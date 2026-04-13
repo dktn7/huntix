@@ -1,5 +1,6 @@
 # Huntix — Cursor Rules
 # Auto-loaded every session. Never delete or override these.
+# MAINTAINER NOTE: Update the "Development Phase" section below when advancing phases.
 
 ## Project Identity
 Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
@@ -18,6 +19,29 @@ Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
 - No dynamic `import()` at runtime
 - Do not upgrade Three.js mid-jam
 
+## Game Loop — Fixed Timestep (Critical)
+- GameLoop.js uses a FIXED timestep accumulator: FIXED_DT = 1/60 = 0.01667s always
+- The callback always receives exactly 0.01667s — never a variable dt from RAF
+- MAX_DT cap is 1/20 (50ms) to prevent spiral of death after tab switch
+- All gameplay code must be written for fixed dt, not variable dt
+- Do NOT read performance.now() or RAF timestamps in gameplay code — use the dt passed in
+
+## Real Input Bindings (from InputManager.js — do not invent new ones)
+P1 Keyboard:
+  Move: WASD + Arrow keys
+  Light attack: J
+  Heavy attack: K
+  Dodge: Shift (left or right)
+  Special: E
+  Interact: F
+  Pause: Escape
+P1 Gamepad (index 0):
+  Move: axes[0] (LX), axes[1] (LY) — deadzone 0.3
+  Interact: button 0 | Dodge: button 1 | Light: button 2 | Heavy: button 3
+  Special: button 5 | Pause: button 9
+P2–P4 Gamepad: NOT YET IMPLEMENTED — must be built in Phase 3
+P2 Keyboard: NOT YET IMPLEMENTED — must be built in Phase 3
+
 ## Performance Limits
 - Max 20 enemies on screen — use THREE.InstancedMesh for grunts
 - Max 500 particles — pool and reuse, never allocate in game loop
@@ -31,7 +55,7 @@ Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
 - One class per file
 - `src/engine/` = core systems, `src/gameplay/` = game logic
 - All movement uses `dt` (delta time in seconds) — never frame-count timers
-- All input goes through InputManager.isDown(action, playerIndex) only
+- All input goes through InputManager.isDown(action) — never read raw keys directly
 - State machines use named string constants — no magic strings inline
 - No console.log in shipped code except behind `if (DEBUG)` flag
 - Comment every public method with a one-line description
@@ -45,17 +69,30 @@ Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
 - Only valid cancel: any attack → dodge
 
 ## Hunter Quick Reference
-| Hunter  | Element       | HP  | Mana | Dodge          | Status |
-|---------|---------------|-----|------|----------------|--------|
-| Dabik   | Shadow        | 80  | 120  | Blink          | Bleed  |
-| Benzu   | Thunder/Earth | 160 | 70   | Shoulder Charge| Stun   |
-| Sereisa | Lightning     | 100 | 100  | Electric Dash  | Slow   |
-| Vesol   | Flame         | 90  | 130  | Flame Scatter  | Burn   |
+| Hunter  | Element       | HP  | Mana | Dodge           | Status |
+|---------|---------------|-----|------|-----------------|--------|
+| Dabik   | Shadow        | 80  | 120  | Blink           | Bleed  |
+| Benzu   | Thunder/Earth | 160 | 70   | Shoulder Charge | Stun   |
+| Sereisa | Lightning     | 100 | 100  | Electric Dash   | Slow   |
+| Vesol   | Flame         | 90  | 130  | Flame Scatter   | Burn   |
 
 ## Development Phase (Current)
-Phase 1 — Core Engine (Days 1–3)
-Next to build: PlayerState.js FSM → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
-Do NOT add: character models, textures, audio, zone transitions (not until later phases)
+# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ───────────────────────────────
+Current Phase: 1 — Core Engine (Days 1–3)
+Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
+Next to build: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
+Do NOT add yet: character models, textures, audio, zone transitions, P2+ input
+# ───────────────────────────────────────────────────────────────────────────
+
+## Phase Unlock Gates (do not build ahead of schedule)
+| Phase | Days | Gate |
+|---|---|---|
+| 1 | 1–3  | Core engine + combat input |
+| 2 | 4–6  | Enemy AI + hit detection + juice |
+| 3 | 7–9  | Hunter models + 4P input + camera |
+| 4 | 10–12 | Zones + boss phases + essence drops |
+| 5 | 13–15 | Hub shop + XP + HUD |
+| 6 | 16–18 | Audio + onboarding + deploy |
 
 ## Design Docs
 Before implementing any system, read the relevant doc in docs/:
@@ -70,3 +107,4 @@ INPUT.md | COOP.md | WEAPONS.md | HUD.md | AUDIO.md | TECHSTACK.md
 - Commit large binaries to repo root — use assets/
 - Build features not in the spec without flagging first
 - Remove or modify the Vibe Jam widget script
+- Implement P2–P4 input before Phase 3

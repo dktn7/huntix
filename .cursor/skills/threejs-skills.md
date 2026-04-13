@@ -1,35 +1,48 @@
 ---
 name: threejs-skills
-description: Core Three.js + 2.5D scene setup, WebGPU renderer, orthographic camera, Y-sort depth, elemental aura particle systems. Everything runs through this. Always load alongside systematic-debugging.
+description: Core Three.js + 2.5D scene setup, orthographic camera, Y-sort depth, fixed-timestep game loop, elemental aura particle systems. Everything runs through this. Always load alongside systematic-debugging.
 ---
 
 # Three.js Skills for Huntix
 
-You are building a 2.5D browser beat 'em up in Three.js r169 with NO build step and NO npm.
+Building a 2.5D browser beat 'em up in Three.js r169 — NO build step, NO npm.
 
 ## What Is Already Built — Read Before Writing Any Engine Code
 
-These files exist in `src/engine/` and must NOT be recreated:
-
 | File | What it does |
 |---|---|
-| `src/engine/GameLoop.js` | Fixed-timestep RAF loop with FPS tracking. Provides `dt` to all systems. |
-| `src/engine/Renderer.js` | Orthographic Three.js renderer, handles resize, pixel ratio, canvas setup. |
-| `src/engine/SceneManager.js` | 2.5D scene, Y-sort, placeholder player box, movement. |
-| `src/engine/InputManager.js` | Keyboard + gamepad, all combat actions mapped for up to 4 players. |
-| `src/main.js` | Bootstrap — wires all engine modules together. |
+| `src/engine/GameLoop.js` | Fixed-timestep accumulator. Callback ALWAYS receives `FIXED_DT = 1/60 = 0.01667s`. |
+| `src/engine/Renderer.js` | Orthographic Three.js renderer, resize, pixel ratio, canvas setup. |
+| `src/engine/SceneManager.js` | 2.5D scene, Y-sort, placeholder player box, movement, ground plane. |
+| `src/engine/InputManager.js` | P1 keyboard (WASD/J/K/Shift/E) + P1 gamepad. P2–P4 not yet built. |
+| `src/main.js` | Bootstrap — wires all engine modules. |
 
-Next files to create live in `src/gameplay/` — see AGENTS.md for the ordered list.
+All new gameplay code goes in `src/gameplay/` — see AGENTS.md for build order.
 
-## Core Principles
+## Fixed-Timestep Game Loop (Critical — Read This)
 
-- Three.js r169 loaded via CDN importmap — NO npm, NO Vite, NO bundler
-- `requestAnimationFrame` for game loop — never `setInterval`
-- Orthographic camera only — never switch to perspective
-- No dynamic shadows in combat scenes
-- Dispose geometries, materials, and textures when removing objects to prevent leaks
+GameLoop.js does NOT pass a variable RAF `dt`. It uses a fixed accumulator:
 
-## Orthographic Camera (Already set up in Renderer.js — reference only)
+```js
+const FIXED_DT = 1 / 60;  // always 0.01667s — every tick is identical
+const MAX_DT   = 1 / 20;  // cap: prevents spiral of death after tab switch
+
+// Accumulator pattern:
+this._accum += Math.min(rawDt, MAX_DT);
+while (this._accum >= FIXED_DT) {
+  this._callback(FIXED_DT); // your code always gets 0.01667
+  this._accum -= FIXED_DT;
+}
+```
+
+**Consequences for your code:**
+- `dt` in any `update(dt)` call is always `0.01667s` — treat it as a constant
+- Do NOT call `performance.now()` or measure time yourself in gameplay code
+- Do NOT use `dt` as a variable that changes — it never does
+- Physics, timers, and animations are all deterministic and reproducible
+- Example: `entity.position.x += speed * dt` where `dt = 0.01667` always
+
+## Orthographic Camera (set up in Renderer.js — do not recreate)
 
 ```js
 const aspect = window.innerWidth / window.innerHeight;
@@ -40,84 +53,77 @@ camera.position.set(0, 5, 20);
 camera.lookAt(0, 0, 0);
 ```
 
-## Y-Sort Depth Sorting — Run Every Frame
-
-Entities lower on screen appear in front of entities higher on screen:
+## Y-Sort Depth — Run Every Frame in SceneManager
 
 ```js
-// In SceneManager update — already implemented, do not duplicate
+// Already in SceneManager.js — do not duplicate
+// Objects with lower Y (further down screen) render in front
 entities.forEach(entity => {
   entity.mesh.position.z = -entity.worldY * 0.01;
 });
 ```
 
-## Movement on XZ Plane
+## Performance Rules (Hard Limits)
 
-```js
-function moveEntity(entity, dx, dz, dt) {
-  entity.position.x += dx * entity.speed * dt;
-  entity.position.z += dz * entity.speed * dt;
-}
-```
-
-## Performance Rules (Hard Limits from AGENTS.md)
-
-- Max 20 enemies on screen — use `THREE.InstancedMesh` for grunts
-- Max 500 particles — pool and reuse, NEVER allocate new objects in game loop
+- Max 20 enemies — `THREE.InstancedMesh` for grunts
+- Max 500 particles — pool and reuse, NEVER allocate in game loop
 - No dynamic shadows in combat scenes
-- NEVER `new THREE.Vector3()` / `new THREE.Matrix4()` / `new THREE.Color()` inside animation loop
+- NEVER `new THREE.Vector3()` / `new THREE.Matrix4()` inside the loop
+- Pre-allocate all vectors at class level, reuse via `.set()` / `.copy()`
 - Target 60fps on Intel Iris / integrated GPU
-- All assets preloaded before first frame — no runtime fetches
 - Total initial asset payload < 3MB
 
-## InstancedMesh for Enemies
+## InstancedMesh Pattern
 
 ```js
-const geometry = new THREE.BoxGeometry(1, 2, 0.5);
-const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-const enemies = new THREE.InstancedMesh(geometry, material, 20); // max 20
+// Allocated ONCE at scene init
+const enemies = new THREE.InstancedMesh(geometry, material, 20);
 scene.add(enemies);
 
-// Update per enemy (reuse matrix — pre-allocated outside loop)
-const _matrix = new THREE.Matrix4(); // allocated ONCE outside loop
-function updateEnemyTransform(i, x, y, z) {
-  _matrix.setPosition(x, y, z);
-  enemies.setMatrixAt(i, _matrix);
+// Pre-allocate matrix ONCE outside loop
+const _m = new THREE.Matrix4();
+
+// Inside update — reuse _m, never new Matrix4()
+function setEnemyTransform(i, x, y, z) {
+  _m.setPosition(x, y, z);
+  enemies.setMatrixAt(i, _m);
   enemies.instanceMatrix.needsUpdate = true;
 }
 ```
 
-## Lighting Setup
+## Lighting (set up in SceneManager — do not recreate)
 
 ```js
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-dirLight.position.set(5, 10, 5);
-// castShadow = false always in combat scenes
-scene.add(ambientLight, dirLight);
+// Bright ambient for flat 2.5D readability
+new THREE.AmbientLight(0xffffff, 1.2);
+// Subtle directional from top-left for mild depth
+const dir = new THREE.DirectionalLight(0xffeedd, 0.6);
+dir.position.set(-3, 5, 10);
+// castShadow = false always in combat
 ```
 
-## Elemental Aura Particles (Pooled)
+## Elemental Aura Particles (Pooled — pre-allocate at init)
 
 ```js
-// Allocate at init — never inside game loop
-const auraGeometry = new THREE.BufferGeometry();
-const positions = new Float32Array(50 * 3); // 50 particles per aura
-auraGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-const auraMat = new THREE.PointsMaterial({ color: 0x9b59b6, size: 0.08, transparent: true, opacity: 0.8 });
-const aura = new THREE.Points(auraGeometry, auraMat);
+// Allocate ONCE — never inside game loop
+const positions = new Float32Array(50 * 3);
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const aura = new THREE.Points(geo,
+  new THREE.PointsMaterial({ color: 0x9b59b6, size: 0.08, transparent: true })
+);
 hunterMesh.add(aura);
 
-// Update positions in loop (mutate existing array — no allocation)
-function updateAura(auraGeometry, time) {
-  const pos = auraGeometry.attributes.position.array;
+// Update in loop — mutate array in place, no allocation
+function updateAura(geo, time) {
+  const pos = geo.attributes.position.array;
   for (let i = 0; i < 50; i++) {
     const t = time + i * 0.5;
-    pos[i * 3]     = Math.cos(t) * (0.4 + Math.random() * 0.2);
-    pos[i * 3 + 1] = Math.sin(t * 0.7) * 0.5 + i * 0.05;
-    pos[i * 3 + 2] = Math.sin(t) * (0.4 + Math.random() * 0.2);
+    pos[i*3]   = Math.cos(t) * 0.5;
+    pos[i*3+1] = Math.sin(t * 0.7) * 0.5 + i * 0.05;
+    pos[i*3+2] = Math.sin(t) * 0.5;
   }
-  auraGeometry.attributes.position.needsUpdate = true;
+  geo.attributes.position.needsUpdate = true;
 }
 ```
 
