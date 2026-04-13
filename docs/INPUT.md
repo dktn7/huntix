@@ -1,42 +1,59 @@
-# Huntix Co-op Input Plan
+# Huntix Input Spec
 
-Unified, co-op-friendly scheme — shared keys across all hunters for chaos-free 1–4P, with unique effects/flavors per character.
+Unified control scheme for 1–4P local co-op. All actions go through `InputManager.js`.
+
+> **Source of truth:** `src/engine/InputManager.js` — this doc reflects what is implemented.
+> P2–P4 keyboard and gamepad support is planned for Phase 3 (Days 7–9).
 
 ---
 
-## Keyboard / Mouse Layout
+## P1 Keyboard (Implemented — Phase 1)
 
-WASD moves fluidly (face direction; optional mouse aim). 10–15 frame buffer enables light/dodge cancels like Dead Cells.
-
-| Action | Key | Details |
+| Action | Key(s) | Notes |
 |---|---|---|
-| Move | WASD | Responsive arcade; hunter speed varies (Dabik fastest) |
-| Jump | Space | Light hop, no double jump |
-| Sprint | Shift hold | ×1.2 speed (optional) |
-| Light Attack | LMB | 3–5 chains, applies status (e.g. bleed); fastest |
-| Heavy Attack | RMB | Arc/slam, high dmg/stagger, 1s CD |
-| Dodge / Dash | LShift | 0.2s i-frames; unique per hunter (blink/charge); 0.8s CD |
-| Special | E | Mana — minor (instant) / hold for advanced/ult |
+| Move Left | A, ← Arrow | |
+| Move Right | D, → Arrow | |
+| Move Up | W, ↑ Arrow | |
+| Move Down | S, ↓ Arrow | |
+| Light Attack | J | 3–5 chain combos, applies status |
+| Heavy Attack | K | Wide arc/slam, high damage + stagger |
+| Dodge / Dash | Shift (L or R) | 300ms total, 200ms i-frames, unique per hunter |
+| Special | E | Mana cost; hold for advanced |
 | Interact | F | Shop / portal / pickup |
-| Pause | Esc | Menu |
+| Pause | Escape | |
 
 ---
 
-## Controller Layout (Xbox / PS)
+## P1 Gamepad (Implemented — Phase 1)
 
-Left stick moves/jumps; A bumpers/triggers for attacks like Castle Crashers spam.
+Xbox / PS layout. Deadzone: 0.3 on all axes.
 
-| Action | Button | Details |
+| Action | Button/Axis | Notes |
 |---|---|---|
-| Move | Left Stick | Same as KB |
-| Jump | A | — |
-| Sprint | L3 Click | — |
-| Light Attack | X / Square | Chains |
-| Heavy Attack | Y / Triangle | Burst |
-| Dodge / Dash | B / Circle | I-frames |
-| Special | RB / R1 | Mana skills |
-| Interact | A (ctx) | — |
-| Pause | Start | — |
+| Move | axes[0] (LX), axes[1] (LY) | Deadzone 0.3 |
+| Interact | Button 0 (A / Cross) | |
+| Dodge | Button 1 (B / Circle) | 300ms, 200ms i-frames |
+| Light Attack | Button 2 (X / Square) | Chains, applies status |
+| Heavy Attack | Button 3 (Y / Triangle) | Burst, stagger |
+| Special | Button 5 (RB / R1) | Mana skills |
+| Pause | Button 9 (Start / Options) | |
+
+---
+
+## P2–P4 Input (Phase 3 — Not Yet Implemented)
+
+P2 keyboard layout (to be confirmed and added to `InputManager.js` in Phase 3):
+
+| Action | Key |
+|---|---|
+| Light Attack | H |
+| Heavy Attack | L |
+| Dodge | N |
+| Special | M |
+| Movement | TBD — confirm before implementing |
+
+P2–P4 gamepads: `navigator.getGamepads()[playerIndex]` polled each frame.
+Never cache the gamepad object — always re-poll inside the animation loop.
 
 ---
 
@@ -51,17 +68,29 @@ Left stick moves/jumps; A bumpers/triggers for attacks like Castle Crashers spam
 
 ---
 
-## Resource / Feedback Integration
+## Input Buffer
 
-- **Health** — red bar; potions heal; die at zero
-- **Mana** — blue bar; regen on hits and passively
-- **Surge** — yellow bar; triggers ultimate; no block/parry — defense via dodge and stats
+- Buffer queues up to 3 actions
+- 10–15 frame window for light → dodge cancel
+- Only valid cancel: any attack → dodge
+
+---
+
+## Combat Feel Timing (from AGENTS.md spec)
+
+| Action | Timing |
+|---|---|
+| Light attack hitstop | 80ms |
+| Heavy attack hitstop | 150ms |
+| Dodge duration | 300ms total |
+| Dodge i-frames | 200ms |
+| Dodge cooldown | 800ms |
 
 ---
 
 ## Tech Notes
 
-- Input buffer queues 3 actions
-- Hitstop 40–80ms on connect
-- Particles on hit connect
-- Light/dodge cancels work within 10–15 frame window
+- All input goes through `InputManager.isDown(action)` or `justPressed(action)` — never read raw keys in gameplay code
+- `InputManager.poll()` is called once per frame at the top of the game loop by `SceneManager.update()`
+- `moveVector` is normalised — diagonal movement is not faster than axis-aligned
+- Fixed timestep: `dt` in all update calls is always `1/60 = 0.01667s`

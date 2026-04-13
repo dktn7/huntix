@@ -26,7 +26,7 @@ Before touching any code, read `AGENTS.md` at the repo root.
 - GameLoop.js uses a FIXED timestep accumulator: FIXED_DT = 1/60 = 0.01667s always
 - The update callback ALWAYS receives exactly 0.01667s — never a variable RAF dt
 - MAX_DT cap = 1/20 to prevent spiral of death after tab switch
-- Write ALL gameplay code assuming fixed dt = 0.01667s
+- Write ALL gameplay code assuming fixed dt = 0.01667s — it never varies
 - Do NOT call performance.now() or read RAF timestamps in gameplay code
 
 ## Real Input Bindings (from InputManager.js — match these exactly)
@@ -49,7 +49,7 @@ P2–P4 input: NOT YET IMPLEMENTED — build in Phase 3 only
 ## Code Conventions
 - One class per file
 - src/engine/ = core | src/gameplay/ = game logic
-- dt is always fixed 0.01667s from GameLoop
+- dt in all update(dt) calls is always 0.01667s (fixed timestep) — treat as constant
 - Input via InputManager.isDown(action) only — never raw keys
 - Named string constants for all FSM states — no magic strings
 - No console.log except behind if (DEBUG)
@@ -90,7 +90,7 @@ Do NOT add yet: models, textures, audio, zone transitions, P2+ input
 ## Available Skills (.agents/skills/)
 threejs-skills | systematic-debugging | animation-fsm | game-feel-juice
 multiplayer-coop | 3d-model-optimization | spatial-audio | progression-xp
-minimax-shader-dev | ui-skills | root-cause-tracing | test-driven-development
+minimax-shader-dev | ibelick-ui-skills | root-cause-tracing | test-driven-development
 find-bugs | verification-before-completion | vercel-deploy | create-pr
 
 ## Do Not

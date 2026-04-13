@@ -81,7 +81,7 @@ All design documentation lives in `docs/`. Read the relevant doc before implemen
 | `docs/BOSSES.md` | 4 boss designs with phases, attacks, telegraphs, co-op scaling, perf specs |
 | `docs/ENEMIES.md` | 3 enemy types + miniboss: FSM states, HP, AI notes, wave compositions per zone |
 | `docs/ZONES.md` | All 4 zones + hub: layout, parallax layers, dimensions, transition flow |
-| `docs/INPUT.md` | Full control scheme for 1-4P: keyboard, controller, action buffers, hunter dodges |
+| `docs/INPUT.md` | Full control scheme: P1 keyboard (J/K/Shift/E) + gamepad, P2-4 Phase 3 plan |
 | `docs/COOP.md` | Co-op rules: shared camera, HP scaling, AI fill, player colors, synergies |
 | `docs/WEAPONS.md` | 17 weapons with costs, stats, best hunter, shop economy |
 | `docs/HUD.md` | HUD layout: bar positions, combo counter, damage numbers, boss health bar |
@@ -110,11 +110,33 @@ See `docs/TECHSTACK.md` for the full tech reference. Summary:
 
 ---
 
+## Game Loop — Fixed Timestep (Critical)
+
+`GameLoop.js` uses a fixed-timestep accumulator. The `dt` passed to every `update()` call is **always exactly `1/60 = 0.01667s`** — it never varies.
+
+- Do NOT treat `dt` as a variable that changes frame to frame
+- Do NOT call `performance.now()` or measure elapsed time in gameplay code
+- The `MAX_DT` cap of `1/20` prevents spiral-of-death after tab switches
+- All gameplay physics, timers, and animations are fully deterministic as a result
+
+```js
+// GameLoop.js — for reference only, already implemented
+const FIXED_DT = 1 / 60;  // 0.01667s — always
+const MAX_DT   = 1 / 20;  // 50ms cap
+this._accum += Math.min(rawDt, MAX_DT);
+while (this._accum >= FIXED_DT) {
+  this._callback(FIXED_DT); // your update() always receives 0.01667
+  this._accum -= FIXED_DT;
+}
+```
+
+---
+
 ## Code Conventions
 
 - One class per file
 - Files live in `src/engine/` (core systems) or `src/gameplay/` (game logic)
-- Use `dt` (delta time in seconds) for all movement and timers
+- `dt` in all `update(dt)` calls is always `0.01667s` (fixed timestep) — use it for all movement and timers
 - All input goes through `InputManager.isDown(action)` or `justPressed(action)` — never read raw keys directly
 - State machines use string constants, not magic strings inline
 - No `console.log` in shipped code except behind `debug` flag
@@ -165,3 +187,4 @@ Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = open
 - Do not create gameplay features that are not in the spec without flagging it first
 - Do not skip the widget script
 - Do not upgrade Three.js mid-jam
+- Do not implement P2–P4 input before Phase 3
