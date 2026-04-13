@@ -107,6 +107,8 @@ See [HUNTERS.md](./HUNTERS.md) for full character profiles.
 
 ## 6. Opponents
 
+See [ENEMIES.md](./ENEMIES.md) for full enemy specs, AI states, and wave compositions.
+
 | Enemy Type | Behaviour |
 |---|---|
 | Grunt | Standard melee — rushes players, basic attack pattern |
@@ -119,14 +121,15 @@ See [HUNTERS.md](./HUNTERS.md) for full character profiles.
 
 ## 7. Game World & Zones
 
-Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style arenas with parallax backgrounds and depth layers for visual richness.
+Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style arenas with parallax backgrounds and depth layers for visual richness. See [ZONES.md](./ZONES.md) for full zone details.
 
-| Zone | Description | Focus |
+| Zone | Description | Boss |
 |---|---|---|
-| Hunter Hub | Safe area, shop, portal access, character select | Setup, atmosphere |
-| City Breach | Ruined streets, introductory enemies and miniboss | Movement, basic combat |
-| Ruin Den | Underground dungeon, aggressive waves | Spacing, timing, item use |
-| Shadow Core | Final boss zone, most dramatic tone | Full kit, teamwork, ultimates |
+| Hunter Hub | Safe area, shop, portal access, character select | None |
+| City Breach | Ruined streets, introductory enemies | Fire Bruiser |
+| Ruin Den | Underground dungeon, aggressive waves | Earth Tank |
+| Shadow Core | Arcane corruption zone, most dramatic tone | Rogue Dabik |
+| Thunder Spire | Storm-struck tower peak, final zone | Raiju |
 
 ---
 
@@ -160,11 +163,13 @@ Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style ar
 
 ## 9. Controls
 
+See [INPUT.md](./INPUT.md) for full control scheme including controller layout and hunter dodge differences.
+
 | Action | Keyboard | Controller |
 |---|---|---|
 | Move | WASD | Left stick |
-| Light Attack | Left mouse | X / Square |
-| Heavy Attack | Right mouse | Y / Triangle |
+| Light Attack | J / Left mouse | X / Square |
+| Heavy Attack | K / Right mouse | Y / Triangle |
 | Dodge | Shift | B / Circle |
 | Special | E | RB / R1 |
 | Interact | F | A / Cross |
@@ -175,10 +180,14 @@ Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style ar
 
 ## 10. Art & Audio
 
+See [ANIMATIONS.md](./ANIMATIONS.md) for animation states and frame budgets.  
+See [HUD.md](./HUD.md) for HUD layout and element specs.  
+See [AUDIO.md](./AUDIO.md) for full SFX list and music direction.
+
 - **Art** — dark, high contrast, stylized. 3D models lit for 2.5D presentation. Combat effects glow strongly against dark world. Auras intensify with level.
 - **Audio** — punchy, arcade-like, responsive to hits, upgrades, and boss moments.
 - **Aura system** — aura intensity visually tied to level, darker and more dramatic as hunters grow stronger.
-- **Parallax backgrounds** — multi-layer depth scrolling behind the flat combat plane for visual depth.
+- **Parallax backgrounds** — 3-layer depth system per zone (background / midground / foreground).
 
 ---
 
@@ -201,11 +210,11 @@ Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style ar
 - All four hunters (Dabik, Benzu, Sereisa, Vesol)
 - 1–4 local players
 - Optional AI companion
-- 3 enemy types
-- 1 miniboss, 1 final boss
+- 3 enemy types (Grunt, Ranged, Bruiser)
+- 1 miniboss (Gate Warden), 1 final boss per zone (4 total)
 - Shop with items
-- Level-up power system
-- 3 short portal zones
+- Level-up power system (4 levels, 3 choices each)
+- **4 portal zones** (City Breach, Ruin Den, Shadow Core, Thunder Spire)
 - Required Vibe Jam widget
 - Instant browser loading
 
@@ -232,5 +241,7 @@ Built in Three.js using a 2.5D architecture. Key systems:
 - Mana, surge, and resource management
 - Shop and upgrade flow
 - Portal transitions
-- Parallax background layers
+- Parallax background layers (3 per zone)
 - Vibe Jam widget integration
+
+See [MVP-PLAN.md](./MVP-PLAN.md) for the full 18-day phased development timeline.
