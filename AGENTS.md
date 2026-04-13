@@ -11,7 +11,7 @@ Huntix is a 2.5D browser action brawler built in Three.js for Vibe Jam 2026.
 - Genre: beat 'em up / roguelite brawler
 - Perspective: 2.5D side-scroll with orthographic camera and Y-sort depth
 - Players: 1-4 local co-op (shared screen, keyboard + gamepad)
-- Engine: Three.js via CDN importmap — no build step, no bundler
+- Engine: Three.js r169 via CDN importmap — no build step, no bundler
 - Target: instant browser load, 60fps on a mid-spec laptop, no login required
 - Deadline: 1 May 2026 @ 13:37 UTC (Vibe Jam 2026)
 
@@ -71,28 +71,34 @@ Do not add zone transitions until Phase 4.
 
 ## Project Spec Files
 
-All design documentation lives in `docs/`. Read these before implementing any system.
+All design documentation lives in `docs/`. Read the relevant doc before implementing any system.
 
 | File | What It Covers |
 |------|----------------|
 | `docs/GDD.md` | Full game design document: mechanics, combat, zones, progression, all systems |
 | `docs/MVP-PLAN.md` | 18-day phased development roadmap with milestones and risk mitigations |
-| `docs/HUNTERS.md` | All 4 hunters: Dabik, Benzu, Sereisa, Vesol — lore, combat styles, abilities, status effects |
+| `docs/HUNTERS.md` | All 4 hunters: Dabik, Benzu, Sereisa, Vesol — lore, stats, spells, upgrade paths |
 | `docs/BOSSES.md` | 4 boss designs with phases, attacks, telegraphs, co-op scaling, perf specs |
-| `docs/INPUT.md` | Full control scheme for 1-4P: keyboard, controller, action buffers |
-| `docs/COOP.md` | Co-op rules: shared camera, HP scaling, AI fill, player colors, revive |
-| `docs/WEAPONS.md` | Weapon types per hunter, silhouette rules, elemental effects |
+| `docs/ENEMIES.md` | 3 enemy types + miniboss: FSM states, HP, AI notes, wave compositions per zone |
+| `docs/ZONES.md` | All 4 zones + hub: layout, parallax layers, dimensions, transition flow |
+| `docs/INPUT.md` | Full control scheme for 1-4P: keyboard, controller, action buffers, hunter dodges |
+| `docs/COOP.md` | Co-op rules: shared camera, HP scaling, AI fill, player colors, synergies |
+| `docs/WEAPONS.md` | 17 weapons with costs, stats, best hunter, shop economy |
+| `docs/HUD.md` | HUD layout: bar positions, combo counter, damage numbers, boss health bar |
+| `docs/AUDIO.md` | Full SFX list per action, hunter sounds, boss stings, music by zone |
+| `docs/ANIMATIONS.md` | Animation states, frame budgets, placeholder behaviour, state machine spec |
+| `docs/VISUAL-DESIGN.md` | World tone, art direction, character philosophy, color system, visual style |
+| `docs/CUSTOMIZATION.md` | Customization system: color slots, outfit variants, co-op readability rules |
+| `docs/TECHSTACK.md` | Tech stack: Three.js version, importmap, project structure, perf rules, deploy |
 | `docs/PORTAL-WEBRING.md` | Vibe Jam portal webring implementation with Three.js exit/start portals |
-
-Also at the root:
-- `huntix_full_design_spec_v2.md` — visual design spec: world tone, art direction, character philosophy, color system, HUD layout (moved to docs if not already there)
-- `huntix_hunter_customization_spec.md` — customization system: color slots, outfit variants, co-op readability rules (moved to docs if not already there)
 
 ---
 
 ## Tech Rules
 
-- Three.js loaded via CDN importmap — no npm, no Vite, no bundler
+See `docs/TECHSTACK.md` for the full tech reference. Summary:
+
+- Three.js r169 loaded via CDN importmap — no npm, no Vite, no bundler
 - ES modules only (`type="module"` in script tags)
 - Max 20 enemies on screen — use instanced meshes for grunts
 - Max 500 particles — pool and reuse
@@ -118,12 +124,12 @@ Also at the root:
 
 ## Hunter Summary
 
-| Hunter | Element | Weapon | Special | Status |
-|--------|---------|--------|---------|--------|
-| Dabik | Shadow | Twin daggers | Shadow dash | Bleed + Slow |
-| Benzu | Thunder/Earth | Gauntlets | Ground slam | Stun + Wall |
-| Sereisa | Lightning | Electro-blades | Blink strike | Slow + Stun |
-| Vesol | Flame | Wrist focus | Flame burst | Burn + Slam |
+| Hunter | Element | Weapon | Dodge | Status |
+|--------|---------|--------|-------|--------|
+| Dabik | Shadow | Twin daggers | Blink (teleports behind nearest enemy) | Bleed |
+| Benzu | Thunder/Earth | Gauntlets | Shoulder Charge (staggers enemies hit) | Stun |
+| Sereisa | Lightning | Electro-blades | Electric Dash (applies slow on contact) | Slow |
+| Vesol | Flame | Wrist focus | Flame Scatter (pushes enemies back) | Burn |
 
 Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = opening window, Burn+Slam = AoE control.
 
@@ -131,9 +137,9 @@ Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = open
 
 ## Resource System Per Hunter
 
-- **Health** — survival (100 base, scales with run level)
-- **Mana** — powers specials (100 max, 20/sec regen, special costs 40)
-- **Surge** — unlocks ultimate (fills from hits, drains on use)
+- **Health** — survival (varies per hunter: Dabik 80, Benzu 160, Sereisa 100, Vesol 90)
+- **Mana** — powers specials (Dabik 120, Benzu 70, Sereisa 100, Vesol 130)
+- **Surge** — unlocks ultimate (fills from kills/hits/streaks, drains on use)
 - **Stamina** — limits dodge and sprint (restores on hit, warns UI when low)
 
 ---
@@ -158,3 +164,4 @@ Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = open
 - Do not commit large image or audio binaries to the repo root — use `assets/`
 - Do not create gameplay features that are not in the spec without flagging it first
 - Do not skip the widget script
+- Do not upgrade Three.js mid-jam
