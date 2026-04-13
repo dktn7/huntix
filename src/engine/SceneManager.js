@@ -1,48 +1,131 @@
 import * as THREE from 'three';
-import { ORTHO_WIDTH, ORTHO_HEIGHT } from './Renderer.js';
+import { ORTHO_WIDTH } from './Renderer.js';
+import { Actions } from './InputManager.js';
+import { CameraShake } from './CameraShake.js';
+import { PlayerState } from '../gameplay/PlayerState.js';
+import { CombatController } from '../gameplay/CombatController.js';
+import { ManaBar } from '../gameplay/ManaBar.js';
+import { EnemySpawner } from '../gameplay/EnemySpawner.js';
+import { SparkPool } from '../gameplay/SparkPool.js';
+import { DebugHitboxes } from '../gameplay/DebugHitboxes.js';
+import { GameplayHUD } from '../gameplay/GameplayHUD.js';
 
-// ─── SceneManager ─────────────────────────────────────────────────────────
-// Owns the Three.js Scene and the orthographic camera.
-// All game objects live inside this scene.
+const SceneModes = {
+  HUB: 'HUB',
+  CITY_BREACH: 'CITY_BREACH',
+};
 
 export class SceneManager {
+  /** Creates the Three.js scene, camera, arena, and Phase 1 gameplay systems. */
   constructor(renderer) {
-    this.scene  = new THREE.Scene();
+    this.scene = new THREE.Scene();
     this.camera = renderer.createCamera();
+    this.mode = SceneModes.HUB;
+    this.debugEnabled = false;
 
     this._setupLighting();
-    this._setupTestScene();
+    this._setupArena();
+    this._setupHubPortal();
+
+    this.resources = new ManaBar();
+    this.player = new PlayerState(this.scene, this.resources);
+    this.combat = new CombatController(this.resources);
+    this.spawner = new EnemySpawner(this.scene, 1);
+    this.sparks = new SparkPool(this.scene);
+    this.cameraShake = new CameraShake(this.camera);
+    this.debugHitboxes = new DebugHitboxes(this.scene);
+    this.hud = new GameplayHUD(document.getElementById('ui-overlay'));
+    this._slowMoTicks = 0;
+    this._slowMoScale = 1;
   }
 
-  // ─── Lighting (2.5D: flat ambient + directional for mild depth) ──────────
+  /** Advances input, gameplay simulation, and hitstop-aware enemy updates. */
+  update(dt, input) {
+    input.poll();
+
+    if (input.justPressed(Actions.DEBUG)) {
+      this.debugEnabled = !this.debugEnabled;
+      document.body.classList.toggle('debug', this.debugEnabled);
+      this.debugHitboxes.setEnabled(this.debugEnabled);
+    }
+
+    if (this.mode === SceneModes.HUB) {
+      this._updateHub(dt, input);
+      return;
+    }
+
+    this._updateSlowMo(dt);
+    const scaledDt = dt * this._slowMoScale;
+    const inHitstop = this.combat.consumeHitstop(dt);
+    if (inHitstop) {
+      this.combat.advanceHitboxes(dt);
+      this.sparks.update(dt);
+      this.cameraShake.update(dt);
+      this.spawner.syncVisuals();
+      this.hud.setCombo(this.combat.comboCount);
+      this.hud.update(this.camera);
+      this._updateDebugHitboxes();
+      return;
+    }
+
+    const enemies = this.spawner.getActiveEnemies();
+    const hitEvents = this.combat.update(scaledDt, input, this.player, enemies, this.spawner);
+    this._applyCombatEvents(hitEvents);
+    this.player.update(scaledDt, input);
+    const spawnerEvents = this.spawner.update(scaledDt, [this.player]);
+    this._applyCombatEvents(spawnerEvents);
+    this.sparks.update(scaledDt);
+    this.cameraShake.update(scaledDt);
+    this.hud.setCombo(this.combat.comboCount);
+    this.hud.update(this.camera);
+    this._updateDebugHitboxes();
+  }
+
+  /** Returns the managed Three.js scene. */
+  getScene() {
+    return this.scene;
+  }
+
+  /** Returns the managed orthographic camera. */
+  getCamera() {
+    return this.camera;
+  }
+
+  /** Returns lightweight state for the debug overlay. */
+  getDebugInfo() {
+    return {
+      mode: this.mode,
+      playerState: this.player.state,
+      health: this.resources.health,
+      maxHealth: this.resources.maxHealth,
+      mana: this.resources.mana,
+      maxMana: this.resources.maxMana,
+      surge: this.resources.surge,
+      maxSurge: this.resources.maxSurge,
+      stamina: this.resources.stamina,
+      maxStamina: this.resources.maxStamina,
+      enemies: this.spawner.getActiveEnemies().length,
+      combo: this.combat.comboCount,
+      hitstop: this.combat.hitstopRemaining,
+    };
+  }
+
   _setupLighting() {
-    // Bright ambient so sprites stay readable
     const ambient = new THREE.AmbientLight(0xffffff, 1.2);
     this.scene.add(ambient);
 
-    // Subtle directional from top-left for a hint of 3D depth
     const dir = new THREE.DirectionalLight(0xffeedd, 0.6);
     dir.position.set(-3, 5, 10);
     this.scene.add(dir);
   }
 
-  // ─── Test scene: shows the 2.5D setup is working ─────────────────────────
-  _setupTestScene() {
-    // Ground plane (the "lane" — X axis is movement)
+  _setupArena() {
     const groundGeo = new THREE.PlaneGeometry(ORTHO_WIDTH, 2);
     const groundMat = new THREE.MeshLambertMaterial({ color: 0x1a1a2e });
-    const ground    = new THREE.Mesh(groundGeo, groundMat);
+    const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.position.set(0, -3, 0);
     this.scene.add(ground);
 
-    // Placeholder player (box — replace with sprite/model in Phase 2)
-    const playerGeo = new THREE.BoxGeometry(0.8, 1.2, 0.4);
-    const playerMat = new THREE.MeshLambertMaterial({ color: 0x9b59b6 });
-    this._playerMesh = new THREE.Mesh(playerGeo, playerMat);
-    this._playerMesh.position.set(0, -2.2, 0);
-    this.scene.add(this._playerMesh);
-
-    // Some background depth boxes (parallax layer simulation)
     const bgColors = [0x16213e, 0x0f3460, 0x16213e];
     bgColors.forEach((color, i) => {
       const geo = new THREE.BoxGeometry(ORTHO_WIDTH, 3, 0.1);
@@ -51,33 +134,112 @@ export class SceneManager {
       mesh.position.set(0, 2 + i * 2, -(i + 1) * 2);
       this.scene.add(mesh);
     });
-
-    // Player state for test movement
-    this._playerPos  = { x: 0, y: -2.2 };
-    this._playerSpeed = 5; // world units/sec
   }
 
-  // ─── Update (called every fixed tick) ───────────────────────────────────
-  update(dt, input) {
-    input.poll();
+  _setupHubPortal() {
+    const hunterPadGeo = new THREE.BoxGeometry(1.4, 0.16, 0.1);
+    const hunterPadMat = new THREE.MeshLambertMaterial({ color: 0x3b2554 });
+    this._hunterPad = new THREE.Mesh(hunterPadGeo, hunterPadMat);
+    this._hunterPad.position.set(0, -2.85, 0.2);
+    this.scene.add(this._hunterPad);
 
-    const mv = input.moveVector;
-    this._playerPos.x += mv.x * this._playerSpeed * dt;
-    this._playerPos.y += mv.y * this._playerSpeed * dt * 0.4; // Y movement is compressed (2.5D feel)
+    const portalGeo = new THREE.TorusGeometry(0.55, 0.08, 8, 24);
+    const portalMat = new THREE.MeshBasicMaterial({ color: 0x48f7ff });
+    this._portalMesh = new THREE.Mesh(portalGeo, portalMat);
+    this._portalMesh.position.set(3.2, -2.2, 0.3);
+    this.scene.add(this._portalMesh);
 
-    // Clamp to visible area
-    const hw = ORTHO_WIDTH  / 2 - 0.5;
-    const hh = ORTHO_HEIGHT / 2 - 0.5;
-    this._playerPos.x = Math.max(-hw, Math.min(hw, this._playerPos.x));
-    this._playerPos.y = Math.max(-hh, Math.min(hh, this._playerPos.y));
-
-    this._playerMesh.position.x = this._playerPos.x;
-    this._playerMesh.position.y = this._playerPos.y;
-
-    // Y-sort: objects further down (lower Y) render in front
-    this._playerMesh.position.z = -this._playerPos.y * 0.01;
+    const pedestalGeo = new THREE.BoxGeometry(1.2, 0.18, 0.1);
+    const pedestalMat = new THREE.MeshLambertMaterial({ color: 0x29364f });
+    this._portalPedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+    this._portalPedestal.position.set(3.2, -2.85, 0.2);
+    this.scene.add(this._portalPedestal);
   }
 
-  getScene()  { return this.scene; }
-  getCamera() { return this.camera; }
+  _updateHub(dt, input) {
+    this.player.update(dt, input);
+    this.sparks.update(dt);
+    this.cameraShake.update(dt);
+    this._animatePortal(dt);
+    this._updateDebugHitboxes();
+
+    if (input.justPressed(Actions.INTERACT) && this._isPlayerNearPortal()) {
+      this._enterCityBreach(input);
+    }
+  }
+
+  _enterCityBreach(input) {
+    this.mode = SceneModes.CITY_BREACH;
+    input.clearBuffer();
+    this.player.position.x = -4;
+    this.player.position.y = -2.2;
+    this._portalMesh.visible = false;
+    this._portalPedestal.visible = false;
+    this._hunterPad.visible = false;
+    this.spawner.startCityBreach();
+  }
+
+  _isPlayerNearPortal() {
+    const dx = this.player.position.x - this._portalMesh.position.x;
+    const dy = this.player.position.y - this._portalMesh.position.y;
+    return Math.hypot(dx, dy) <= 1.2;
+  }
+
+  _animatePortal(dt) {
+    this._hunterPad.position.z = -this._hunterPad.position.y * 0.01;
+    this._portalMesh.rotation.z += dt * 2.5;
+    this._portalMesh.position.z = -this._portalMesh.position.y * 0.01 + 0.3;
+    this._portalPedestal.position.z = -this._portalPedestal.position.y * 0.01;
+  }
+
+  _applyCombatEvents(events) {
+    for (const event of events) {
+      if (event.type === 'hit') {
+        this.sparks.spawn(event.x, event.y, event.intensity);
+        this.cameraShake.request(event.intensity);
+        this.hud.showDamageNumber(event.x, event.y, event.damage, event.attackType);
+        if (event.killed) {
+          this.sparks.spawnEssence(event.x, event.y, this.player);
+          if (this.spawner.isCurrentWaveCleared()) this._startKillSlowMo();
+        }
+      } else if (event.type === 'damage') {
+        this.hud.showDamageNumber(event.x, event.y, event.damage, event.attackType || 'light');
+      } else if (event.type === 'statusDamage') {
+        this.hud.showDamageNumber(event.x, event.y, event.damage, 'status');
+      } else if (event.type === 'kill') {
+        this.sparks.spawnEssence(event.x, event.y, this.player);
+        if (this.spawner.isCurrentWaveCleared()) this._startKillSlowMo();
+      } else if (event.type === 'hitbox') {
+        this.combat.addHitbox(event.hitbox);
+      } else if (event.type === 'playerHit') {
+        this.cameraShake.request(0.35);
+      } else if (event.type === 'waveClear') {
+        this.hud.showWaveClear();
+      } else if (event.type === 'ultimate') {
+        this.cameraShake.request(0.6);
+      } else if (event.type === 'spell') {
+        this.sparks.spawn(event.x, event.y, 0.25);
+      }
+    }
+  }
+
+  _updateDebugHitboxes() {
+    const activeHitboxes = this.combat.getActiveHitboxes().concat(this.spawner.getProjectileHitboxes());
+    this.debugHitboxes.update(this.player, this.spawner.getActiveEnemies(), activeHitboxes);
+  }
+
+  _startKillSlowMo() {
+    this._slowMoTicks = Math.max(this._slowMoTicks, 30);
+    this._slowMoScale = 0.3;
+  }
+
+  _updateSlowMo() {
+    if (this._slowMoTicks <= 0) {
+      this._slowMoScale = 1;
+      return;
+    }
+
+    this._slowMoTicks -= 1;
+    if (this._slowMoTicks <= 0) this._slowMoScale = 1;
+  }
 }

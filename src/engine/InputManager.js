@@ -35,14 +35,32 @@ const KEY_MAP = {
   'ShiftRight': Actions.DODGE,
   'KeyE': Actions.SPECIAL,
   'KeyF': Actions.INTERACT,
+  'Backquote': Actions.DEBUG,
   'Escape': Actions.PAUSE,
 };
+
+const MOUSE_MAP = {
+  0: Actions.LIGHT,
+  2: Actions.HEAVY,
+};
+
+const BUFFERED_ACTIONS = [
+  Actions.LIGHT,
+  Actions.HEAVY,
+  Actions.DODGE,
+  Actions.SPECIAL,
+];
+
+const BUFFER_MAX_FRAMES = 15;
+const BUFFER_MAX_ACTIONS = 3;
 
 export class InputManager {
   constructor() {
     this.pressed    = new Set(); // actions held this frame
     this._prevFrame = new Set(); // actions held last frame
     this._keys      = new Set(); // raw keys held
+    this._mouseButtons = new Set();
+    this._buffer = [];
 
     window.addEventListener('keydown', e => {
       if (e.repeat) return;
@@ -51,12 +69,21 @@ export class InputManager {
     window.addEventListener('keyup', e => {
       this._keys.delete(e.code);
     });
-    // Prevent context menu on right-click in canvas
-    document.getElementById('game-canvas')
-      ?.addEventListener('contextmenu', e => e.preventDefault());
+
+    const canvas = document.getElementById('game-canvas');
+    canvas?.addEventListener('mousedown', e => {
+      const action = MOUSE_MAP[e.button];
+      if (!action) return;
+      e.preventDefault();
+      this._mouseButtons.add(e.button);
+    });
+    window.addEventListener('mouseup', e => {
+      this._mouseButtons.delete(e.button);
+    });
+    canvas?.addEventListener('contextmenu', e => e.preventDefault());
   }
 
-  // Called once per frame by GameLoop before update
+  /** Polls keyboard, mouse, and gamepad state once per fixed tick. */
   poll() {
     this._prevFrame = new Set(this.pressed);
     this.pressed.clear();
@@ -64,6 +91,11 @@ export class InputManager {
     // Keyboard → actions
     for (const code of this._keys) {
       const action = KEY_MAP[code];
+      if (action) this.pressed.add(action);
+    }
+
+    for (const button of this._mouseButtons) {
+      const action = MOUSE_MAP[button];
       if (action) this.pressed.add(action);
     }
 
@@ -83,13 +115,40 @@ export class InputManager {
       if (b[5]?.pressed) this.pressed.add(Actions.SPECIAL);
       if (b[9]?.pressed) this.pressed.add(Actions.PAUSE);
     }
+
+    this._updateBuffer();
   }
 
-  isDown(action)      { return this.pressed.has(action); }
-  justPressed(action) { return this.pressed.has(action) && !this._prevFrame.has(action); }
-  justReleased(action){ return !this.pressed.has(action) && this._prevFrame.has(action); }
+  /** Returns true while an action is currently held. */
+  isDown(action) {
+    return this.pressed.has(action);
+  }
 
-  // Normalised movement vector {x, y}
+  /** Returns true only on the first tick an action is pressed. */
+  justPressed(action) {
+    return this.pressed.has(action) && !this._prevFrame.has(action);
+  }
+
+  /** Returns true only on the first tick an action is released. */
+  justReleased(action) {
+    return !this.pressed.has(action) && this._prevFrame.has(action);
+  }
+
+  /** Returns true and consumes the newest buffered action within maxFrames. */
+  consumeBuffered(action, maxFrames = BUFFER_MAX_FRAMES) {
+    const index = this._buffer.findIndex(entry => entry.action === action && entry.age <= maxFrames);
+    if (index === -1) return false;
+
+    this._buffer.splice(index, 1);
+    return true;
+  }
+
+  /** Clears all queued buffered actions. */
+  clearBuffer() {
+    this._buffer.length = 0;
+  }
+
+  /** Returns the normalized movement vector for held move actions. */
   get moveVector() {
     const x = (this.isDown(Actions.MOVE_RIGHT) ? 1 : 0)
              - (this.isDown(Actions.MOVE_LEFT)  ? 1 : 0);
@@ -97,5 +156,23 @@ export class InputManager {
              - (this.isDown(Actions.MOVE_DOWN)  ? 1 : 0);
     const len = Math.hypot(x, y);
     return len > 0 ? { x: x / len, y: y / len } : { x: 0, y: 0 };
+  }
+
+  _updateBuffer() {
+    this._buffer = this._buffer
+      .map(entry => ({ action: entry.action, age: entry.age + 1 }))
+      .filter(entry => entry.age <= BUFFER_MAX_FRAMES);
+
+    for (const action of BUFFERED_ACTIONS) {
+      if (this.justPressed(action)) this._pushBuffered(action);
+    }
+  }
+
+  _pushBuffered(action) {
+    this._buffer = this._buffer.filter(entry => entry.action !== action);
+    this._buffer.unshift({ action, age: 0 });
+    if (this._buffer.length > BUFFER_MAX_ACTIONS) {
+      this._buffer.length = BUFFER_MAX_ACTIONS;
+    }
   }
 }

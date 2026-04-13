@@ -36,6 +36,46 @@
       display: none;
     }
     body.debug #debug-panel { display: block; }
+    .combo-counter {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) scale(1);
+      transform-origin: center top;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 24px;
+      font-weight: 800;
+      opacity: 0;
+      text-shadow: 0 2px 0 #000;
+    }
+    .wave-flash {
+      position: fixed;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+      opacity: 0;
+      text-shadow: 0 0 14px #48f7ff, 0 3px 0 #000;
+    }
+    .damage-number {
+      position: fixed;
+      transform: translate(-50%, -50%);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      opacity: 0;
+      text-shadow: 0 2px 0 #000;
+      will-change: top, opacity;
+    }
+    .damage-number.heavy,
+    .damage-number.status {
+      font-size: 18px;
+      color: #f39c12;
+    }
   </style>
 </head>
 <body>
