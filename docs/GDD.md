@@ -9,7 +9,7 @@
 
 ## 1. Game Overview
 
-Huntix is a browser-based 3D action beat 'em up built in Three.js where 1 to 4 hunters fight through portal-linked combat zones. The game uses a dark action-fantasy tone inspired by Solo Leveling, with fast combat, elite hunter characters, and a sense of escalation as players grow stronger through upgrades and boss fights.
+Huntix is a browser-based **2.5D** action beat 'em up built in Three.js where 1 to 4 hunters fight through portal-linked combat zones. The game uses a dark action-fantasy tone inspired by Solo Leveling, with fast combat, elite hunter characters, and a sense of escalation as players grow stronger through upgrades and boss fights.
 
 **Inspired by:**
 - **Solo Leveling** — dark hunter fantasy, ranked elites, dramatic auras, power escalation
@@ -18,6 +18,8 @@ Huntix is a browser-based 3D action beat 'em up built in Three.js where 1 to 4 h
 
 The game is a stand-alone browser experience with no login, no heavy downloads, and instant entry. Designed for short sessions, strong combat feedback, co-op chaos, and polished action-game presentation.
 
+> **Rendering approach:** Three.js with 3D models rendered on a fixed orthographic camera — 2.5D style. Movement is constrained to the X/Y plane. This gives the visual quality of 3D assets with the readability and simplicity of a 2D brawler.
+
 ---
 
 ## 2. Tagline & Description
@@ -25,7 +27,7 @@ The game is a stand-alone browser experience with no login, no heavy downloads, 
 | | |
 |---|---|
 | **Tagline** | Hunt. Enter. Survive. |
-| **Short description** | Gates have opened. Elite hunters are the only answer. Huntix is a 3D browser beat 'em up with fast combat, co-op chaos, and escalating boss fights — built for Vibe Jam 2026. |
+| **Short description** | Gates have opened. Elite hunters are the only answer. Huntix is a 2.5D browser beat 'em up with fast combat, co-op chaos, and escalating boss fights — built for Vibe Jam 2026. |
 
 ---
 
@@ -69,7 +71,7 @@ The objective is to clear zones, defeat bosses, collect rewards, and grow strong
 | Ultimate | Full Surge bar | Cinematic wind-up | Hunter-specific, unstoppable moment |
 
 ### Combat
-Close-range, fast, and feedback-heavy. Each hunter changes attack speed, reach, and status effect — but all share core controls for simple multiplayer. Enemies telegraph attacks clearly. Combat includes hit sparks, stagger, screen shake, and hit stop.
+Close-range, fast, and feedback-heavy. Movement is constrained to the X/Y plane — classic brawler lane system. Each hunter changes attack speed, reach, and status effect — but all share core controls for simple multiplayer. Enemies telegraph attacks clearly. Combat includes hit sparks, stagger, screen shake, and hit stop.
 
 ### Status Effect Synergies
 
@@ -81,7 +83,7 @@ Close-range, fast, and feedback-heavy. Each hunter changes attack speed, reach, 
 | Burn + Slam | Vesol + Benzu | Burning enemies take bonus stagger on slam |
 
 ### Physics
-Simple arcade physics — responsive movement, light jumps, enemies pushed by hits, dodge grants brief safety.
+Simple arcade physics on the X/Y plane — responsive movement, light jumps, enemies pushed by hits, dodge grants brief safety. Z-axis is visual only (depth layering).
 
 ### Economy
 Enemies and bosses drop gold or essence spent at the hub shop between zones. Light economy focused on combat progression, not inventory simulation.
@@ -116,6 +118,8 @@ See [HUNTERS.md](./HUNTERS.md) for full character profiles.
 ---
 
 ## 7. Game World & Zones
+
+Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style arenas with parallax backgrounds and depth layers for visual richness.
 
 | Zone | Description | Focus |
 |---|---|---|
@@ -165,15 +169,16 @@ See [HUNTERS.md](./HUNTERS.md) for full character profiles.
 | Special | E | RB / R1 |
 | Interact | F | A / Cross |
 
-**Camera:** Shared action camera keeping all active players visible. Readability over drama in local co-op.
+**Camera:** Fixed orthographic camera (2.5D). Zooms out smoothly when players spread apart. No rotation needed — readability is the priority.
 
 ---
 
 ## 10. Art & Audio
 
-- **Art** — dark, high contrast, stylized. Combat effects glow strongly against dark world. Auras intensify with level.
+- **Art** — dark, high contrast, stylized. 3D models lit for 2.5D presentation. Combat effects glow strongly against dark world. Auras intensify with level.
 - **Audio** — punchy, arcade-like, responsive to hits, upgrades, and boss moments.
 - **Aura system** — aura intensity visually tied to level, darker and more dramatic as hunters grow stronger.
+- **Parallax backgrounds** — multi-layer depth scrolling behind the flat combat plane for visual depth.
 
 ---
 
@@ -217,12 +222,15 @@ See [HUNTERS.md](./HUNTERS.md) for full character profiles.
 
 ## 13. Development
 
-Built in Three.js. Key systems:
+Built in Three.js using a 2.5D architecture. Key systems:
+- Fixed orthographic camera with dynamic zoom
+- X/Y plane movement and AABB hit detection
 - Scene setup and zone management
 - Local player handling (1–4)
 - Combat, status effects, and synergies
-- Enemy AI and boss phases
+- Enemy AI and boss phases (lane-based pathing)
 - Mana, surge, and resource management
 - Shop and upgrade flow
 - Portal transitions
+- Parallax background layers
 - Vibe Jam widget integration
