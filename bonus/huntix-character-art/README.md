@@ -25,9 +25,20 @@ Huntix is a **modern arcane action anime** brought into a browser brawler. The r
 - **Hades** — dark palette, expressive faces, stylised modern character design
 - **Streets of Rage 4** — clean 2.5D side-scroll readability, strong weapon silhouettes
 - **Solo Leveling** — moody urban fantasy, glowing power, dark battle environments
+- **Castle Crashers** — co-op energy, bold readable character shapes, expressive combat personality, distinct per-character colour identity
 
-But the Huntix identity is not a direct copy of any of these. It lives in the overlap:
+But the Huntix identity is not a direct copy of any of these. It lives at the intersection:
 **urban arcane world + elite professional hunter + aura glow + 2.5D browser brawler clarity.**
+
+What each reference contributes to the Huntix blend:
+
+| Reference | What it gives Huntix |
+|---|---|
+| Hunter x Hunter | Aura system language, elite hunter hierarchy, silhouette discipline |
+| Hades | Dark palette confidence, expressive faces, modern stylised design |
+| Streets of Rage 4 | 2.5D side-scroll readability, weapon profile clarity, urban grit |
+| Solo Leveling | Moody arcane atmosphere, gate/breach world feel, glowing power drama |
+| Castle Crashers | Co-op character distinction, bold readable shapes at small size, expressive idle personality |
 
 Key constraints from `docs/VISUAL-DESIGN.md`:
 - Dark urban base palette: deep navy, black, charcoal, steel, muted grey
@@ -97,7 +108,7 @@ clearly readable from a 16:9 browser window at 1280×720.
 
 **Reference discipline:**
 - Pass only the minimum reference images the edit actually needs
-- For direction sheets: anchor image (isometric/standing) + identity reference (full-body)
+- For direction sheets: anchor image (standing master) + identity reference (full-body)
 - Do not stack extra references — it dilutes control and makes failure analysis harder
 
 ---
