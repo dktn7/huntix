@@ -36,8 +36,8 @@ Milestone: solo hunter moves and attacks feel good with placeholder geometry.
 
 What is already built:
 - `src/engine/GameLoop.js` — fixed-timestep RAF loop with FPS tracking
-- `src/engine/Renderer.js` — orthographic Three.js renderer
-- `src/engine/SceneManager.js` — 2.5D scene, Y-sort, placeholder player box, movement
+- `src/engine/Renderer.js` — orthographic Three.js renderer, ORTHO_HEIGHT=10, letterbox/pillarbox
+- `src/engine/SceneManager.js` — 2.5D scene, Y-sort, **placeholder player box + movement in `_setupTestScene()`**
 - `src/engine/InputManager.js` — keyboard + gamepad, all combat actions mapped
 - `src/main.js` — bootstrap wiring all engine modules together
 - `index.html` — canvas, widget, Three.js importmap, debug panel
@@ -50,9 +50,16 @@ What needs to be built next (in order):
 5. `src/gameplay/EnemyAI.js` — basic grunt: patrol, aggro range, attack
 6. `src/gameplay/EnemySpawner.js` — wave spawning, co-op HP scaling
 
+⚠️ **SceneManager.js cleanup required when PlayerState.js lands:**
+Delete `_setupTestScene()`, `_playerMesh`, `_playerPos`, `_playerSpeed`, and the movement
+logic inside `update()`. Replace with a call to `PlayerState.update(dt, input)`. If both
+the test mesh and PlayerState try to drive a player object simultaneously, you will get
+double-movement and z-fighting. The test scene code exists only as a Phase 1 placeholder.
+
 Do not add character models, textures, or art assets until Phase 3.
 Do not add audio until Phase 6.
 Do not add zone transitions until Phase 4.
+Do not build HUD or shop UI until Phase 5.
 
 ---
 
@@ -107,6 +114,7 @@ See `docs/TECHSTACK.md` for the full tech reference. Summary:
 - No dynamic shadows in combat scenes
 - Y-sort all game objects every frame: `mesh.position.z = -worldY * 0.01`
 - Orthographic camera — do not switch to perspective
+- Camera: `ORTHO_HEIGHT = 10`, `ORTHO_WIDTH ≈ 17.78`, positioned at `(0, 0, 100)`
 
 ---
 
@@ -188,3 +196,4 @@ Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = open
 - Do not skip the widget script
 - Do not upgrade Three.js mid-jam
 - Do not implement P2–P4 input before Phase 3
+- Do not build HUD or shop UI before Phase 5

@@ -2,13 +2,13 @@
 # Auto-loaded every Codex session alongside AGENTS.md.
 # MAINTAINER NOTE: Update the "Development Phase" section below when advancing phases.
 #
-# ── WHY THIS FILE IS STRUCTURED THIS WAY ────────────────────────────────────
+# ── WHY THIS FILE IS STRUCTURED THIS WAY ──────────────────────────────────────
 # LLMs exhibit U-shaped attention: strongest at the start and end of context,
 # weakest in the middle. Critical constraints (widget, phase, do-not list) are
 # placed at the TOP of this file intentionally. The phase block is near the top
 # so it is never lost-in-the-middle during long sessions.
 # Source: context-degradation pattern (muratcankoylan/agent-skills-for-context-engineering)
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 ## What This Project Is
 Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
@@ -24,12 +24,14 @@ Before touching any code, read `AGENTS.md` at the repo root.
 - Free-to-play, no login, public URL, single domain
 
 ## Development Phase (Current)
-# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ────────────────────────────────
+# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ──────────────────────────────────
 Current Phase: 1 — Core Engine (Days 1–3)
 Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
 Next: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
 Do NOT add yet: models, textures, audio, zone transitions, P2+ input, HUD, shop
-# ────────────────────────────────────────────────────────────────────────────
+⚠️  When PlayerState.js lands: delete _setupTestScene(), _playerMesh, _playerPos,
+    _playerSpeed from SceneManager.js. Two systems driving player position = double-movement.
+# ──────────────────────────────────────────────────────────────────────────────
 
 ## Do Not
 - Add npm or build tools
@@ -46,6 +48,7 @@ Do NOT add yet: models, textures, audio, zone transitions, P2+ input, HUD, shop
 - Three.js r169 via CDN importmap — NO npm, NO Vite, NO bundler, NO build step
 - ES modules only (`type="module"`)
 - Orthographic camera only — never switch to perspective
+- Camera: ORTHO_HEIGHT=10, ORTHO_WIDTH≈17.78, position (0,0,100) looking at origin
 - No dynamic `import()` at runtime
 - Do not upgrade Three.js mid-jam
 
@@ -107,10 +110,20 @@ P2–P4 input: NOT YET IMPLEMENTED — build in Phase 3 only
 | 6 | 16–18 | Audio + deploy |
 
 ## Available Skills (.agents/skills/)
+
+### Flat skills (load by reading the .md file directly)
 threejs-skills | systematic-debugging | animation-fsm | game-feel-juice
 multiplayer-coop | 3d-model-optimization | spatial-audio | progression-xp
 minimax-shader-dev | ibelick-ui-skills | game-hud-ui | root-cause-tracing
 test-driven-development | find-bugs | verification-before-completion | vercel-deploy | create-pr
+
+### Directory skills (read the SKILL.md inside each folder)
+- `fal-ai-image/SKILL.md` — fal.ai text-to-image and image-edit generation, model comparison,
+  queue-based workflows, cost tracking. Use when generating or editing game concept art,
+  character references, or texture source images via fal.ai API.
+- `threejs-builder/SKILL.md` — extended Three.js build patterns, references, and scripts
+  beyond what threejs-skills.md covers. Use for advanced renderer setups, shader pipelines,
+  or Three.js-specific tooling not covered in the flat skill.
 
 ## Design Docs (read before implementing any system)
 docs/GDD.md | docs/MVP-PLAN.md | docs/HUNTERS.md | docs/BOSSES.md | docs/ENEMIES.md

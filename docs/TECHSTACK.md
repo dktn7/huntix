@@ -44,21 +44,28 @@ Complete technical reference for every layer of the project. Read before writing
 ## Camera
 
 ```js
-const frustumSize = 20;
-const aspect = window.innerWidth / window.innerHeight;
-const camera = new THREE.OrthographicCamera(
-  -frustumSize * aspect / 2,
-   frustumSize * aspect / 2,
-   frustumSize / 2,
-  -frustumSize / 2,
-  0.1, 100
+// From src/engine/Renderer.js — the real values used in production
+import { ORTHO_WIDTH, ORTHO_HEIGHT } from './Renderer.js';
+// ORTHO_HEIGHT = 10  (world units visible vertically)
+// ORTHO_WIDTH  = ORTHO_HEIGHT * (1280 / 720)  ≈ 17.78
+
+const cam = new THREE.OrthographicCamera(
+  -ORTHO_WIDTH  / 2,  // left
+   ORTHO_WIDTH  / 2,  // right
+   ORTHO_HEIGHT / 2,  // top
+  -ORTHO_HEIGHT / 2,  // bottom
+  0.1,                // near
+  1000                // far
 );
-camera.position.set(0, 0, 10);
+// Camera sits at Z=100 looking straight down -Z axis
+cam.position.set(0, 0, 100);
+cam.lookAt(0, 0, 0);
 ```
 
 - Fixed orthographic — never switch to perspective
-- Tracks player group centroid
-- Zoom out smoothly when players spread apart (lerp frustumSize)
+- `ORTHO_HEIGHT = 10` world units; `ORTHO_WIDTH ≈ 17.78` (16:9 ratio)
+- Camera position is `(0, 0, 100)` — looking at origin, never moved
+- Zoom for co-op: lerp `ORTHO_HEIGHT` multiplier when players spread (Phase 3)
 - Do not rotate camera
 
 ---
@@ -115,7 +122,7 @@ huntix/
 ## Rendering Rules
 
 - **No dynamic shadows** — baked AO only (post-MVP)
-- **Y-sort every frame:** `mesh.renderOrder = mesh.position.y * -1` or `mesh.position.z = -worldY * 0.01`
+- **Y-sort every frame:** `mesh.position.z = -worldY * 0.01`
 - **Instanced meshes** for grunts (up to 10 per draw call)
 - **LOD** on bosses: switch to low-poly mesh at >10 world units from camera
 - **Particle pool:** pre-allocate 500 `Points` objects, reuse — never `new` in game loop
@@ -129,7 +136,7 @@ All input routed through `InputManager.js`. Never read raw keys directly.
 
 ```js
 // Correct
-if (input.justPressed('LIGHT_ATTACK')) { ... }
+if (input.justPressed('LIGHT')) { ... }
 
 // Wrong — never do this
 if (keys['j']) { ... }
@@ -146,7 +153,7 @@ if (keys['j']) { ... }
 - One class per file
 - `src/engine/` — core systems only (renderer, loop, input, scene)
 - `src/gameplay/` — all game logic
-- Use `dt` (delta time in seconds) for all movement and timers
+- Use `dt` (delta time in seconds) for all movement and timers — always exactly `0.01667s` (fixed timestep)
 - State machines use string constants: `const STATES = { IDLE: 'IDLE', ... }`
 - No `console.log` in shipped code except behind `if (DEBUG)` flag
 - Comment every public method with a one-line JSDoc
