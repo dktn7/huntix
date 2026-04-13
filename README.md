@@ -6,11 +6,12 @@
 
 ### *Hunt. Enter. Survive.*
 
-> A browser-based 3D action beat 'em up built in **Three.js** for **Vibe Jam 2026**
+> A browser-based **2.5D** action beat 'em up built in **Three.js** for **Vibe Jam 2026**
 > 1–4 hunters · Elemental gates · No login · Instant play
 
 [![Vibe Jam 2026](https://img.shields.io/badge/Vibe%20Jam-2026-blueviolet?style=for-the-badge)](https://vibej.am/2026/)
 [![Engine](https://img.shields.io/badge/Engine-Three.js-black?style=for-the-badge&logo=threedotjs)](https://threejs.org/)
+[![Style](https://img.shields.io/badge/Style-2.5D%20Brawler-ff69b4?style=for-the-badge)](#)
 [![Players](https://img.shields.io/badge/Players-1--4%20Local%20Co--op-green?style=for-the-badge)](#)
 [![Status](https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge)](#)
 
@@ -22,11 +23,12 @@
 
 Gates have opened. Elite hunters are the only answer.
 
-**Huntix** is a fast, polished 3D brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
+**Huntix** is a fast, polished **2.5D** brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Built in Three.js with 3D models on a fixed orthographic camera — the visual quality of 3D with the readability and tight feel of a classic beat 'em up. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
 
 | Detail | Info |
 |--------|------|
 | 🔧 Engine | Three.js (browser-native, no install) |
+| 🎥 Camera | Fixed orthographic — 2.5D lane-based brawler |
 | 👥 Players | 1–4 local co-op (AI fills empty slots) |
 | ⏱ Session | 10–20 min full run · 2–5 min per zone |
 | 🔁 Run Type | Roguelite — Essence drops, run-tied levelling |
@@ -91,12 +93,14 @@ All four hunters share the same core controls. Each has unique stats, spells, st
 
 ## 🌍 Zones & Bosses
 
+All zones are flat horizontal stages — 2.5D scrolling arenas with parallax depth layers.
+
 | # | Zone | Tone | Boss | Boss Mechanic | Co-op Scale |
 |---|------|------|------|---------------|-------------|
 | 1 | 🏙 City Breach | Ruined streets, intro zone | Fire Bruiser | Charge phases | +Adds at 4P |
 | 2 | 🏚 Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
 | 3 | 🌑 Shadow Core | Dark, final-act tone | Rogue Dabik | x2 Clones + invisibility | Full kit required |
-| 4 | ⚡ Thunder Spire | Aerial platforms | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
+| 4 | ⚡ Thunder Spire | Elevated platform stages | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
 
 ---
 
@@ -233,7 +237,7 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 | Special | E | RB / R1 |
 | Interact | F | A / Cross |
 
-> Camera: shared action camera keeping all active players visible. Readability over drama in local co-op.
+> Camera: fixed orthographic (2.5D). Zooms out smoothly as players spread apart. No rotation — readability first.
 
 ---
 
@@ -242,10 +246,14 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 | Layer | Choice |
 |-------|--------|
 | Engine | Three.js |
+| Camera | Fixed orthographic — 2.5D presentation |
+| Movement | X/Y plane only — Z is visual depth layering |
+| Collision | AABB (flat 2D hit boxes) |
+| Enemy AI | Lane-based pathing (Yuka.js or custom) |
 | Weapons | Bone-attach system |
 | Status | Stackable (Confusion, Bleed, Burn, Slow, Stun) |
 | Co-op | Local-first · 1–4 players · AI companions fill empty slots |
-| Performance | 60fps · max 20 enemies instanced · 500 particles · baked AO + LOD |
+| Performance | 60fps · max 20 enemies instanced · 500 particles |
 | Deployment | Single domain/subdomain · no login · no loading screen |
 | Vibe Jam Widget | `<script async src="https://vibej.am/2026/widget.js"></script>` |
 
@@ -260,6 +268,7 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 - 3 enemy types + 1 mini-boss + 1 final boss
 - Shop with items + level-up system
 - 3 short portal zones (City Breach, Ruin Den, Shadow Core)
+- Parallax background layers per zone
 - Vibe Jam widget embedded
 - Instant browser load, no login
 
@@ -280,10 +289,10 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 
 | Phase | Days | Focus | Milestone |
 |-------|------|-------|-----------|
-| 1 — Core Engine | 1–3 | Three.js setup, player controller, move/dodge/attack, hub, widget | ✅ Solo hunter moves + attacks |
-| 2 — Combat Basics | 4–6 | Enemy AI (3 types), hit detection, status effects, mana/surge/spells, juice | ✅ Fight grunt waves |
-| 3 — Hunters + Co-op | 7–9 | All 4 hunters, local 1–4P input, camera, AI companions, co-op scaling | ✅ 4P hub + combat |
-| 4 — Zones + Bosses | 10–12 | 4 zones, portals, transitions, mini-boss + boss phases, Essence drops | ✅ Full run clearable |
+| 1 — Core Engine | 1–3 | Three.js 2.5D setup (orthographic cam, X/Y movement), player controller, hub, widget | ✅ Solo hunter moves + attacks |
+| 2 — Combat Basics | 4–6 | Enemy AI (lane-based, 3 types), AABB hit detection, status effects, mana/surge/spells, juice | ✅ Fight grunt waves |
+| 3 — Hunters + Co-op | 7–9 | All 4 hunters, local 1–4P input, orthographic cam zoom, AI companions, co-op scaling | ✅ 4P hub + combat |
+| 4 — Zones + Bosses | 10–12 | 4 zones, portals, parallax backgrounds, mini-boss + boss phases, Essence drops | ✅ Full run clearable |
 | 5 — Progression + UI | 13–15 | Hub shop, cosmetics, weapons, levelling, XP thresholds, HUD, combo UI | ✅ Buy + upgrade loop |
 | 6 — Polish + Deploy | 16–18 | Audio/SFX, onboarding, 60fps tweaks, deploy to domain, widget confirm | ✅ Playable jam entry |
 
@@ -322,7 +331,7 @@ huntix/
 
 <div align="center">
 
-*Huntix — Vibe Jam 2026 entry · Solo dev + AI · Built in Three.js*
+*Huntix — Vibe Jam 2026 entry · Solo dev + AI · Built in Three.js · 2.5D brawler*
 
 **[▶ Play (coming soon)](#)** · **[📋 Changelog](CHANGELOG.md)** · **[🚀 Start Here](START-HERE.md)**
 
