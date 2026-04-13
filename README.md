@@ -1,4 +1,5 @@
-# HUNTIX
+# HUNTIX <img width="1024" height="1024" alt="Futuristic HUNTIX logo design (1)" src="https://github.com/user-attachments/assets/944d925c-4e6e-4b5e-ab9b-d6c3490b5c35" />
+
 ### *Hunt. Enter. Survive.*
 
 > A browser-based 3D action beat 'em up built in Three.js for **Vibe Jam 2026**.
