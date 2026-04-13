@@ -1,6 +1,14 @@
 # Huntix — Codex Instructions
 # Auto-loaded every Codex session alongside AGENTS.md.
 # MAINTAINER NOTE: Update the "Development Phase" section below when advancing phases.
+#
+# ── WHY THIS FILE IS STRUCTURED THIS WAY ────────────────────────────────────
+# LLMs exhibit U-shaped attention: strongest at the start and end of context,
+# weakest in the middle. Critical constraints (widget, phase, do-not list) are
+# placed at the TOP of this file intentionally. The phase block is near the top
+# so it is never lost-in-the-middle during long sessions.
+# Source: context-degradation pattern (muratcankoylan/agent-skills-for-context-engineering)
+# ─────────────────────────────────────────────────────────────────────────────
 
 ## What This Project Is
 Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
@@ -14,6 +22,25 @@ Before touching any code, read `AGENTS.md` at the repo root.
   `<script async src="https://vibej.am/2026/widget.js"></script>`
 - No loading screens — game must be playable within seconds
 - Free-to-play, no login, public URL, single domain
+
+## Development Phase (Current)
+# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ────────────────────────────────
+Current Phase: 1 — Core Engine (Days 1–3)
+Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
+Next: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
+Do NOT add yet: models, textures, audio, zone transitions, P2+ input, HUD, shop
+# ────────────────────────────────────────────────────────────────────────────
+
+## Do Not
+- Add npm or build tools
+- Use perspective camera
+- Add loading screens
+- Use eval() or runtime dynamic import()
+- Commit large binaries to repo root
+- Build features not in spec without flagging
+- Remove Vibe Jam widget script
+- Implement P2–P4 input before Phase 3
+- Build HUD or shop UI before Phase 5
 
 ## Tech Stack (Do Not Change)
 - Three.js r169 via CDN importmap — NO npm, NO Vite, NO bundler, NO build step
@@ -69,14 +96,6 @@ P2–P4 input: NOT YET IMPLEMENTED — build in Phase 3 only
 | Sereisa | 100 | 100  | Electric Dash   | Slow   |
 | Vesol   | 90  | 130  | Flame Scatter   | Burn   |
 
-## Development Phase (Current)
-# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ───────────────────────────────
-Current Phase: 1 — Core Engine (Days 1–3)
-Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
-Next: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
-Do NOT add yet: models, textures, audio, zone transitions, P2+ input
-# ───────────────────────────────────────────────────────────────────────────
-
 ## Phase Gates
 | Phase | Days  | Unlocks |
 |-------|-------|---------|
@@ -84,21 +103,17 @@ Do NOT add yet: models, textures, audio, zone transitions, P2+ input
 | 2 | 4–6   | Enemy AI + juice |
 | 3 | 7–9   | Models + 4P input |
 | 4 | 10–12 | Zones + bosses |
-| 5 | 13–15 | Hub shop + XP |
+| 5 | 13–15 | Hub shop + XP + HUD |
 | 6 | 16–18 | Audio + deploy |
 
 ## Available Skills (.agents/skills/)
 threejs-skills | systematic-debugging | animation-fsm | game-feel-juice
 multiplayer-coop | 3d-model-optimization | spatial-audio | progression-xp
-minimax-shader-dev | ibelick-ui-skills | root-cause-tracing | test-driven-development
-find-bugs | verification-before-completion | vercel-deploy | create-pr
+minimax-shader-dev | ibelick-ui-skills | game-hud-ui | root-cause-tracing
+test-driven-development | find-bugs | verification-before-completion | vercel-deploy | create-pr
 
-## Do Not
-- Add npm or build tools
-- Use perspective camera
-- Add loading screens
-- Use eval() or runtime dynamic import()
-- Commit large binaries to repo root
-- Build features not in spec without flagging
-- Remove Vibe Jam widget script
-- Implement P2–P4 input before Phase 3
+## Design Docs (read before implementing any system)
+docs/GDD.md | docs/MVP-PLAN.md | docs/HUNTERS.md | docs/BOSSES.md | docs/ENEMIES.md
+docs/ZONES.md | docs/INPUT.md | docs/COOP.md | docs/WEAPONS.md | docs/HUD.md
+docs/AUDIO.md | docs/ANIMATIONS.md | docs/VISUAL-DESIGN.md | docs/CUSTOMIZATION.md
+docs/TECHSTACK.md | docs/PORTAL-WEBRING.md

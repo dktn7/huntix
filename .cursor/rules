@@ -1,16 +1,43 @@
 # Huntix — Cursor Rules
 # Auto-loaded every session. Never delete or override these.
 # MAINTAINER NOTE: Update the "Development Phase" section below when advancing phases.
-
-## Project Identity
-Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
-Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
+#
+# ── WHY THIS FILE IS STRUCTURED THIS WAY ────────────────────────────────────
+# LLMs exhibit U-shaped attention: strongest at the start and end of context,
+# weakest in the middle. Critical constraints (widget, phase, do-not list) are
+# placed at the TOP of this file intentionally. The phase block is near the top
+# so it is never lost-in-the-middle during long sessions.
+# Source: context-degradation pattern (muratcankoylan/agent-skills-for-context-engineering)
+# ─────────────────────────────────────────────────────────────────────────────
 
 ## Non-Negotiable Vibe Jam Rules
 - The widget script MUST always be present in index.html:
   `<script async src="https://vibej.am/2026/widget.js"></script>`
 - No loading screens. Game must be playable within seconds of opening URL.
 - Free-to-play, no login, public URL, single domain.
+
+## Development Phase (Current)
+# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ───────────────────────────────
+Current Phase: 1 — Core Engine (Days 1–3)
+Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
+Next to build: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
+Do NOT add yet: character models, textures, audio, zone transitions, P2+ input
+# ───────────────────────────────────────────────────────────────────────────
+
+## Do Not
+- Add npm packages or build tools
+- Use perspective camera
+- Add loading screens or splash delays
+- Use eval() or runtime dynamic import()
+- Commit large binaries to repo root — use assets/
+- Build features not in the spec without flagging first
+- Remove or modify the Vibe Jam widget script
+- Implement P2–P4 input before Phase 3
+- Build HUD or shop UI before Phase 5
+
+## Project Identity
+Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
+Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
 
 ## Tech Stack (Do Not Change)
 - Three.js r169 via CDN importmap — NO npm, NO Vite, NO bundler, NO build step
@@ -54,7 +81,7 @@ P2 Keyboard: NOT YET IMPLEMENTED — must be built in Phase 3
 ## Code Conventions
 - One class per file
 - `src/engine/` = core systems, `src/gameplay/` = game logic
-- All movement uses `dt` (delta time in seconds) — never frame-count timers
+- All movement uses `dt` — always 0.01667s (fixed timestep), never frame-count timers
 - All input goes through InputManager.isDown(action) — never read raw keys directly
 - State machines use named string constants — no magic strings inline
 - No console.log in shipped code except behind `if (DEBUG)` flag
@@ -76,14 +103,6 @@ P2 Keyboard: NOT YET IMPLEMENTED — must be built in Phase 3
 | Sereisa | Lightning     | 100 | 100  | Electric Dash   | Slow   |
 | Vesol   | Flame         | 90  | 130  | Flame Scatter   | Burn   |
 
-## Development Phase (Current)
-# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ───────────────────────────────
-Current Phase: 1 — Core Engine (Days 1–3)
-Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
-Next to build: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
-Do NOT add yet: character models, textures, audio, zone transitions, P2+ input
-# ───────────────────────────────────────────────────────────────────────────
-
 ## Phase Unlock Gates (do not build ahead of schedule)
 | Phase | Days | Gate |
 |---|---|---|
@@ -98,13 +117,3 @@ Do NOT add yet: character models, textures, audio, zone transitions, P2+ input
 Before implementing any system, read the relevant doc in docs/:
 GDD.md | MVP-PLAN.md | HUNTERS.md | BOSSES.md | ENEMIES.md | ZONES.md
 INPUT.md | COOP.md | WEAPONS.md | HUD.md | AUDIO.md | TECHSTACK.md
-
-## Do Not
-- Add npm packages or build tools
-- Use perspective camera
-- Add loading screens or splash delays
-- Use eval() or runtime dynamic import()
-- Commit large binaries to repo root — use assets/
-- Build features not in the spec without flagging first
-- Remove or modify the Vibe Jam widget script
-- Implement P2–P4 input before Phase 3
