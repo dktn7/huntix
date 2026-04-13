@@ -1,24 +1,37 @@
-# HUNTIX <img width="700" height="333" alt="Futuristic HUNTIX logo design (1)" src="https://github.com/user-attachments/assets/944d925c-4e6e-4b5e-ab9b-d6c3490b5c35" />
+<div align="center">
+
+<img width="700" height="333" alt="HUNTIX Logo" src="https://github.com/user-attachments/assets/944d925c-4e6e-4b5e-ab9b-d6c3490b5c35" />
+
+# HUNTIX
 
 ### *Hunt. Enter. Survive.*
 
-> A browser-based 3D action beat 'em up built in Three.js for **Vibe Jam 2026**.
-> 1–4 hunters. Elemental gates. No login. Instant play.
+> A browser-based 3D action beat 'em up built in **Three.js** for **Vibe Jam 2026**
+> 1–4 hunters · Elemental gates · No login · Instant play
+
+[![Vibe Jam 2026](https://img.shields.io/badge/Vibe%20Jam-2026-blueviolet?style=for-the-badge)](https://vibej.am/2026/)
+[![Engine](https://img.shields.io/badge/Engine-Three.js-black?style=for-the-badge&logo=threedotjs)](https://threejs.org/)
+[![Players](https://img.shields.io/badge/Players-1--4%20Local%20Co--op-green?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge)](#)
+
+</div>
 
 ---
 
-## Overview
+## 🎮 Overview
 
 Gates have opened. Elite hunters are the only answer.
 
-Huntix is a fast, polished 3D brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
+**Huntix** is a fast, polished 3D brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
 
-- **Engine:** Three.js (browser-native, no install)
-- **Players:** 1–4 local co-op (AI companions fill empty slots)
-- **Session length:** 10–20 min full run, 2–5 min per zone
-- **Run type:** Roguelite — Essence drops, run-tied levelling, reset on wipe
-- **Deployment:** Single domain, no login, no loading screens
-- **Vibe Jam widget:** Required ✅
+| Detail | Info |
+|--------|------|
+| 🔧 Engine | Three.js (browser-native, no install) |
+| 👥 Players | 1–4 local co-op (AI fills empty slots) |
+| ⏱ Session | 10–20 min full run · 2–5 min per zone |
+| 🔁 Run Type | Roguelite — Essence drops, run-tied levelling |
+| 🚀 Deployment | Single domain · No login · No loading screens |
+| 🏆 Jam Widget | Required ✅ |
 
 ```html
 <script async src="https://vibej.am/2026/widget.js"></script>
@@ -26,7 +39,7 @@ Huntix is a fast, polished 3D brawler where 1–4 players control S-Rank hunters
 
 ---
 
-## Core Loop
+## 🔄 Core Loop
 
 ```
 Hub (select hunter + weapon + shop)
@@ -38,25 +51,25 @@ Hub (select hunter + weapon + shop)
             → Push next zone  ↺
 ```
 
-Full clear = 4 zones. Wipe = lose run buffs/XP, keep 50% Essence. Win = high score + Essence bonus, restart run.
+> Full clear = 4 zones · Wipe = lose run buffs/XP, keep 50% Essence · Win = high score + Essence bonus
 
 ---
 
-## Hunters — S-Rank Roster
+## 🧑‍🤝‍🧑 Hunters — S-Rank Roster
 
 All four hunters share the same core controls. Each has unique stats, spells, status effects, and ultimate.
 
 | Hunter | Element | Status | Weapon | Playstyle |
 |--------|---------|--------|--------|-----------|
-| **Dabik** | Shadow | Bleed | Twin curved daggers | Fastest. Blink-backstab, stealth combos, lowest HP |
-| **Benzu** | Thunder/Earth | Stun | Stone gauntlets | Tank. Charges ultimate by *taking* damage. Slowest |
-| **Sereisa** | Lightning | Slow | Electro-blades | Speed/chain. Dashes through enemies, shocks entire groups |
-| **Vesol** | Flame | Burn | Gate crystal focus (wrist) | Mage. Highest mana, precision spells, arena control |
+| ⚫ **Dabik** | Shadow | Bleed | Twin curved daggers | Fastest. Blink-backstab, stealth combos, lowest HP |
+| 🟤 **Benzu** | Thunder/Earth | Stun | Stone gauntlets | Tank. Charges ultimate by *taking* damage. Slowest |
+| 🟡 **Sereisa** | Lightning | Slow | Electro-blades | Speed/chain. Dashes through enemies, shocks entire groups |
+| 🔴 **Vesol** | Flame | Burn | Gate crystal focus (wrist) | Mage. Highest mana, precision spells, arena control |
 
 ### Hunter Stats At A Glance
 
-| Stat | Dabik | Benzu | Sereisa | Vesol |
-|------|-------|-------|---------|-------|
+| Stat | ⚫ Dabik | 🟤 Benzu | 🟡 Sereisa | 🔴 Vesol |
+|------|---------|---------|----------|--------|
 | HP | 80 | 160 | 100 | 90 |
 | Mana | 120 | 70 | 100 | 130 |
 | Move Speed | 9/10 | 4/10 | 8/10 | 6/10 |
@@ -65,7 +78,7 @@ All four hunters share the same core controls. Each has unique stats, spells, st
 | Defense | 3/10 | 9/10 | 5/10 | 4/10 |
 | Dodge | Blink (teleport behind enemy) | Shoulder Charge (forward burst) | Electric Dash (through enemies) | Flame Scatter (pushes enemies back) |
 
-### Status Synergies (Co-op)
+### ⚡ Status Synergies (Co-op)
 
 | Combo | Hunters | Effect |
 |-------|---------|--------|
@@ -76,38 +89,40 @@ All four hunters share the same core controls. Each has unique stats, spells, st
 
 ---
 
-## Zones & Bosses
+## 🌍 Zones & Bosses
 
 | # | Zone | Tone | Boss | Boss Mechanic | Co-op Scale |
 |---|------|------|------|---------------|-------------|
-| 1 | City Breach | Ruined streets, intro zone | Fire Bruiser | Charge phases | +Adds at 4P |
-| 2 | Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
-| 3 | Shadow Core | Dark, final-act tone | Rogue Dabik | x2 Clones + invisibility | Full kit required |
-| 4 | Thunder Spire | Aerial platforms | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
+| 1 | 🏙 City Breach | Ruined streets, intro zone | Fire Bruiser | Charge phases | +Adds at 4P |
+| 2 | 🏚 Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
+| 3 | 🌑 Shadow Core | Dark, final-act tone | Rogue Dabik | x2 Clones + invisibility | Full kit required |
+| 4 | ⚡ Thunder Spire | Aerial platforms | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
 
 ---
 
-## Combat Feel
+## 💥 Combat Feel
 
-- **Hit stop:** 40–80ms on heavy hits
-- **Screen shake:** Tiered by hit weight
-- **Flash:** 1–2 frame white flash on connect
-- **Input buffer:** 10–15 frames (cancel dodge → light)
-- **Combo UI:** Active counter on screen
-- **Slow-mo kills:** Triggered on boss finishers
-- **Ultimate punch:** Cinematic wind-up per hunter
+| Effect | Detail |
+|--------|--------|
+| Hit Stop | 40–80ms on heavy hits |
+| Screen Shake | Tiered by hit weight |
+| Flash | 1–2 frame white flash on connect |
+| Input Buffer | 10–15 frames (cancel dodge → light) |
+| Combo UI | Active counter on screen |
+| Slow-mo Kills | Triggered on boss finishers |
+| Ultimate Punch | Cinematic wind-up per hunter |
 
 ---
 
-## Resource System
+## 📊 Resource System
 
 Each hunter has **3 bars:**
 
 | Bar | Function | Recovers By |
 |-----|----------|-------------|
-| Health | Take damage, die at zero | Potions, hub shop |
-| Mana | Powers spells | Passively + light attack hits |
-| Surge | Unlocks ultimate when full | Kills, damage taken, hit streaks |
+| ❤️ Health | Take damage, die at zero | Potions, hub shop |
+| 🔵 Mana | Powers spells | Passively + light attack hits |
+| 🟠 Surge | Unlocks ultimate when full | Kills, damage taken, hit streaks |
 
 ### Spell Tiers
 
@@ -119,30 +134,30 @@ Each hunter has **3 bars:**
 
 ---
 
-## Hunter Ultimates
+## 🌟 Hunter Ultimates
 
 | Hunter | Ultimate | Effect |
 |--------|----------|--------|
-| Dabik | Monarch's Domain | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
-| Benzu | Titan's Wrath | Full-screen ground shatter; all enemies stunned 5s; Benzu takes zero damage |
-| Sereisa | Storm Surge | Untouchable 6s; every dash deals damage; speed doubles |
-| Vesol | Inferno | Entire arena fills with fire 6s; all enemies burn; Vesol immune to own flames |
+| ⚫ Dabik | **Monarch's Domain** | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
+| 🟤 Benzu | **Titan's Wrath** | Full-screen ground shatter; all enemies stunned 5s; Benzu takes zero damage |
+| 🟡 Sereisa | **Storm Surge** | Untouchable 6s; every dash deals damage; speed doubles |
+| 🔴 Vesol | **Inferno** | Entire arena fills with fire 6s; all enemies burn; Vesol immune to own flames |
 
 ---
 
-## Progression & Shop
+## 🛒 Progression & Shop
 
-**Essence Economy:** Drops 5–500 per kill/boss. Max 5 buys per run. Refresh costs 10 Essence.
+**Essence Economy:** Drops 5–500 per kill/boss · Max 5 buys per run · Refresh costs 10 Essence
 
 | Category | Examples |
 |----------|---------|
-| Power | Damage boost, combo extender, special power upgrade |
-| Survival | Health restore, armour, recovery speed |
-| Mobility | Dodge distance, speed, cooldown reduction |
-| Utility | Mana regen boost, reroll |
-| Cosmetic | Aura colours, weapon skins |
+| ⚔️ Power | Damage boost, combo extender, special power upgrade |
+| 🛡 Survival | Health restore, armour, recovery speed |
+| 💨 Mobility | Dodge distance, speed, cooldown reduction |
+| 🔧 Utility | Mana regen boost, reroll |
+| 🎨 Cosmetic | Aura colours, weapon skins |
 
-**Level-Up (Run-Tied XP):**
+### Level-Up (Run-Tied XP)
 
 | Source | XP Reward |
 |--------|-----------|
@@ -160,14 +175,14 @@ Each hunter has **3 bars:**
 Max level 4 per run. Resets on wipe.
 
 **Upgrade Paths (choose one at L3):**
-- **Power** — damage, combo length, special impact
-- **Survival** — health, shield, recovery
-- **Mobility** — dodge distance, speed, cooldown
-- **Style** — aura intensity, cosmetic flair, silent casting
+- ⚔️ **Power** — damage, combo length, special impact
+- 🛡 **Survival** — health, shield, recovery
+- 💨 **Mobility** — dodge distance, speed, cooldown
+- ✨ **Style** — aura intensity, cosmetic flair, silent casting
 
 ---
 
-## Weapons (21 Total — Randomised Each Run)
+## ⚔️ Weapons (21 Total — Randomised Each Run)
 
 | Weapon | Type | Cost | Best Hunter | Notes |
 |--------|------|------|-------------|-------|
@@ -191,7 +206,7 @@ Max level 4 per run. Resets on wipe.
 
 ---
 
-## Enemy Types
+## 👾 Enemy Types
 
 | Type | Behaviour |
 |------|-----------|
@@ -203,14 +218,14 @@ Max level 4 per run. Resets on wipe.
 
 Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 
-**Co-op Scaling:** HP +50% per player. Max 20 enemies on screen. Enemy count scales with player count per zone.
+**Co-op Scaling:** HP +50% per player · Max 20 enemies on screen · Enemy count scales with player count
 
 ---
 
-## Controls
+## 🎮 Controls
 
-| Action | Keyboard | Controller |
-|--------|----------|------------|
+| Action | ⌨️ Keyboard | 🎮 Controller |
+|--------|------------|--------------|
 | Move | WASD | Left stick |
 | Light Attack | Left mouse | X / Square |
 | Heavy Attack | Right mouse | Y / Triangle |
@@ -218,30 +233,30 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 | Special | E | RB / R1 |
 | Interact | F | A / Cross |
 
-Camera: shared action camera keeping all active players visible. Readability over drama in local co-op.
+> Camera: shared action camera keeping all active players visible. Readability over drama in local co-op.
 
 ---
 
-## Tech Stack
+## 🔧 Tech Stack
 
 | Layer | Choice |
 |-------|--------|
 | Engine | Three.js |
 | Weapons | Bone-attach system |
 | Status | Stackable (Confusion, Bleed, Burn, Slow, Stun) |
-| Co-op | Local-first; 1–4 players; AI companions fill empty slots |
-| Performance targets | 60fps, max 20 enemies instanced, 500 particles, baked AO + LOD |
-| Deployment | Single domain/subdomain, no login, no loading screen |
-| Vibe Jam widget | `<script async src="https://vibej.am/2026/widget.js"></script>` |
+| Co-op | Local-first · 1–4 players · AI companions fill empty slots |
+| Performance | 60fps · max 20 enemies instanced · 500 particles · baked AO + LOD |
+| Deployment | Single domain/subdomain · no login · no loading screen |
+| Vibe Jam Widget | `<script async src="https://vibej.am/2026/widget.js"></script>` |
 
 ---
 
-## MVP Scope
+## 🗺 MVP Scope
 
 **Build now:**
 - Hunter hub (character select, shop 6–8 slots, portal select)
 - All 4 hunters — Dabik, Benzu, Sereisa, Vesol
-- 1–4 local players; optional AI companion
+- 1–4 local players + optional AI companion
 - 3 enemy types + 1 mini-boss + 1 final boss
 - Shop with items + level-up system
 - 3 short portal zones (City Breach, Ruin Den, Shadow Core)
@@ -259,33 +274,37 @@ Camera: shared action camera keeping all active players visible. Readability ove
 
 ---
 
-## 18-Day Build Plan (Apr 13 → May 1)
+## 📅 18-Day Build Plan
+
+> **Jam Deadline: 1 May 2026 @ 12:37 GMT** *(Birmingham, UK)*
 
 | Phase | Days | Focus | Milestone |
 |-------|------|-------|-----------|
-| 1 — Core Engine | 1–3 | Three.js setup, player controller, move/dodge/attack, hub, widget | Solo hunter moves + attacks |
-| 2 — Combat Basics | 4–6 | Enemy AI (3 types), hit detection, status effects, mana/surge/spells, juice | Fight grunt waves |
-| 3 — Hunters + Co-op | 7–9 | All 4 hunters, local 1–4P input, camera, AI companions, co-op scaling | 4P hub + combat |
-| 4 — Zones + Bosses | 10–12 | 4 zones, portals, transitions, mini-boss + boss phases, Essence drops | Full run clearable |
-| 5 — Progression + UI | 13–15 | Hub shop, cosmetics, weapons, levelling, XP thresholds, HUD, combo UI | Buy + upgrade loop |
-| 6 — Polish + Deploy | 16–18 | Audio/SFX, onboarding, 60fps tweaks, deploy to domain, widget confirm | Playable jam entry |
+| 1 — Core Engine | 1–3 | Three.js setup, player controller, move/dodge/attack, hub, widget | ✅ Solo hunter moves + attacks |
+| 2 — Combat Basics | 4–6 | Enemy AI (3 types), hit detection, status effects, mana/surge/spells, juice | ✅ Fight grunt waves |
+| 3 — Hunters + Co-op | 7–9 | All 4 hunters, local 1–4P input, camera, AI companions, co-op scaling | ✅ 4P hub + combat |
+| 4 — Zones + Bosses | 10–12 | 4 zones, portals, transitions, mini-boss + boss phases, Essence drops | ✅ Full run clearable |
+| 5 — Progression + UI | 13–15 | Hub shop, cosmetics, weapons, levelling, XP thresholds, HUD, combo UI | ✅ Buy + upgrade loop |
+| 6 — Polish + Deploy | 16–18 | Audio/SFX, onboarding, 60fps tweaks, deploy to domain, widget confirm | ✅ Playable jam entry |
 
 ---
 
-## Jam Compliance
+## ✅ Jam Compliance
 
-- ✅ New game (created during jam period — April 2026)
-- ✅ Web-accessible, no login, free-to-play
-- ✅ Vibe Jam widget included
-- ✅ ≥90% AI-assisted code
-- ✅ Three.js (recommended engine)
-- ✅ Instant load — no loading screen
-- ✅ 1–4 players (multiplayer capable)
-- ✅ Single domain tracking for widget
+| Rule | Status |
+|------|--------|
+| New game (created during jam period — April 2026) | ✅ |
+| Web-accessible, no login, free-to-play | ✅ |
+| Vibe Jam widget included | ✅ |
+| ≥90% AI-assisted code | ✅ |
+| Three.js (recommended engine) | ✅ |
+| Instant load — no loading screen | ✅ |
+| 1–4 players (multiplayer capable) | ✅ |
+| Single domain tracking for widget | ✅ |
 
 ---
 
-## File Structure
+## 📁 File Structure
 
 ```
 huntix/
@@ -296,9 +315,15 @@ huntix/
 ├── .agents/            # AI agent config
 ├── .claude/            # Claude project instructions
 ├── CHANGELOG.md        # Version log
-└── START-HERE.md       # Original starter pack notes (reference)
+└── START-HERE.md       # Starter pack notes (reference)
 ```
 
 ---
 
-*Huntix — Vibe Jam 2026 entry. Solo dev + AI. Built in Three.js.*
+<div align="center">
+
+*Huntix — Vibe Jam 2026 entry · Solo dev + AI · Built in Three.js*
+
+**[▶ Play (coming soon)](#)** · **[📋 Changelog](CHANGELOG.md)** · **[🚀 Start Here](START-HERE.md)**
+
+</div>
