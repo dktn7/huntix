@@ -1,0 +1,72 @@
+# Huntix — Cursor Rules
+# Auto-loaded every session. Never delete or override these.
+
+## Project Identity
+Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
+Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window.
+
+## Non-Negotiable Vibe Jam Rules
+- The widget script MUST always be present in index.html:
+  `<script async src="https://vibej.am/2026/widget.js"></script>`
+- No loading screens. Game must be playable within seconds of opening URL.
+- Free-to-play, no login, public URL, single domain.
+
+## Tech Stack (Do Not Change)
+- Three.js r169 via CDN importmap — NO npm, NO Vite, NO bundler, NO build step
+- ES modules only (`type="module"`)
+- Orthographic camera — never switch to perspective
+- No dynamic `import()` at runtime
+- Do not upgrade Three.js mid-jam
+
+## Performance Limits
+- Max 20 enemies on screen — use THREE.InstancedMesh for grunts
+- Max 500 particles — pool and reuse, never allocate in game loop
+- No dynamic shadows in combat scenes
+- No new THREE.Vector3() / Matrix4 / Color inside the animation loop
+- Target 60fps on Intel Iris / integrated GPU
+- All assets preloaded before first frame — no runtime fetches
+- Total initial asset payload < 3MB
+
+## Code Conventions
+- One class per file
+- `src/engine/` = core systems, `src/gameplay/` = game logic
+- All movement uses `dt` (delta time in seconds) — never frame-count timers
+- All input goes through InputManager.isDown(action, playerIndex) only
+- State machines use named string constants — no magic strings inline
+- No console.log in shipped code except behind `if (DEBUG)` flag
+- Comment every public method with a one-line description
+
+## Combat Feel Spec
+- Light attack hitstop: freeze dt for 80ms
+- Heavy attack hitstop: freeze dt for 150ms
+- Dodge: 300ms total, 200ms i-frames, directional from moveVector
+- Every hit must produce: spark particles + screenshake + stagger + SFX
+- Enemy must show attack telegraph before every hit
+- Only valid cancel: any attack → dodge
+
+## Hunter Quick Reference
+| Hunter  | Element       | HP  | Mana | Dodge          | Status |
+|---------|---------------|-----|------|----------------|--------|
+| Dabik   | Shadow        | 80  | 120  | Blink          | Bleed  |
+| Benzu   | Thunder/Earth | 160 | 70   | Shoulder Charge| Stun   |
+| Sereisa | Lightning     | 100 | 100  | Electric Dash  | Slow   |
+| Vesol   | Flame         | 90  | 130  | Flame Scatter  | Burn   |
+
+## Development Phase (Current)
+Phase 1 — Core Engine (Days 1–3)
+Next to build: PlayerState.js FSM → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
+Do NOT add: character models, textures, audio, zone transitions (not until later phases)
+
+## Design Docs
+Before implementing any system, read the relevant doc in docs/:
+GDD.md | MVP-PLAN.md | HUNTERS.md | BOSSES.md | ENEMIES.md | ZONES.md
+INPUT.md | COOP.md | WEAPONS.md | HUD.md | AUDIO.md | TECHSTACK.md
+
+## Do Not
+- Add npm packages or build tools
+- Use perspective camera
+- Add loading screens or splash delays
+- Use eval() or runtime dynamic import()
+- Commit large binaries to repo root — use assets/
+- Build features not in the spec without flagging first
+- Remove or modify the Vibe Jam widget script
