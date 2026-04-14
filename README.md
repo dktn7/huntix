@@ -59,14 +59,137 @@ Hub (select hunter + weapon + shop)
 
 ## 🧑‍🤝‍🧑 Hunters — S-Rank Roster
 
-All four hunters share the same core controls. Each has unique stats, spells, status effects, and ultimate.
+All four hunters share the same core controls. Each has unique stats, spells, status effects, and ultimate. They come from different corners of the world and share one purpose — when the gates open, they enter.
 
-| Hunter | Element | Status | Weapon | Playstyle |
-|--------|---------|--------|--------|-----------|
-| ⚫ **Dabik** | Shadow | Bleed | Twin curved daggers | Fastest. Blink-backstab, stealth combos, lowest HP |
-| 🟤 **Benzu** | Thunder/Earth | Stun | Stone gauntlets | Tank. Charges ultimate by *taking* damage. Slowest |
-| 🟡 **Sereisa** | Lightning | Slow | Electro-blades | Speed/chain. Dashes through enemies, shocks entire groups |
-| 🔴 **Vesol** | Flame | Burn | Gate crystal focus (wrist) | Mage. Highest mana, precision spells, arena control |
+---
+
+### ⚫ DABIK — Shadow Striker
+
+> *Silence is the last thing you hear.*
+
+| Attribute | Detail |
+|---|---|
+| Origin | Caribbean-African |
+| Element | Shadow |
+| Status | Bleed |
+| Weapon | Twin curved daggers |
+| Build | Muscular agile — compact power, fast and controlled |
+| Skin | Dark brown |
+| Hair | Short wild spiky white |
+| Eyes | Purple — calm, unnatural, faint glow in power states |
+| Aura | Black with deep purple edges, spreads like a shadow at dusk |
+| Palette | Black, purple, muted silver |
+
+**Background:** Born on a small island between the Caribbean Sea and the Atlantic, to a family with deep West African roots. His grandfather was a tracker. Dabik inherited the instinct. He entered his first gate alone at C-Rank on a dare. Walked out A-Rank. Nobody saw what happened inside. Reached S-Rank through principle, not brute force — *the most dangerous thing is what you never see coming.*
+
+**Combat:** Don't fight the enemy. End the encounter. Blink behind target, bleed methodically, vanish, repeat.
+
+| Stat | Value |
+|---|---|
+| HP | 80 |
+| Move Speed | 9/10 (fastest) |
+| Attack Speed | 9/10 |
+| Damage | 6/10 |
+| Defense | 3/10 |
+| Dodge | Blink — teleports behind nearest enemy |
+
+---
+
+### 🟤 BENZU — Iron Breaker
+
+> *I don't dodge. I don't need to.*
+
+| Attribute | Detail |
+|---|---|
+| Origin | South American / Brazilian |
+| Element | Thunder/Earth |
+| Status | Stun |
+| Weapon | Stone-forged gauntlets reinforced with gate ore |
+| Build | Massive fortress — huge, broad, immovable |
+| Skin | Bronze-orange |
+| Hair | Long dirty-blonde mane, thick and heavy |
+| Eyes | Dark and heavy-set |
+| Aura | Deep red with gold fractures, pulses like heat under stone |
+| Palette | Deep red, gold, ember black |
+
+**Background:** Grew up in Rio de Janeiro. Worked construction from fifteen. Awakened when a gate boss pinned his entire team — picked up rubble the size of a car door and hit it until it stopped. Every S-Rank board said the same thing: *we have no protocol for this.*
+
+**Combat:** Take the hit. Then take everything else. Absorbs damage to charge surge, then releases it all at once.
+
+| Stat | Value |
+|---|---|
+| HP | 160 (highest) |
+| Move Speed | 4/10 (slowest) |
+| Attack Speed | 3/10 |
+| Damage | 10/10 (highest) |
+| Defense | 9/10 |
+| Dodge | Shoulder Charge — short forward burst, staggers enemies |
+
+---
+
+### 🟡 SEREISA — Storm Chaser
+
+> *You blinked. That's why you lost.*
+
+| Attribute | Detail |
+|---|---|
+| Origin | European / British-Nordic |
+| Element | Lightning |
+| Status | Slow (electric shock) |
+| Weapon | Single lightning rapier — slender, precise, permanently crackling |
+| Build | Sleek athletic — speed-first, narrow and precise |
+| Skin | Pale Nordic |
+| Hair | Platinum undercut, sharp and practical |
+| Eyes | Light and focused |
+| Aura | Bright yellow with white crackling edges |
+| Palette | Bright yellow, white, pale steel |
+
+**Background:** Born in London to a British mother and Norwegian father. Competed in fencing at national level. Awakened when a barrier failed at a gate event — crossed thirty metres of active combat zone and pulled two people clear before the response team arrived. Fastest S-Rank progression in European gate authority history. The record still stands.
+
+**Combat:** Control the distance. Control the fight. Fencing footwork, dash-in punishments, shock to slow, then make them pay for being slow.
+
+| Stat | Value |
+|---|---|
+| HP | 100 |
+| Move Speed | 8/10 (second fastest) |
+| Attack Speed | 8/10 |
+| Damage | 7/10 |
+| Defense | 5/10 |
+| Dodge | Electric Dash — dashes through enemies, applies slow on contact |
+
+---
+
+### 🔴 VESOL — Ember Mage
+
+> *The gate burns. So does everything in it.*
+
+| Attribute | Detail |
+|---|---|
+| Origin | Asian / Japanese-Filipino |
+| Element | Flame |
+| Status | Burn |
+| Weapon | Gate crystal focus at the wrist — no physical blade |
+| Build | Defined, poised, refined — controlled and deliberate |
+| Skin | Warm tan |
+| Hair | Dark controlled bun with a few deliberate loose strands |
+| Eyes | Dark, thoughtful, observant |
+| Aura | Deep blue that bleeds into crimson as power increases |
+| Palette | Deep blue, crimson, dark charcoal |
+
+**Background:** Born in Tokyo. PhD in gate energy theory from Tokyo University. Lead researcher on a mana absorption programme. The answer was her. The experiment concluded when she unconsciously incinerated a containment room during calibration. Nobody was hurt. The readings were extraordinary. S-Rank after her third solo gate run, completed in fourteen minutes and documented in a forty-page report.
+
+**Combat:** Precision over power — though precision at sufficient scale becomes power. Maps the battlefield before engaging it. In co-op, she sets the arena up so everyone else can finish it.
+
+| Stat | Value |
+|---|---|
+| HP | 90 |
+| Move Speed | 6/10 |
+| Attack Speed | 5/10 |
+| Damage | 8/10 |
+| Defense | 4/10 |
+| Dodge | Flame Scatter — burst of embers, pushes enemies back |
+
+---
 
 ### Hunter Stats At A Glance
 
@@ -78,7 +201,7 @@ All four hunters share the same core controls. Each has unique stats, spells, st
 | Attack Speed | 9/10 | 3/10 | 8/10 | 5/10 |
 | Damage | 6/10 | 10/10 | 7/10 | 8/10 |
 | Defense | 3/10 | 9/10 | 5/10 | 4/10 |
-| Dodge | Blink (teleport behind enemy) | Shoulder Charge (forward burst) | Electric Dash (through enemies) | Flame Scatter (pushes enemies back) |
+| Dodge | Blink | Shoulder Charge | Electric Dash | Flame Scatter |
 
 ### ⚡ Status Synergies (Co-op)
 
@@ -98,7 +221,7 @@ All zones are flat horizontal stages — 2.5D scrolling arenas with parallax dep
 | # | Zone | Tone | Boss | Boss Mechanic | Co-op Scale |
 |---|------|------|------|---------------|-------------|
 | 1 | 🏙 City Breach | Ruined streets, intro zone | Fire Bruiser | Charge phases | +Adds at 4P |
-| 2 | 🏚 Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
+| 2 | 🏕 Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
 | 3 | 🌑 Shadow Core | Dark, final-act tone | Rogue Dabik | x2 Clones + invisibility | Full kit required |
 | 4 | ⚡ Thunder Spire | Elevated platform stages | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
 
@@ -149,7 +272,7 @@ Each hunter has **3 bars:**
 
 ---
 
-## 🛒 Progression & Shop
+## 🛍 Progression & Shop
 
 **Essence Economy:** Drops 5–500 per kill/boss · Max 5 buys per run · Refresh costs 10 Essence
 
@@ -162,12 +285,6 @@ Each hunter has **3 bars:**
 | 🎨 Cosmetic | Aura colours, weapon skins |
 
 ### Level-Up (Run-Tied XP)
-
-| Source | XP Reward |
-|--------|-----------|
-| Enemy kill | 50–200 |
-| Zone clear | 500 |
-| Boss kill | 1500 |
 
 | Level | XP Threshold | Unlock |
 |-------|-------------|--------|
@@ -186,27 +303,43 @@ Max level 4 per run. Resets on wipe.
 
 ---
 
-## ⚔️ Weapons (21 Total — Randomised Each Run)
+## ⚔️ Weapons
 
-| Weapon | Type | Cost | Best Hunter | Notes |
-|--------|------|------|-------------|-------|
-| Twin Daggers | Melee Fast | 60 | Dabik | Default |
-| Gauntlets | Heavy | 90 | Benzu | Castle Crashers feel |
-| Electro-Blades | Melee Chain | 80 | Sereisa | Dead Cells feel |
-| Flame Rod | Ranged | 70 | Vesol | Burn DoT |
-| Shadow Kunai | Thrown | 65 | Dabik | Tracking + Bleed |
-| Earth Maul | Slam AoE | 95 | Benzu | Stun wall + HP |
-| Lightning Bow | Ranged | 85 | Sereisa | Chain slow |
-| Inferno Glaive | Reach | 100 | Vesol | Burn sweep |
-| Gatebreaker Rifle | Gun | 110 | Benzu | Range + stun shot |
-| Portal Dagger | Melee | 75 | Dabik | Blink teleport |
-| Oni Katana | Melee Reach | 85 | All | Damage + bleed slash |
-| Balloon Blade | Melee Float | 55 | Sereisa | Jump + light AoE |
-| Yokai Feather | Thrown | 65 | Sereisa | Slow fan + air dodge |
-| Storm Umbrella | Shield/Melee | 70 | Vesol | Block slow + spin |
-| Mana Staff | Ranged | 80 | Vesol | Mana regen + burn bolt |
-| Portal Blaster | Gun | 120 | Dabik | Summon ally portal |
-| Tsunami Squirt | Ranged | 90 | Benzu | Slow wave + wet debuff |
+Each hunter has a **signature weapon** locked to their identity. Additional weapons are available in the shop each run and can be used by any hunter, with stat bonuses favouring the recommended hunter.
+
+### Default (Signature) Weapons
+
+| Hunter | Weapon | Type |
+|--------|--------|------|
+| ⚫ Dabik | Twin Curved Daggers | Melee Fast |
+| 🟤 Benzu | Stone-Forged Gauntlets | Heavy Melee |
+| 🟡 Sereisa | Lightning Rapier | Melee Precision |
+| 🔴 Vesol | Gate Crystal Focus | Cast/Ranged |
+
+### Shop Weapons (Available Each Run)
+
+| Weapon | Type | Cost | Best For | Effect |
+|--------|------|------|----------|--------|
+| Shadow Kunai | Thrown | 65 | Dabik | Tracking throw, bleed on landing |
+| Portal Dagger | Melee | 75 | Dabik | Blink teleport on hit |
+| Phase Edge | Precision | 85 | Dabik / Sereisa | Blink on heavy, bleed or slow |
+| Shadow Dart | Thrown | 65 | Dabik | Silent ranged, bleed DoT |
+| Portal Blaster | Special | 120 | Dabik | Summon decoy portal trap |
+| Earth Maul | Heavy | 95 | Benzu | Slam AoE, stun wall |
+| Gate Fist | Heavy | 80 | Benzu | Close stun burst, staggers on heavy |
+| Gatebreaker Rifle | Ranged | 110 | Benzu | Range stun shot, burst ammo |
+| Lightning Bow | Ranged | 85 | Sereisa | Chain slow, ranged shock |
+| Storm Lance | Precision | 90 | Sereisa | Thrust range, slow on hit |
+| Storm Bangle | Utility | 90 | Sereisa | Wrist shock burst on dodge |
+| Glaive of Embers | Heavy | 100 | Vesol | Reach sweep, burn trail |
+| Inferno Bolt | Ranged | 80 | Vesol | Burn bolt, mana regen on hit |
+| Mana Staff | Cast | 80 | Vesol | Mana regen, amplified burn bolt |
+| Gate Crystal Shard | Cast | 70 | All | Minor spell cast, utility |
+| Oni Katana | Melee Reach | 85 | All | High damage, bleed slash on heavy |
+| Crescent Blade | Melee | 80 | All | Fast arc, status on chain hit |
+| Void Bracer | Utility | 95 | All | Dodge applies weapon status effect |
+
+> See [`docs/WEAPONS.md`](docs/WEAPONS.md) for full distribution, design rules, and shop economy.
 
 ---
 
@@ -219,8 +352,6 @@ Max level 4 per run. Resets on wipe.
 | Bruiser | Slow, high HP, hard to stagger |
 | Mini-boss | Zone gatekeeper — stronger patterns, telegraphed |
 | Boss | Zone finale — multiple phases, dramatic telegraphs |
-
-Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 
 **Co-op Scaling:** HP +50% per player · Max 20 enemies on screen · Enemy count scales with player count
 
@@ -237,8 +368,6 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 | Special | E | RB / R1 |
 | Interact | F | A / Cross |
 
-> Camera: fixed orthographic (2.5D). Zooms out smoothly as players spread apart. No rotation — readability first.
-
 ---
 
 ## 🔧 Tech Stack
@@ -251,7 +380,7 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 | Collision | AABB (flat 2D hit boxes) |
 | Enemy AI | Lane-based pathing (Yuka.js or custom) |
 | Weapons | Bone-attach system |
-| Status | Stackable (Confusion, Bleed, Burn, Slow, Stun) |
+| Status | Stackable (Bleed, Burn, Slow, Stun) |
 | Co-op | Local-first · 1–4 players · AI companions fill empty slots |
 | Performance | 60fps · max 20 enemies instanced · 500 particles |
 | Deployment | Single domain/subdomain · no login · no loading screen |
@@ -262,39 +391,37 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 ## 🗺 MVP Scope
 
 **Build now:**
-- Hunter hub (character select, shop 6–8 slots, portal select)
+- Hunter hub (character select, shop, portal select)
 - All 4 hunters — Dabik, Benzu, Sereisa, Vesol
 - 1–4 local players + optional AI companion
 - 3 enemy types + 1 mini-boss + 1 final boss
 - Shop with items + level-up system
 - 3 short portal zones (City Breach, Ruin Den, Shadow Core)
-- Parallax background layers per zone
 - Vibe Jam widget embedded
 - Instant browser load, no login
 
-**Post-MVP (do later):**
+**Post-MVP:**
 - Online multiplayer
 - Thunder Spire (zone 4)
 - Additional hunters
 - Save system
-- Quest and dialogue system
+- Quest and dialogue
 - Procedural generation
-- Complex inventory management
 
 ---
 
 ## 📅 18-Day Build Plan
 
-> **Jam Deadline: 1 May 2026 @ 12:37 GMT** *(Birmingham, UK)*
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC**
 
 | Phase | Days | Focus | Milestone |
 |-------|------|-------|-----------|
-| 1 — Core Engine | 1–3 | Three.js 2.5D setup (orthographic cam, X/Y movement), player controller, hub, widget | ✅ Solo hunter moves + attacks |
-| 2 — Combat Basics | 4–6 | Enemy AI (lane-based, 3 types), AABB hit detection, status effects, mana/surge/spells, juice | ✅ Fight grunt waves |
-| 3 — Hunters + Co-op | 7–9 | All 4 hunters, local 1–4P input, orthographic cam zoom, AI companions, co-op scaling | ✅ 4P hub + combat |
-| 4 — Zones + Bosses | 10–12 | 4 zones, portals, parallax backgrounds, mini-boss + boss phases, Essence drops | ✅ Full run clearable |
-| 5 — Progression + UI | 13–15 | Hub shop, cosmetics, weapons, levelling, XP thresholds, HUD, combo UI | ✅ Buy + upgrade loop |
-| 6 — Polish + Deploy | 16–18 | Audio/SFX, onboarding, 60fps tweaks, deploy to domain, widget confirm | ✅ Playable jam entry |
+| 1 — Core Engine | 1–3 | Three.js 2.5D setup, player controller, hub, widget | ✅ Solo hunter moves |
+| 2 — Combat Basics | 4–6 | Enemy AI, hit detection, status effects, juice | ✅ Fight grunt waves |
+| 3 — Hunters + Co-op | 7–9 | All 4 hunters, 1–4P input, AI companions | ✅ 4P hub + combat |
+| 4 — Zones + Bosses | 10–12 | 3 zones, portals, boss phases, Essence drops | ✅ Full run clearable |
+| 5 — Progression + UI | 13–15 | Shop, weapons, levelling, HUD, combo UI | ✅ Buy + upgrade loop |
+| 6 — Polish + Deploy | 16–18 | Audio, onboarding, 60fps, deploy to domain | ✅ Playable jam entry |
 
 ---
 
@@ -302,7 +429,7 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 
 | Rule | Status |
 |------|--------|
-| New game (created during jam period — April 2026) | ✅ |
+| New game (created April 2026) | ✅ |
 | Web-accessible, no login, free-to-play | ✅ |
 | Vibe Jam widget included | ✅ |
 | ≥90% AI-assisted code | ✅ |
@@ -313,19 +440,20 @@ Elemental variants: shadow grunt (bleed), fire grunt (burn), etc.
 
 ---
 
-## 📁 File Structure
+## 📁 Docs
 
-```
-huntix/
-├── index.html          # Entry point — widget included here
-├── assets/             # Models, textures, audio
-├── projects/           # Cursor/AI project context files
-├── bonus/              # Extras, references, scratchpad
-├── .agents/            # AI agent config
-├── .claude/            # Claude project instructions
-├── CHANGELOG.md        # Version log
-└── START-HERE.md       # Starter pack notes (reference)
-```
+| File | Contents |
+|------|----------|
+| [`docs/HUNTERS.md`](docs/HUNTERS.md) | Full character sheets — stats, spells, appearance, backstory |
+| [`docs/WEAPONS.md`](docs/WEAPONS.md) | Full weapon list, distribution, shop economy |
+| [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.md) | Visual rules, locked identity elements, outfit system |
+| [`docs/VISUAL-DESIGN.md`](docs/VISUAL-DESIGN.md) | Art direction, aura system, palette |
+| [`docs/BOSSES.md`](docs/BOSSES.md) | Boss phases, attacks, counters |
+| [`docs/ZONES.md`](docs/ZONES.md) | Zone layouts, pacing, parallax |
+| [`docs/GDD.md`](docs/GDD.md) | Full game design document |
+| [`docs/ANIMATIONS.md`](docs/ANIMATIONS.md) | Animation states per hunter |
+| [`docs/HUD.md`](docs/HUD.md) | HUD layout and UI flow |
+| [`docs/AUDIO.md`](docs/AUDIO.md) | Audio design and SFX spec |
 
 ---
 
@@ -333,6 +461,6 @@ huntix/
 
 *Huntix — Vibe Jam 2026 entry · Solo dev + AI · Built in Three.js · 2.5D brawler*
 
-**[▶ Play (coming soon)](#)** · **[📋 Changelog](CHANGELOG.md)** · **[🚀 Start Here](START-HERE.md)**
+**[▶ Play (coming soon)](#)** · **[📋 Changelog](CHANGELOG.md)**
 
 </div>
