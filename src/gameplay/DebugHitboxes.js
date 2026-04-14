@@ -12,8 +12,10 @@ export class DebugHitboxes {
     scene.add(this.group);
 
     this._playerBox = this._createBox(0x48f7ff);
+    this._playerHurtbox = this._createBox(0x00ff88);
     this._activeBoxes = [];
     this._enemyBoxes = [];
+    this._enemyHurtboxes = [];
     this._enemyRanges = [];
 
     for (let i = 0; i < MAX_ACTIVE_BOXES; i += 1) {
@@ -22,6 +24,7 @@ export class DebugHitboxes {
 
     for (let i = 0; i < MAX_ENEMY_BOXES; i += 1) {
       this._enemyBoxes.push(this._createBox(0xff5555));
+      this._enemyHurtboxes.push(this._createBox(0xffcc00));
       this._enemyRanges.push(this._createBox(0xff3333));
     }
   }
@@ -36,8 +39,10 @@ export class DebugHitboxes {
   update(player, enemies, activeHitboxes = []) {
     if (!this.enabled) return;
 
-    const hurtbox = player.getHurtbox?.() || player.getBounds();
-    this._syncBox(this._playerBox, hurtbox);
+    const playerBody = player.getBodyBounds?.() || player.getBounds();
+    const playerHurtbox = player.getHurtbox?.();
+    this._syncBox(this._playerBox, playerBody);
+    this._syncOptionalBox(this._playerHurtbox, playerHurtbox);
 
     for (let i = 0; i < MAX_ACTIVE_BOXES; i += 1) {
       const hitbox = activeHitboxes[i];
@@ -52,11 +57,13 @@ export class DebugHitboxes {
       const enemy = enemies[i];
       if (!enemy) {
         this._enemyBoxes[i].visible = false;
+        this._enemyHurtboxes[i].visible = false;
         this._enemyRanges[i].visible = false;
         continue;
       }
 
-      this._syncBox(this._enemyBoxes[i], enemy.getBounds());
+      this._syncBox(this._enemyBoxes[i], enemy.getBodyBounds?.() || enemy.getBounds());
+      this._syncOptionalBox(this._enemyHurtboxes[i], enemy.getHurtbox?.());
       this._syncRange(this._enemyRanges[i], enemy);
     }
   }
@@ -90,6 +97,14 @@ export class DebugHitboxes {
     mesh.visible = true;
     mesh.position.set(box.x + box.width / 2, box.y + box.height / 2, 10);
     mesh.scale.set(box.width, box.height, 1);
+  }
+
+  _syncOptionalBox(mesh, box) {
+    if (!box) {
+      mesh.visible = false;
+      return;
+    }
+    this._syncBox(mesh, box);
   }
 
   _syncRange(mesh, enemy) {

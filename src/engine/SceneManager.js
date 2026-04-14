@@ -9,6 +9,7 @@ import { EnemySpawner } from '../gameplay/EnemySpawner.js';
 import { SparkPool } from '../gameplay/SparkPool.js';
 import { DebugHitboxes } from '../gameplay/DebugHitboxes.js';
 import { GameplayHUD } from '../gameplay/GameplayHUD.js';
+import { CollisionResolver } from '../gameplay/CollisionResolver.js';
 import { createCityBreachArena } from '../visuals/CityBreachArena.js';
 import { createAura } from '../visuals/AuraShader.js';
 import { HUNTERS } from '../visuals/Palettes.js';
@@ -35,6 +36,7 @@ export class SceneManager {
     this.player = new PlayerState(this.scene, this.resources);
     this.combat = new CombatController(this.resources);
     this.spawner = new EnemySpawner(this.scene, 1);
+    this.collision = new CollisionResolver();
     this.sparks = new SparkPool(this.scene);
     this.cameraShake = new CameraShake(this.camera);
     this.debugHitboxes = new DebugHitboxes(this.scene);
@@ -90,6 +92,8 @@ export class SceneManager {
     this.player.update(scaledDt, input);
     const spawnerEvents = this.spawner.update(scaledDt, [this.player]);
     this._applyCombatEvents(spawnerEvents);
+    this.collision.resolve(this.player, this.spawner.getActiveEnemies());
+    this.spawner.syncVisuals();
     this.sparks.update(scaledDt);
     this._hitFlares.update(scaledDt);
     this.cameraShake.update(scaledDt);

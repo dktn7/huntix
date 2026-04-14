@@ -230,8 +230,8 @@ export class EnemyAI {
     this._frozenTimer = Math.max(this._frozenTimer, seconds);
   }
 
-  /** Returns the enemy's current body AABB. */
-  getBounds() {
+  /** Returns the enemy's current body AABB for physical separation/debug only. */
+  getBodyBounds() {
     return new Hitbox({
       x: this.position.x - this.config.width / 2,
       y: this.position.y - this.config.height / 2,
@@ -242,10 +242,22 @@ export class EnemyAI {
     });
   }
 
+  /** Returns the enemy's current body AABB for legacy debug callers. */
+  getBounds() {
+    return this.getBodyBounds();
+  }
+
   /** Returns the enemy's damageable hurtbox. */
   getHurtbox() {
     if (this.state === EnemyStates.DEAD) return null;
-    return this.getBounds();
+    return this.getBodyBounds();
+  }
+
+  /** Nudges the enemy body during collision resolution without applying damage. */
+  displace(dx, dy) {
+    if (this.state === EnemyStates.DEAD) return;
+    this.position.x += dx;
+    this.position.y += dy;
   }
 
   /** Returns true once this enemy has entered the dead state. */
