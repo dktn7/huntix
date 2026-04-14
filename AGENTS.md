@@ -1,6 +1,78 @@
 # HUNTIX — Agent Context
 
-Read this file before touching any code. It tells you exactly what this project is, where everything lives, and what to build next.
+---
+
+## ⚡ STEP ZERO — DETECT CURRENT PHASE BEFORE ANYTHING ELSE
+
+**Before writing a single line of code, you MUST determine the current development phase by scanning the actual files in `src/`.** Do not trust any hardcoded phase label. The codebase is the source of truth.
+
+### How to detect the phase:
+
+Check which files exist across the phase checklists below. The current phase is the **lowest-numbered phase that still has missing files**. Everything above that phase is off-limits.
+
+You can also run this to get an instant answer:
+```bash
+node scripts/check-phase.js
+```
+
+### Phase Completion Checklists
+
+**Phase 1 — Core Engine** ✅ complete when ALL exist:
+- `src/engine/GameLoop.js`
+- `src/engine/Renderer.js`
+- `src/engine/SceneManager.js`
+- `src/engine/InputManager.js`
+- `src/main.js`
+- `src/gameplay/PlayerState.js`
+- `src/gameplay/CombatController.js`
+- `src/gameplay/Hitbox.js`
+- `src/gameplay/ManaBar.js`
+
+**Phase 2 — Enemy AI & Juice** ✅ complete when ALL exist:
+- `src/gameplay/EnemyAI.js`
+- `src/gameplay/EnemySpawner.js`
+- `src/gameplay/StatusEffects.js`
+- `src/gameplay/SparkPool.js`
+- `src/engine/CameraShake.js`
+
+**Phase 3 — 4 Hunters & Co-op** ✅ complete when ALL exist:
+- `src/gameplay/HunterController.js`
+- `src/gameplay/CoopManager.js`
+- `src/visuals/HunterMeshes.js`
+- `src/gameplay/AICompanion.js`
+- `src/gameplay/HunterDabik.js`
+- `src/gameplay/HunterBenzu.js`
+- `src/gameplay/HunterSereisa.js`
+- `src/gameplay/HunterVesol.js`
+
+**Phase 4 — Zones & Bosses** ✅ complete when ALL exist:
+- `src/gameplay/ZoneManager.js`
+- `src/gameplay/PortalTransition.js`
+- `src/gameplay/BossController.js`
+- `src/gameplay/EssenceDrop.js`
+- `src/visuals/CityBreachArena.js`
+
+**Phase 5 — Hub, Shop & HUD** ✅ complete when ALL exist:
+- `src/gameplay/HubScene.js`
+- `src/gameplay/ShopManager.js`
+- `src/gameplay/LevelingSystem.js`
+- `src/gameplay/ComboUI.js`
+- `src/gameplay/GameplayHUD.js`
+
+**Phase 6 — Audio, Polish & Deploy** ✅ complete when ALL exist:
+- `src/engine/AudioManager.js`
+- `src/gameplay/OnboardingFlow.js`
+- `src/gameplay/PerfMonitor.js`
+
+### Blocked features per phase
+
+| Feature | Blocked until |
+|---------|---------------|
+| Character models / hunter art | Phase 3 |
+| P2–P4 input / co-op wiring | Phase 3 |
+| Zone transitions / boss phases | Phase 4 |
+| HUD / shop UI / combo counter | Phase 5 |
+| Audio (SFX, music) | Phase 6 |
 
 ---
 
@@ -25,41 +97,6 @@ Huntix is a 2.5D browser action brawler built in Three.js for Vibe Jam 2026.
 - Free-to-play, no login
 - Game must run on a single domain
 - New game created during the jam (April 2026 onwards)
-
----
-
-## Current Phase: Phase 1 — Core Engine (Days 1-3)
-
-**Focus: game mechanics only. No character models or art yet.**
-
-Milestone: solo hunter moves and attacks feel good with placeholder geometry.
-
-What is already built:
-- `src/engine/GameLoop.js` — fixed-timestep RAF loop with FPS tracking
-- `src/engine/Renderer.js` — orthographic Three.js renderer, ORTHO_HEIGHT=10, letterbox/pillarbox
-- `src/engine/SceneManager.js` — 2.5D scene, Y-sort, **placeholder player box + movement in `_setupTestScene()`**
-- `src/engine/InputManager.js` — keyboard + gamepad, all combat actions mapped
-- `src/main.js` — bootstrap wiring all engine modules together
-- `index.html` — canvas, widget, Three.js importmap, debug panel
-
-What needs to be built next (in order):
-1. `src/gameplay/PlayerState.js` — FSM: IDLE, MOVE, ATTACK_LIGHT, ATTACK_HEAVY, DODGE, HURT, DEAD
-2. `src/gameplay/CombatController.js` — reads input actions, drives state transitions, hitstop, dodge i-frames, mana
-3. `src/gameplay/Hitbox.js` — AABB hit detection, damage, knockback vectors
-4. `src/gameplay/ManaBar.js` — mana/surge resource tracking, regen, cost
-5. `src/gameplay/EnemyAI.js` — basic grunt: patrol, aggro range, attack
-6. `src/gameplay/EnemySpawner.js` — wave spawning, co-op HP scaling
-
-⚠️ **SceneManager.js cleanup required when PlayerState.js lands:**
-Delete `_setupTestScene()`, `_playerMesh`, `_playerPos`, `_playerSpeed`, and the movement
-logic inside `update()`. Replace with a call to `PlayerState.update(dt, input)`. If both
-the test mesh and PlayerState try to drive a player object simultaneously, you will get
-double-movement and z-fighting. The test scene code exists only as a Phase 1 placeholder.
-
-Do not add character models, textures, or art assets until Phase 3.
-Do not add audio until Phase 6.
-Do not add zone transitions until Phase 4.
-Do not build HUD or shop UI until Phase 5.
 
 ---
 
