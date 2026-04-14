@@ -1,10 +1,11 @@
 import * as THREE from 'three';
+import { sparkGeometry, sparkHitMaterial, sparkEssenceMaterial } from '../visuals/SparkLook.js';
 
 const POOL_SIZE = 48;
 const SPARK_LIFE = 0.18;
 
 export class SparkPool {
-  /** Creates a reusable pool of placeholder hit spark meshes. */
+  /** Creates a reusable pool of hit spark / essence meshes (shared visuals). */
   constructor(scene) {
     this._particles = [];
     this._essence = [];
@@ -12,11 +13,8 @@ export class SparkPool {
     this._essenceCursor = 0;
     this._spawnPhase = 0;
 
-    const geo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
-    const mat = new THREE.MeshBasicMaterial({ color: 0xfff2a8 });
-
     for (let i = 0; i < POOL_SIZE; i += 1) {
-      const mesh = new THREE.Mesh(geo, mat);
+      const mesh = new THREE.Mesh(sparkGeometry, sparkHitMaterial);
       mesh.visible = false;
       scene.add(mesh);
       this._particles.push({
@@ -46,6 +44,7 @@ export class SparkPool {
       particle.essence = false;
       particle.target = null;
       particle.ticks = 0;
+      particle.mesh.material = sparkHitMaterial;
       particle.mesh.position.set(x, y, -y * 0.01 + 0.2);
       particle.mesh.scale.setScalar(1);
       particle.mesh.visible = true;
@@ -59,6 +58,7 @@ export class SparkPool {
     const particle = this._particles[this._essenceCursor];
     this._essenceCursor = (this._essenceCursor + 1) % this._particles.length;
 
+    particle.mesh.material = sparkEssenceMaterial;
     particle.life = 1;
     particle.vx = 0;
     particle.vy = 0;

@@ -36,7 +36,7 @@ const ENEMY_CONFIGS = {
     aggroRange: 8,
     cooldown: 1.8,
     telegraph: 0.4,
-    attackLife: 0.08,
+    attackLife: 0.12,
     color: 0x6d6d6d,
     hitboxWidth: 1.2,
     hitboxHeight: 0.9,
@@ -52,7 +52,7 @@ const ENEMY_CONFIGS = {
     aggroRange: 12,
     cooldown: 3,
     telegraph: 0.6,
-    attackLife: 0.08,
+    attackLife: 0.12,
     color: 0x3f8cff,
     preferredMin: 5,
     preferredMax: 8,
@@ -140,7 +140,7 @@ export class EnemyAI {
       return this.consumeEvents();
     }
 
-    if (this._frozenTimer > 0 || this.statusEffects.isStunned()) {
+    if (this._isControlLocked()) {
       this._frozenTimer = Math.max(0, this._frozenTimer - dt);
       this.isTelegraphing = false;
       return this.consumeEvents();
@@ -220,6 +220,7 @@ export class EnemyAI {
   /** Applies or replaces a status effect on this enemy. */
   applyStatus(type) {
     if (this.statusEffects.apply(type) && type === StatusTypes.STUN) {
+      if (this._isControlLocked()) return;
       this._transitionTo(EnemyStates.AGGRO);
     }
   }
@@ -295,9 +296,13 @@ export class EnemyAI {
   _shouldAttack(distance) {
     if (this._cooldown > 0) return false;
     if (this.type === EnemyTypes.RANGED) {
-      return distance <= this.config.preferredMax && distance >= this.config.retreatRange;
+      return distance <= this.config.preferredMax;
     }
     return distance <= this.attackRange;
+  }
+
+  _isControlLocked() {
+    return this._frozenTimer > 0 || this.statusEffects.isStunned();
   }
 
   _updatePatrol(dt) {

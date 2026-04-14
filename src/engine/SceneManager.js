@@ -9,6 +9,10 @@ import { EnemySpawner } from '../gameplay/EnemySpawner.js';
 import { SparkPool } from '../gameplay/SparkPool.js';
 import { DebugHitboxes } from '../gameplay/DebugHitboxes.js';
 import { GameplayHUD } from '../gameplay/GameplayHUD.js';
+import { createCityBreachArena } from '../visuals/CityBreachArena.js';
+import { createAura } from '../visuals/AuraShader.js';
+import { HUNTERS } from '../visuals/Palettes.js';
+import { HitFlarePool } from '../visuals/HitFlarePool.js';
 
 const SceneModes = {
   HUB: 'HUB',
@@ -37,6 +41,16 @@ export class SceneManager {
     this.hud = new GameplayHUD(document.getElementById('ui-overlay'));
     this._slowMoTicks = 0;
     this._slowMoScale = 1;
+
+    this._cityBreachArena = createCityBreachArena();
+    this._cityBreachArena.visible = false;
+    this.scene.add(this._cityBreachArena);
+
+    this._playerAura = createAura(HUNTERS.Dabik.auraColor, 2.4);
+    this._playerAura.visible = false;
+    this.scene.add(this._playerAura);
+
+    this._hitFlares = new HitFlarePool(this.scene);
   }
 
   /** Advances input, gameplay simulation, and hitstop-aware enemy updates. */
@@ -60,10 +74,12 @@ export class SceneManager {
     if (inHitstop) {
       this.combat.advanceHitboxes(dt);
       this.sparks.update(dt);
+      this._hitFlares.update(dt);
       this.cameraShake.update(dt);
       this.spawner.syncVisuals();
       this.hud.setCombo(this.combat.comboCount);
       this.hud.update(this.camera);
+      this._syncCityBreachAura(dt);
       this._updateDebugHitboxes();
       return;
     }
@@ -75,9 +91,11 @@ export class SceneManager {
     const spawnerEvents = this.spawner.update(scaledDt, [this.player]);
     this._applyCombatEvents(spawnerEvents);
     this.sparks.update(scaledDt);
+    this._hitFlares.update(scaledDt);
     this.cameraShake.update(scaledDt);
     this.hud.setCombo(this.combat.comboCount);
     this.hud.update(this.camera);
+    this._syncCityBreachAura(scaledDt);
     this._updateDebugHitboxes();
   }
 
@@ -120,11 +138,14 @@ export class SceneManager {
   }
 
   _setupArena() {
+    this._hubBackdrop = [];
+
     const groundGeo = new THREE.PlaneGeometry(ORTHO_WIDTH, 2);
     const groundMat = new THREE.MeshLambertMaterial({ color: 0x1a1a2e });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.position.set(0, -3, 0);
     this.scene.add(ground);
+    this._hubBackdrop.push(ground);
 
     const bgColors = [0x16213e, 0x0f3460, 0x16213e];
     bgColors.forEach((color, i) => {
@@ -133,6 +154,7 @@ export class SceneManager {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(0, 2 + i * 2, -(i + 1) * 2);
       this.scene.add(mesh);
+      this._hubBackdrop.push(mesh);
     });
   }
 
@@ -176,7 +198,22 @@ export class SceneManager {
     this._portalMesh.visible = false;
     this._portalPedestal.visible = false;
     this._hunterPad.visible = false;
+    for (const m of this._hubBackdrop) {
+      m.visible = false;
+    }
+    this._cityBreachArena.visible = true;
+    this._playerAura.visible = true;
     this.spawner.startCityBreach();
+  }
+
+  /** Y-sorts aura with player mesh; advances aura shader time (call after player.update). */
+  _syncCityBreachAura(timeDelta) {
+    this._playerAura.position.set(
+      this.player.mesh.position.x,
+      this.player.mesh.position.y,
+      this.player.mesh.position.z - 0.05
+    );
+    this._playerAura.material.uniforms.uTime.value += timeDelta;
   }
 
   _isPlayerNearPortal() {
@@ -196,6 +233,7 @@ export class SceneManager {
     for (const event of events) {
       if (event.type === 'hit') {
         this.sparks.spawn(event.x, event.y, event.intensity);
+        this._hitFlares.spawn(event.x, event.y);
         this.cameraShake.request(event.intensity);
         this.hud.showDamageNumber(event.x, event.y, event.damage, event.attackType);
         if (event.killed) {
