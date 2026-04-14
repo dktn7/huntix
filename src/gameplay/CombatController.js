@@ -229,6 +229,7 @@ export class CombatController {
       this.hitEvents.push({
         type: 'playerHit',
         damage: hitbox.damage,
+        attackType: hitbox.attackType,
         x: player.position.x,
         y: player.position.y,
       });

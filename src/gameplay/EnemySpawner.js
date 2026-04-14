@@ -5,6 +5,7 @@ import { Hitbox, HitboxOwners } from './Hitbox.js';
 const MAX_ENEMIES = 20;
 const ENEMY_CAPACITY = 20;
 const PROJECTILE_CAPACITY = 10;
+const PROJECTILE_ARM_TIME = 3 / 60;
 
 const HP_MULTIPLIERS = {
   1: 1,
@@ -121,7 +122,9 @@ export class EnemySpawner {
 
   /** Returns active projectile hitboxes for debug and combat. */
   getProjectileHitboxes() {
-    return this._projectiles.map(projectile => this._projectileHitbox(projectile));
+    return this._projectiles
+      .filter(projectile => projectile.age >= PROJECTILE_ARM_TIME)
+      .map(projectile => this._projectileHitbox(projectile));
   }
 
   /** Adds an advanced-spell decoy taunt at the supplied position. */
@@ -185,6 +188,7 @@ export class EnemySpawner {
       vy: event.vy,
       damage: event.damage,
       life: 2.2,
+      age: 0,
       owner: event.owner,
     });
   }
@@ -193,7 +197,9 @@ export class EnemySpawner {
     for (const projectile of this._projectiles) {
       projectile.x += projectile.vx * dt;
       projectile.y += projectile.vy * dt;
+      projectile.age += dt;
       projectile.life = Math.max(0, projectile.life - dt);
+      if (projectile.age < PROJECTILE_ARM_TIME) continue;
 
       const hitbox = this._projectileHitbox(projectile);
       for (const player of players) {
@@ -204,6 +210,7 @@ export class EnemySpawner {
         this._events.push({
           type: 'playerHit',
           damage: projectile.damage,
+          attackType: 'projectile',
           x: player.position.x,
           y: player.position.y,
         });

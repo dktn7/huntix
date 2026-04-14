@@ -30,7 +30,9 @@ export const PlayerAttackSpecs = {
   [PlayerStates.ATTACK_LIGHT]: {
     damage: 16,
     radius: 1.2,
-    lifetime: 0.08,
+    activeStart: 4 * TICK,
+    activeLife: 0.1,
+    lifetime: 0.1,
     arcCos: 0.35,
     knockbackX: 2.5,
     knockbackY: 0.5,
@@ -38,6 +40,8 @@ export const PlayerAttackSpecs = {
   [PlayerStates.ATTACK_HEAVY]: {
     damage: 32,
     radius: 1.8,
+    activeStart: 8 * TICK,
+    activeLife: 0.15,
     lifetime: 0.15,
     arcCos: -0.2,
     knockbackX: 4,
@@ -162,8 +166,8 @@ export class PlayerState {
     return this._dodgeIFrameTimer > 0;
   }
 
-  /** Returns the player's current body AABB for movement/debug only. */
-  getBounds() {
+  /** Returns the player's current body AABB for physical separation/debug only. */
+  getBodyBounds() {
     return new Hitbox({
       x: this.position.x - PLAYER_WIDTH / 2,
       y: this.position.y - PLAYER_HEIGHT / 2,
@@ -174,15 +178,25 @@ export class PlayerState {
     });
   }
 
+  /** Returns the player's current body AABB for legacy debug callers. */
+  getBounds() {
+    return this.getBodyBounds();
+  }
+
   /** Returns the player's damageable hurtbox, or null during i-frames. */
   getHurtbox() {
     if (this.isInvincible() || this.state === PlayerStates.DEAD) return null;
-    return this.getBounds();
+    return this.getBodyBounds();
   }
 
   /** Returns the current attack spec used by CombatController damage hitboxes. */
   getAttackSpec() {
-    return PlayerAttackSpecs[this.state] || null;
+    const spec = PlayerAttackSpecs[this.state];
+    if (!spec) return null;
+    if (this._stateElapsed < spec.activeStart || this._stateElapsed >= spec.activeStart + spec.activeLife) {
+      return null;
+    }
+    return { ...spec, lifetime: spec.activeLife };
   }
 
   /** Returns a debug-only attack AABB, or null when no attack is active. */
@@ -239,6 +253,15 @@ export class PlayerState {
   setRapidStrike(seconds) {
     this._rapidStrikeTimer = Math.max(this._rapidStrikeTimer, seconds);
     this._attackSpeedMultiplier = 2;
+  }
+
+  /** Nudges the player body during collision resolution without applying damage. */
+  displace(dx, dy) {
+    if (this.state === PlayerStates.DEAD) return;
+    this.position.x += dx;
+    this.position.y += dy;
+    this._clampToArena();
+    this._syncMesh();
   }
 
   _updateFreeMovement(dt, moveVector) {
