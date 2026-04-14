@@ -1,132 +1,77 @@
 # Huntix — Codex Instructions
-# Auto-loaded every Codex session alongside AGENTS.md.
-# MAINTAINER NOTE: Update the "Development Phase" section below when advancing phases.
+# Codex is the PRIMARY builder. You own full-file creation and multi-file changes.
+# Cursor runs in parallel for interactive edits — do not duplicate its work.
 #
-# ── WHY THIS FILE IS STRUCTURED THIS WAY ──────────────────────────────────────
-# LLMs exhibit U-shaped attention: strongest at the start and end of context,
-# weakest in the middle. Critical constraints (widget, phase, do-not list) are
-# placed at the TOP of this file intentionally. The phase block is near the top
-# so it is never lost-in-the-middle during long sessions.
-# Source: context-degradation pattern (muratcankoylan/agent-skills-for-context-engineering)
-# ──────────────────────────────────────────────────────────────────────────────
+# U-shaped attention: critical rules are at TOP and BOTTOM of this file.
 
-## What This Project Is
-Huntix is a 2.5D browser beat 'em up / roguelite brawler built in Three.js r169 for Vibe Jam 2026.
-Deadline: 1 May 2026 @ 13:37 UTC. 18-day build window. You are building this game.
+---
 
-## Always Read First
-Before touching any code, read `AGENTS.md` at the repo root.
+## STEP 1 — ALWAYS DO THIS FIRST
 
-## Non-Negotiable Vibe Jam Rules
-- Widget script MUST always be in index.html:
-  `<script async src="https://vibej.am/2026/widget.js"></script>`
-- No loading screens — game must be playable within seconds
-- Free-to-play, no login, public URL, single domain
+1. Read `AGENTS.md` at the repo root — it is the single source of truth for the project
+2. Run `node scripts/check-phase.js` to detect the current phase from actual files
+3. Read the relevant `docs/*.md` for the system you are about to build
+4. Only then write code
 
-## Development Phase (Current)
-# ─── UPDATE THIS BLOCK WHEN ADVANCING PHASES ──────────────────────────────────
-Current Phase: 1 — Core Engine (Days 1–3)
-Already built: GameLoop.js | Renderer.js | SceneManager.js | InputManager.js | main.js
-Next: PlayerState.js → CombatController.js → Hitbox.js → ManaBar.js → EnemyAI.js → EnemySpawner.js
-Do NOT add yet: models, textures, audio, zone transitions, P2+ input, HUD, shop
-⚠️  When PlayerState.js lands: delete _setupTestScene(), _playerMesh, _playerPos,
-    _playerSpeed from SceneManager.js. Two systems driving player position = double-movement.
-# ──────────────────────────────────────────────────────────────────────────────
+Never rely on a hardcoded phase label. The script is always correct. The codebase is truth.
 
-## Do Not
-- Add npm or build tools
-- Use perspective camera
-- Add loading screens
-- Use eval() or runtime dynamic import()
-- Commit large binaries to repo root
-- Build features not in spec without flagging
-- Remove Vibe Jam widget script
-- Implement P2–P4 input before Phase 3
-- Build HUD or shop UI before Phase 5
+---
 
-## Tech Stack (Do Not Change)
-- Three.js r169 via CDN importmap — NO npm, NO Vite, NO bundler, NO build step
-- ES modules only (`type="module"`)
-- Orthographic camera only — never switch to perspective
-- Camera: ORTHO_HEIGHT=10, ORTHO_WIDTH≈17.78, position (0,0,100) looking at origin
-- No dynamic `import()` at runtime
-- Do not upgrade Three.js mid-jam
+## Your Role as Codex
 
-## Game Loop — Fixed Timestep (Critical)
-- GameLoop.js uses a FIXED timestep accumulator: FIXED_DT = 1/60 = 0.01667s always
-- The update callback ALWAYS receives exactly 0.01667s — never a variable RAF dt
-- MAX_DT cap = 1/20 to prevent spiral of death after tab switch
-- Write ALL gameplay code assuming fixed dt = 0.01667s — it never varies
-- Do NOT call performance.now() or read RAF timestamps in gameplay code
+- You are the **heavy lifter**: full file creation, multi-file refactors, new systems from scratch
+- Cursor handles: small interactive edits, line-level fixes, parallel UI polish
+- If a file is being actively edited in Cursor, do not rewrite it — create new files instead
+- Always create one class per file, placed in `src/engine/` or `src/gameplay/` per conventions
+- Commit messages: `feat:`, `fix:`, `refactor:` prefix, one line, present tense
 
-## Real Input Bindings (from InputManager.js — match these exactly)
-P1 Keyboard:
-  Move: WASD + Arrow keys
-  Light: J | Heavy: K | Dodge: Shift | Special: E | Interact: F | Pause: Escape
-P1 Gamepad (index 0):
-  Move: axes[0]/axes[1] deadzone 0.3
-  Interact: btn 0 | Dodge: btn 1 | Light: btn 2 | Heavy: btn 3 | Special: btn 5 | Pause: btn 9
-P2–P4 input: NOT YET IMPLEMENTED — build in Phase 3 only
+---
 
-## Performance Limits
-- Max 20 enemies — THREE.InstancedMesh for grunts
-- Max 500 particles — pool and reuse, never allocate in game loop
-- No dynamic shadows in combat scenes
-- Never new THREE.Vector3() / Matrix4 inside animation loop
-- 60fps target on Intel Iris
-- Total initial asset payload < 3MB
+## How to Use Skills
 
-## Code Conventions
-- One class per file
-- src/engine/ = core | src/gameplay/ = game logic
-- dt in all update(dt) calls is always 0.01667s (fixed timestep) — treat as constant
-- Input via InputManager.isDown(action) only — never raw keys
-- Named string constants for all FSM states — no magic strings
-- No console.log except behind if (DEBUG)
+Skills are in `.agents/skills/`. Load only what is relevant to the current task.
 
-## Combat Feel
-- Light hitstop: 80ms | Heavy hitstop: 150ms
-- Dodge: 300ms, 200ms i-frames, directional
-- Every hit: sparks + screenshake + stagger + SFX
-- Enemy telegraphs before every attack
-- Only cancel: attack → dodge
+| Task | Skill to load |
+|------|---------------|
+| Building enemy AI or FSMs | `animation-fsm.md` |
+| Hit feedback, particles, screenshake | `game-feel-juice.md` |
+| Co-op input, shared camera | `multiplayer-coop.md` |
+| Hunter/enemy meshes, LOD | `3d-model-optimization.md` |
+| Shaders, aura effects | `minimax-shader-dev.md` |
+| Audio system | `spatial-audio.md` |
+| HUD, shop, combo UI | `game-hud-ui.md` |
+| XP, leveling, progression | `progression-xp.md` |
+| Three.js advanced patterns | `threejs-builder/SKILL.md` |
+| Concept art, character refs | `fal-ai-image/SKILL.md` |
+| Debugging a broken system | `systematic-debugging.md` + `root-cause-tracing.md` |
+| Finding bugs in existing code | `find-bugs.md` |
+| Before marking a task done | `verification-before-completion.md` |
+| Creating a PR | `create-pr.md` |
 
-## Hunter Quick Reference
-| Hunter  | HP  | Mana | Dodge           | Status |
-|---------|-----|------|-----------------|--------|
-| Dabik   | 80  | 120  | Blink           | Bleed  |
-| Benzu   | 160 | 70   | Shoulder Charge | Stun   |
-| Sereisa | 100 | 100  | Electric Dash   | Slow   |
-| Vesol   | 90  | 130  | Flame Scatter   | Burn   |
+Never load all skills at once. One or two per task maximum.
 
-## Phase Gates
-| Phase | Days  | Unlocks |
-|-------|-------|---------|
-| 1 | 1–3   | Core engine + combat input |
-| 2 | 4–6   | Enemy AI + juice |
-| 3 | 7–9   | Models + 4P input |
-| 4 | 10–12 | Zones + bosses |
-| 5 | 13–15 | Hub shop + XP + HUD |
-| 6 | 16–18 | Audio + deploy |
+---
 
-## Available Skills (.agents/skills/)
+## Multi-File Task Protocol
 
-### Flat skills (load by reading the .md file directly)
-threejs-skills | systematic-debugging | animation-fsm | game-feel-juice
-multiplayer-coop | 3d-model-optimization | spatial-audio | progression-xp
-minimax-shader-dev | ibelick-ui-skills | game-hud-ui | root-cause-tracing
-test-driven-development | find-bugs | verification-before-completion | vercel-deploy | create-pr
+When building a new system (e.g. HunterController, ZoneManager):
+1. Run `node scripts/check-phase.js` — confirm the system is in the current phase
+2. Read the relevant doc in `docs/`
+3. Load the relevant skill
+4. Write the new file(s)
+5. Update any imports in `src/main.js` or the appropriate wiring file
+6. Do NOT modify engine files unless the task explicitly requires it
+7. Run `verification-before-completion.md` checklist before finishing
 
-### Directory skills (read the SKILL.md inside each folder)
-- `fal-ai-image/SKILL.md` — fal.ai text-to-image and image-edit generation, model comparison,
-  queue-based workflows, cost tracking. Use when generating or editing game concept art,
-  character references, or texture source images via fal.ai API.
-- `threejs-builder/SKILL.md` — extended Three.js build patterns, references, and scripts
-  beyond what threejs-skills.md covers. Use for advanced renderer setups, shader pipelines,
-  or Three.js-specific tooling not covered in the flat skill.
+---
 
-## Design Docs (read before implementing any system)
-docs/GDD.md | docs/MVP-PLAN.md | docs/HUNTERS.md | docs/BOSSES.md | docs/ENEMIES.md
-docs/ZONES.md | docs/INPUT.md | docs/COOP.md | docs/WEAPONS.md | docs/HUD.md
-docs/AUDIO.md | docs/ANIMATIONS.md | docs/VISUAL-DESIGN.md | docs/CUSTOMIZATION.md
-docs/TECHSTACK.md | docs/PORTAL-WEBRING.md
+## Non-Negotiable Rules (repeated here intentionally — bottom of context)
+
+- Widget MUST stay in index.html: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- No npm, no Vite, no bundler — Three.js r169 via CDN importmap only
+- No loading screens, no login, free-to-play, single domain
+- Fixed timestep: dt is always 0.01667s — never variable
+- Orthographic camera — never perspective
+- Do not build ahead of current phase
+- Do not remove or modify the widget script
+- Max 20 enemies, max 500 particles, no new allocations in game loop
