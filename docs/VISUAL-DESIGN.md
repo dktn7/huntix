@@ -1,67 +1,116 @@
-# HUNTIX Full Design Spec v2
+# HUNTIX Visual Design Spec
 
-> **Source of truth for visual style and art direction.**
-> For character appearance details (skin, hair, eyes, build) always defer to `docs/HUNTERS.md`.
-> For weapon identity always defer to `docs/HUNTERS.md` and `docs/WEAPONS.md`.
+> **Source of truth for visual style, art direction, and character prompts.**
+> For canonical character stats, lore, and appearance — defer to `docs/HUNTERS.md`.
+> For canonical weapon details — defer to `docs/WEAPONS.md`.
+
+---
 
 ## 1. High Concept
-Huntix is a 2.5D Three.js browser action game set in a modern arcane world where elite hunters defend city districts from gate breaches. The game blends urban fantasy, dramatic aura powers, readable co-op combat, and short run-based progression. The core fantasy is simple: enter a breach, survive the zone, defeat the boss, return stronger.
+
+Huntix is a 2.5D Three.js browser brawler set in a modern arcane world where elite hunters defend city districts from gate breaches. The game blends urban dark fantasy, dramatic aura powers, readable co-op combat, and short run-based progression.
+
+---
 
 ## 2. Design Pillars
-- Instant play in the browser with no login and no loading screens.
-- Stylish modern arcane fantasy with urban textures and magical tech.
-- Readable 2.5D combat with strong silhouettes and clear weapon identity.
-- 1-4 local co-op hunters with fast, chaotic, satisfying combat.
-- Run-based progression that feels powerful without becoming complex.
 
-## 3. World Tone
-The world is a contemporary city layered with hidden breach zones, hunter guild infrastructure, arcane research, and elemental danger. Streetlights, concrete, glass, neon, rune circuits, and gate energy all coexist. The tone should feel stylish and dangerous rather than cute or comedic.
+- Instant play in the browser — no login, no loading screens
+- Dark urban fantasy with arcane glow and material contrast
+- Readable 2.5D combat — strong silhouettes, clear weapon identity
+- 1–4 local co-op hunters — fast, chaotic, satisfying
+- Run-based progression that feels powerful without becoming complex
 
-## 4. Visual Style
-Use dark urban palettes, reflective surfaces, arcane glow, and clean modern tailoring mixed with battle armor. Characters should look like professionals who live in a world of breaches and elite combat. The visual emphasis is on sharp silhouettes, aura color, weapon glow, and material contrast.
+---
 
-## 5. Branding
-The Huntix symbol stays fixed as the main brand icon. The icon should appear on the title screen, hub signage, menus, portal gates, reward screens, and loading-free splash moments. Colors can shift by zone or hunter, but the symbol itself remains constant.
+## 3. Inspirations
 
-Logo files: `assets/logo-huntix.png` and `assets/logo-huntix-concept.png`
+Three references — use as tone anchors, not visual copies:
 
-## 6. Character Art Philosophy
-Characters should be designed around story first, then role, then class readability. Armor, clothing, and accessories should reflect where each hunter came from, how they fight, and what kind of power they wield. In 2.5D, profile clarity matters more than surface detail, so each hunter needs a strong body shape, weapon shape, and stance.
+| Reference | What it gives Huntix |
+|---|---|
+| **Solo Leveling** | Dark urban arcane atmosphere, gate/breach world feel, aura as identity, dramatic power escalation |
+| **Castle Crashers** | Co-op character distinction, bold readable shapes, expressive idle personality, distinct per-character colour identity |
+| **Dead Cells** | Tight dodge timing, snappy animation feel, status effect synergies, weight on every hit |
 
-## 7. Hunters
+---
 
-> ⚠️ Appearance details below are summaries only. Full canonical descriptions live in `docs/HUNTERS.md`.
-> Do not use this section as a prompt source — use `docs/HUNTERS.md` and `docs/VISUAL-REFERENCE.md`.
+## 4. World Tone
+
+A contemporary city layered with breach zones, hunter guild infrastructure, arcane research, and elemental danger. Streetlights, concrete, glass, neon, rune circuits, and gate energy coexist. Stylish and dangerous — not cute, not comedic.
+
+---
+
+## 5. Visual Style
+
+Dark urban palettes, arcane glow, and modern combat gear designed for a specific purpose. Characters look like professionals who live in a world of breaches — not fantasy heroes.
+
+- Base palette: deep navy, black, charcoal, steel, muted grey
+- Each hunter defined by their aura colour — that is their brand
+- Strong silhouettes above all else — profile clarity wins over surface detail
+- Clothing and gear: designed, not found. Modern and functional.
+- NOT: chibi, western cartoon, generic fantasy, tribal markings
+
+---
+
+## 6. The Huntix Logo on Clothing
+
+Every hunter wears the Huntix H emblem on their gear. It is **agency insignia** — it communicates team, rank, and world.
+
+| Hunter | Logo placement | Material |
+|---|---|---|
+| **Dabik** | Left shoulder | Dark embossed — nearly invisible except at close range |
+| **Benzu** | Chest | Gate ore inlay — gold-orange, visible |
+| **Sereisa** | Left shoulder | Pale steel inlay — clean and minimal |
+| **Vesol** | Left shoulder | Crystal inlay — cold blue |
+
+The logo is **part of the world**, not branding. It should feel like a hunter guild patch, not a sports jersey. Each material matches the hunter's palette and element.
+
+---
+
+## 7. Character Clothing
+
+All clothing is modern functional gear designed for arcane combat — not fantasy armour, not casual streetwear.
 
 ### Dabik
-Dabik should look like a shadow tracker from a modern hunter network. Muscular and agile — compact power. Dark brown skin, short wild spiky white hair, purple eyes. He wears dark fitted tactical layers, minimal armor, a high collar or hood option, and understated gear that suggests stealth and precision. His twin curved daggers should be the visual focal point, with a black-purple aura and thin shadow trails.
+Dark fitted tactical layers — matte black and dark charcoal. High collar or slim hood. Nothing catches light. No buckles, no decorative detail. Gear chosen to disappear.
 
 ### Benzu
-Benzu should look like a heavy frontline breaker built from construction strength and gate reinforcement. Bronze-orange skin, long dirty-blonde mane. He wears large custom armor plates, thick stone-forged gauntlets, reinforced boots, and broad shoulder shapes. His red-gold thunder aura should make him feel immovable, loud, and dangerous.
+Heavy custom combat gear — deep red and black. No manufacturer makes his size off the shelf. Thick reinforced pauldrons, broad chest layer, heavy dark boots. Visibly worn — dented, repaired, still standing.
 
 ### Sereisa
-Sereisa should look like an elite arcane duelist and speed specialist. Pale Nordic skin, platinum undercut. Her style should be sleek, fitted, and aerodynamic, with fencing-inspired lines, light plating, and polished modern combat tailoring. Her single lightning rapier — slender, precise, permanently crackling with electric charge — and yellow-white lightning aura should make her read as the fastest hunter in motion. The single rapier keeps her silhouette clean and aerodynamic.
+Sleek fitted combat gear — dark charcoal and black with pale steel trim at collar and shoulders. Fencing-inspired seam lines — nothing restrictive, nothing that would slow her. Designed to move in.
 
 ### Vesol
-Vesol should look like a modern arcane researcher turned battlefield mage. Warm tan skin, dark hair in a controlled architectural bun. She wears structured coats, layered mage-armor, crystal fittings, rune bands, and disciplined, elegant shapes. Her gate crystal channelling focus at the wrist should be central, and her blue-to-crimson flame aura should suggest controlled heat and precision.
+Long structured coat — deep dark navy, tailored clean seam lines. Deep red inner lining visible at collar, cuffs, and coat hem. Layered combat gear underneath at chest and shoulders — dark charcoal with faint rune circuit detail. Standing collar. Crystal fittings at collar and both cuffs. Rune band on right wrist.
 
-## 8. Class and Style Relationship
-Class should influence posture, animation language, and combat clarity, but not lock the characters into bland archetypes. A character can look like a strategist, a technician, a warrior, or an investigator as long as the weapon, stance, and aura still communicate gameplay role. This allows the cast to feel more personal and memorable.
+---
+
+## 8. Character Art Philosophy
+
+Design around story first, then role, then class readability. Armour and clothing should reflect where each hunter came from and how they fight. In 2.5D, profile clarity matters more than surface detail — each hunter needs a strong body shape, weapon shape, and stance.
+
+---
 
 ## 9. Weapon Styling
-Weapons should feel like they belong to the hunter, not like generic loot. Every weapon needs a clear silhouette, a readable profile from the side camera, and a distinct elemental effect. Daggers should feel sharp and light, gauntlets heavy and solid, the lightning rapier fast and precise, and flame focuses refined and dangerous.
+
+Weapons belong to the hunter — not generic loot. Every weapon needs a clear silhouette and a readable side-camera profile.
+
+| Hunter | Weapon | Feel |
+|---|---|---|
+| Dabik | Twin curved daggers | Sharp and light — blades catch no light |
+| Benzu | Stone-forged gauntlets | Heavy and solid — gate ore veins glow |
+| Sereisa | Single lightning rapier | Fast and precise — permanently crackling |
+| Vesol | Gate crystal focus at wrist | Refined and dangerous — no blade |
+
+---
 
 ## 10. 2.5D Model Rules
-The side-view camera means the most important shapes are head, shoulders, torso, hips, legs, and weapon outline. Avoid tiny detail clutter and prioritize large readable forms. Capes, collars, shoulder plates, belt shapes, and weapon length are more important than micro-detail. Armor should move enough to feel alive, but not so much that it muddies the silhouette.
 
-## 11. Animation Language
-Animations should be broad and readable. Dodges need a strong lean, attacks need clear wind-ups, and casts need visible hand or weapon preparation. Each hunter should have a distinct idle pose, combat stance, and movement rhythm that matches their personality.
+Side-view camera — most important shapes are head, shoulders, torso, hips, legs, weapon outline. Avoid tiny detail clutter. Prioritise large readable forms. Collars, shoulder shapes, belt lines, and weapon length matter more than micro-detail.
 
-See [ANIMATIONS.md](./ANIMATIONS.md) for full frame budgets and state machine spec.
+---
 
-## 12. Color System
-
-Base world colors should be dark navy, black, charcoal, steel, and muted gray. Hunter accent colors should be bold and individual:
+## 11. Colour System
 
 | Hunter | Primary | Secondary | Aura |
 |---|---|---|---|
@@ -70,27 +119,23 @@ Base world colors should be dark navy, black, charcoal, steel, and muted gray. H
 | Sereisa | Bright yellow `#f1c40f` | White `#ecf0f1` | Yellow-white crackle |
 | Vesol | Deep blue `#2980b9` | Crimson `#e74c3c` | Blue-to-crimson shift |
 
-UI accents can echo each hunter color without overwhelming readability.
+---
+
+## 12. Animation Language
+
+Broad and readable. Dodges need a strong lean, attacks need clear wind-ups, casts need visible preparation. Each hunter should have a distinct idle, combat stance, and movement rhythm that matches their personality. Dead Cells feel throughout — snappy, no floaty motion, every hit has weight.
+
+See [ANIMATIONS.md](./ANIMATIONS.md) for full frame budgets and state machine spec.
+
+---
 
 ## 13. HUD
-See [HUD.md](./HUD.md) for full HUD layout. The HUD stays compact and modern with clear color coding — health red, mana blue, surge yellow. Co-op players need easy-to-read indicators at all times.
 
-## 14. Resource System
-Each hunter uses health, mana, surge, and stamina. Health defines survival, mana powers special abilities, surge unlocks ultimates, and stamina prevents sprint/dodge spam. Simple enough to learn quickly, deep enough to reward timing.
+See [HUD.md](./HUD.md) for full HUD layout. Compact and modern — health red, mana blue, surge yellow.
 
-## 15. Stamina
-Stamina is a tactical limiter, not a punishment. Dodges and sprinting drain stamina, while passive regen and successful hits restore momentum. When stamina is low, the UI warns the player visually without making the game feel sluggish.
+---
 
-## 16. Combat Feel
-Combat should feel close, crisp, and impactful. Enemies need obvious attack telegraphs, hit sparks, stagger, screen shake, and short hitstop. The game should encourage timing, spacing, and combo execution rather than random button pressing.
-
-See [AGENTS.md](../AGENTS.md) for exact hitstop values and combat feel rules.
-
-## 17. Status Synergies
-The elemental pairings are a major identity feature. Bleed and slow work together for setup and punishment, stun and wall trap enemies, slow and blink create opening windows, and burn plus slam creates brutal area control. These synergies make the hunters feel like a coordinated elite squad.
-
-## 18. Zone Structure
-See [ZONES.md](./ZONES.md) for full zone details including parallax layers, dimensions, and wave compositions.
+## 14. Zone Visual Themes
 
 | Zone | Visual Theme |
 |---|---|
@@ -100,41 +145,338 @@ See [ZONES.md](./ZONES.md) for full zone details including parallax layers, dime
 | Shadow Core | Pure void — black, deep purple, white energy cracks |
 | Thunder Spire | Storm tower — dark navy, electric blue, white lightning |
 
-## 19. Progression
-Short runs, upgrades, repeatable zones. Players earn currency from enemies and bosses, spend it in the hub. Progression should always make the player feel more elite, more dangerous, and more visually dramatic.
+---
 
-## 20. Shop and Cosmetics
-The shop sells survival, power, mobility, utility, and cosmetic upgrades. Cosmetic options include aura intensity, armor tint, weapon skin, and minor visual variants. Changes keep character identity intact. See [CUSTOMIZATION.md](./CUSTOMIZATION.md) for full customization spec.
+## 15. Mixboard Prompts
 
-## 21. Audio Direction
-Audio should feel punchy, modern, and magical. Hunter movement, weapon impacts, aura bursts, and boss attacks need distinct sound layers. Premium action anime game, not generic fantasy hack-and-slash. See [AUDIO.md](./AUDIO.md) for full SFX and music list.
+> Use these prompts in Mixboard (GPT Image 1) to generate character design reference sheets.
+> Output from Mixboard feeds into the fal.ai pipeline in `bonus/huntix-character-art/`.
+> Do NOT run these prompts until you have confirmed the design lock in `docs/VISUAL-REFERENCE.md`.
 
-## 22. Technical Direction
-Build in Three.js with a lightweight, optimized asset pipeline. Low-poly readable models, instancing where possible, fast startup over visual excess. See [TECHSTACK.md](./TECHSTACK.md) for full tech decisions.
+### Shared preamble — include at the start of every session
 
-## 23. MVP Scope
-- One hub
-- Four hunters
-- 1-4 local players
-- Optional AI companion fill
-- 3 enemy types
-- 1 miniboss, 1 final boss per zone (4 total)
-- Shop and cosmetic system
-- Stamina, mana, and surge systems
-- Required Vibe Jam widget
-- Instant browser loading
+```
+Huntix is a dark stylised action brawler. Characters are elite S-Rank hunters
+who defend a modern city from arcane gate breaches.
 
-## 24. What To Build First
-1. Fixed 2.5D camera
-2. Hub scene with Huntix symbol
-3. One hunter with movement, attack, dodge, stamina
-4. One enemy type
-5. One weapon style pass
-6. Aura and hit effect system
-7. Local co-op input support
-8. Zone transitions
-9. Shop and upgrade menu
-10. Boss telegraph prototype
+Tone references (do not copy — use as anchors):
+- Solo Leveling: dark urban arcane world, aura as identity, gate/breach atmosphere,
+  dramatic power escalation, S-rank professional presence
+- Castle Crashers: bold readable character shapes at small scale, strong per-character
+  colour identity, expressive idle personality, co-op team distinction
+- Dead Cells: tight snappy animation language, weight on every hit, status synergies
 
-## 25. Final Look
-Huntix should feel like a modern arcane action anime brought into a browser game with premium readability. The characters should look like elite hunters from a living city, the world should feel dangerous and stylish, and the combat should feel sharp enough to sell every aura flare and weapon swing.
+Visual rules:
+- Dark base palette: deep navy, black, charcoal, steel, muted grey
+- Each hunter's aura colour is their brand — make it visible
+- Silhouette clarity wins over surface detail
+- Clothing is modern functional gear — designed, not found
+- The Huntix H emblem appears on every hunter's gear as agency insignia —
+  part of the world, not decoration
+- NOT: chibi, generic fantasy armour, tribal markings, casual streetwear,
+  ornate decoration, bright base colours
+```
+
+---
+
+### DABIK — Shadow Striker
+
+```
+Create a professional character design sheet for a 2D dark action brawler.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + twin curved dagger detail
+- Right: hero pose — 2.5D angled 3/4 brawler camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+NOT chibi. NOT generic fantasy. Dark stylised action game. No text. No UI.
+
+CHARACTER:
+Caribbean-African man. Muscular and agile — compact power built for burst movement.
+Dark brown skin. Short wild spiky WHITE hair — natural, not dyed,
+tight coil roots, spikes upward at crown.
+Purple eyes — calm, unnatural stillness, faint glow in power states.
+
+CLOTHING:
+Dark fitted tactical layers — matte black and dark charcoal.
+High collar or slim hood. Nothing catches light.
+No buckles, no tribal markings, no decorative detail.
+Dark trousers. Flat dark boots.
+Huntix H emblem on left shoulder — dark embossed, nearly invisible,
+reads as a guild mark not a logo.
+
+WEAPON:
+Twin curved daggers — one at side, one reverse-grip at back hip.
+No markings, no grip tape. Worn from use. Short curved blades.
+
+AURA:
+Black with deep purple edges. Does not flare.
+Spreads close to the body like a shadow at dusk.
+Purple sheen at crown of hair under shadow light.
+
+COLOUR PALETTE: Matte black, deep purple edge-glow, dark charcoal,
+muted silver blade edges, white hair as high contrast.
+```
+
+---
+
+### BENZU — Iron Breaker
+
+```
+Create a professional character design sheet for a 2D dark action brawler.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + stone-forged gauntlet detail
+- Right: hero pose — 2.5D angled 3/4 brawler camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+NOT chibi. NOT generic fantasy. Dark stylised action game. No text. No UI.
+
+CHARACTER:
+Brazilian man. Enormous broad build — built like architecture, immovable.
+Bronze-orange skin. Long dirty-blonde mane — thick, heavy, loose or roughly tied.
+Dark roots. Heavy carved jaw. Takes up more space than anyone else.
+
+CLOTHING:
+Heavy custom combat gear — deep red and black.
+No manufacturer makes his size. Thick reinforced pauldrons, broad chest layer.
+Heavy dark boots. Gear is visibly worn — dented, repaired, still standing.
+Huntix H emblem on chest — gate ore inlay, gold-orange, clearly visible.
+The emblem looks like it has been through as many gates as he has.
+
+WEAPON:
+Stone-forged gauntlets — both fists and forearms to the elbow.
+Dark stone with glowing gate ore veins — deep gold-orange.
+Knuckles show impact damage.
+
+AURA:
+Deep red with gold fractures. Does not shimmer.
+Pulses rhythmically — heat building under stone.
+Concentrated at fists and boots. Intensifies before impact.
+
+COLOUR PALETTE: Deep red, ember black, gold fracture glow, bronze-orange skin,
+dirty-blonde hair as contrast element.
+```
+
+---
+
+### SEREISA — Storm Chaser
+
+```
+Create a professional character design sheet for a 2D dark action brawler.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + single lightning rapier detail
+- Right: hero pose — 2.5D angled 3/4 brawler camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+NOT chibi. NOT generic fantasy. Dark stylised action game. No text. No UI.
+
+CHARACTER:
+British-Norwegian woman. Tall, lean, sharp-featured.
+Pale Nordic skin. Light focused eyes.
+Fencer's posture — upright, deliberate, always balanced.
+
+HAIR:
+Platinum white — natural Nordic near-white, not dyed.
+Disconnected undercut — skin fade sides, top swept back to one side.
+Moves with her. Lightning threads through at full power.
+
+CLOTHING:
+Sleek fitted combat gear — dark charcoal and black.
+Pale steel trim at collar and shoulders.
+Fencing-inspired seam lines — nothing restrictive, designed to move in.
+Huntix H emblem at left shoulder — pale steel inlay, minimal.
+Reads as precision — the same quality as the rapier.
+
+WEAPON:
+SINGLE lightning rapier — right hand, slender, one weapon.
+Permanently crackling yellow-white along the full blade length.
+NOT twin blades. The rapier silhouette is her visual identity.
+
+AURA:
+Bright yellow with white crackling edges.
+Sparks at hands and feet. Threads up the rapier blade.
+
+COLOUR PALETTE: Charcoal black, pale steel trim, bright yellow aura,
+white lightning crackle, platinum hair as contrast.
+```
+
+---
+
+### VESOL — Ember Mage
+
+```
+Create a professional character design sheet for a 2D dark action brawler.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + left wrist crystal focus detail
+- Right: hero pose — 2.5D angled 3/4 brawler camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+NOT chibi. NOT generic fantasy. Dark stylised action game. No text. No UI.
+
+CHARACTER:
+Japanese-Filipino woman. Defined, poised, refined. Warm tan skin.
+Dark almond-shaped eyes — composed, dangerous calm, not cold.
+
+HAIR:
+Dark near-black — structured high bun, architectural and deliberate.
+Two jade pins crossed through the bun — visible silhouette detail.
+2-3 deep crimson streaks visible from front and side.
+One short strand loose at the temple — the only imprecision she allows.
+
+CLOTHING:
+Long structured coat — deep dark navy, tailored clean seam lines.
+Deep red inner lining visible at collar, cuffs, and coat hem.
+Layered combat gear underneath at chest and shoulders —
+dark charcoal with faint rune circuit detail.
+Standing collar — structured, upright.
+Crystal fittings at collar and both cuffs.
+Rune band on right wrist. Dark fitted trousers. Clean dark boots.
+Huntix H emblem on left shoulder — crystal inlay, cold blue.
+Reads as a researcher's field kit built for someone who became dangerous.
+
+WEAPON:
+Left wrist: slender gate crystal rod ~20cm, flush to the forearm.
+Faint cold blue inner glow at rest. No blade. No handle.
+
+AURA:
+Cold blue particles rising from hands and feet.
+Bleeds from cold blue core to deep crimson at outer edges.
+Calm at rest. Does not flare outside the hero pose.
+
+COLOUR PALETTE: Deep navy, dark charcoal, deep red lining,
+cold blue crystal glow, jade pin accent.
+```
+
+---
+
+## 16. Grok Animation Prompts
+
+> Use these after the Mixboard design sheet is locked.
+> Feed the Mixboard output as the reference image into Grok.
+
+### DABIK
+
+```
+IDLE:
+2D sidescroller. Dead Cells animation feel — minimal, deliberate, no floaty motion.
+Character: muscular dark-brown-skinned man, matte black tactical layers,
+short wild spiky WHITE hair, purple eyes, twin curved daggers.
+Almost no idle movement — weight shifts once, one dagger taps the thigh.
+Purple-black shadow aura drifts low at feet and hands.
+3-second seamless loop. Green (#00FF00) background. Fixed 2.5D brawler angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Explosive from stillness, instant return to idle.
+Step in, slash, slash, reverse-grip finish. Under 0.8 seconds total.
+Motion blur on blades. No flourish. Pure efficiency.
+Green background. Fixed 2.5D angle.
+
+DODGE — BLINK:
+Vanishes in shadow burst — reappears behind enemy space, dagger raised.
+Shadow lingers 0.4 seconds at origin point. 0.3 second total duration.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — MONARCH'S DOMAIN:
+Raises one hand slowly. Shadow expands from feet outward across screen.
+Purple-black covers arena edges. Steps into invisibility.
+Afterimage remains 1 second. 2-second build before release.
+Green background. Fixed 2.5D angle.
+```
+
+### BENZU
+
+```
+IDLE:
+2D sidescroller. Dead Cells feel — weight is everything, no floaty motion.
+Character: enormous bronze-orange-skinned man, long dirty-blonde hair,
+heavy deep red and black combat gear, stone gauntlets with gold gate-ore glow.
+Idle: arms at sides or crossed, breathing slow and heavy.
+Gold aura pulses in gauntlets once every 2 seconds.
+3-second seamless loop. Green background. Fixed 2.5D brawler angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Slow wind-up, devastating release.
+Wide hook, overhead slam, ground punch. Shockwave ripple on each hit.
+Hitstop 1–2 frames on each impact. Gold aura flares on contact.
+Green background. Fixed 2.5D angle.
+
+DODGE — SHOULDER CHARGE:
+Lowers head, drives forward shoulder-first. Short burst forward.
+Gold-red aura flares on contact. 0.4 second duration. Not elegant. Effective.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — TITAN'S WRATH:
+Raises both fists overhead slowly — aura blazes full gold-red.
+Slams both gauntlets into ground. Shockwave cracks radiate full screen.
+2-second cinematic build before impact.
+Green background. Fixed 2.5D angle.
+```
+
+### SEREISA
+
+```
+IDLE:
+2D sidescroller. Dead Cells — coiled energy, precise micro-movements, no floaty motion.
+Character: tall pale Nordic woman, dark charcoal fitted combat gear,
+platinum undercut hair, SINGLE lightning rapier crackling yellow-white in right hand.
+Weight slightly forward, rapier held low but live. Lightning arcs along blade.
+3-second seamless loop. Green background. Fixed 2.5D brawler angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Fastest combo on the roster.
+Fencing-style: thrust, parry-slash, full dash-through.
+Third hit: complete pass-through, lightning trail left behind.
+Yellow spark burst on each hit. Total combo under 0.6 seconds.
+Green background. Fixed 2.5D angle.
+
+DODGE — ELECTRIC DASH:
+Full forward dash through enemy space. Zero hesitation.
+Yellow-white electric trail persists 0.5 seconds after.
+0.2 second total duration.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — STORM SURGE:
+Aura explodes full yellow-white. Body becomes a blur.
+Every dash shown as streaking lightning lines across screen.
+6-second duration. 2-second build before burst releases.
+Green background. Fixed 2.5D angle.
+```
+
+### VESOL
+
+```
+IDLE:
+2D sidescroller. Dead Cells feel — composed stillness, no floaty motion.
+Character: slender Japanese-Filipino woman, long structured navy coat,
+dark architectural bun with crimson streaks, wrist crystal glowing cold blue.
+Gentle idle breathing — shoulders rise and fall. Crystal pulses softly.
+Cold blue particles drift upward slowly from hands.
+3-second seamless loop. Green background. Fixed 2.5D brawler angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Precise, controlled, crisp.
+Right hand raises, wrist crystal brightens blue-to-crimson, bolt fires, returns to stance.
+3 hits. Controlled. No wasted movement. Aura flares on each cast.
+Green background. Fixed 2.5D angle.
+
+DODGE — FLAME SCATTER:
+Steps back, releases ember burst outward from both hands.
+Aura flares crimson for the duration, snaps back to blue.
+Instant commitment. 0.5 seconds.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — INFERNO:
+Raises both arms — aura shifts fully crimson, screen edge glow builds.
+Stands in centre of growing inferno. Visibly immune. Composed. Still.
+2-second build. She is the furnace.
+Green background. Fixed 2.5D angle.
+```
+
+---
+
+## 17. Final Look
+
+Huntix should feel like a dark stylised action brawler with premium visual readability. Characters look like elite hunters from a living city. Combat should feel sharp enough to sell every aura flare and weapon swing.

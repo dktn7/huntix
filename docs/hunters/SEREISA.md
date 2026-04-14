@@ -2,7 +2,8 @@
 
 > *You blinked. That's why you lost.*
 
-<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance or weapon without updating HUNTERS.md first -->
+<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
+<!-- Mixboard and animation prompts live in docs/VISUAL-DESIGN.md -->
 
 | Attribute | Value |
 |---|---|
@@ -20,23 +21,27 @@
 > **⚠️ Canonical design — read from HUNTERS.md before editing**
 
 ```
-Build:   Tall, lean, sharp-featured. Speed-first silhouette.
-Skin:    Pale Nordic
-Hair:    Platinum — short, practical, kept clean. Undercut.
-Eyes:    Light — sharp and focused
-Posture: Fencer's stance built into how she stands —
-         upright, deliberate, always balanced
-Clothing: Fitted athletic gear, fencing-inspired and streamlined.
-          Nothing restrictive. No heavy plate.
-Aura:    Bright yellow, white crackling edges.
-         Sparks at hands and feet. Lightning threads up the arms.
-         Crackles when she shifts weight.
-Weapon:  SINGLE lightning rapier — slender, one hand.
-         NOT twin blades. The single rapier keeps her silhouette
-         clean and aerodynamic. Permanently crackling with charge.
+Build:    Tall, lean, sharp-featured. Speed-first silhouette.
+Skin:     Pale Nordic
+Hair:     Platinum — short, practical undercut. Skin fade on sides,
+          top swept back. Moves with her.
+Eyes:     Light — sharp and focused
+Posture:  Fencer's stance — upright, deliberate, always balanced
+Clothing: Sleek fitted combat gear — dark charcoal and black.
+          Pale steel trim at collar and shoulders.
+          Fencing-inspired seam lines — nothing restrictive, nothing
+          that would slow her. Designed to move in.
+          Huntix H emblem at the left shoulder — pale steel inlay,
+          clean and minimal. Professional identity, not decoration.
+Weapon:   Single lightning rapier — right hand, slender, precise.
+          NOT twin blades. Permanently crackling yellow-white along
+          the full blade length.
+Aura:     Bright yellow with white crackling edges.
+          Sparks at hands and feet. Threads up the rapier blade.
+          Crackles when she shifts weight.
 ```
 
-**Visual note (from HUNTERS.md):** Her weapon should feel like speed and precision, not force. The single rapier keeps her silhouette clean and aerodynamic. Lightning trails on movement reinforce her speed identity.
+**Visual note:** The single rapier keeps her silhouette clean and aerodynamic. Lightning trails on movement reinforce her speed identity.
 
 ---
 
@@ -126,84 +131,3 @@ Treats every combat zone like a fencing bout — footwork, timing, distance mana
 - **Mobility** — dash cooldown reduced, chain shock gains one extra target
 - **Power** — slow duration increases, shocked enemies take bonus damage from all hunters
 - **Style** — yellow/white aura crackles, dashes leave persistent lightning trails on ground
-
----
-
-## Mixboard Prompt
-
-```
-Create a professional character design sheet for a 2D dark action-fantasy game.
-Divide into three vertical sections:
-- Left: front, side, back views (full body)
-- Centre: face portrait + single lightning rapier detail
-- Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
-
-SOLID GREEN background (#00FF00). 9:16. High resolution.
-Art direction: Solo Leveling (S-rank hunter, aura as identity, elite presence).
-Character readability: Castle Crashers (sharp readable silhouette, bold outlines, 2.5D angle).
-NOT chibi. NOT western cartoon. Stylised but grounded. No text. No UI.
-
-CHARACTER:
-British-Norwegian woman. Tall, lean, sharp-featured.
-Pale Nordic skin. Always balanced — fencer's posture built into how she stands.
-Light focused eyes.
-
-HAIR: Platinum white — natural Nordic near-white.
-Disconnected undercut — skin fade sides, top 6-8cm swept back to one side.
-Moves with her — reacts to speed. Lightning threads through hair at full aura.
-Individual strands lift with static charge at full Storm Surge.
-
-CLOTHING:
-Dark charcoal structured combat outfit — nothing restrictive.
-Pale steel trim at shoulders and collar. Fitted not armoured.
-Lightweight boots built for movement. Fencing-inspired clean lines.
-Huntix logo — angular H symbol — engraved at shoulder as agency insignia.
-
-WEAPON:
-SINGLE lightning rapier — one hand, right side.
-Slender, precise. Permanently crackling with electric charge along the blade.
-Yellow-white arc along the full length. Clean aerodynamic profile.
-NOT twin blades. One weapon. The rapier silhouette is her identity.
-
-AURA:
-Bright yellow with white crackling edges. Active, not subtle.
-Sparks at hands and feet. Lightning threads run up the arms.
-Crackles when she shifts weight.
-
-COLOUR PALETTE: Charcoal black, pale steel, bright yellow, white lightning arc,
-platinum hair as contrast.
-```
-
-## Grok Animation Prompts
-
-```
-IDLE:
-2D sidescroller. Dead Cells feel — coiled energy, precise micro-movements, no floaty motion.
-Character: tall pale Nordic woman, dark charcoal structured jacket,
-platinum undercut hair, SINGLE lightning rapier crackling yellow-white in right hand.
-Idle: weight slightly forward, rapier held low but live.
-Lightning arcs along blade constantly. Sparks drift from hand.
-Solo Leveling aura — electricity threads up the arm.
-3-second seamless loop. Green background. Fixed Castle Crashers 2.5D angle.
-
-LIGHT ATTACK (3-hit combo):
-Same character. Dead Cells — fastest combo on the roster.
-Fencing-style: thrust, parry-slash, full dash-through.
-Third hit: complete pass-through, lightning trail left behind.
-Yellow spark burst on each hit. Total combo under 0.6 seconds.
-Green background. Fixed 2.5D angle.
-
-DODGE — ELECTRIC DASH:
-Full forward dash through enemy space. Zero hesitation.
-Yellow-white electric trail persists 0.5 seconds.
-Slow particles on contact. 0.2 second duration.
-Green background. Fixed 2.5D angle.
-
-ULTIMATE — STORM SURGE:
-Solo Leveling escalation — speed as power.
-Aura explodes full yellow-white. She becomes a blur.
-Every dash shown as streaking lightning lines across screen.
-Body barely visible inside the storm. 6-second duration.
-2-second build before burst releases — then pure chaos.
-Green background. Fixed 2.5D angle.
-```

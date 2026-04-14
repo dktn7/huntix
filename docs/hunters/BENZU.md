@@ -3,6 +3,7 @@
 > *I don't dodge. I don't need to.*
 
 <!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
+<!-- Mixboard and animation prompts live in docs/VISUAL-DESIGN.md -->
 
 | Attribute | Value |
 |---|---|
@@ -20,16 +21,23 @@
 > **⚠️ Canonical design — read from HUNTERS.md before editing**
 
 ```
-Build:   Enormous. Built like architecture. Immovable.
-Skin:    Bronze-orange
-Hair:    Long dirty-blonde mane — thick, heavy, worn loose or tied back
-Jaw:     Carved. Heavy.
-Armour:  Heavy custom plate — deep red and black.
-         No manufacturer makes his size off the shelf.
-         Dented, repaired, still standing.
-Aura:    Deep red with gold fractures. Does not shimmer.
-         Pulses like heat building under stone.
-         Concentrated at the fists and boots.
+Build:    Enormous. Built like architecture. Immovable.
+Skin:     Bronze-orange
+Hair:     Long dirty-blonde mane — thick, heavy, worn loose or tied back.
+          Dark roots.
+Jaw:      Carved. Heavy.
+Clothing: Heavy custom combat gear — deep red and black.
+          No manufacturer makes his size off the shelf.
+          Thick reinforced pauldrons, broad chest layer, heavy dark boots.
+          Visibly worn — dented, repaired, still standing.
+          Huntix H emblem on chest — gate ore inlay, gold-orange.
+          Reads as the team mark of someone who has cleared a lot of gates.
+Weapon:   Stone-forged gauntlets — both fists and forearms to the elbow.
+          Dark stone with glowing gate ore veins — deep gold-orange.
+          Knuckles show impact damage.
+Aura:     Deep red with gold fractures. Does not shimmer.
+          Pulses like heat building under stone.
+          Concentrated at the fists and boots.
 ```
 
 **Visual note:** The dirty-blonde hair contrasts cleanly against his bronze-orange skin, letting the aura and sheer size carry the visual identity. He should always feel like the biggest and heaviest object in the room.
@@ -89,7 +97,7 @@ Every S-Rank evaluation board: "We have no protocol for this."
 
 > *"Take the hit. Then take everything else."*
 
-Pure attrition. Absorbs damage that would end other hunters, charges surge through punishment, releases it all at once. Doesn't outmanoeuvre enemies — outlasts them and then removes them from the situation entirely.
+Pure attrition. Absorbs damage that would end other hunters, charges surge through punishment, releases it all at once. Doesn't outmanoeuvre enemies — outlasts them and removes them from the situation entirely.
 
 ---
 
@@ -123,76 +131,4 @@ Pure attrition. Absorbs damage that would end other hunters, charges surge throu
 
 - **Survival** — health pool increases, mana regen from hits doubles
 - **Power** — seismic slam radius increases, stun duration extends
-- **Style** — red/gold aura blazes, shoulder charge leaves fire trail, armour visually upgrades each level
-
----
-
-## Mixboard Prompt
-
-```
-Create a professional character design sheet for a 2D dark action-fantasy game.
-Divide into three vertical sections:
-- Left: front, side, back views (full body)
-- Centre: face portrait + stone-forged gauntlet detail
-- Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
-
-SOLID GREEN background (#00FF00). 9:16. High resolution.
-Art direction: Solo Leveling (S-rank aura, raw power escalation, dramatic presence).
-Character readability: Castle Crashers (massive readable silhouette, bold outlines, 2.5D angle).
-NOT chibi. NOT western cartoon. Stylised but grounded. No text. No UI.
-
-CHARACTER:
-Brazilian man. Enormous broad build — built like architecture, immovable.
-Bronze-orange skin. Long dirty-blonde mane — thick, heavy, loose or roughly tied.
-Heavy carved jaw. Takes up more space than anyone else on the roster. Intentionally.
-
-CLOTHING:
-Heavy custom plate armour — deep red and black.
-Visibly custom — no off-the-shelf size. Thick pauldrons.
-Reinforced chest plate with gold fracture line detail.
-Heavy dark boots. Armour dented, repaired, still standing.
-
-WEAPON:
-Stone-forged gauntlets — both fists and forearms to the elbow.
-Dark stone reinforced with glowing gate ore veins — deep gold-orange.
-Hands the size of shields. Knuckles show impact damage.
-
-AURA:
-Deep red with gold fractures. Does not shimmer.
-Pulses rhythmically — heat building under stone.
-Concentrated at fists and boots. Intensifies before impact.
-
-COLOUR PALETTE: Deep red, ember black, gold fracture glow, bronze-orange skin,
-dirty-blonde hair as contrast element.
-```
-
-## Grok Animation Prompts
-
-```
-IDLE:
-2D sidescroller. Dead Cells feel — weight is everything, no floaty motion.
-Character: enormous bronze-orange-skinned man, long dirty-blonde hair,
-deep red-black heavy plate armour, stone gauntlets with gold gate-ore glow.
-Idle: arms at sides or crossed, breathing slow and heavy.
-Gold aura pulses in gauntlets once every 2 seconds.
-Solo Leveling aura — power radiates without effort.
-3-second seamless loop. Green background. Fixed Castle Crashers 2.5D angle.
-
-LIGHT ATTACK (3-hit combo):
-Same character. Dead Cells — slow wind-up, devastating release.
-Wide hook, overhead slam, ground punch. Shockwave ripple on each hit.
-Hitstop 1-2 frames on each impact. Gold aura flares on contact.
-Green background. Fixed 2.5D angle.
-
-DODGE — SHOULDER CHARGE:
-Lowers head, drives forward shoulder-first. 1 metre distance.
-Gold-red aura flares on contact. 0.4 second duration. Not elegant. Effective.
-Green background. Fixed 2.5D angle.
-
-ULTIMATE — TITAN'S WRATH:
-Solo Leveling dramatic escalation — maximum impact.
-Raises both fists overhead slowly — aura blazes full gold-red.
-Slams both gauntlets into ground. Shockwave cracks radiate full screen.
-Ground splits visibly. 2-second cinematic build.
-Green background. Fixed 2.5D angle.
-```
+- **Style** — red/gold aura blazes, shoulder charge leaves fire trail, gear visually upgrades each level
