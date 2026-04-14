@@ -44,7 +44,7 @@ Every zone follows the same structure:
 
 ## Zone 1 — City Breach
 
-**Boss:** Fire Bruiser  
+**Boss:** VRAEL (Fire Bruiser)
 **Theme:** Ruined urban street. Entry zone. Teaches movement and dodging.
 
 | Element | Details |
@@ -66,7 +66,7 @@ Every zone follows the same structure:
 
 ## Zone 2 — Ruin Den
 
-**Boss:** Earth Tank  
+**Boss:** ZARTH (Earth Tank)
 **Theme:** Underground utility zone. Tighter, more dangerous. Teaches spacing and item use.
 
 | Element | Details |
@@ -88,7 +88,7 @@ Every zone follows the same structure:
 
 ## Zone 3 — Shadow Core
 
-**Boss:** Rogue Dabik  
+**Boss:** KIBAD (Rogue Angel)
 **Theme:** Deep arcane corruption zone. Most dramatic magic. Teaches teamwork and synergies.
 
 | Element | Details |
@@ -104,13 +104,13 @@ Every zone follows the same structure:
 **Visual notes:**
 - Most visually dramatic zone
 - Aura effects intensify — player auras glow brighter against the dark world
-- Boss (Rogue Dabik) has black-purple spread that temporarily dims the scene
+- Boss (Kibad) enters with a blinding white-gold radiance that temporarily overwhelms the dark scene — stark contrast against the void
 
 ---
 
 ## Zone 4 — Thunder Spire
 
-**Boss:** Raiju  
+**Boss:** THYXIS (Thunder Beast)
 **Theme:** Elevated storm zone. Final zone. Full hunter synergies required.
 
 | Element | Details |
@@ -126,7 +126,7 @@ Every zone follows the same structure:
 **Visual notes:**
 - Lightning flash events (random ambient, every 8–15s) — quick full-scene brightness spike
 - Blue/white colour palette — clean contrast for final boss readability
-- Boss Raiju fur crackles with active lightning — most visually complex enemy in game
+- Boss Thyxis fur crackles with active lightning — most visually complex enemy in game. Shifts from pale blue to blinding white in Phase 3.
 
 ---
 
