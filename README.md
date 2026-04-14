@@ -296,19 +296,19 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ## 📅 Build Plan
 
-> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Started: 15 Apr 2026 · 16 days to ship  
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Started: 13 Apr 2026 · 18 days to ship  
 > Legend: ✅ Complete · 🔄 In Progress · ⬜ Locked  
 > Auto-updated by GitHub Actions on every push to `src/`
 
 <!-- PHASE-TABLE-START -->
 | Phase | Dates | Focus | Progress | Milestone |
 |-------|-------|-------|----------|-----------|
-| ✅ **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
-| ✅ **2 — Enemy AI & Juice** | Apr 18–20 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
-| 🔄 **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 12%` | 4P hub + combat |
-| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `█░░░░ 20%` | Full run clearable |
-| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `█░░░░ 20%` | Buy + upgrade loop |
-| ⬜ **6 — Polish & Deploy** | Apr 30 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `░░░░░ 0%` | 🚢 Ship it |
+| ✅ **1 — Core Engine** | Apr 13–15 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
+| ✅ **2 — Enemy AI & Juice** | Apr 16–18 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
+| 🔄 **3 — 4 Hunters & Co-op** | Apr 19–21 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 12%` | 4P hub + combat |
+| ⬜ **4 — Zones & Bosses** | Apr 22–24 | 3 zones, portals, boss phases, Essence drops, screen transitions | `█░░░░ 20%` | Full run clearable |
+| ⬜ **5 — Hub, Shop & HUD** | Apr 25–27 | Shop, weapons, levelling, HUD, combo UI | `█░░░░ 20%` | Buy + upgrade loop |
+| ⬜ **6 — Polish & Deploy** | Apr 28 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `░░░░░ 0%` | 🚢 Ship it |
 <!-- PHASE-TABLE-END -->
 
 ---
