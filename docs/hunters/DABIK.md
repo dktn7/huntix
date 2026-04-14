@@ -1,132 +1,167 @@
-# 🌑 DABIK | S-RANK SHADOW STRIKER
+<div align="center">
+
+# 🌑 DABIK
+### SHADOW STRIKER — S-RANK
 > *"Silence is the last thing you hear."*
 
----
+![Aura](https://img.shields.io/badge/Element-Shadow-1a0033?style=flat-square&labelColor=000) ![Status](https://img.shields.io/badge/Status_Effect-Bleed-4B0082?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-Caribbean--African-2d002d?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
 
-## 🪪 Identity
-| | |
-|:---|:---|
-| **Class** | Shadow Striker |
-| **Rank** | S-Class |
-| **Origin** | Caribbean-African |
-| **Element** | Shadow |
-| **Status Effect** | Bleed |
-| **Aura** | Black with deep purple edges — spreads like a shadow at dusk |
+</div>
 
 ---
 
-## 🧬 Physical Description
+## 🌑 Physical Profile
+
 | Attribute | Detail |
 |:---|:---|
-| **Build** | Lean and controlled — moves with an economy of motion that makes everyone else look wasteful |
+| **Build** | Lean, controlled — economy of motion that makes everyone else look wasteful |
 | **Skin** | Dark |
 | **Hair** | Close-cut |
 | **Eyes** | Don't miss anything |
-| **Clothing** | Minimal armour — dark fitted layers, nothing that catches light |
-| **Aura State** | Doesn't flare. Spreads like a shadow at dusk. Darkens with each upgrade |
+| **Clothing** | Minimal armour — dark fitted layers. Nothing that catches light. |
 | **Weapon** | Twin curved daggers — lightweight, unmarked, no grip tape. Worn from use, not decoration. |
+| **Aura** | Black with deep purple edges — doesn't flare. Spreads like a shadow at dusk. |
+
+> *Completely still until he isn't.*
+> *The aura doesn't announce him. It arrives after he does.*
+
+---
+
+## 🗡️ Weapon — Twin Curved Daggers
+
+```
+  ITEM CLASS : Paired Short Blades
+  MATERIAL   : Unknown alloy — no markings, no origin stamp
+  CONDITION  : Worn from use. Not decoration.
+  CARRIED    : No sheath. No ceremony.
+  FUNCTION   : Precision bleed application at close range.
+               Not built to fight. Built to end.
+  NOTE       : He has never once sharpened them in front of anyone.
+               They are always sharp.
+```
 
 ---
 
 ## 📊 Combat Vitals
+
 | Attribute | Value | Notes |
 |:---|:---|:---|
-| **Health** | 80 | Low — punishes mistakes |
-| **Mana** | 120 | High — built around spell use |
-| **Mana Regen** | 8/sec + 5 per light hit | Rewards aggressive play |
+| **Health** | `80` | Low — every mistake costs |
+| **Mana** | `120` | High — built around spell use |
+| **Mana Regen** | `8/sec + 5 per light hit` | Rewards aggressive play |
 | **Surge** | Builds on kills | Clean play charges ultimate faster |
-| **Move Speed** | 9/10 | Fastest hunter |
-| **Attack Speed** | 9/10 | Rapid light combos |
-| **Damage** | 6/10 | Low per hit — devastating per combo |
-| **Defense** | 3/10 | Frail — must dodge |
-| **Dodge** | Blink | Teleports behind nearest enemy — low cooldown |
-
----
-
-## ⚔️ Weapon
-**Twin Curved Daggers**
-> Lightweight, unmarked, no grip tape. Worn from use, not decoration.
-> No enchantment. No ceremony. Just precision made physical.
-> The bleed they apply isn't magic — it's methodology.
+| **Move Speed** | `9/10` | 🔝 Fastest hunter |
+| **Attack Speed** | `9/10` | Rapid light combos |
+| **Damage** | `6/10` | Low per hit — devastating per combo |
+| **Defense** | `3/10` | Frail — dodge or die |
+| **Dodge** | Blink | Teleports behind nearest enemy. Low CD. |
 
 ---
 
 ## 🌑 Spell Mastery
-| Tier | Name | Mana Cost | Effect |
+
+| Tier | Name | Cost | Effect |
 |:---|:---|:---|:---|
-| **Minor** | Shadow Step | 15 mana | Blinks behind target — next hit applies bleed |
-| **Advanced** | Shadow Clone | 40 mana | Decoy taunts enemies for 3 seconds |
-| **Ultimate** | Monarch's Domain | Full Surge | All enemies frozen 4s — Dabik enters invisible rapid-strike mode |
+| **Minor** | `Shadow Step` | 15 mana | Blink behind target — next hit applies bleed |
+| **Advanced** | `Shadow Clone` | 40 mana | Decoy taunts enemies for 3s |
+| **Ultimate** | `Monarch's Domain` | Full Surge | All enemies frozen 4s — Dabik invisible, rapid-strike mode |
 
----
-
-## 🔄 Status Effect
-**Bleed** — Applied on light attacks and Shadow Step. Stacks, ticks over time.
+> 🩸 **Bleed** — Applied on light attacks and Shadow Step. Stacks. Ticks. Silent.
 
 ### 🔗 Synergies
-| Combo | Partner | Effect |
+
+| Combo | With | Effect |
 |:---|:---|:---|
-| Bleed + Slow | Sereisa | Slowed enemies take amplified bleed damage |
-| Slow + Blink | Sereisa | Free backstab on shocked target |
+| Bleed + Slow | **Sereisa** | Slowed enemies take amplified bleed damage |
+| Slow + Blink | **Sereisa** | Free backstab on shocked target |
 
 ---
 
-## 🧪 Upgrade Paths
-| Path | Unlocks |
+## ⬆️ Upgrade Paths
+
+| Path | What Sharpens |
 |:---|:---|
-| **Power** | Bleed stacks faster — +2 combo hits |
-| **Mobility** | Shadow Step cooldown halved — blink range doubled |
-| **Style** | Aura darkens, clone fights back, silent casting |
+| **Power** 🩸 | Bleed stacks faster — +2 combo hits |
+| **Mobility** 💨 | Shadow Step CD halved — blink range doubled |
+| **Style** ✨ | Aura darkens. Clone fights back. Silent casting. |
 
 ---
 
-## 📖 Field Record — Backstory
+## 📋 Field Record
+
 ```
-SUBJECT: DABIK
-CLEARANCE: S-CLASS
-FILE TYPE: GATE AUTHORITY FIELD RECORD
+╔══════════════════════════════════════════════════════════╗
+║     GATE AUTHORITY — SUBJECT FILE                        ║
+║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
+╚══════════════════════════════════════════════════════════╝
 
-Origin: Small island — Caribbean Sea / Atlantic. Family roots: West Africa.
-Heritage: Grandfather was a tracker — forests, animals, people. Dabik inherited the instinct.
+  SUBJECT      : DABIK
+  ELEMENT      : Shadow
+  ORIGIN       : Caribbean-African — island between Caribbean Sea & Atlantic
 
-Pre-Awakening: Recruited by private intelligence firms at age 19.
-               Gates opened. That world became irrelevant.
+  PRE-AWAKENING
+  ─────────────
+  Heritage     : Grandfather was a tracker. Forests, animals, people.
+                 Dabik inherited the instinct.
+  Age 19       : Recruitment offers — private intelligence firms.
+                 Gates opened. That world became irrelevant.
 
-First Gate Entry: Solo. C-Rank on a dare.
-Exit Rank: A-Rank.
-Witnesses: None.
-Explanation given: "The monsters had been loud."
+  FIRST GATE ENTRY
+  ────────────────
+  Rank at entry : C-Class
+  Entry method  : Solo. On a dare.
+  Exit rank     : A-Class.
+  Witnesses     : None.
+  Statement     : "The monsters had been loud."
 
-S-Rank Path: Not through strength or magic.
-             Through principle — the most dangerous thing is what you never see coming.
+  S-RANK PATH
+  ───────────
+  Method       : Not strength. Not magic.
+                 Principle — the most dangerous thing is what you
+                 never see coming.
 
-Status: ACTIVE — S-RANK FIELD OPERATIVE
+  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
 ```
 
 ---
 
 ## 🧠 Personality
-> Minimal. Observes everything, says very little. Not cold — just precise.
-> In the field he is completely still until he isn't.
-> Occasionally dry humour surfaces, usually at the worst moments.
-> Trusted completely because he has never once needed to be told something twice.
+
+> *Minimal. Observes everything, says very little.*
+> *Not cold — just precise.*
+> *Dry humour surfaces at the worst moments.*
+> *Trusted completely because he has never once needed to be told something twice.*
 
 **Combat Philosophy:**
 > *"Don't fight the enemy. End the encounter."*
 
-> Every move has a purpose. He doesn't combo for the sake of it.
-> He bleeds targets methodically, reads openings, and closes fights before they become fights.
-> His blink isn't a flashy dodge. It's the last step before the last hit.
+> He doesn't combo for the sake of it.
+> He bleeds targets methodically, reads openings,
+> and closes fights before they become fights.
+> The blink isn't a flashy dodge — it's the last step before the last hit.
 
 ---
 
 ## 👥 Team Dynamic
-| Hunter | Relationship |
+
+| Hunter | Field Notes |
 |:---|:---|
-| **Benzu** | Mutual respect — few words needed |
-| **Sereisa** | Quiet rivalry — genuine trust. Running debate about who is actually faster |
-| **Vesol** | Professional alignment — similar precision |
+| 🔴 **Benzu** | Mutual respect — few words needed |
+| ⚡ **Sereisa** | Quiet rivalry — genuine trust. Neither will admit who's faster. |
+| 🔥 **Vesol** | Professional alignment — similar precision |
 
 ---
 
-*← [Back to Hunters Overview](../HUNTERS.md)*
+## 🎮 Controls
+
+| Action | ⌨️ Keys | 🎮 Controller |
+|:---|:---|:---|
+| Move | `WASD` | Left Stick |
+| Light Attack | `LMB` | X / Square |
+| Heavy Attack | `RMB` | Y / Triangle |
+| Dodge — Blink | `LShift` | B / Circle |
+| Spell | `E` tap/hold | RB / R1 |
+
+---
+
+*← [Back to All Hunters](../HUNTERS.md)*

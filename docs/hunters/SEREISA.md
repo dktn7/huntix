@@ -1,135 +1,169 @@
-# ⚡ SEREISA | S-RANK STORM CHASER
+<div align="center">
+
+# ⚡ SEREISA
+### STORM CHASER — S-RANK
 > *"You blinked. That's why you lost."*
 
----
+![Aura](https://img.shields.io/badge/Element-Lightning-FFD700?style=flat-square&labelColor=1a1a00) ![Status](https://img.shields.io/badge/Status_Effect-Slow-yellow?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-British--Nordic-4682B4?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
 
-## 🪪 Identity
-| | |
-|:---|:---|
-| **Class** | Storm Chaser |
-| **Rank** | S-Class |
-| **Origin** | European — British-Nordic |
-| **Element** | Lightning |
-| **Status Effect** | Slow (electric shock) |
-| **Aura** | Bright yellow with white crackling edges — sparks when she shifts her weight |
+</div>
 
 ---
 
-## 🧬 Physical Description
+## ⚡ Physical Profile
+
 | Attribute | Detail |
 |:---|:---|
-| **Height** | Tall, lean |
-| **Build** | Sharp-featured — upright, deliberate, always balanced |
+| **Build** | Tall, lean, sharp-featured — upright, deliberate, always balanced |
 | **Skin** | Pale — Nordic colouring |
-| **Hair** | Platinum — kept short and practical |
-| **Eyes** | Light |
-| **Clothing** | Fencer's posture — structured, nothing restrictive |
-| **Aura State** | Crackles visibly around hands and feet — persistent lightning trails at full Style upgrade |
+| **Hair** | Platinum — short, practical |
+| **Eyes** | Light, focused |
+| **Clothing** | Structured — nothing restrictive. Fencer's posture built in. |
 | **Weapon** | Twin electro-blades — short, curved, permanently humming with charge |
+| **Aura** | Bright yellow with white crackling edges — sparks visibly at hands and feet when she shifts weight |
+
+> *The fastest thing in any room she enters.*
+> *She knows it. Everyone else finds out.*
+
+---
+
+## ⚡ Weapon — Twin Electro-Blades
+
+```
+  ITEM CLASS : Paired Short Blades
+  MATERIAL   : Modified fencing blades — post-awakening lightning channelling
+  CONDITION  : Permanently active. Hum audible at 3 metres.
+  FUNCTION   : Precision strikes. Shock on contact. Slow applied.
+               Every hit controls distance.
+               Every dash is punishment.
+  NOTE       : Originally competition fencing equipment.
+               Still the most precise weapons on the roster.
+               Just electrified.
+```
 
 ---
 
 ## 📊 Combat Vitals
+
 | Attribute | Value | Notes |
 |:---|:---|:---|
-| **Health** | 100 | Medium — survives through movement |
-| **Mana** | 100 | Balanced pool |
-| **Mana Regen** | 6/sec + 8 per dash through enemy | Rewards aggressive dashing |
+| **Health** | `100` | Medium — survives through movement |
+| **Mana** | `100` | Balanced pool |
+| **Mana Regen** | `6/sec + 8 per dash through enemy` | Rewards aggressive dashing |
 | **Surge** | Builds on hit streaks | Keep attacking without getting hit |
-| **Move Speed** | 8/10 | Second fastest |
-| **Attack Speed** | 8/10 | Fast combos, chain dashes |
-| **Damage** | 7/10 | Medium-high — shock adds bonus |
-| **Defense** | 5/10 | Medium — relies on not getting hit |
-| **Dodge** | Electric Dash | Dashes through enemies — applies slow on contact. Medium cooldown |
-
----
-
-## ⚔️ Weapon
-**Twin Electro-Blades**
-> Short, curved, permanently humming with electric charge.
-> Originally fencing blades — modified post-awakening to channel lightning.
-> Every hit slows. Every dash punishes.
+| **Move Speed** | `8/10` | Second fastest |
+| **Attack Speed** | `8/10` | Fast combos, chain dashes |
+| **Damage** | `7/10` | Medium-high — shock adds bonus |
+| **Defense** | `5/10` | Relies on not getting hit |
+| **Dodge** | Electric Dash | Dashes through enemies — applies slow on contact. Medium CD. |
 
 ---
 
 ## ⚡ Spell Mastery
-| Tier | Name | Mana Cost | Effect |
+
+| Tier | Name | Cost | Effect |
 |:---|:---|:---|:---|
-| **Minor** | Electric Dart | 15 mana | Ranged shock projectile — slows enemy 40% for 2s |
-| **Advanced** | Chain Shock | 45 mana | Lightning chains between up to 4 enemies — all slowed |
-| **Ultimate** | Storm Surge | Full Surge | Untouchable for 6s — every dash deals damage, speed doubles |
+| **Minor** | `Electric Dart` | 15 mana | Ranged shock projectile — slows enemy 40% for 2s |
+| **Advanced** | `Chain Shock` | 45 mana | Lightning chains between up to 4 enemies — all slowed |
+| **Ultimate** | `Storm Surge` | Full Surge | Untouchable 6s — every dash deals damage, speed doubles |
 
----
-
-## 🔄 Status Effect
-**Slow** — Electric shock applied on dashes and Electric Dart. Reduces enemy movement/attack speed.
+> ⚡ **Slow** — Electric shock applied on dashes and Electric Dart. Reduces enemy speed/attack rate.
 
 ### 🔗 Synergies
-| Combo | Partner | Effect |
+
+| Combo | With | Effect |
 |:---|:---|:---|
-| Bleed + Slow | Dabik | Slowed enemies take amplified bleed damage |
-| Slow + Blink | Dabik | Free backstab on shocked target |
+| Bleed + Slow | **Dabik** | Slowed enemies take amplified bleed damage |
+| Slow + Blink | **Dabik** | Free backstab on shocked target |
 
 ---
 
-## 🧪 Upgrade Paths
-| Path | Unlocks |
+## ⬆️ Upgrade Paths
+
+| Path | What Accelerates |
 |:---|:---|
-| **Mobility** | Dash cooldown reduced — Chain Shock +1 target |
-| **Power** | Slow duration up — shocked enemies take bonus damage from all hunters |
-| **Style** | Aura crackles constantly — dashes leave persistent lightning trails |
+| **Mobility** 💨 | Dash CD reduced — Chain Shock hits +1 target |
+| **Power** ⚡ | Slow duration up — shocked enemies take bonus damage from all hunters |
+| **Style** ✨ | Aura crackles constantly — dashes leave persistent lightning trails |
 
 ---
 
-## 📖 Field Record — Backstory
+## 📋 Authority Record
+
 ```
-SUBJECT: SEREISA
-CLEARANCE: S-CLASS
-FILE TYPE: GATE AUTHORITY AWAKENING RECORD
+╔══════════════════════════════════════════════════════════╗
+║     GATE AUTHORITY — SUBJECT FILE                        ║
+║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
+╚══════════════════════════════════════════════════════════╝
 
-Origin: London, UK. British mother, Norwegian father — both academics.
-Background: National-level fencer. Under-21 championships. Mid-PhD (Sports Science).
+  SUBJECT      : SEREISA
+  ELEMENT      : Lightning
+  ORIGIN       : London, UK — British mother, Norwegian father
 
-Awakening Event:
-  Charity gate-clearing event. Civilian observation zone.
-  Barrier failed.
-  Sereisa moved before any professional hunter did.
-  Crossed 30 metres of active combat zone.
-  Pulled 2 people clear before response team arrived.
-  Footage blurred. Speed unclocked on camera.
+  PRE-AWAKENING
+  ─────────────
+  Education    : Sports Science (PhD — incomplete at awakening)
+  Athletics    : National-level fencer.
+                 Under-21 championships. Represented country.
 
-S-Rank Progression: Under 18 months.
-Record: Fastest S-Rank progression in European gate authority history.
-Status of Record: STILL STANDS.
+  AWAKENING EVENT
+  ───────────────
+  Location     : Charity gate-clearing event. Civilian zone.
+  Incident     : Barrier failed.
+  Response     : Moved before any professional hunter.
+                 Crossed 30m of active combat zone.
+                 Pulled 2 people clear before response team arrived.
+  Footage      : Blurred. Speed unclocked on camera.
 
-Active Status: ACTIVE — S-RANK FIELD OPERATIVE
+  S-RANK RECORD
+  ─────────────
+  Progression  : S-Class in under 18 months.
+  Record       : Fastest S-Rank progression in EU gate authority history.
+  Status       : STILL STANDS.
+
+  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
 ```
 
 ---
 
 ## 🧠 Personality
-> Competitive, precise, occasionally insufferable about both.
-> Has an answer for everything and is usually right, which makes it worse.
-> Genuinely warm underneath — expresses care through showing up faster than anyone else.
-> Has a running rivalry with Dabik about who is actually faster that neither will ever formally resolve.
+
+> *Competitive, precise, occasionally insufferable about both.*
+> *Has an answer for everything. Usually right. Which makes it worse.*
+> *Genuinely warm underneath — care expressed by showing up faster than anyone else.*
+> *Running rivalry with Dabik on who is actually faster.*
+> *Neither will ever formally resolve it.*
 
 **Combat Philosophy:**
 > *"Control the distance. Control the fight."*
 
-> Treats every combat zone like a fencing bout — footwork, timing, distance management.
+> Treats every combat zone like a fencing bout.
+> Footwork. Timing. Distance management.
 > Never stands where an attack expects her to be.
-> Her electric dash isn't just repositioning — it's punishment.
-> Shocks targets to slow them, then makes them pay for being slow.
+> Shocks to slow — then makes them pay for being slow.
 
 ---
 
 ## 👥 Team Dynamic
-| Hunter | Relationship |
+
+| Hunter | Field Notes |
 |:---|:---|
-| **Dabik** | Competitive — would die for him. Ongoing speed rivalry |
-| **Benzu** | Loud friendship — opposite energy |
-| **Vesol** | Intellectual sparring — deep mutual respect |
+| 🌑 **Dabik** | Competitive — would die for him. Speed rivalry ongoing. |
+| 🔴 **Benzu** | Loud friendship — opposite energy |
+| 🔥 **Vesol** | Intellectual sparring — deep mutual respect |
 
 ---
 
-*← [Back to Hunters Overview](../HUNTERS.md)*
+## 🎮 Controls
+
+| Action | ⌨️ Keys | 🎮 Controller |
+|:---|:---|:---|
+| Move | `WASD` | Left Stick |
+| Light Attack | `LMB` | X / Square |
+| Heavy Attack | `RMB` | Y / Triangle |
+| Dodge — Electric Dash | `LShift` | B / Circle |
+| Spell | `E` tap/hold | RB / R1 |
+
+---
+
+*← [Back to All Hunters](../HUNTERS.md)*

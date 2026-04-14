@@ -1,134 +1,170 @@
-# 🟥 BENZU | S-RANK IRON BREAKER
+<div align="center">
+
+# 🔴 BENZU
+### IRON BREAKER — S-RANK
 > *"I don't dodge. I don't need to."*
 
----
+![Aura](https://img.shields.io/badge/Element-Thunder%2FEarth-8B0000?style=flat-square) ![Status](https://img.shields.io/badge/Status_Effect-Stun-DAA520?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-Brazilian-B22222?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
 
-## 🪪 Identity
-| | |
-|:---|:---|
-| **Class** | Iron Breaker |
-| **Rank** | S-Class |
-| **Origin** | South American — Brazilian |
-| **Element** | Thunder / Earth |
-| **Status Effect** | Stun |
-| **Aura** | Deep red with gold fractures — pulses like something about to break through the ground |
+</div>
 
 ---
 
-## 🧬 Physical Description
+## 🪨 Physical Profile
+
 | Attribute | Detail |
 |:---|:---|
 | **Build** | Enormous — built like architecture |
 | **Skin** | Dark brown |
-| **Hair** | Shaved head |
+| **Hair** | Shaved |
 | **Jaw** | Looks carved |
-| **Armour** | Heavy plate — custom. No manufacturer makes his size off the shelf |
-| **Aura State** | Doesn't shimmer — pulses deep red and gold. Blazes at full Surge |
+| **Armour** | Heavy plate — custom. No manufacturer makes his size off the shelf. |
 | **Weapon** | Stone-forged gauntlets reinforced with gate ore. Hands the size of shields. |
+| **Aura** | Deep red with gold fractures — doesn't shimmer. Pulses. Like something about to break through the ground. |
+
+> *When he walks into a zone, enemies track him first.*
+> *That's the point.*
+
+---
+
+## ✊ Weapon — Stone-Forged Gauntlets
+
+```
+  ITEM CLASS : Heavy Gauntlets
+  MATERIAL   : Stone-forged alloy — reinforced with recovered gate ore
+  SIZE       : Custom fabricated. No standard mould exists.
+  FUNCTION   : Concussive stun on impact. Thunder energy discharge
+               on heavy hits. No blade needed.
+               He is the weapon.
+  CONDITION  : Dented. Repaired. Still standing.
+  NOTE       : The gate ore conducts his aura outward on every slam.
+               Enemies stop moving. That's the intended outcome.
+```
 
 ---
 
 ## 📊 Combat Vitals
+
 | Attribute | Value | Notes |
 |:---|:---|:---|
-| **Health** | 160 | Highest in roster |
-| **Mana** | 70 | Low — spells are slow and costly |
-| **Mana Regen** | 4/sec + 10 per hit taken | Rewards staying in danger |
-| **Surge** | Builds on damage taken | Absorb punishment to charge ultimate |
-| **Move Speed** | 4/10 | Slowest hunter |
-| **Attack Speed** | 3/10 | Slow, devastating swings |
-| **Damage** | 10/10 | Highest single-hit damage |
-| **Defense** | 9/10 | Can absorb multiple hits |
-| **Dodge** | Shoulder Charge | Short forward burst — staggers enemies hit. Low range |
+| **Health** | `160` | 🔝 Highest in roster |
+| **Mana** | `70` | Low — spells are slow and costly |
+| **Mana Regen** | `4/sec + 10 per hit taken` | Rewards staying in danger |
+| **Surge** | Builds on damage taken | Absorb punishment — release everything |
+| **Move Speed** | `4/10` | Slowest hunter — doesn't matter |
+| **Attack Speed** | `3/10` | Slow, devastating swings |
+| **Damage** | `10/10` | 🔝 Highest single-hit damage |
+| **Defense** | `9/10` | Absorbs multiple hits |
+| **Dodge** | Shoulder Charge | Short forward burst — staggers enemies on contact. Low range. |
 
 ---
 
-## ⚔️ Weapon
-**Stone-Forged Gauntlets**
-> Reinforced with gate ore recovered from cleared dungeons.
-> Hands the size of shields. No blade needed — he is the weapon.
-> The gauntlets conduct thunder energy on heavy hits, releasing concussive stun bursts on impact.
+## 💥 Spell Mastery
 
----
-
-## 🟥 Spell Mastery
-| Tier | Name | Mana Cost | Effect |
+| Tier | Name | Cost | Effect |
 |:---|:---|:---|:---|
-| **Minor** | Shield Bash | 20 mana | Short range stun — interrupts enemy attacks |
-| **Advanced** | Seismic Slam | 50 mana | Leaps and slams — shockwave knocks back all nearby |
-| **Ultimate** | Titan's Wrath | Full Surge | Full screen ground shatter — all enemies stunned 5s, Benzu takes zero damage during |
+| **Minor** | `Shield Bash` | 20 mana | Short range stun — interrupts enemy attacks |
+| **Advanced** | `Seismic Slam` | 50 mana | Leaps and slams — shockwave knocks back all nearby |
+| **Ultimate** | `Titan's Wrath` | Full Surge | Full-screen ground shatter — all enemies stunned 5s. Benzu takes zero damage during. |
 
----
-
-## 🔄 Status Effect
-**Stun** — Applied on heavy hits and Shield Bash. Interrupts enemy actions.
+> ⚡ **Stun** — Applied on heavy hits and Shield Bash. Stops enemies cold.
 
 ### 🔗 Synergies
-| Combo | Partner | Effect |
+
+| Combo | With | Effect |
 |:---|:---|:---|
-| Stun + Wall | Vesol | Stunned enemies trapped inside Flame Wall |
-| Burn + Slam | Vesol | Burning enemies take bonus stagger on Seismic Slam |
+| Stun + Wall | **Vesol** | Stunned enemies locked inside Flame Wall |
+| Burn + Slam | **Vesol** | Burning targets take bonus stagger on Seismic Slam |
 
 ---
 
-## 🧪 Upgrade Paths
-| Path | Unlocks |
+## ⬆️ Upgrade Paths
+
+| Path | What Gets Heavier |
 |:---|:---|
-| **Survival** | Health pool up — mana regen from hits doubles |
-| **Power** | Seismic Slam radius up — stun extends |
-| **Style** | Aura blazes, shoulder charge leaves fire trail, armour upgrades visually each level |
+| **Survival** 🛡️ | Health pool up — mana regen from hits doubles |
+| **Power** 💥 | Seismic Slam radius up — stun extends |
+| **Style** ✨ | Aura blazes. Shoulder charge leaves fire trail. Armour upgrades visually each level. |
 
 ---
 
-## 📖 Field Record — Backstory
+## 📋 Field Record
+
 ```
-SUBJECT: BENZU
-CLEARANCE: S-CLASS
-FILE TYPE: GATE AUTHORITY FIELD RECORD
+╔══════════════════════════════════════════════════════════╗
+║     GATE AUTHORITY — SUBJECT FILE                        ║
+║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
+╚══════════════════════════════════════════════════════════╝
 
-Origin: Rio de Janeiro, Brazil.
-Background: Construction worker from age 15 — cranes, foundations, demolition.
+  SUBJECT      : BENZU
+  ELEMENT      : Thunder / Earth
+  ORIGIN       : Rio de Janeiro, Brazil
 
-Pre-Awakening: Drafted into emergency gate-clearing teams.
-               Hunters needed people not afraid of collapsing structures.
+  PRE-AWAKENING
+  ─────────────
+  Background   : Construction worker from age 15.
+                 Cranes. Foundations. Demolition.
+  Drafted      : Emergency gate-clearing teams.
+                 Hunters needed people not afraid of
+                 collapsing structures.
 
-Awakening Event:
-  Gate boss pinned entire team.
-  Benzu picked up rubble — size of a car door.
-  Hit it until it stopped moving.
-  The awakening just made that official.
+  AWAKENING EVENT
+  ───────────────
+  Incident     : Gate boss pinned entire team.
+  Action taken : Picked up rubble — size of a car door.
+                 Hit it until it stopped moving.
+  Assessment   : "The awakening just made that official."
+  Board note   : "We have no protocol for this."
 
-Evaluation Board Note: "We have no protocol for this."
+  FIELD RECORD
+  ────────────
+  Rank path    : Not talent.
+                 Impossible to stop.
 
-Rank Path: Not talent. Impossible to stop.
-
-Status: ACTIVE — S-RANK FIELD OPERATIVE
+  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
 ```
 
 ---
 
 ## 🧠 Personality
-> Direct, warm, occasionally terrifying. The team's anchor in every sense.
-> Laughs loudly, holds grudges never, hits things extremely hard.
-> Has zero patience for strategy meetings but perfect instinct in the field.
-> Protective of his team in a way that borders on immovable.
+
+> *Direct, warm, occasionally terrifying.*
+> *The team's anchor in every sense.*
+> *Laughs loudly. Holds grudges never. Hits things extremely hard.*
+> *Zero patience for strategy meetings.*
+> *Perfect instinct in the field.*
 
 **Combat Philosophy:**
 > *"Take the hit. Then take everything else."*
 
-> Pure attrition. Absorbs damage that would end other hunters.
-> Charges his surge through punishment — then releases it all at once.
-> Doesn't need to outmanoeuvre enemies. He outlasts them and removes them entirely.
+> Pure attrition.
+> He absorbs what would end other hunters.
+> Charges surge through punishment — releases it all at once.
+> Doesn't outmanoeuvre enemies. He outlasts them.
+> Then removes them from the situation entirely.
 
 ---
 
 ## 👥 Team Dynamic
-| Hunter | Relationship |
+
+| Hunter | Field Notes |
 |:---|:---|
-| **Dabik** | Trusts completely — mutual respect, few words needed |
-| **Sereisa** | Loud friendship — opposite energy |
-| **Vesol** | Fond of him, won't say so. Affectionate exasperation |
+| 🌑 **Dabik** | Trusts completely — mutual respect, few words |
+| ⚡ **Sereisa** | Loud friendship — opposite energy |
+| 🔥 **Vesol** | Fond of her, won't say so. Affectionate exasperation. |
 
 ---
 
-*← [Back to Hunters Overview](../HUNTERS.md)*
+## 🎮 Controls
+
+| Action | ⌨️ Keys | 🎮 Controller |
+|:---|:---|:---|
+| Move | `WASD` | Left Stick |
+| Light Attack | `LMB` | X / Square |
+| Heavy Attack | `RMB` | Y / Triangle |
+| Dodge — Shoulder Charge | `LShift` | B / Circle |
+| Spell | `E` tap/hold | RB / R1 |
+
+---
+
+*← [Back to All Hunters](../HUNTERS.md)*
