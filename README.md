@@ -294,21 +294,21 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ---
 
-## 📅 18-Day Build Plan
+## 📅 Build Plan
 
-> **Jam Deadline: 1 May 2026 @ 13:37 UTC**  
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Started: 15 Apr 2026 · 16 days to ship  
 > Legend: ✅ Complete · 🔄 In Progress · ⬜ Locked  
-> Auto-updated by `node scripts/update-readme.js` — run after each phase lands.
+> Auto-updated by GitHub Actions on every push to `src/`
 
 <!-- PHASE-TABLE-START -->
-| Phase | Days | Focus | Progress | Milestone |
-|-------|------|-------|----------|-----------|
-| 🔄 **1 — Core Engine** | 1–3 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████░░░░░ 55%` | Solo hunter moves |
-| ⬜ **2 — Enemy AI & Juice** | 4–6 | Enemy AI, hit detection, status effects, combos, juice | `░░░░░ 0%` | Fight grunt waves |
-| ⬜ **3 — 4 Hunters & Co-op** | 7–9 | All 4 hunters, 1–4P input, AI companions | `░░░░░ 0%` | 4P hub + combat |
-| ⬜ **4 — Zones & Bosses** | 10–12 | 3 zones, portals, boss phases, Essence drops, screen transitions | `░░░░░ 0%` | Full run clearable |
-| ⬜ **5 — Hub, Shop & HUD** | 13–15 | Shop, weapons, levelling, HUD, combo UI | `░░░░░ 0%` | Buy + upgrade loop |
-| ⬜ **6 — Audio, Polish & Deploy** | 16–18 | Audio, onboarding, 60fps target, deploy to domain | `░░░░░ 0%` | Playable jam entry |
+| Phase | Dates | Focus | Progress | Milestone |
+|-------|-------|-------|----------|-----------|
+| 🔄 **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████░░░░░ 55%` | Solo hunter moves |
+| ⬜ **2 — Enemy AI & Juice** | Apr 18–20 | Enemy AI, hit detection, status effects, combos, juice | `░░░░░ 0%` | Fight grunt waves |
+| ⬜ **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `░░░░░ 0%` | 4P hub + combat |
+| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `░░░░░ 0%` | Full run clearable |
+| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `░░░░░ 0%` | Buy + upgrade loop |
+| ⬜ **6 — Polish & Deploy** | Apr 30 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `░░░░░ 0%` | 🚢 Ship it |
 <!-- PHASE-TABLE-END -->
 
 ---

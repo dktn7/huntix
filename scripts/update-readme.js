@@ -3,18 +3,16 @@
  * scripts/update-readme.js
  * Run: node scripts/update-readme.js
  *
- * Reads src/ file tree via the same PHASES definition used by check-phase.js,
- * then rewrites the 18-Day Build Plan table in README.md with live checkboxes:
- *   ✅  = all files for that phase are present (phase complete)
- *   🔄  = phase is currently in progress (lowest incomplete)
- *   ⬜  = phase not yet started (locked)
+ * Reads src/ file tree, evaluates each phase, then rewrites the
+ * 18-Day Build Plan table in README.md between the sentinel comments:
+ *   <!-- PHASE-TABLE-START -->  ...  <!-- PHASE-TABLE-END -->
  *
- * Safe to run repeatedly — only the table rows between the sentinel comments
- * are touched. Everything else in README.md is left exactly as-is.
+ * Icons:
+ *   ✅  = all files present (phase complete)
+ *   🔄  = lowest incomplete phase (currently in progress)
+ *   ⬜  = not yet started (locked)
  *
- * Usage:
- *   node scripts/update-readme.js
- *   # or as a git pre-push hook / CI step
+ * Safe to run repeatedly — only the table rows are touched.
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -27,12 +25,12 @@ const README = resolve(root, 'README.md');
 
 const exists = (p) => existsSync(resolve(root, p));
 
-// ── Same PHASES definition as check-phase.js ──────────────────────────────
+// ── Phase definitions (keep in sync with check-phase.js) ──────────────────
 const PHASES = [
   {
     number: 1,
     name: 'Core Engine',
-    days: '1–3',
+    dates: 'Apr 15–17',
     focus: 'Three.js 2.5D setup, player controller, fixed timestep, input',
     milestone: 'Solo hunter moves',
     files: [
@@ -50,7 +48,7 @@ const PHASES = [
   {
     number: 2,
     name: 'Enemy AI & Juice',
-    days: '4–6',
+    dates: 'Apr 18–20',
     focus: 'Enemy AI, hit detection, status effects, combos, juice',
     milestone: 'Fight grunt waves',
     files: [
@@ -64,7 +62,7 @@ const PHASES = [
   {
     number: 3,
     name: '4 Hunters & Co-op',
-    days: '7–9',
+    dates: 'Apr 21–23',
     focus: 'All 4 hunters, 1–4P input, AI companions',
     milestone: '4P hub + combat',
     files: [
@@ -81,7 +79,7 @@ const PHASES = [
   {
     number: 4,
     name: 'Zones & Bosses',
-    days: '10–12',
+    dates: 'Apr 24–26',
     focus: '3 zones, portals, boss phases, Essence drops, screen transitions',
     milestone: 'Full run clearable',
     files: [
@@ -95,7 +93,7 @@ const PHASES = [
   {
     number: 5,
     name: 'Hub, Shop & HUD',
-    days: '13–15',
+    dates: 'Apr 27–29',
     focus: 'Shop, weapons, levelling, HUD, combo UI',
     milestone: 'Buy + upgrade loop',
     files: [
@@ -108,10 +106,10 @@ const PHASES = [
   },
   {
     number: 6,
-    name: 'Audio, Polish & Deploy',
-    days: '16–18',
-    focus: 'Audio, onboarding, 60fps target, deploy to domain',
-    milestone: 'Playable jam entry',
+    name: 'Polish & Deploy',
+    dates: 'Apr 30 – May 1',
+    focus: 'Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1',
+    milestone: '🚢 Ship it',
     files: [
       'src/engine/AudioManager.js',
       'src/gameplay/OnboardingFlow.js',
@@ -120,7 +118,7 @@ const PHASES = [
   },
 ];
 
-// ── Evaluate phases ────────────────────────────────────────────────────────
+// ── Evaluate ──────────────────────────────────────────────────────────────────
 const results = PHASES.map((phase) => {
   const missing = phase.files.filter((f) => !exists(f));
   return { ...phase, missing, complete: missing.length === 0 };
@@ -128,40 +126,38 @@ const results = PHASES.map((phase) => {
 
 const currentIdx = results.findIndex((p) => !p.complete);
 
-function statusIcon(phase, idx) {
-  if (phase.complete)         return '✅';
-  if (idx === currentIdx)     return '🔄';
+function icon(phase, idx) {
+  if (phase.complete)     return '✅';
+  if (idx === currentIdx) return '🔄';
   return '⬜';
 }
 
-function progressBar(phase) {
-  if (phase.complete) return '█████ 100%';
-  const done = phase.files.length - phase.missing.length;
+function bar(phase) {
+  if (phase.complete) return '`█████ 100%`';
+  const done  = phase.files.length - phase.missing.length;
   const total = phase.files.length;
-  const pct = Math.round((done / total) * 100);
+  const pct   = Math.round((done / total) * 100);
   const filled = Math.round((done / total) * 5);
-  return '█'.repeat(filled) + '░'.repeat(5 - filled) + ` ${pct}%`;
+  return '`' + '█'.repeat(filled) + '░'.repeat(5 - filled) + ` ${pct}%` + '`';
 }
 
-// ── Build replacement table ────────────────────────────────────────────────
-const header = `| Phase | Days | Focus | Progress | Milestone |\n|-------|------|-------|----------|-----------|`;
+// ── Build table ───────────────────────────────────────────────────────────────
+const header = `| Phase | Dates | Focus | Progress | Milestone |\n|-------|-------|-------|----------|-----------|`;
 
-const rows = results.map((p, i) => {
-  const icon = statusIcon(p, i);
-  return `| ${icon} **${p.number} — ${p.name}** | ${p.days} | ${p.focus} | \`${progressBar(p)}\` | ${p.milestone} |`;
-}).join('\n');
+const rows = results.map((p, i) =>
+  `| ${icon(p, i)} **${p.number} \u2014 ${p.name}** | ${p.dates} | ${p.focus} | ${bar(p, i)} | ${p.milestone} |`
+).join('\n');
 
 const newTable = `${header}\n${rows}`;
 
-// ── Splice into README between sentinel comments ───────────────────────────
+// ── Splice into README ──────────────────────────────────────────────────────────────
 const START = '<!-- PHASE-TABLE-START -->';
 const END   = '<!-- PHASE-TABLE-END -->';
 
 let readme = readFileSync(README, 'utf8');
 
 if (!readme.includes(START) || !readme.includes(END)) {
-  console.error(`❌  Sentinels ${START} / ${END} not found in README.md`);
-  console.error('    Add them around the 18-Day Build Plan table and re-run.');
+  console.error(`❌  Sentinels not found in README.md.`);
   process.exit(1);
 }
 
@@ -171,10 +167,9 @@ readme = `${before}\n${newTable}\n${after}`;
 
 writeFileSync(README, readme, 'utf8');
 
-// ── Summary ───────────────────────────────────────────────────────────────
 console.log('\n✅  README.md phase table updated:\n');
 results.forEach((p, i) => {
   const done = p.files.length - p.missing.length;
-  console.log(`  ${statusIcon(p, i)} Phase ${p.number} — ${p.name}: ${done}/${p.files.length} files`);
+  console.log(`  ${icon(p, i)} Phase ${p.number} (${p.dates}) — ${p.name}: ${done}/${p.files.length} files`);
 });
 console.log('');
