@@ -57,143 +57,21 @@ Hub (select hunter + weapon + shop)
 
 ---
 
-## 🧑‍🤝‍🧑 Hunters — S-Rank Roster
+## 🛡️ Meet the Hunters
 
-All four hunters share the same core controls. Each has unique stats, spells, status effects, and ultimate. They come from different corners of the world and share one purpose — when the gates open, they enter.
+Four S-Rank hunters. Different worlds. One purpose — when the gates open, they enter.
 
----
-
-### ⚫ DABIK — Shadow Striker
-
-> *Silence is the last thing you hear.*
-
-| Attribute | Detail |
-|---|---|
-| Origin | Caribbean-African |
-| Element | Shadow |
-| Status | Bleed |
-| Weapon | Twin curved daggers |
-| Build | Muscular agile — compact power, fast and controlled |
-| Skin | Dark brown |
-| Hair | Short wild spiky white |
-| Eyes | Purple — calm, unnatural, faint glow in power states |
-| Aura | Black with deep purple edges, spreads like a shadow at dusk |
-| Palette | Black, purple, muted silver |
-
-**Background:** Born on a small island between the Caribbean Sea and the Atlantic, to a family with deep West African roots. His grandfather was a tracker. Dabik inherited the instinct. He entered his first gate alone at C-Rank on a dare. Walked out A-Rank. Nobody saw what happened inside. Reached S-Rank through principle, not brute force — *the most dangerous thing is what you never see coming.*
-
-**Combat:** Don't fight the enemy. End the encounter. Blink behind target, bleed methodically, vanish, repeat.
-
-| Stat | Value |
-|---|---|
-| HP | 80 |
-| Move Speed | 9/10 (fastest) |
-| Attack Speed | 9/10 |
-| Damage | 6/10 |
-| Defense | 3/10 |
-| Dodge | Blink — teleports behind nearest enemy |
-
----
-
-### 🟤 BENZU — Iron Breaker
-
-> *I don't dodge. I don't need to.*
-
-| Attribute | Detail |
-|---|---|
-| Origin | South American / Brazilian |
-| Element | Thunder/Earth |
-| Status | Stun |
-| Weapon | Stone-forged gauntlets reinforced with gate ore |
-| Build | Massive fortress — huge, broad, immovable |
-| Skin | Bronze-orange |
-| Hair | Long dirty-blonde mane, thick and heavy |
-| Eyes | Dark and heavy-set |
-| Aura | Deep red with gold fractures, pulses like heat under stone |
-| Palette | Deep red, gold, ember black |
-
-**Background:** Grew up in Rio de Janeiro. Worked construction from fifteen. Awakened when a gate boss pinned his entire team — picked up rubble the size of a car door and hit it until it stopped. Every S-Rank board said the same thing: *we have no protocol for this.*
-
-**Combat:** Take the hit. Then take everything else. Absorbs damage to charge surge, then releases it all at once.
-
-| Stat | Value |
-|---|---|
-| HP | 160 (highest) |
-| Move Speed | 4/10 (slowest) |
-| Attack Speed | 3/10 |
-| Damage | 10/10 (highest) |
-| Defense | 9/10 |
-| Dodge | Shoulder Charge — short forward burst, staggers enemies |
-
----
-
-### 🟡 SEREISA — Storm Chaser
-
-> *You blinked. That's why you lost.*
-
-| Attribute | Detail |
-|---|---|
-| Origin | European / British-Nordic |
-| Element | Lightning |
-| Status | Slow (electric shock) |
-| Weapon | Single lightning rapier — slender, precise, permanently crackling |
-| Build | Sleek athletic — speed-first, narrow and precise |
-| Skin | Pale Nordic |
-| Hair | Platinum undercut, sharp and practical |
-| Eyes | Light and focused |
-| Aura | Bright yellow with white crackling edges |
-| Palette | Bright yellow, white, pale steel |
-
-**Background:** Born in London to a British mother and Norwegian father. Competed in fencing at national level. Awakened when a barrier failed at a gate event — crossed thirty metres of active combat zone and pulled two people clear before the response team arrived. Fastest S-Rank progression in European gate authority history. The record still stands.
-
-**Combat:** Control the distance. Control the fight. Fencing footwork, dash-in punishments, shock to slow, then make them pay for being slow.
-
-| Stat | Value |
-|---|---|
-| HP | 100 |
-| Move Speed | 8/10 (second fastest) |
-| Attack Speed | 8/10 |
-| Damage | 7/10 |
-| Defense | 5/10 |
-| Dodge | Electric Dash — dashes through enemies, applies slow on contact |
-
----
-
-### 🔴 VESOL — Ember Mage
-
-> *The gate burns. So does everything in it.*
-
-| Attribute | Detail |
-|---|---|
-| Origin | Asian / Japanese-Filipino |
-| Element | Flame |
-| Status | Burn |
-| Weapon | Gate crystal focus at the wrist — no physical blade |
-| Build | Defined, poised, refined — controlled and deliberate |
-| Skin | Warm tan |
-| Hair | Dark controlled bun with a few deliberate loose strands |
-| Eyes | Dark, thoughtful, observant |
-| Aura | Deep blue that bleeds into crimson as power increases |
-| Palette | Deep blue, crimson, dark charcoal |
-
-**Background:** Born in Tokyo. PhD in gate energy theory from Tokyo University. Lead researcher on a mana absorption programme. The answer was her. The experiment concluded when she unconsciously incinerated a containment room during calibration. Nobody was hurt. The readings were extraordinary. S-Rank after her third solo gate run, completed in fourteen minutes and documented in a forty-page report.
-
-**Combat:** Precision over power — though precision at sufficient scale becomes power. Maps the battlefield before engaging it. In co-op, she sets the arena up so everyone else can finish it.
-
-| Stat | Value |
-|---|---|
-| HP | 90 |
-| Move Speed | 6/10 |
-| Attack Speed | 5/10 |
-| Damage | 8/10 |
-| Defense | 4/10 |
-| Dodge | Flame Scatter — burst of embers, pushes enemies back |
-
----
+| [![Vesol](https://img.shields.io/badge/🔥_VESOL-Ember_Mage-crimson?style=for-the-badge)](docs/hunters/VESOL.md) | [![Dabik](https://img.shields.io/badge/🌑_DABIK-Shadow_Striker-4B0082?style=for-the-badge)](docs/hunters/DABIK.md) | [![Benzu](https://img.shields.io/badge/🔴_BENZU-Iron_Breaker-8B0000?style=for-the-badge)](docs/hunters/BENZU.md) | [![Sereisa](https://img.shields.io/badge/⚡_SEREISA-Storm_Chaser-DAA520?style=for-the-badge)](docs/hunters/SEREISA.md) |
+|:---:|:---:|:---:|:---:|
+| *"The gate burns."* | *"Silence is the last thing you hear."* | *"I don't dodge."* | *"You blinked."* |
+| Flame · Burn | Shadow · Bleed | Thunder/Earth · Stun | Lightning · Slow |
+| HP 90 · Mana 130 | HP 80 · Mana 120 | HP 160 · Mana 70 | HP 100 · Mana 100 |
+| Wrist Crystal Focus | Twin Curved Daggers | Stone Gauntlets | Twin Electro-Blades |
+| [→ Full Sheet](docs/hunters/VESOL.md) | [→ Full Sheet](docs/hunters/DABIK.md) | [→ Full Sheet](docs/hunters/BENZU.md) | [→ Full Sheet](docs/hunters/SEREISA.md) |
 
 ### Hunter Stats At A Glance
 
-| Stat | ⚫ Dabik | 🟤 Benzu | 🟡 Sereisa | 🔴 Vesol |
+| Stat | 🌑 Dabik | 🔴 Benzu | ⚡ Sereisa | 🔥 Vesol |
 |------|---------|---------|----------|--------|
 | HP | 80 | 160 | 100 | 90 |
 | Mana | 120 | 70 | 100 | 130 |
@@ -202,6 +80,7 @@ All four hunters share the same core controls. Each has unique stats, spells, st
 | Damage | 6/10 | 10/10 | 7/10 | 8/10 |
 | Defense | 3/10 | 9/10 | 5/10 | 4/10 |
 | Dodge | Blink | Shoulder Charge | Electric Dash | Flame Scatter |
+| Ultimate | Monarch's Domain | Titan's Wrath | Storm Surge | Inferno |
 
 ### ⚡ Status Synergies (Co-op)
 
@@ -265,10 +144,10 @@ Each hunter has **3 bars:**
 
 | Hunter | Ultimate | Effect |
 |--------|----------|--------|
-| ⚫ Dabik | **Monarch's Domain** | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
-| 🟤 Benzu | **Titan's Wrath** | Full-screen ground shatter; all enemies stunned 5s; Benzu takes zero damage |
-| 🟡 Sereisa | **Storm Surge** | Untouchable 6s; every dash deals damage; speed doubles |
-| 🔴 Vesol | **Inferno** | Entire arena fills with fire 6s; all enemies burn; Vesol immune to own flames |
+| 🌑 Dabik | **Monarch's Domain** | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
+| 🔴 Benzu | **Titan's Wrath** | Full-screen ground shatter; all enemies stunned 5s; Benzu takes zero damage |
+| ⚡ Sereisa | **Storm Surge** | Untouchable 6s; every dash deals damage; speed doubles |
+| 🔥 Vesol | **Inferno** | Entire arena fills with fire 6s; all enemies burn; Vesol immune to own flames |
 
 ---
 
@@ -277,7 +156,7 @@ Each hunter has **3 bars:**
 **Essence Economy:** Drops 5–500 per kill/boss · Max 5 buys per run · Refresh costs 10 Essence
 
 | Category | Examples |
-|----------|---------|
+|----------|---------| 
 | ⚔️ Power | Damage boost, combo extender, special power upgrade |
 | 🛡 Survival | Health restore, armour, recovery speed |
 | 💨 Mobility | Dodge distance, speed, cooldown reduction |
@@ -305,41 +184,18 @@ Max level 4 per run. Resets on wipe.
 
 ## ⚔️ Weapons
 
-Each hunter has a **signature weapon** locked to their identity. Additional weapons are available in the shop each run and can be used by any hunter, with stat bonuses favouring the recommended hunter.
+Each hunter has a **signature weapon** locked to their identity. Additional weapons are available in the shop each run.
 
 ### Default (Signature) Weapons
 
 | Hunter | Weapon | Type |
 |--------|--------|------|
-| ⚫ Dabik | Twin Curved Daggers | Melee Fast |
-| 🟤 Benzu | Stone-Forged Gauntlets | Heavy Melee |
-| 🟡 Sereisa | Lightning Rapier | Melee Precision |
-| 🔴 Vesol | Gate Crystal Focus | Cast/Ranged |
+| 🌑 Dabik | Twin Curved Daggers | Melee Fast |
+| 🔴 Benzu | Stone-Forged Gauntlets | Heavy Melee |
+| ⚡ Sereisa | Lightning Rapier | Melee Precision |
+| 🔥 Vesol | Gate Crystal Focus | Cast/Ranged |
 
-### Shop Weapons (Available Each Run)
-
-| Weapon | Type | Cost | Best For | Effect |
-|--------|------|------|----------|--------|
-| Shadow Kunai | Thrown | 65 | Dabik | Tracking throw, bleed on landing |
-| Portal Dagger | Melee | 75 | Dabik | Blink teleport on hit |
-| Phase Edge | Precision | 85 | Dabik / Sereisa | Blink on heavy, bleed or slow |
-| Shadow Dart | Thrown | 65 | Dabik | Silent ranged, bleed DoT |
-| Portal Blaster | Special | 120 | Dabik | Summon decoy portal trap |
-| Earth Maul | Heavy | 95 | Benzu | Slam AoE, stun wall |
-| Gate Fist | Heavy | 80 | Benzu | Close stun burst, staggers on heavy |
-| Gatebreaker Rifle | Ranged | 110 | Benzu | Range stun shot, burst ammo |
-| Lightning Bow | Ranged | 85 | Sereisa | Chain slow, ranged shock |
-| Storm Lance | Precision | 90 | Sereisa | Thrust range, slow on hit |
-| Storm Bangle | Utility | 90 | Sereisa | Wrist shock burst on dodge |
-| Glaive of Embers | Heavy | 100 | Vesol | Reach sweep, burn trail |
-| Inferno Bolt | Ranged | 80 | Vesol | Burn bolt, mana regen on hit |
-| Mana Staff | Cast | 80 | Vesol | Mana regen, amplified burn bolt |
-| Gate Crystal Shard | Cast | 70 | All | Minor spell cast, utility |
-| Oni Katana | Melee Reach | 85 | All | High damage, bleed slash on heavy |
-| Crescent Blade | Melee | 80 | All | Fast arc, status on chain hit |
-| Void Bracer | Utility | 95 | All | Dodge applies weapon status effect |
-
-> See [`docs/WEAPONS.md`](docs/WEAPONS.md) for full distribution, design rules, and shop economy.
+> See [`docs/WEAPONS.md`](docs/WEAPONS.md) for full weapon list, shop distribution, and economy rules.
 
 ---
 
@@ -360,7 +216,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 ## 🎮 Controls
 
 | Action | ⌨️ Keyboard | 🎮 Controller |
-|--------|------------|--------------|
+|--------|------------|--------------| 
 | Move | WASD | Left stick |
 | Light Attack | Left mouse | X / Square |
 | Heavy Attack | Right mouse | Y / Triangle |
@@ -444,7 +300,11 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 | File | Contents |
 |------|----------|
-| [`docs/HUNTERS.md`](docs/HUNTERS.md) | Full character sheets — stats, spells, appearance, backstory |
+| [`docs/hunters/VESOL.md`](docs/hunters/VESOL.md) | 🔥 Vesol — full character sheet |
+| [`docs/hunters/DABIK.md`](docs/hunters/DABIK.md) | 🌑 Dabik — full character sheet |
+| [`docs/hunters/BENZU.md`](docs/hunters/BENZU.md) | 🔴 Benzu — full character sheet |
+| [`docs/hunters/SEREISA.md`](docs/hunters/SEREISA.md) | ⚡ Sereisa — full character sheet |
+| [`docs/HUNTERS.md`](docs/HUNTERS.md) | All hunters overview |
 | [`docs/WEAPONS.md`](docs/WEAPONS.md) | Full weapon list, distribution, shop economy |
 | [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.md) | Visual rules, locked identity elements, outfit system |
 | [`docs/VISUAL-DESIGN.md`](docs/VISUAL-DESIGN.md) | Art direction, aura system, palette |
