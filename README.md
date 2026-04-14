@@ -97,12 +97,62 @@ Four S-Rank hunters. Different worlds. One purpose — when the gates open, they
 
 All zones are flat horizontal stages — 2.5D scrolling arenas with parallax depth layers.
 
-| # | Zone | Tone | Boss | Boss Mechanic | Co-op Scale |
-|---|------|------|------|---------------|-------------|
-| 1 | 🏙 City Breach | Ruined streets, intro zone | Fire Bruiser | Charge phases | +Adds at 4P |
-| 2 | 🏕 Ruin Den | Underground dungeon | Earth Tank | Wall slams | Wall spawns |
-| 3 | 🌑 Shadow Core | Dark, final-act tone | Rogue Dabik | x2 Clones + invisibility | Full kit required |
-| 4 | ⚡ Thunder Spire | Elevated platform stages | Raiju Thunderbeast | Chain lightning + dive | Platform combat |
+| # | Zone | Tone | Boss | Hunter Echo | Deep Lore |
+|---|------|------|------|-------------|----------|
+| 1 | 🏙 [City Breach](docs/zones/CITY-BREACH.md) | Ruined industrial-research district | [VRAEL](docs/bosses/VRAEL.md) — Fire Bruiser | Vesol | The facility with no name |
+| 2 | 🏕 [Ruin Den](docs/zones/RUIN-DEN.md) | Genuinely deep underground | [ZARTH](docs/bosses/ZARTH.md) — Earth Tank | Benzu | The exit that didn't exist until he fell |
+| 3 | 🌑 [Shadow Core](docs/zones/SHADOW-CORE.md) | Void between worlds | [KIBAD](docs/bosses/KIBAD.md) — Rogue Angel | Dabik | The angel ascends smiling |
+| 4 | ⚡ [Thunder Spire](docs/zones/THUNDER-SPIRE.md) | Gate-grown storm structure | [THYXIS](docs/bosses/THYXIS.md) — Thunder Beast | Sereisa | Defeat the storm, the wolf comes back |
+
+### Zone Unlock Flow
+
+```mermaid
+flowchart LR
+    HUB([🏠 Hub]) --> Z1
+    Z1[🏙 City Breach\nVRAEL] --> Z2
+    Z2[🏕 Ruin Den\nZARTH] --> Z3
+    Z3[🌑 Shadow Core\nKIBAD] --> Z4
+    Z4[⚡ Thunder Spire\nTHYXIS] --> WIN([🏆 Full Clear])
+    Z1 -->|wipe| HUB
+    Z2 -->|wipe| HUB
+    Z3 -->|wipe| HUB
+    Z4 -->|wipe| HUB
+```
+
+### Enemy State Machine (All Zones)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Aggro : player enters range
+    Aggro --> Telegraph : attack cooldown ready
+    Telegraph --> Action : telegraph complete
+    Action --> Recover : hit lands or misses
+    Recover --> Aggro : recovery complete
+    Aggro --> Idle : player out of range
+    Action --> Staggered : player heavy hit
+    Staggered --> Recover : stagger ends
+```
+
+### Boss Phase Flow
+
+```mermaid
+flowchart TD
+    ENTER([Hunter enters zone]) --> WAVES[Clear enemy waves]
+    WAVES --> BOSS[Boss encounter begins]
+    BOSS --> P1[Phase 1\n100–60% HP]
+    P1 -->|HP threshold hit| TRANS1[⚡ Phase transition]
+    TRANS1 --> P2[Phase 2\n60–0% HP]
+    P2 -->|Boss defeated| DEATH[Death sequence]
+    DEATH --> VRAEL_END[VRAEL — Implosion]
+    DEATH --> ZARTH_END[ZARTH — Fissures go dark]
+    DEATH --> KIBAD_END[KIBAD — Ascends smiling]
+    DEATH --> THYXIS_END[THYXIS — Wolf returns]
+    VRAEL_END --> EXIT([Exit portal opens])
+    ZARTH_END --> EXIT
+    KIBAD_END --> EXIT
+    THYXIS_END --> EXIT
+```
 
 ---
 
@@ -308,7 +358,15 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 | [`docs/WEAPONS.md`](docs/WEAPONS.md) | Full weapon list, distribution, shop economy |
 | [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.md) | Visual rules, locked identity elements, outfit system |
 | [`docs/VISUAL-DESIGN.md`](docs/VISUAL-DESIGN.md) | Art direction, aura system, palette |
-| [`docs/BOSSES.md`](docs/BOSSES.md) | Boss phases, attacks, counters |
+| [`docs/bosses/VRAEL.md`](docs/bosses/VRAEL.md) | 🔥 VRAEL — full boss lore + combat spec |
+| [`docs/bosses/ZARTH.md`](docs/bosses/ZARTH.md) | 🪨 ZARTH — full boss lore + combat spec |
+| [`docs/bosses/KIBAD.md`](docs/bosses/KIBAD.md) | 🌑 KIBAD — full boss lore + combat spec |
+| [`docs/bosses/THYXIS.md`](docs/bosses/THYXIS.md) | ⚡ THYXIS — full boss lore + combat spec |
+| [`docs/zones/CITY-BREACH.md`](docs/zones/CITY-BREACH.md) | 🏙 City Breach — zone lore + enemy design |
+| [`docs/zones/RUIN-DEN.md`](docs/zones/RUIN-DEN.md) | 🏕 Ruin Den — zone lore + enemy design |
+| [`docs/zones/SHADOW-CORE.md`](docs/zones/SHADOW-CORE.md) | 🌑 Shadow Core — zone lore + enemy design |
+| [`docs/zones/THUNDER-SPIRE.md`](docs/zones/THUNDER-SPIRE.md) | ⚡ Thunder Spire — zone lore + enemy design |
+| [`docs/BOSSES.md`](docs/BOSSES.md) | Boss index |
 | [`docs/ZONES.md`](docs/ZONES.md) | Zone layouts, pacing, parallax |
 | [`docs/GDD.md`](docs/GDD.md) | Full game design document |
 | [`docs/ANIMATIONS.md`](docs/ANIMATIONS.md) | Animation states per hunter |

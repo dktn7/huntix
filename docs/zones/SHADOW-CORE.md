@@ -33,11 +33,11 @@ When hunters enter the Shadow Core they are not walking into a ruin. They are st
 
 The Shadow Core should feel like a place with no horizon. The edges of the lane are swallowed by void, then given just enough detail to suggest depth without ever resolving into it.
 
-- **Floating debris:** Rock shards, broken platform fragments, and gate-energy splinters suspended in the dark. They do not drift randomly — they subtly orient toward Kibad at all times.
-- **Shadow tendrils:** Thin black shapes that move at the edge of vision. Not solid enough to block movement, but they react to light flashes and boss attacks — recoiling then returning.
+- **Floating debris:** Rock shards, broken platform fragments, and gate-energy splinters suspended in the dark. They do not drift randomly — they subtly orient toward Kibad.
+- **Shadow tendrils:** Thin black shapes that move at the edge of vision. They are not solid enough to block movement, but they react to light flashes and boss attacks.
 - **Silver cracks:** Faint lines of light in the floor and distant walls, like the zone itself is trying to split open. They brighten when Kibad uses Radiant Burst.
 - **Lost architecture:** Broken arches and platform remnants floating in the background — not functional, only symbolic. They make the void feel like it swallowed a world rather than simply being empty.
-- **Light bloom:** Any strong aura in this zone is exaggerated by the darkness. Kibad’s presence feels almost too bright to look at. Player auras also pop harder here than in any other zone — every hunter feels more visible, more exposed.
+- **Light bloom:** Any strong aura in this zone is exaggerated by the darkness. Kibad's presence should feel almost too bright to look at. Player auras also pop harder here than in any other zone.
 
 ---
 
@@ -45,10 +45,10 @@ The Shadow Core should feel like a place with no horizon. The edges of the lane 
 
 The enemies in the Shadow Core are shadows that developed awareness — the dark itself learning to move. They were not always creatures. They became creatures because Kibad was here long enough for them to change.
 
-They are not hostile in a simple sense. They are worshipful. They move toward light because that is the only thing in the void that tells them they still exist. When hunters bring their own light in, the shadows cannot distinguish between the light they worship and the light that threatens their congregation.
+They are not hostile in a simple way. They are worshipful. They move toward light because that is the only thing in the void that tells them they still exist.
 
 ### Grunt — Shade Wisp
-Fast, low-health shadow fragment. Drifts and lunges in short bursts. Barely humanoid — a suggestion of a body with a pale silver core that brightens near Kibad.
+Fast, low-health shadow fragment. Drifts and lunges in short bursts. It is barely humanoid — a suggestion of a body with a bright core when Kibad is nearby.
 
 | Stat | Value |
 |---|---|
@@ -59,10 +59,10 @@ Fast, low-health shadow fragment. Drifts and lunges in short bursts. Barely huma
 | Essence Drop | 5–20 |
 
 - **Attack:** Swipe — short shadow lash, 400ms wind-up
-- **Visual:** Black semi-transparent body with pale silver edges. Passively faces toward Kibad whenever he is on screen.
+- **Visual:** Black semi-transparent body with pale silver edges. Turns toward Kibad whenever he is on screen.
 
 ### Ranged Unit — Lumen Hound
-A shadow that learned to throw light back. Fires compressed void shards that flare white on impact. Keeps at mid-range, circling the arena as if protecting something at its centre.
+A shadow creature that has learned to throw light back at its source. It fires compressed void shards that flare white on impact. Keeps at mid-range, circling the arena as if guarding a shrine.
 
 | Stat | Value |
 |---|---|
@@ -72,11 +72,11 @@ A shadow that learned to throw light back. Fires compressed void shards that fla
 | Attack Cooldown | 2.5s |
 | Essence Drop | 10–30 |
 
-- **Attack:** Void Shard — straight projectile that flashes white on impact
-- **Behaviour:** Circles the arena laterally rather than retreating. Reorients toward the brightest target.
+- **Attack:** Void Shard — straight projectile that flashes on impact
+- **Retreat Step:** Backs away if the player gets close, but reorients toward the brightest target
 
 ### Bruiser — Null Choir
-Multiple shadows fused into one dense form. Not a single creature — a mass of them that agreed on a shape. Slow, enduring, difficult to stagger. Moves like a crowd of things trying to reach the same destination.
+Heavy shadow mass. Not a creature so much as multiple shadows fused into one dense form. Slow, enduring, difficult to stagger. It moves like a crowd of things trying to agree on a body.
 
 | Stat | Value |
 |---|---|
@@ -96,10 +96,10 @@ Multiple shadows fused into one dense form. Not a single creature — a mass of 
 
 | Wave | Enemies | Notes |
 |---|---|---|
-| Wave 1 | 5 Shade Wisps | The void fills with movement the moment light enters |
-| Wave 2 | 3 Shade Wisps + 2 Lumen Hounds | Circling patterns, mid-range pressure |
-| Wave 3 | 2 Null Choir + 2 Lumen Hounds | The congregation thickens before the boss |
-| Boss | KIBAD | Phase 2 adds clones, Radiant Burst, full arena light bloom |
+| Wave 1 | 5 Shade Wisps | Immediate pressure — the void fills with movement as soon as players enter |
+| Wave 2 | 3 Shade Wisps + 1 Lumen Hound | Mid-range pressure and circling patterns |
+| Wave 3 | 2 Null Choir + 2 Lumen Hound | The congregation becomes denser before the boss |
+| Boss | KIBAD | Phase 2 adds clones, Radiant Burst, and full arena light bloom |
 
 **4P adds:** +1 Shade Wisp per wave
 
@@ -109,38 +109,37 @@ Multiple shadows fused into one dense form. Not a single creature — a mass of 
 
 | Element | Detail |
 |---|---|
-| Tone | Pure void, arcane, watching — black until light touches it, then too much contrast |
-| Colours | Black, deep purple, white energy cracks, faint silver, white-gold bloom from Kibad |
-| Parallax — Background | Infinite void with fragmented geometry, barely visible distant structures |
-| Parallax — Midground | Floating broken arches, shattered platforms, shadow tendril clusters |
-| Parallax — Foreground | Silver cracks in the floor, drifting debris, shadows gathering and dispersing |
-| Hazards | Shadow pools visual only in MVP — pulse when Kibad uses Radiant Burst |
+| Tone | Pure void, arcane, oppressive — black until light touches it |
+| Colours | Black, deep purple, white energy cracks, faint silver light sources, white-gold bloom from Kibad |
+| Parallax — Background | Infinite black void with fragmented geometry and barely visible distant structures |
+| Parallax — Midground | Floating broken arches, shattered platforms, shadow tendrils |
+| Parallax — Foreground | Silver cracks, drifting debris, shadow congregations forming and dispersing |
+| Hazards | Shadow pools pulse when Kibad uses Radiant Burst |
 | Ambient particles | Black motes with occasional silver flashes — 25 max sprites, very slow |
-| Ground | Floating dark stone suspended over nothing, white-light cracks beneath |
-| Lighting | Almost no ambient light. Kibad’s aura is the primary illumination source. High contrast is essential — everything either fully dark or fully lit. |
-| Music mood | Dark, cinematic, electronic with arcane tones. No percussion during the ascension. |
+| Ground | Floating dark stone with cracks of white light beneath, arena suspended over nothing |
+| Lighting | Almost no ambient light. Kibad's aura provides most scene illumination. Strong contrast essential. |
+| Music mood | Dark, cinematic, electronic with arcane tones; no percussion during ascension moments |
 
 ---
 
 ## Zone Flow
 
 ```
-Portal entry (players emerge from a dim rift that closes behind them immediately)
-→ Wave 1 — shadows respond to light the moment it enters the void
-→ Wave 2 — Lumen Hounds begin circling, enemies orient toward brightest target
+Portal entry (players emerge from a dim rift in the void — it closes behind them almost immediately)
+→ Wave 1 — shadows move as soon as light enters the zone
+→ Wave 2 — Lumen Hound introduced, enemies begin circling brightest target
 → Wave 3 — congregation thickens, the zone feels watched
-→ KIBAD intro — the void flares white-gold as he rises in the distance, too bright to look at
+→ KIBAD intro — the void flares white-gold as he rises in the distance
 → Boss fight
-→ KIBAD defeated — two seconds of total darkness, all lights out including UI
-→ Kibad ascends — white-gold trail fading upward through the void
+→ KIBAD defeated — two seconds of total darkness, then ascension
 → Essence magnet
-→ Exit portal opens — a white-gold tear in the void, light returning to the lane edges first
+→ Exit portal opens — light returns to the edges of the lane first, then the floor
 ```
 
-**Portal detail:** The entry rift closes behind players immediately. There is no way back from the moment they arrive. The exit appears only after Kibad ascends — a tear of light in the void that was not possible before he left.
+**Portal detail:** Exit appears only after Kibad ascends — a white-gold tear in the void. The zone holds its breath the entire fight.
 
 ---
 
 ## Special Moment
 
-When Kibad uses Radiant Burst at low health, the Shade Wisps at the edges of the lane angle toward him. Not an animation requirement — just a visual direction note. The feeling in that moment should be devotional. They are not attacking. They are witnessing.
+When Kibad uses Radiant Burst at low health, the shadows angle toward him — devotional, not aggressive. He is the thing they have learned to orbit. The congregation worships the light even as the light tries to end everything around it.
