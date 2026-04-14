@@ -1,129 +1,167 @@
-# DABIK — Shadow Striker
+<div align="center">
 
-> *Silence is the last thing you hear.*
+# 🌑 DABIK
+### SHADOW STRIKER — S-RANK
+> *"Silence is the last thing you hear."*
 
-<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
-<!-- Mixboard and animation prompts live in docs/VISUAL-DESIGN.md -->
+![Aura](https://img.shields.io/badge/Element-Shadow-1a0033?style=flat-square&labelColor=000) ![Status](https://img.shields.io/badge/Status_Effect-Bleed-4B0082?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-Caribbean--African-2d002d?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
 
-| Attribute | Value |
-|---|---|
-| Origin | Caribbean-African |
-| Rank | S-Class |
-| Element | Shadow |
-| Status Effect | Bleed |
-| Aura Colour | Black with deep purple edges |
-| Weapon | Twin curved daggers — lightweight, unmarked, no grip tape |
+</div>
 
 ---
 
-## Appearance
+## 🌑 Physical Profile
 
-> **⚠️ Canonical design — read from HUNTERS.md before editing**
+| Attribute | Detail |
+|:---|:---|
+| **Build** | Muscular and agile — compact power built for burst movement and lethal close-range pressure |
+| **Skin** | Dark brown |
+| **Hair** | Short wild spiky WHITE — natural, not dyed. Tight coil roots, spikes upward at crown. |
+| **Eyes** | Purple — calm, unnatural, faint glow when shadow powers activate |
+| **Clothing** | Dark fitted tactical layers — matte black and charcoal. High collar or slim hood. Nothing catches light. Huntix H emblem on left shoulder — dark embossed, agency mark. No tribal markings. |
+| **Weapon** | Twin curved daggers — lightweight, unmarked, no grip tape. Worn from use, not decoration. |
+| **Aura** | Black with deep purple edges — doesn't flare. Spreads like a shadow at dusk. |
 
-```
-Build:    Muscular and agile — compact power built for burst movement
-          and lethal close-range pressure. Fast shoulders and forearms,
-          not bulk for its own sake.
-Skin:     Dark brown
-Hair:     Short, wild, spiky WHITE — primary visual identifier
-Eyes:     Purple — calm, unnatural, faint glow when shadow powers activate
-Clothing: Dark fitted tactical layers — matte black and dark charcoal.
-          High collar or slim hood. Nothing catches light.
-          Huntix H emblem on left shoulder — dark embossed, not visible
-          until close. Agency mark, not decoration.
-          No tribal markings. No buckles or ornament.
-Weapon:   Twin curved daggers — one at side, one reverse-grip at back hip.
-          No markings, no grip tape. Worn from use.
-Aura:     Black with deep purple edges. Does not flare.
-          Spreads like a shadow at dusk. Stays close to the body.
-```
-
-**Visual note:** His white hair and purple eyes carry all the supernatural identity. Avoid tribal markings, extra ornament, or heavy gear.
+> *Completely still until he isn't.*
+> *The aura doesn't announce him. It arrives after he does.*
 
 ---
 
-## Hair (Prompt-Ready)
+## 🗡️ Weapon — Twin Curved Daggers
 
 ```
-HAIR: Short wild spiky white hair — natural supernatural colouring,
-not dyed. Tight coil texture at the roots, spikes upward and outward
-at the crown. No product. Irregular shape. Purple sheen visible
-under shadow aura light at full power state.
+  ITEM CLASS : Paired Short Blades
+  MATERIAL   : Unknown alloy — no markings, no origin stamp
+  CONDITION  : Worn from use. Not decoration.
+  CARRIED    : No sheath. No ceremony.
+  FUNCTION   : Precision bleed application at close range.
+               Not built to fight. Built to end.
+  NOTE       : He has never once sharpened them in front of anyone.
+               They are always sharp.
 ```
 
 ---
 
-## Background
+## 📊 Combat Vitals
 
-> *Field Record — Gate Authority Caribbean Division*
-> *Classification: S-Rank Active*
-
-```
-Born on a small island between the Caribbean Sea and the Atlantic,
-to a family with deep roots in West Africa.
-Grandfather: tracker — forests, animals, people.
-Dabik inherited the instinct.
-
-Age 19: Already being recruited by private intelligence firms
-before the gates opened and made that world irrelevant.
-
-First gate: entered alone. C-Rank on a dare.
-Exited: A-Rank. Nobody saw what happened inside.
-When asked, he said the monsters had been loud.
-
-S-Rank achieved not through brute strength or flashy magic
-but through a principle learned tracking in the forest:
-The most dangerous thing is what you never see coming.
-```
+| Attribute | Value | Notes |
+|:---|:---|:---|
+| **Health** | `80` | Low — every mistake costs |
+| **Mana** | `120` | High — built around spell use |
+| **Mana Regen** | `8/sec + 5 per light hit` | Rewards aggressive play |
+| **Surge** | Builds on kills | Clean play charges ultimate faster |
+| **Move Speed** | `9/10` | 🔝 Fastest hunter |
+| **Attack Speed** | `9/10` | Rapid light combos |
+| **Damage** | `6/10` | Low per hit — devastating per combo |
+| **Defense** | `3/10` | Frail — dodge or die |
+| **Dodge** | Blink | Teleports behind nearest enemy. Low CD. |
 
 ---
 
-## Personality
-
-> *Minimal. Observes everything, says very little. Not cold — just precise.*
-
-- In the field: completely still until he isn't
-- Dry humour surfaces at the worst moments
-- Trusted completely — has never needed to be told something twice
-
----
-
-## Combat Philosophy
-
-> *"Don't fight the enemy. End the encounter."*
-
-Every move has a purpose. Bleeds targets methodically, reads openings, closes fights before they become fights. His blink isn't a flashy dodge. It's the last step before the last hit.
-
----
-
-## Stats
-
-| Stat | Value | Notes |
-|---|---|---|
-| Health | 80 | Low — punishes mistakes |
-| Mana | 120 | High — built around spell use |
-| Mana Regen | 8s / 5 per light hit | Rewards aggressive play |
-| Surge Rate | Builds on kills | Clean play charges ultimate faster |
-| Move Speed | 9/10 | Fastest hunter |
-| Attack Speed | 9/10 | Rapid light combos |
-| Damage | 6/10 | Low per hit, devastating per combo |
-| Defense | 3/10 | Frail — must dodge |
-| Dodge | Blink — teleports behind nearest enemy | Low cooldown |
-
----
-
-## Spells
+## 🌑 Spell Mastery
 
 | Tier | Name | Cost | Effect |
-|---|---|---|---|
-| Minor | Shadow Step | 15 mana | Blinks behind target, next hit applies bleed |
-| Advanced | Shadow Clone | 40 mana | Decoy taunts enemies for 3 seconds |
-| Ultimate | Monarch's Domain | Full Surge | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
+|:---|:---|:---|:---|
+| **Minor** | `Shadow Step` | 15 mana | Blink behind target — next hit applies bleed |
+| **Advanced** | `Shadow Clone` | 40 mana | Decoy taunts enemies for 3s |
+| **Ultimate** | `Monarch's Domain` | Full Surge | All enemies frozen 4s — Dabik invisible, rapid-strike mode |
+
+> 🩸 **Bleed** — Applied on light attacks and Shadow Step. Stacks. Ticks. Silent.
+
+### 🔗 Synergies
+
+| Combo | With | Effect |
+|:---|:---|:---|
+| Bleed + Slow | **Sereisa** | Slowed enemies take amplified bleed damage |
+| Slow + Blink | **Sereisa** | Free backstab on shocked target |
 
 ---
 
-## Upgrade Paths
+## ⬆️ Upgrade Paths
 
-- **Power** — bleed stacks deal more damage, combos extend by 2 hits
-- **Mobility** — Shadow Step cooldown halved, blink range doubled
-- **Style** — aura darkens, clone fights back, silent casting unlocked
+| Path | What Sharpens |
+|:---|:---|
+| **Power** 🩸 | Bleed stacks faster — +2 combo hits |
+| **Mobility** 💨 | Shadow Step CD halved — blink range doubled |
+| **Style** ✨ | Aura darkens. Clone fights back. Silent casting. |
+
+---
+
+## 📋 Field Record
+
+```
+╔══════════════════════════════════════════════════════════╗
+║     GATE AUTHORITY — SUBJECT FILE                        ║
+║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
+╚══════════════════════════════════════════════════════════╝
+
+  SUBJECT      : DABIK
+  ELEMENT      : Shadow
+  ORIGIN       : Caribbean-African — island between Caribbean Sea & Atlantic
+
+  PRE-AWAKENING
+  ─────────────
+  Heritage     : Grandfather was a tracker. Forests, animals, people.
+                 Dabik inherited the instinct.
+  Age 19       : Recruitment offers — private intelligence firms.
+                 Gates opened. That world became irrelevant.
+
+  FIRST GATE ENTRY
+  ────────────────
+  Rank at entry : C-Class
+  Entry method  : Solo. On a dare.
+  Exit rank     : A-Class.
+  Witnesses     : None.
+  Statement     : "The monsters had been loud."
+
+  S-RANK PATH
+  ───────────
+  Method       : Not strength. Not magic.
+                 Principle — the most dangerous thing is what you
+                 never see coming.
+
+  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
+```
+
+---
+
+## 🧠 Personality
+
+> *Minimal. Observes everything, says very little.*
+> *Not cold — just precise.*
+> *Dry humour surfaces at the worst moments.*
+> *Trusted completely because he has never once needed to be told something twice.*
+
+**Combat Philosophy:**
+> *"Don't fight the enemy. End the encounter."*
+
+> He doesn't combo for the sake of it.
+> He bleeds targets methodically, reads openings,
+> and closes fights before they become fights.
+> The blink isn't a flashy dodge — it's the last step before the last hit.
+
+---
+
+## 👥 Team Dynamic
+
+| Hunter | Field Notes |
+|:---|:---|
+| 🔴 **Benzu** | Mutual respect — few words needed |
+| ⚡ **Sereisa** | Quiet rivalry — genuine trust. Neither will admit who's faster. |
+| 🔥 **Vesol** | Professional alignment — similar precision |
+
+---
+
+## 🎮 Controls
+
+| Action | ⌨️ Keys | 🎮 Controller |
+|:---|:---|:---|
+| Move | `WASD` | Left Stick |
+| Light Attack | `LMB` | X / Square |
+| Heavy Attack | `RMB` | Y / Triangle |
+| Dodge — Blink | `LShift` | B / Circle |
+| Spell | `E` tap/hold | RB / R1 |
+
+---
+
+*← [Back to All Hunters](../HUNTERS.md)*
