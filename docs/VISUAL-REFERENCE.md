@@ -5,6 +5,7 @@
 > **Rule: This document is the canonical design lock for all four hunters.**
 > Before writing any character prompt, description, or asset spec — read this first.
 > Do not reference previous conversation context. Do not assume. Read here.
+> All entries sourced directly from `docs/HUNTERS.md` — the master character document.
 
 ---
 
@@ -14,7 +15,7 @@
 |---|---|---|---|---|---|---|---|
 | **Dabik** | Muscular agile, compact power | Dark brown | Short wild spiky **WHITE** | **Purple** (faint glow in power states) | Twin curved daggers | Black, purple, muted silver | Silent predator |
 | **Benzu** | Massive, built like architecture | **Bronze-orange** | Long **dirty-blonde mane** | Dark | Stone-forged gauntlets | Deep red, gold, ember black | Living wall |
-| **Sereisa** | Tall lean speed-first | Pale Nordic | Platinum undercut | Light | **Twin** electro-blades (short curved, both hands) | Bright yellow, white, pale steel | Speed duelist |
+| **Sereisa** | Tall lean speed-first | Pale Nordic | Platinum undercut | Light | **Single lightning rapier** — slender, precise, one hand | Bright yellow, white, pale steel | Speed duelist |
 | **Vesol** | Defined, poised, refined | Warm tan | Dark controlled bun | Dark | Gate crystal focus at left wrist | Deep blue, crimson, dark charcoal | Arcane controller |
 
 ---
@@ -26,8 +27,10 @@
 | Dabik | Close-cut black hair, dark eyes | **Short wild spiky WHITE hair, purple eyes** |
 | Dabik | Lean build | **Muscular and agile — compact power** |
 | Benzu | Dark brown skin, shaved head | **Bronze-orange skin, long dirty-blonde mane** |
-| Sereisa | Single rapier | **Twin electro-blades — one in each hand** |
+| Sereisa | Twin blades / twin electro-blades | **Single lightning rapier — one hand, slender, crackling** |
+| Sereisa | Heavy gear or armour | **Sleek fitted fencing-inspired, nothing restrictive** |
 | Vesol | Generic dark hair bun | **Architectural bun, jade pins, 2-3 crimson streaks** |
+| Vesol | Physical blade of any kind | **Crystal focus rod at wrist only — no blade** |
 
 ---
 
@@ -75,7 +78,7 @@ At full Surge/Inferno: crimson streaks glow faintly at the tips.
 |---|---|---|
 | **Dabik** | Black, purple edges, stays close to body | Deep purple spreads wide, white hair gets purple sheen |
 | **Benzu** | Deep red with gold fracture pulses at fists/boots | Full gold-red blaze, cracks radiate from feet |
-| **Sereisa** | Yellow-white crackle at hands/feet | Full yellow-white storm, lightning threads everywhere |
+| **Sereisa** | Yellow-white crackle at hands/feet, along rapier blade | Full yellow-white storm, lightning threads everywhere |
 | **Vesol** | Cold blue particles drifting upward | Full crimson — blue vanishes entirely |
 
 ---
@@ -86,7 +89,7 @@ At full Surge/Inferno: crimson streaks glow faintly at the tips.
 |---|---|---|
 | **Dabik** | Twin curved daggers | One at side, one reverse-grip at back hip. No markings, no grip tape. |
 | **Benzu** | Stone-forged gauntlets | Both fists/forearms to elbow. Gate ore vein glow (gold-orange). |
-| **Sereisa** | Twin electro-blades | Short curved blades, ONE IN EACH HAND. Both always active. |
+| **Sereisa** | Single lightning rapier | ONE rapier, right hand. Slender, precise. Permanently crackling yellow-white. Clean aerodynamic silhouette. |
 | **Vesol** | Gate crystal focus rod | Left wrist, flush to forearm. ~20cm. No blade. Cold blue glow. |
 
 ---
@@ -100,7 +103,13 @@ Camera/pose:     Castle Crashers — 2.5D angled 3/4 isometric view,
                  clean readable silhouettes, bold outlines
 Animation feel:  Dead Cells — snappy, tight, no floaty motion,
                  every hit has weight, every dodge is intentional
+Clothing tone:   Modern tailoring mixed with arcane battle gear —
+                 designed for a specific purpose, not found.
+                 Characters look like professionals, not fantasy heroes.
+Logo:            Huntix angular H symbol engraved/embossed on armour
+                 as agency insignia — part of the world, not branding.
 NOT:             Chibi. Western cartoon. Anime generic. Tribal markings.
+                 Casual streetwear. Twin blades on Sereisa.
 ```
 
 ---

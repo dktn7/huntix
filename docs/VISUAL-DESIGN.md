@@ -1,5 +1,9 @@
 # HUNTIX Full Design Spec v2
 
+> **Source of truth for visual style and art direction.**
+> For character appearance details (skin, hair, eyes, build) always defer to `docs/HUNTERS.md`.
+> For weapon identity always defer to `docs/HUNTERS.md` and `docs/WEAPONS.md`.
+
 ## 1. High Concept
 Huntix is a 2.5D Three.js browser action game set in a modern arcane world where elite hunters defend city districts from gate breaches. The game blends urban fantasy, dramatic aura powers, readable co-op combat, and short run-based progression. The core fantasy is simple: enter a breach, survive the zone, defeat the boss, return stronger.
 
@@ -26,23 +30,26 @@ Characters should be designed around story first, then role, then class readabil
 
 ## 7. Hunters
 
+> ⚠️ Appearance details below are summaries only. Full canonical descriptions live in `docs/HUNTERS.md`.
+> Do not use this section as a prompt source — use `docs/HUNTERS.md` and `docs/VISUAL-REFERENCE.md`.
+
 ### Dabik
-Dabik should look like a shadow tracker from a modern hunter network. He wears dark fitted tactical layers, minimal armor, a high collar or hood option, and understated gear that suggests stealth and precision. His twin daggers should be the visual focal point, with a black-purple aura and thin shadow trails.
+Dabik should look like a shadow tracker from a modern hunter network. Muscular and agile — compact power. Dark brown skin, short wild spiky white hair, purple eyes. He wears dark fitted tactical layers, minimal armor, a high collar or hood option, and understated gear that suggests stealth and precision. His twin curved daggers should be the visual focal point, with a black-purple aura and thin shadow trails.
 
 ### Benzu
-Benzu should look like a heavy frontline breaker built from construction strength and gate reinforcement. He wears large custom armor plates, thick gauntlets, reinforced boots, and broad shoulder shapes. His red-gold thunder aura should make him feel immovable, loud, and dangerous.
+Benzu should look like a heavy frontline breaker built from construction strength and gate reinforcement. Bronze-orange skin, long dirty-blonde mane. He wears large custom armor plates, thick stone-forged gauntlets, reinforced boots, and broad shoulder shapes. His red-gold thunder aura should make him feel immovable, loud, and dangerous.
 
 ### Sereisa
-Sereisa should look like an elite arcane duelist and speed specialist. Her style should be sleek, fitted, and aerodynamic, with fencing-inspired lines, light plating, and polished modern combat tailoring. Her twin electro-blades and yellow-white lightning aura should make her read as the fastest hunter in motion.
+Sereisa should look like an elite arcane duelist and speed specialist. Pale Nordic skin, platinum undercut. Her style should be sleek, fitted, and aerodynamic, with fencing-inspired lines, light plating, and polished modern combat tailoring. Her single lightning rapier — slender, precise, permanently crackling with electric charge — and yellow-white lightning aura should make her read as the fastest hunter in motion. The single rapier keeps her silhouette clean and aerodynamic.
 
 ### Vesol
-Vesol should look like a modern arcane researcher turned battlefield mage. She wears structured coats, layered mage-armor, crystal fittings, rune bands, and disciplined, elegant shapes. Her wrist focus or channeling device should be central, and her blue-to-crimson flame aura should suggest controlled heat and precision.
+Vesol should look like a modern arcane researcher turned battlefield mage. Warm tan skin, dark hair in a controlled architectural bun. She wears structured coats, layered mage-armor, crystal fittings, rune bands, and disciplined, elegant shapes. Her gate crystal channelling focus at the wrist should be central, and her blue-to-crimson flame aura should suggest controlled heat and precision.
 
 ## 8. Class and Style Relationship
 Class should influence posture, animation language, and combat clarity, but not lock the characters into bland archetypes. A character can look like a strategist, a technician, a warrior, or an investigator as long as the weapon, stance, and aura still communicate gameplay role. This allows the cast to feel more personal and memorable.
 
 ## 9. Weapon Styling
-Weapons should feel like they belong to the hunter, not like generic loot. Every weapon needs a clear silhouette, a readable profile from the side camera, and a distinct elemental effect. Daggers should feel sharp and light, gauntlets heavy and solid, electro-blades fast and elegant, and flame focuses refined and dangerous.
+Weapons should feel like they belong to the hunter, not like generic loot. Every weapon needs a clear silhouette, a readable profile from the side camera, and a distinct elemental effect. Daggers should feel sharp and light, gauntlets heavy and solid, the lightning rapier fast and precise, and flame focuses refined and dangerous.
 
 ## 10. 2.5D Model Rules
 The side-view camera means the most important shapes are head, shoulders, torso, hips, legs, and weapon outline. Avoid tiny detail clutter and prioritize large readable forms. Capes, collars, shoulder plates, belt shapes, and weapon length are more important than micro-detail. Armor should move enough to feel alive, but not so much that it muddies the silhouette.

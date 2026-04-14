@@ -2,7 +2,7 @@
 
 > *You blinked. That's why you lost.*
 
-<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
+<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance or weapon without updating HUNTERS.md first -->
 
 | Attribute | Value |
 |---|---|
@@ -11,7 +11,7 @@
 | Element | Lightning |
 | Status Effect | Slow (electric shock) |
 | Aura Colour | Bright yellow with white crackling edges |
-| Weapon | Twin electro-blades — short, curved, permanently humming with charge |
+| Weapon | Single lightning rapier — slender, precise, permanently crackling with electric charge |
 
 ---
 
@@ -31,11 +31,12 @@ Clothing: Fitted athletic gear, fencing-inspired and streamlined.
 Aura:    Bright yellow, white crackling edges.
          Sparks at hands and feet. Lightning threads up the arms.
          Crackles when she shifts weight.
-Weapon:  TWIN electro-blades — short, curved, one in each hand.
-         NOT a single rapier. Both permanently humming with charge.
+Weapon:  SINGLE lightning rapier — slender, one hand.
+         NOT twin blades. The single rapier keeps her silhouette
+         clean and aerodynamic. Permanently crackling with charge.
 ```
 
-**Visual note:** Her weapon should feel like speed and precision, not force. Lightning trails on movement reinforce her speed identity. Two blades, always both active.
+**Visual note (from HUNTERS.md):** Her weapon should feel like speed and precision, not force. The single rapier keeps her silhouette clean and aerodynamic. Lightning trails on movement reinforce her speed identity.
 
 ---
 
@@ -134,7 +135,7 @@ Treats every combat zone like a fencing bout — footwork, timing, distance mana
 Create a professional character design sheet for a 2D dark action-fantasy game.
 Divide into three vertical sections:
 - Left: front, side, back views (full body)
-- Centre: face portrait + twin electro-blade detail (BOTH blades)
+- Centre: face portrait + single lightning rapier detail
 - Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
 
 SOLID GREEN background (#00FF00). 9:16. High resolution.
@@ -155,12 +156,14 @@ Individual strands lift with static charge at full Storm Surge.
 CLOTHING:
 Dark charcoal structured combat outfit — nothing restrictive.
 Pale steel trim at shoulders and collar. Fitted not armoured.
-Lightweight boots built for movement.
+Lightweight boots built for movement. Fencing-inspired clean lines.
+Huntix logo — angular H symbol — engraved at shoulder as agency insignia.
 
 WEAPON:
-TWIN short curved blades — one in each hand.
-Both permanently electrified. Yellow-white electrical arc along both blades.
-Sparks at tips. Always active. Both visible in all three views.
+SINGLE lightning rapier — one hand, right side.
+Slender, precise. Permanently crackling with electric charge along the blade.
+Yellow-white arc along the full length. Clean aerodynamic profile.
+NOT twin blades. One weapon. The rapier silhouette is her identity.
 
 AURA:
 Bright yellow with white crackling edges. Active, not subtle.
@@ -177,15 +180,15 @@ platinum hair as contrast.
 IDLE:
 2D sidescroller. Dead Cells feel — coiled energy, precise micro-movements, no floaty motion.
 Character: tall pale Nordic woman, dark charcoal structured jacket,
-platinum undercut hair, TWIN electro-blades crackling yellow-white.
-Idle: weight slightly forward, both blades low but live.
-Lightning arcs along both blades constantly. Sparks drift from hands.
-Solo Leveling aura — electricity threads up the arms.
+platinum undercut hair, SINGLE lightning rapier crackling yellow-white in right hand.
+Idle: weight slightly forward, rapier held low but live.
+Lightning arcs along blade constantly. Sparks drift from hand.
+Solo Leveling aura — electricity threads up the arm.
 3-second seamless loop. Green background. Fixed Castle Crashers 2.5D angle.
 
 LIGHT ATTACK (3-hit combo):
 Same character. Dead Cells — fastest combo on the roster.
-Fencing-style: thrust (right blade), slash (left blade), full dash-through.
+Fencing-style: thrust, parry-slash, full dash-through.
 Third hit: complete pass-through, lightning trail left behind.
 Yellow spark burst on each hit. Total combo under 0.6 seconds.
 Green background. Fixed 2.5D angle.
