@@ -1,169 +1,206 @@
-<div align="center">
+# SEREISA — Storm Chaser
 
-# ⚡ SEREISA
-### STORM CHASER — S-RANK
-> *"You blinked. That's why you lost."*
+> *You blinked. That's why you lost.*
 
-![Aura](https://img.shields.io/badge/Element-Lightning-FFD700?style=flat-square&labelColor=1a1a00) ![Status](https://img.shields.io/badge/Status_Effect-Slow-yellow?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-British--Nordic-4682B4?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
+<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
 
-</div>
-
----
-
-## ⚡ Physical Profile
-
-| Attribute | Detail |
-|:---|:---|
-| **Build** | Tall, lean, sharp-featured — upright, deliberate, always balanced |
-| **Skin** | Pale — Nordic colouring |
-| **Hair** | Platinum — short, practical |
-| **Eyes** | Light, focused |
-| **Clothing** | Structured — nothing restrictive. Fencer's posture built in. |
-| **Weapon** | Twin electro-blades — short, curved, permanently humming with charge |
-| **Aura** | Bright yellow with white crackling edges — sparks visibly at hands and feet when she shifts weight |
-
-> *The fastest thing in any room she enters.*
-> *She knows it. Everyone else finds out.*
+| Attribute | Value |
+|---|---|
+| Origin | European / British-Nordic |
+| Rank | S-Class |
+| Element | Lightning |
+| Status Effect | Slow (electric shock) |
+| Aura Colour | Bright yellow with white crackling edges |
+| Weapon | Twin electro-blades — short, curved, permanently humming with charge |
 
 ---
 
-## ⚡ Weapon — Twin Electro-Blades
+## Appearance
+
+> **⚠️ Canonical design — read from HUNTERS.md before editing**
 
 ```
-  ITEM CLASS : Paired Short Blades
-  MATERIAL   : Modified fencing blades — post-awakening lightning channelling
-  CONDITION  : Permanently active. Hum audible at 3 metres.
-  FUNCTION   : Precision strikes. Shock on contact. Slow applied.
-               Every hit controls distance.
-               Every dash is punishment.
-  NOTE       : Originally competition fencing equipment.
-               Still the most precise weapons on the roster.
-               Just electrified.
+Build:   Tall, lean, sharp-featured. Speed-first silhouette.
+Skin:    Pale Nordic
+Hair:    Platinum — short, practical, kept clean. Undercut.
+Eyes:    Light — sharp and focused
+Posture: Fencer's stance built into how she stands —
+         upright, deliberate, always balanced
+Clothing: Fitted athletic gear, fencing-inspired and streamlined.
+          Nothing restrictive. No heavy plate.
+Aura:    Bright yellow, white crackling edges.
+         Sparks at hands and feet. Lightning threads up the arms.
+         Crackles when she shifts weight.
+Weapon:  TWIN electro-blades — short, curved, one in each hand.
+         NOT a single rapier. Both permanently humming with charge.
 ```
 
----
-
-## 📊 Combat Vitals
-
-| Attribute | Value | Notes |
-|:---|:---|:---|
-| **Health** | `100` | Medium — survives through movement |
-| **Mana** | `100` | Balanced pool |
-| **Mana Regen** | `6/sec + 8 per dash through enemy` | Rewards aggressive dashing |
-| **Surge** | Builds on hit streaks | Keep attacking without getting hit |
-| **Move Speed** | `8/10` | Second fastest |
-| **Attack Speed** | `8/10` | Fast combos, chain dashes |
-| **Damage** | `7/10` | Medium-high — shock adds bonus |
-| **Defense** | `5/10` | Relies on not getting hit |
-| **Dodge** | Electric Dash | Dashes through enemies — applies slow on contact. Medium CD. |
+**Visual note:** Her weapon should feel like speed and precision, not force. Lightning trails on movement reinforce her speed identity. Two blades, always both active.
 
 ---
 
-## ⚡ Spell Mastery
-
-| Tier | Name | Cost | Effect |
-|:---|:---|:---|:---|
-| **Minor** | `Electric Dart` | 15 mana | Ranged shock projectile — slows enemy 40% for 2s |
-| **Advanced** | `Chain Shock` | 45 mana | Lightning chains between up to 4 enemies — all slowed |
-| **Ultimate** | `Storm Surge` | Full Surge | Untouchable 6s — every dash deals damage, speed doubles |
-
-> ⚡ **Slow** — Electric shock applied on dashes and Electric Dart. Reduces enemy speed/attack rate.
-
-### 🔗 Synergies
-
-| Combo | With | Effect |
-|:---|:---|:---|
-| Bleed + Slow | **Dabik** | Slowed enemies take amplified bleed damage |
-| Slow + Blink | **Dabik** | Free backstab on shocked target |
-
----
-
-## ⬆️ Upgrade Paths
-
-| Path | What Accelerates |
-|:---|:---|
-| **Mobility** 💨 | Dash CD reduced — Chain Shock hits +1 target |
-| **Power** ⚡ | Slow duration up — shocked enemies take bonus damage from all hunters |
-| **Style** ✨ | Aura crackles constantly — dashes leave persistent lightning trails |
-
----
-
-## 📋 Authority Record
+## Hair (Prompt-Ready)
 
 ```
-╔══════════════════════════════════════════════════════════╗
-║     GATE AUTHORITY — SUBJECT FILE                        ║
-║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
-╚══════════════════════════════════════════════════════════╝
-
-  SUBJECT      : SEREISA
-  ELEMENT      : Lightning
-  ORIGIN       : London, UK — British mother, Norwegian father
-
-  PRE-AWAKENING
-  ─────────────
-  Education    : Sports Science (PhD — incomplete at awakening)
-  Athletics    : National-level fencer.
-                 Under-21 championships. Represented country.
-
-  AWAKENING EVENT
-  ───────────────
-  Location     : Charity gate-clearing event. Civilian zone.
-  Incident     : Barrier failed.
-  Response     : Moved before any professional hunter.
-                 Crossed 30m of active combat zone.
-                 Pulled 2 people clear before response team arrived.
-  Footage      : Blurred. Speed unclocked on camera.
-
-  S-RANK RECORD
-  ─────────────
-  Progression  : S-Class in under 18 months.
-  Record       : Fastest S-Rank progression in EU gate authority history.
-  Status       : STILL STANDS.
-
-  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
+HAIR: Platinum white — natural Nordic near-white, not dyed.
+Disconnected undercut — skin fade on sides, top 6-8cm swept back
+and slightly to one side. Holds shape without product.
+Moves with her — reacts to speed.
+At full Storm Surge: individual strands visibly charged,
+lift slightly at tips with static. Lightning threads through hair.
 ```
 
 ---
 
-## 🧠 Personality
+## Background
+
+> *Gate Authority EU Division — Record: Fastest S-Rank Progression*
+> *Classification: S-Rank Active | EU speed record: still standing*
+
+```
+Born in London. British mother, Norwegian father — both academics.
+Competed in fencing at national level from childhood.
+Represented her country at under-21 championships.
+Studied sports science at university. Was mid-PhD when the gates opened.
+
+Awakening: charity gate-clearing event. Barrier failed.
+She moved before any professional hunters did.
+Crossed thirty metres of active combat zone.
+Pulled two people clear before the response team arrived.
+Nobody clocked her speed on camera — the footage blurred.
+
+Qualified S-Rank: under eighteen months.
+Fastest progression in European gate authority history.
+The record still stands.
+```
+
+---
+
+## Personality
 
 > *Competitive, precise, occasionally insufferable about both.*
-> *Has an answer for everything. Usually right. Which makes it worse.*
-> *Genuinely warm underneath — care expressed by showing up faster than anyone else.*
-> *Running rivalry with Dabik on who is actually faster.*
-> *Neither will ever formally resolve it.*
 
-**Combat Philosophy:**
+- Has an answer for everything and is usually right, which makes it worse
+- Genuinely warm underneath — expresses care by showing up faster than anyone else
+- Running rivalry with Dabik about who is actually faster — neither will ever formally resolve it
+
+---
+
+## Combat Philosophy
+
 > *"Control the distance. Control the fight."*
 
-> Treats every combat zone like a fencing bout.
-> Footwork. Timing. Distance management.
-> Never stands where an attack expects her to be.
-> Shocks to slow — then makes them pay for being slow.
+Treats every combat zone like a fencing bout — footwork, timing, distance management. Never stands where an attack expects her to be. Electric dash isn't just repositioning, it's punishment. Shocks targets to slow them, then makes them pay for being slow.
 
 ---
 
-## 👥 Team Dynamic
+## Stats
 
-| Hunter | Field Notes |
-|:---|:---|
-| 🌑 **Dabik** | Competitive — would die for him. Speed rivalry ongoing. |
-| 🔴 **Benzu** | Loud friendship — opposite energy |
-| 🔥 **Vesol** | Intellectual sparring — deep mutual respect |
-
----
-
-## 🎮 Controls
-
-| Action | ⌨️ Keys | 🎮 Controller |
-|:---|:---|:---|
-| Move | `WASD` | Left Stick |
-| Light Attack | `LMB` | X / Square |
-| Heavy Attack | `RMB` | Y / Triangle |
-| Dodge — Electric Dash | `LShift` | B / Circle |
-| Spell | `E` tap/hold | RB / R1 |
+| Stat | Value | Notes |
+|---|---|---|
+| Health | 100 | Medium — survives through movement |
+| Mana | 100 | Balanced pool |
+| Mana Regen | 6s / 8 per dash through enemy | Rewards aggressive dashing |
+| Surge Rate | Builds on hit streaks | Keep attacking without getting hit |
+| Move Speed | 8/10 | Second fastest |
+| Attack Speed | 8/10 | Fast combos, chain dashes |
+| Damage | 7/10 | Medium-high, shock adds bonus |
+| Defense | 5/10 | Medium — relies on not getting hit |
+| Dodge | Electric Dash — dashes through enemies, applies slow on contact | Medium cooldown |
 
 ---
 
-*← [Back to All Hunters](../HUNTERS.md)*
+## Spells
+
+| Tier | Name | Cost | Effect |
+|---|---|---|---|
+| Minor | Electric Dart | 15 mana | Ranged shock projectile, slows enemy 40% for 2s |
+| Advanced | Chain Shock | 45 mana | Lightning chains between up to 4 enemies, all slowed |
+| Ultimate | Storm Surge | Full Surge | Untouchable for 6s, every dash deals damage, speed doubles |
+
+---
+
+## Upgrade Paths
+
+- **Mobility** — dash cooldown reduced, chain shock gains one extra target
+- **Power** — slow duration increases, shocked enemies take bonus damage from all hunters
+- **Style** — yellow/white aura crackles, dashes leave persistent lightning trails on ground
+
+---
+
+## Mixboard Prompt
+
+```
+Create a professional character design sheet for a 2D dark action-fantasy game.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + twin electro-blade detail (BOTH blades)
+- Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+Art direction: Solo Leveling (S-rank hunter, aura as identity, elite presence).
+Character readability: Castle Crashers (sharp readable silhouette, bold outlines, 2.5D angle).
+NOT chibi. NOT western cartoon. Stylised but grounded. No text. No UI.
+
+CHARACTER:
+British-Norwegian woman. Tall, lean, sharp-featured.
+Pale Nordic skin. Always balanced — fencer's posture built into how she stands.
+Light focused eyes.
+
+HAIR: Platinum white — natural Nordic near-white.
+Disconnected undercut — skin fade sides, top 6-8cm swept back to one side.
+Moves with her — reacts to speed. Lightning threads through hair at full aura.
+Individual strands lift with static charge at full Storm Surge.
+
+CLOTHING:
+Dark charcoal structured combat outfit — nothing restrictive.
+Pale steel trim at shoulders and collar. Fitted not armoured.
+Lightweight boots built for movement.
+
+WEAPON:
+TWIN short curved blades — one in each hand.
+Both permanently electrified. Yellow-white electrical arc along both blades.
+Sparks at tips. Always active. Both visible in all three views.
+
+AURA:
+Bright yellow with white crackling edges. Active, not subtle.
+Sparks at hands and feet. Lightning threads run up the arms.
+Crackles when she shifts weight.
+
+COLOUR PALETTE: Charcoal black, pale steel, bright yellow, white lightning arc,
+platinum hair as contrast.
+```
+
+## Grok Animation Prompts
+
+```
+IDLE:
+2D sidescroller. Dead Cells feel — coiled energy, precise micro-movements, no floaty motion.
+Character: tall pale Nordic woman, dark charcoal structured jacket,
+platinum undercut hair, TWIN electro-blades crackling yellow-white.
+Idle: weight slightly forward, both blades low but live.
+Lightning arcs along both blades constantly. Sparks drift from hands.
+Solo Leveling aura — electricity threads up the arms.
+3-second seamless loop. Green background. Fixed Castle Crashers 2.5D angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Dead Cells — fastest combo on the roster.
+Fencing-style: thrust (right blade), slash (left blade), full dash-through.
+Third hit: complete pass-through, lightning trail left behind.
+Yellow spark burst on each hit. Total combo under 0.6 seconds.
+Green background. Fixed 2.5D angle.
+
+DODGE — ELECTRIC DASH:
+Full forward dash through enemy space. Zero hesitation.
+Yellow-white electric trail persists 0.5 seconds.
+Slow particles on contact. 0.2 second duration.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — STORM SURGE:
+Solo Leveling escalation — speed as power.
+Aura explodes full yellow-white. She becomes a blur.
+Every dash shown as streaking lightning lines across screen.
+Body barely visible inside the storm. 6-second duration.
+2-second build before burst releases — then pure chaos.
+Green background. Fixed 2.5D angle.
+```

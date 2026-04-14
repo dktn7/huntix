@@ -1,167 +1,195 @@
-<div align="center">
+# DABIK — Shadow Striker
 
-# 🌑 DABIK
-### SHADOW STRIKER — S-RANK
-> *"Silence is the last thing you hear."*
+> *Silence is the last thing you hear.*
 
-![Aura](https://img.shields.io/badge/Element-Shadow-1a0033?style=flat-square&labelColor=000) ![Status](https://img.shields.io/badge/Status_Effect-Bleed-4B0082?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-Caribbean--African-2d002d?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
+<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
 
-</div>
-
----
-
-## 🌑 Physical Profile
-
-| Attribute | Detail |
-|:---|:---|
-| **Build** | Lean, controlled — economy of motion that makes everyone else look wasteful |
-| **Skin** | Dark |
-| **Hair** | Close-cut |
-| **Eyes** | Don't miss anything |
-| **Clothing** | Minimal armour — dark fitted layers. Nothing that catches light. |
-| **Weapon** | Twin curved daggers — lightweight, unmarked, no grip tape. Worn from use, not decoration. |
-| **Aura** | Black with deep purple edges — doesn't flare. Spreads like a shadow at dusk. |
-
-> *Completely still until he isn't.*
-> *The aura doesn't announce him. It arrives after he does.*
+| Attribute | Value |
+|---|---|
+| Origin | Caribbean-African |
+| Rank | S-Class |
+| Element | Shadow |
+| Status Effect | Bleed |
+| Aura Colour | Black with deep purple edges |
+| Weapon | Twin curved daggers — lightweight, unmarked, no grip tape. Worn from use, not decoration. |
 
 ---
 
-## 🗡️ Weapon — Twin Curved Daggers
+## Appearance
+
+> **⚠️ Canonical design — read from HUNTERS.md before editing**
 
 ```
-  ITEM CLASS : Paired Short Blades
-  MATERIAL   : Unknown alloy — no markings, no origin stamp
-  CONDITION  : Worn from use. Not decoration.
-  CARRIED    : No sheath. No ceremony.
-  FUNCTION   : Precision bleed application at close range.
-               Not built to fight. Built to end.
-  NOTE       : He has never once sharpened them in front of anyone.
-               They are always sharp.
+Build:   Muscular and agile — compact power built for burst movement
+         and lethal close-range pressure. Fast shoulders and forearms,
+         not bulk for its own sake.
+Skin:    Dark brown
+Hair:    Short, wild, spiky WHITE — this is his primary visual identifier
+Eyes:    Purple — calm, unnatural, faint glow when shadow powers activate
+Armour:  Minimal — dark fitted layers, slim hood or short coat
+         Nothing that catches light. No tribal markings. No decorative detail.
+Aura:    Black with deep purple edges. Does not flare.
+         Spreads like a shadow at dusk. Stays close to the body.
 ```
 
----
-
-## 📊 Combat Vitals
-
-| Attribute | Value | Notes |
-|:---|:---|:---|
-| **Health** | `80` | Low — every mistake costs |
-| **Mana** | `120` | High — built around spell use |
-| **Mana Regen** | `8/sec + 5 per light hit` | Rewards aggressive play |
-| **Surge** | Builds on kills | Clean play charges ultimate faster |
-| **Move Speed** | `9/10` | 🔝 Fastest hunter |
-| **Attack Speed** | `9/10` | Rapid light combos |
-| **Damage** | `6/10` | Low per hit — devastating per combo |
-| **Defense** | `3/10` | Frail — dodge or die |
-| **Dodge** | Blink | Teleports behind nearest enemy. Low CD. |
+**Visual note:** His white hair and purple eyes carry all the supernatural identity. Avoid tribal markings, extra ornament, or heavy gear.
 
 ---
 
-## 🌑 Spell Mastery
-
-| Tier | Name | Cost | Effect |
-|:---|:---|:---|:---|
-| **Minor** | `Shadow Step` | 15 mana | Blink behind target — next hit applies bleed |
-| **Advanced** | `Shadow Clone` | 40 mana | Decoy taunts enemies for 3s |
-| **Ultimate** | `Monarch's Domain` | Full Surge | All enemies frozen 4s — Dabik invisible, rapid-strike mode |
-
-> 🩸 **Bleed** — Applied on light attacks and Shadow Step. Stacks. Ticks. Silent.
-
-### 🔗 Synergies
-
-| Combo | With | Effect |
-|:---|:---|:---|
-| Bleed + Slow | **Sereisa** | Slowed enemies take amplified bleed damage |
-| Slow + Blink | **Sereisa** | Free backstab on shocked target |
-
----
-
-## ⬆️ Upgrade Paths
-
-| Path | What Sharpens |
-|:---|:---|
-| **Power** 🩸 | Bleed stacks faster — +2 combo hits |
-| **Mobility** 💨 | Shadow Step CD halved — blink range doubled |
-| **Style** ✨ | Aura darkens. Clone fights back. Silent casting. |
-
----
-
-## 📋 Field Record
+## Hair (Prompt-Ready)
 
 ```
-╔══════════════════════════════════════════════════════════╗
-║     GATE AUTHORITY — SUBJECT FILE                        ║
-║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
-╚══════════════════════════════════════════════════════════╝
-
-  SUBJECT      : DABIK
-  ELEMENT      : Shadow
-  ORIGIN       : Caribbean-African — island between Caribbean Sea & Atlantic
-
-  PRE-AWAKENING
-  ─────────────
-  Heritage     : Grandfather was a tracker. Forests, animals, people.
-                 Dabik inherited the instinct.
-  Age 19       : Recruitment offers — private intelligence firms.
-                 Gates opened. That world became irrelevant.
-
-  FIRST GATE ENTRY
-  ────────────────
-  Rank at entry : C-Class
-  Entry method  : Solo. On a dare.
-  Exit rank     : A-Class.
-  Witnesses     : None.
-  Statement     : "The monsters had been loud."
-
-  S-RANK PATH
-  ───────────
-  Method       : Not strength. Not magic.
-                 Principle — the most dangerous thing is what you
-                 never see coming.
-
-  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
+HAIR: Short wild spiky white hair — natural supernatural colouring,
+not dyed. Tight coil texture at the roots, spikes upward and outward
+at the crown. No product. Irregular shape. Purple sheen visible
+under shadow aura light at full power state.
 ```
 
 ---
 
-## 🧠 Personality
+## Background
 
-> *Minimal. Observes everything, says very little.*
-> *Not cold — just precise.*
-> *Dry humour surfaces at the worst moments.*
-> *Trusted completely because he has never once needed to be told something twice.*
+> *Field Record — Gate Authority Caribbean Division*
+> *Classification: S-Rank Active*
 
-**Combat Philosophy:**
+```
+Born on a small island between the Caribbean Sea and the Atlantic,
+to a family with deep roots in West Africa.
+Grandfather: tracker — forests, animals, people.
+Dabik inherited the instinct.
+
+Age 19: Already being recruited by private intelligence firms
+before the gates opened and made that world irrelevant.
+
+First gate: entered alone. C-Rank on a dare.
+Exited: A-Rank. Nobody saw what happened inside.
+When asked, he said the monsters had been loud.
+
+S-Rank achieved not through brute strength or flashy magic
+but through a principle learned tracking in the forest:
+The most dangerous thing is what you never see coming.
+```
+
+---
+
+## Personality
+
+> *Minimal. Observes everything, says very little. Not cold — just precise.*
+
+- In the field: completely still until he isn't
+- Dry humour surfaces at the worst moments
+- Trusted completely — has never needed to be told something twice
+
+---
+
+## Combat Philosophy
+
 > *"Don't fight the enemy. End the encounter."*
 
-> He doesn't combo for the sake of it.
-> He bleeds targets methodically, reads openings,
-> and closes fights before they become fights.
-> The blink isn't a flashy dodge — it's the last step before the last hit.
+Every move has a purpose. He doesn't combo for the sake of it — bleeds targets methodically, reads openings, closes fights before they become fights. His blink isn't a flashy dodge. It's the last step before the last hit.
 
 ---
 
-## 👥 Team Dynamic
+## Stats
 
-| Hunter | Field Notes |
-|:---|:---|
-| 🔴 **Benzu** | Mutual respect — few words needed |
-| ⚡ **Sereisa** | Quiet rivalry — genuine trust. Neither will admit who's faster. |
-| 🔥 **Vesol** | Professional alignment — similar precision |
-
----
-
-## 🎮 Controls
-
-| Action | ⌨️ Keys | 🎮 Controller |
-|:---|:---|:---|
-| Move | `WASD` | Left Stick |
-| Light Attack | `LMB` | X / Square |
-| Heavy Attack | `RMB` | Y / Triangle |
-| Dodge — Blink | `LShift` | B / Circle |
-| Spell | `E` tap/hold | RB / R1 |
+| Stat | Value | Notes |
+|---|---|---|
+| Health | 80 | Low — punishes mistakes |
+| Mana | 120 | High — built around spell use |
+| Mana Regen | 8s / 5 per light hit | Rewards aggressive play |
+| Surge Rate | Builds on kills | Clean play charges ultimate faster |
+| Move Speed | 9/10 | Fastest hunter |
+| Attack Speed | 9/10 | Rapid light combos |
+| Damage | 6/10 | Low per hit, devastating per combo |
+| Defense | 3/10 | Frail — must dodge |
+| Dodge | Blink — teleports behind nearest enemy | Low cooldown |
 
 ---
 
-*← [Back to All Hunters](../HUNTERS.md)*
+## Spells
+
+| Tier | Name | Cost | Effect |
+|---|---|---|---|
+| Minor | Shadow Step | 15 mana | Blinks behind target, next hit applies bleed |
+| Advanced | Shadow Clone | 40 mana | Decoy taunts enemies for 3 seconds |
+| Ultimate | Monarch's Domain | Full Surge | All enemies frozen 4s; Dabik enters invisible rapid-strike mode |
+
+---
+
+## Upgrade Paths
+
+- **Power** — bleed stacks deal more damage, combos extend by 2 hits
+- **Mobility** — Shadow Step cooldown halved, blink range doubled
+- **Style** — aura darkens, clone fights back, silent casting unlocked
+
+---
+
+## Mixboard Prompt
+
+```
+Create a professional character design sheet for a 2D dark action-fantasy game.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + twin curved dagger detail
+- Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+Art direction: Solo Leveling (shadow aura, S-rank hunter, power through stillness).
+Character readability: Castle Crashers (bold silhouette, 2.5D angle).
+NOT chibi. NOT western cartoon. Stylised but grounded. No text. No UI.
+
+CHARACTER:
+Caribbean-African man. Muscular and agile — compact power, fast shoulders.
+Dark brown skin. Short wild spiky WHITE hair — natural, not dyed,
+tight coil roots, spikes upward at crown, irregular shape.
+Purple eyes — calm, unnatural stillness, faint glow in power states.
+
+CLOTHING:
+Minimal dark armour — matte black fitted layers.
+Slim dark hood or short coat. Nothing catches light.
+No buckles, no tribal markings, no decorative detail.
+Dark trousers, flat dark boots.
+
+WEAPON:
+Twin curved daggers — one at side, one reverse-grip at back hip.
+No markings, no grip tape. Worn from use. Lightweight, short curved blades.
+
+AURA:
+Black with deep purple edges. Does not flare.
+Spreads close to the body like a shadow at dusk.
+Purple sheen at crown of hair under shadow light.
+
+COLOUR PALETTE: Matte black, deep purple edge-glow, dark charcoal,
+muted silver blade edges, white hair high contrast.
+```
+
+## Grok Animation Prompts
+
+```
+IDLE:
+2D sidescroller. Dead Cells animation feel — minimal, deliberate, no floaty motion.
+Character: muscular dark-brown-skinned man, matte black layers,
+short wild spiky WHITE hair, purple eyes, twin curved daggers.
+Almost no idle movement — weight shifts once, one dagger taps the thigh.
+Purple-black shadow aura drifts low. Solo Leveling aura style.
+3-second seamless loop. Green (#00FF00) background.
+Fixed Castle Crashers 2.5D angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Dead Cells — explosive from stillness, instant return.
+Step in, slash, slash, reverse-grip finish. Under 0.8 seconds total.
+Motion blur on blades. No flourish. Pure efficiency.
+Green background. Fixed 2.5D angle.
+
+DODGE — BLINK:
+Vanishes in shadow burst — reappears behind enemy, dagger raised.
+Shadow lingers 0.4 seconds at origin. 0.3 second duration.
+Solo Leveling shadow particles on exit and entry.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — MONARCH'S DOMAIN:
+Raises one hand slowly. Shadow expands from feet outward across screen.
+Purple-black covers arena edges. Steps into invisibility.
+Afterimage remains 1 second. 2-second build.
+Green background. Fixed 2.5D angle.
+```

@@ -1,168 +1,206 @@
-<div align="center">
+# VESOL — Ember Mage
 
-# 🔥 VESOL
-### EMBER MAGE — S-RANK
-> *"The gate burns. So does everything in it."*
+> *The gate burns. So does everything in it.*
 
-![Aura](https://img.shields.io/badge/Element-Flame-crimson?style=flat-square) ![Status](https://img.shields.io/badge/Status_Effect-Burn-orange?style=flat-square) ![Origin](https://img.shields.io/badge/Origin-Japanese--Filipino-8B0000?style=flat-square) ![Rank](https://img.shields.io/badge/Rank-S--Class-gold?style=flat-square)
+<!-- SOURCE OF TRUTH: docs/HUNTERS.md — do not edit appearance without updating HUNTERS.md first -->
 
-</div>
-
----
-
-## 🔬 Physical Profile
-
-| Attribute | Detail |
-|:---|:---|
-| **Height** | 5'6" |
-| **Build** | Poised, slender |
-| **Skin** | Warm tan |
-| **Hair** | Dark — high bun, jade pins, crimson streaks |
-| **Eyes** | Almond, dark |
-| **Clothing** | Blue kimono-hoodie, flame embroidery, deep red lining |
-| **Weapon** | Gate crystal focus — slender rod at the wrist. No blade. She doesn't need one. |
-| **Aura** | Cold blue at rest → bleeds crimson as mana rises → full crimson in Inferno state |
-
-> *Composed. Still in a way that reads as dangerous rather than calm.*
-> *In full Inferno state the blue vanishes entirely — she looks like she is standing in a furnace she built herself.*
+| Attribute | Value |
+|---|---|
+| Origin | Asian / Japanese-Filipino |
+| Rank | S-Class |
+| Element | Flame |
+| Status Effect | Burn |
+| Aura Colour | Deep blue bleeding into crimson as power increases |
+| Weapon | Channelling focus — slender rod of gate crystal worn at the wrist. No physical blade. |
 
 ---
 
-## 🔥 Weapon — Gate Crystal Focus
+## Appearance
+
+> **⚠️ Canonical design — read from HUNTERS.md before editing**
 
 ```
-  ITEM CLASS : Channelling Focus
-  MATERIAL   : Gate crystal — recovered from classified site, Tokyo Gate-7
-  WORN       : Wrist-mount. No grip. No blade. No ceremony.
-  FUNCTION   : Converts raw gate energy into directed flame output.
-               Hums at base mana. Glows white-hot at full Surge.
-  NOTE       : Originally a research instrument.
-               Still is. Just pointed outward now.
+Build:   Defined, poised, refined. Composed still.
+Skin:    Warm tan — Japanese-Filipino heritage
+Hair:    Dark — worn up and precise. Controlled bun, deliberate.
+Eyes:    Dark — composed, dangerous calm. Not cold.
+Clothing: Structured dark blues and blacks with deep red lining.
+Aura:    Starts cold blue, shifts to deep crimson as mana increases.
+         At full Inferno: blue vanishes entirely.
+         Looks like she is standing in a furnace she built herself.
+Weapon:  Slender gate crystal rod at left wrist — no blade, no handle.
+         Faint cold blue inner glow at rest.
 ```
 
----
-
-## 📊 Combat Vitals
-
-| Attribute | Value | Notes |
-|:---|:---|:---|
-| **Health** | `90` | Low-medium — stay at range |
-| **Mana** | `130` | 🔝 Highest in roster |
-| **Mana Regen** | `10/sec + 3 per spell hit` | Rewards hitting multiple targets |
-| **Surge** | Builds on spell hits | Cast constantly to charge ultimate |
-| **Move Speed** | `6/10` | Medium — not built to run |
-| **Attack Speed** | `5/10` | Deliberate. Every hit placed. |
-| **Damage** | `8/10 + Burn DoT` | High spell dmg + over-time |
-| **Defense** | `4/10` | Fragile up close |
-| **Dodge** | Flame Scatter | Ember burst — pushes enemies back. Medium CD. |
+**Visual note:** She should feel like the smartest person in the room without looking ornate. Let the aura shift carry the visual drama.
 
 ---
 
-## 🌡️ Spell Mastery
-
-| Tier | Name | Cost | Effect |
-|:---|:---|:---|:---|
-| **Minor** | `Flame Bolt` | 12 mana | Fast projectile — burn on hit (DoT 3s) |
-| **Advanced** | `Flame Wall` | 45 mana | Fire wall — burns all who pass through |
-| **Ultimate** | `Inferno` | Full Surge | Arena fills with fire 6s — all burn. Vesol immune. |
-
-> 🔥 **Burn** — DoT applied on all spell hits. Stacks for massive zone pressure.
-
-### 🔗 Synergies
-
-| Combo | With | Effect |
-|:---|:---|:---|
-| Stun + Wall | **Benzu** | Stunned enemies locked inside Flame Wall — guaranteed burn |
-| Burn + Slam | **Benzu** | Burning targets take bonus stagger on Seismic Slam |
-
----
-
-## ⬆️ Upgrade Paths
-
-| Path | What Burns Brighter |
-|:---|:---|
-| **Power** 🔥 | Burn damage doubles. Flame Wall duration extended. |
-| **Survival** 🛡️ | Mana regen up. Flame Scatter pushes further. |
-| **Style** ✨ | Aura shifts blue → deep crimson as she levels. Spells leave scorch marks. |
-
----
-
-## 📋 Laboratory Report
+## Hair (Prompt-Ready)
 
 ```
-╔══════════════════════════════════════════════════════════╗
-║     GATE AUTHORITY — SUBJECT FILE                        ║
-║     CLASSIFICATION: S-CLASS / ACTIVE OPERATIVE           ║
-╚══════════════════════════════════════════════════════════╝
-
-  SUBJECT      : VESOL
-  ELEMENT      : Flame
-  ORIGIN       : Tokyo, Japan — Japanese-Filipino
-
-  PRE-AWAKENING
-  ─────────────
-  Education    : PhD — Gate Energy Theory, Tokyo University
-  Publications : 3 papers on mana channelling (pre-field naming)
-  Role         : Lead researcher, government mana absorption programme
-  Objective    : Determine why certain individuals absorb gate energy
-                 without destabilising.
-
-  AWAKENING EVENT
-  ───────────────
-  Incident     : Calibration test. Containment room incinerated.
-  Casualties   : Zero.
-  Readings     : Extraordinary.
-  Outcome      : Reclassified from researcher to hunter — same afternoon.
-
-  FIELD RECORD
-  ────────────
-  S-Rank Gate  : 3rd solo run
-  Clearance    : 14 minutes
-  Report filed : 40 pages
-  Assessment   : Total precision. Zero wasted effort.
-
-  STATUS: ██ ACTIVE — S-RANK FIELD OPERATIVE ██
+HAIR: Dark near-black hair — structured high bun, architectural and deliberate.
+Not loose or romantic — compressed, controlled, tight cylinder shape.
+Two jade pins crossed through the bun — visible silhouette detail.
+2-3 deep crimson streaks painted through the bun, visible from front and side.
+A single short strand escapes at the temple — the only imprecision she allows.
+At full Surge/Inferno state: crimson streaks glow faintly at the tips.
 ```
 
 ---
 
-## 🧠 Personality
+## Background
 
-> *Measured, dry, observant.*
-> *The quietest person in any room who is also somehow the most present.*
-> *Speaks rarely in the field — when she does, everyone listens.*
-> *Warmth expressed entirely through competence — she always knows where everyone is,*
-> *what they need, and what is about to go wrong before it does.*
+> *Gate Authority Research Division — Incident Report #4471*
+> *Subject reclassification: Researcher → Hunter (same day)*
+> *Classification: S-Rank Active*
 
-**Combat Philosophy:**
+```
+Born in Tokyo. Japanese father, Filipino mother.
+Raised between both countries.
+
+PhD in gate energy theory — Tokyo University.
+Published three papers on mana channelling before the field had a name.
+Lead researcher: government programme studying mana absorption stability.
+
+The answer was her.
+
+The experiment concluded when she unconsciously incinerated a containment room
+during a calibration test.
+Nobody was hurt.
+The readings were extraordinary.
+Reclassified from researcher to hunter the same afternoon.
+
+Approached combat as she approached research:
+total precision, zero wasted effort.
+
+S-Rank: after her third solo gate run.
+Completed in fourteen minutes.
+Documented in a forty-page report afterwards.
+```
+
+---
+
+## Personality
+
+> *Measured, dry, observant. The quietest person in any room who is also the most present.*
+
+- Speaks rarely in the field — when she does, everyone listens
+- Warmth expressed entirely through competence
+- Always knows where everyone is, what they need, what is about to go wrong
+- Finds Benzu's approach to strategy deeply irrational and deeply effective — this bothers her more than she admits
+
+---
+
+## Combat Philosophy
+
 > *"Precision over power. Though precision at sufficient scale becomes power."*
 
-> She maps the battlefield before she enters it.
-> Flame Wall goes down first. Enemies route into it.
-> Everyone else finishes what she set up.
+Never wastes a spell. Every flame bolt is placed. Every wall serves a purpose. Maps the battlefield before engaging it and burns it in the order that makes most sense. In co-op she sets the arena up so everyone else can finish it.
 
 ---
 
-## 👥 Team Dynamic
+## Stats
 
-| Hunter | Field Notes |
-|:---|:---|
-| 🌑 **Dabik** | Professional alignment — similar precision, few words needed |
-| 🔴 **Benzu** | Fond of him, won't say so. His approach is irrational. Also deeply effective. |
-| ⚡ **Sereisa** | Intellectual sparring — deep mutual respect |
-
----
-
-## 🎮 Controls
-
-| Action | ⌨️ Keys | 🎮 Controller |
-|:---|:---|:---|
-| Move | `WASD` | Left Stick |
-| Light Attack | `LMB` | X / Square |
-| Heavy Attack | `RMB` | Y / Triangle |
-| Dodge — Flame Scatter | `LShift` | B / Circle |
-| Spell | `E` tap/hold | RB / R1 |
+| Stat | Value | Notes |
+|---|---|---|
+| Health | 90 | Low-medium — stay at range |
+| Mana | 130 | Highest in roster |
+| Mana Regen | 10s / 3 per enemy hit by spell | Rewards hitting multiple targets |
+| Surge Rate | Builds on spell hits | Cast constantly to charge ultimate |
+| Move Speed | 6/10 | Medium — not built to run |
+| Attack Speed | 5/10 | Slower but hits harder |
+| Damage | 8/10 | High spell damage, burn adds over-time |
+| Defense | 4/10 | Fragile up close |
+| Dodge | Flame Scatter — releases burst of embers, pushes enemies back | Medium cooldown |
 
 ---
 
-*← [Back to All Hunters](../HUNTERS.md)*
+## Spells
+
+| Tier | Name | Cost | Effect |
+|---|---|---|---|
+| Minor | Flame Bolt | 12 mana | Fast projectile, applies burn (damage over 3s) |
+| Advanced | Flame Wall | 45 mana | Wall of fire that damages and burns enemies passing through |
+| Ultimate | Inferno | Full Surge | Entire arena fills with fire for 6s, all enemies burn, Vesol immune |
+
+---
+
+## Upgrade Paths
+
+- **Power** — burn damage doubles, flame wall lasts longer
+- **Survival** — mana regen increases, flame scatter pushes further
+- **Style** — aura shifts from blue to deep crimson as she levels, spells leave scorch marks, silent casting unlocked
+
+---
+
+## Mixboard Prompt
+
+```
+Create a professional character design sheet for a 2D dark action-fantasy game.
+Divide into three vertical sections:
+- Left: front, side, back views (full body)
+- Centre: face portrait + left wrist crystal focus detail
+- Right: hero pose — 2.5D angled 3/4 Castle Crashers camera
+
+SOLID GREEN background (#00FF00). 9:16. High resolution.
+Art direction: Solo Leveling (aura, hunter aesthetic, dramatic power escalation).
+Character readability: Castle Crashers (clean silhouette, bold outlines, 2.5D angle).
+NOT chibi. NOT western cartoon. Stylised but grounded. No text. No UI.
+
+CHARACTER:
+Japanese-Filipino woman. 5'6", poised and slender. Warm tan skin.
+Dark almond-shaped eyes — composed, dangerous calm, not cold.
+
+HAIR: Dark near-black structured high bun — tight cylinder, architectural.
+Two jade pins crossed through the bun. 2-3 deep crimson streaks.
+One short strand loose at the temple. Crimson tips glow faintly.
+
+CLOTHING:
+Dark navy blue kimono-hoodie hybrid — structured, not loose.
+Deep red inner lining visible at collar and cuffs.
+Subtle flame embroidery on left shoulder in deep crimson thread.
+Dark fitted trousers. Clean dark boots.
+
+WEAPON:
+Left wrist: slender gate crystal rod ~20cm, flush against forearm.
+Faint cold blue inner glow at rest. No blade. No handle. Minimal.
+
+AURA:
+Cold blue flame particles rising from hands and feet — ~30cm radius.
+Bleeds from cold blue core to deep crimson at outer edges.
+Calm at rest. Does not flare.
+
+COLOUR PALETTE: Dark navy, charcoal black, deep crimson accent, cold blue glow.
+```
+
+## Grok Animation Prompts
+
+```
+IDLE:
+2D sidescroller. Dead Cells feel — composed stillness, no floaty motion.
+Character: slender Japanese-Filipino woman, blue kimono-hoodie,
+dark hair architectural bun with crimson streaks, wrist crystal glowing cold blue.
+Gentle idle breathing — shoulders rise and fall. Crystal pulses softly.
+Solo Leveling aura — cold blue particles drift upward slowly.
+3-second seamless loop. Green background. Fixed Castle Crashers 2.5D angle.
+
+LIGHT ATTACK (3-hit combo):
+Same character. Dead Cells — precise, controlled, crisp.
+Right hand raises, crystal brightens blue-to-crimson, bolt fires, returns to stance.
+3 hits. Controlled. No wasted movement. Solo Leveling aura flares on each cast.
+Green background. Fixed 2.5D angle.
+
+DODGE — FLAME SCATTER:
+Steps back, releases ember burst outward from both hands.
+Aura flares crimson for the duration, snaps back to blue.
+DeadCells dodge — instant commitment, clear i-frame read. 0.5 seconds.
+Green background. Fixed 2.5D angle.
+
+ULTIMATE — INFERNO:
+Solo Leveling dramatic escalation.
+Raises both arms — aura shifts fully crimson, screen edge glow builds.
+Stands in centre of growing inferno. Visibly immune. Composed. Still.
+2-second build. She is the furnace.
+Green background. Fixed 2.5D angle.
+```

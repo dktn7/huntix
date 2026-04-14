@@ -1,116 +1,181 @@
-# Huntix Vibe Jam 2026 MVP Development Plan
+# HUNTIX — MVP Build Plan
 
-**Deadline:** May 1, 2026 @ 12:37 GMT (Birmingham, UK)
-**Team:** Solo dev + AI assistance
-**Stack:** Three.js 2.5D browser brawler, 1–4 local co-op, roguelite runs 10–20min
-**Focus:** Instant load, 60fps, no login/no heavy shadows, widget included
-
-> **Architecture:** 2.5D — Three.js with 3D models, fixed orthographic camera, X/Y plane movement. Castle Crashers-style lane combat with the visual quality of 3D assets.
+*Last updated: April 14, 2026*
 
 ---
 
-## Core Loop
+## Current Status
 
-Hub (customize/shop) → Portal → Zone (fight waves/boss) → Essence/XP → Repeat
-
----
-
-## MVP Scope
-
-| Feature | Details |
-|---|---|
-| Hub | Character select (4 hunters), cosmetics/weapons, shop (6–8 slots), portals |
-| Hunters | Dabik/Benzu/Sereisa/Vesol — shared controls, unique stats/spells/status |
-| Combat | Light/heavy/dodge/special, mana/surge bars, synergies, juice (hitstop/shake) |
-| Enemies/Bosses | 3 types + 1 miniboss + 1 boss/zone, co-op scaling (HP/enemy count) |
-| Zones | 4 fixed — City Breach, Ruin Den, Shadow Core, Thunder Spire |
-| Progression | Essence drops, shop buys, run-tied levels (4 max, 3 choices each) |
-| Co-op | 1–4 local, AI fill, no friendly fire, distinct player colours |
-| Tech | Max 20 enemies (instanced), 500 particles, orthographic cam, AABB collision |
-
-**Post-MVP:** Online MP, more zones
-
----
-
-## Roguelite Run Structure
-
-- **Hub → 4 Zones → Bosses → Loop** (10–20min full clear)
-- **Start:** Select hunters/weapons, base kit
-- **Progress:** Clear zone → 500 Essence/XP → Hub shop → level if threshold hit
-- **Choices:** Farm (repeat prior zones) or Push (next zone, +10% enemy HP)
-- **Failure:** Wipe/timeout → Hub, lose buffs/XP, keep 50% Essence
-- **Win:** Clear all 4 → high score + Essence bonus → restart run
-
-### Leveling (Run-Tied XP)
-
-| Source | XP Reward |
-|---|---|
-| Enemy | 50–200 |
-| Boss | 1500 |
-| Zone clear | 500 |
-
-**Thresholds (cumulative):** L1: 500 · L2: 1500 · L3: 3000 · L4: 5000
-
-**Shop level-up:** 3 choices (Common/Rare/Elite mods, e.g. "Dash damages"). Max 4/run, reset on fail.
-
-### Zones & Bosses
-
-| Zone | Boss | Co-op Scale |
+| Area | Status | Notes |
 |---|---|---|
-| 1 — City Breach | Fire Bruiser | Adds in 4P |
-| 2 — Ruin Den | Earth Tank | Wall spawns |
-| 3 — Shadow Core | Rogue Dabik | ×2 Clones |
-| 4 — Thunder Spire | Raiju | Chain lightning |
+| GDD | ✅ Complete | `docs/GDD.md` |
+| Hunter designs | ✅ Complete | `docs/HUNTERS.md` — canonical source of truth |
+| Hunter individual files | ✅ Updated | `docs/hunters/` — corrected from HUNTERS.md |
+| Visual reference lock | ✅ New | `docs/VISUAL-REFERENCE.md` — read before any asset work |
+| Character art prompts | ✅ In each hunter file | Mixboard + Grok prompts embedded |
+| Asset pipeline | 🔄 In progress | Mixboard → Kling/Grok → Blender → TexturePacker → Three.js |
+| Three.js engine | 🔲 Not started | Phase 1 |
+| Combat system | 🔲 Not started | Phase 2 |
+| All 4 hunters playable | 🔲 Not started | Phase 3 |
+| Zones (3) | 🔲 Not started | Phase 4 |
+| Bosses | 🔲 Not started | Phase 4 |
+| Shop / progression | 🔲 Not started | Phase 5 |
+| Polish + deploy | 🔲 Not started | Phase 6 |
+| Vibe Jam widget | 🔲 Pending | Required — add to HTML before deploy |
 
 ---
 
-## Phased Timeline
+## Build Phases
 
-| Phase | Days (from Apr 13) | Tasks | Milestone |
-|---|---|---|---|
-| 1 — Core Engine | 1–3 | Three.js 2.5D setup (orthographic cam, X/Y movement), player controller (move/dodge/attack), basic scene/hub, widget integration | Solo hunter moves + attacks |
-| 2 — Combat Basics | 4–6 | Enemy AI (3 types, lane-based), AABB hit detection/status, mana/surge/spells, juice (shake/spark/slow-mo) | Fight grunt waves |
-| 3 — Hunters & Co-op | 7–9 | 4 hunters (models/animations), local 1–4P input/orthographic cam zoom, AI companions, scaling | 4P hub + combat |
-| 4 — Zones & Bosses | 10–12 | 4 zones/portals/transitions, parallax backgrounds, miniboss + boss phases, drops, magnet essence | Full run clear |
-| 5 — Progression/UI | 13–15 | Hub shop/customize, weapons/cosmetics, leveling (XP/thresholds/choices), HUD/combo UI | Buy + upgrade loop |
-| 6 — Polish & Deploy | 16–18 | Audio/SFX, onboarding prompts, perf tweaks (60fps), submit/deploy domain + widget | Playable demo |
+### Phase 1 — Core Engine (Days 1–3)
 
-**Rate:** 4–6 hrs/day with AI for code/models; GitHub repo.
+**Goal:** Solo hunter moves and attacks in a working Three.js scene.
 
----
+- [ ] Three.js project setup — public repo, single domain
+- [ ] 2.5D fixed-angle scene + camera (Castle Crashers angle)
+- [ ] Basic player controller — WASD move, Space jump, LShift dodge
+- [ ] Hunter hub placeholder scene
+- [ ] Vibe Jam widget integration: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- [ ] Light attack chain (3 hits), heavy attack
+- [ ] Basic aura particle system placeholder
 
-## Risks & Mitigations
-
-| Risk | Mitigation |
-|---|---|
-| Performance | Instanced meshes + orthographic cam early |
-| Co-op input bugs | Test local input Day 7 |
-| Asset quality | Low-poly stylized 3D models; reuse for variants |
-| Scope creep | Lock to table above; cut AI companion if needed |
-| Depth sorting | Use Three.js renderOrder + Z offsets for 2.5D layering |
+**Milestone:** One hunter moves, attacks, and dodges. Widget live.
 
 ---
 
-## Combat Feel / Juice
+### Phase 2 — Combat Basics (Days 4–6)
 
-- Hitstop/shake/flash + SFX
-- Combo UI (scales 1–20×, colour shifts green→red, audio ramp)
-- Kill slow-mo (final wave enemy: 0.3× speed for 500ms)
-- Gold magnet (particles lerp to player within 5m)
-- Ultimate: 200ms hitstop + camera zoom-punch
-- Input buffer/cancels (10–15 frames)
+**Goal:** Fight grunt waves with status effects and feedback.
+
+- [ ] 3 enemy types: Grunt (melee), Ranged Unit, Bruiser
+- [ ] Enemy FSM: idle → telegraph → action → recover
+- [ ] Hit detection + hitstop (40–80ms)
+- [ ] Status effects: Bleed, Stun, Slow, Burn
+- [ ] Health / Mana / Surge bars (HUD)
+- [ ] Mana system — passive regen + on-hit regen
+- [ ] Surge system — builds on kills / hits taken / streaks
+- [ ] Screen shake + hit sparks + stagger
+- [ ] Minor spell (tap E) per hunter
+
+**Milestone:** Fight and kill grunt waves with status feedback.
 
 ---
 
-## Deployment Checklist
+### Phase 3 — All Hunters + Co-op (Days 7–9)
 
-- [ ] Single domain (e.g. `huntix.yourdomain.com`)
-- [ ] No login/signup
-- [ ] No loading screens
-- [ ] Widget included:
+**Goal:** 4P hub and combat working.
 
-```html
-<script async src="https://vibej.am/2026/widget.js"></script>
-```
+- [ ] All 4 hunters implemented: Dabik, Benzu, Sereisa, Vesol
+- [ ] Hunter stat differences active (speed, damage, defense)
+- [ ] Each hunter dodge unique: Blink / Shoulder Charge / Electric Dash / Flame Scatter
+- [ ] Advanced spell (hold E) per hunter
+- [ ] Ultimate (full Surge) per hunter
+- [ ] Local 1–4P input handling
+- [ ] Camera pan/zoom for co-op visibility
+- [ ] Optional AI companion placeholder
+- [ ] Status effect synergies: Bleed+Slow, Stun+Wall, Slow+Blink, Burn+Slam
+- [ ] Co-op enemy HP scaling (+50% per additional player)
 
-- [ ] Submit before **May 1, 2026 @ 12:37 GMT**
+**Milestone:** 4P hub and combat working, all ultimates fire.
+
+---
+
+### Phase 4 — Zones + Bosses (Days 10–12)
+
+**Goal:** Full run clearable from hub to final boss.
+
+- [ ] City Breach zone — ruined streets, intro enemies, Fire Bruiser miniboss
+- [ ] Ruin Den zone — underground dungeon, aggressive waves, Earth Tank boss
+- [ ] Shadow Core zone — final boss: Rogue Dabik (mirror hunter)
+- [ ] Zone portal transitions
+- [ ] Boss phase FSM (Phase 1 → Phase 2 on HP threshold)
+- [ ] Essence/gold drops from enemies and bosses
+- [ ] Boss HP bar HUD
+- [ ] Co-op boss HP scaling
+- [ ] Juice: slow-mo kill, tiered screen shake, aura ramp on boss
+
+**Milestone:** Full run: Hub → 3 zones → 3 bosses → Victory.
+
+---
+
+### Phase 5 — Progression + UI (Days 13–15)
+
+**Goal:** Buy, upgrade, and level loop working.
+
+- [ ] Hub shop (6–8 slots, 1 reroll)
+- [ ] Shop categories: Power, Survival, Utility, Cosmetic
+- [ ] Level-up system (4 levels, 3 upgrade paths per hunter)
+- [ ] Upgrade paths: Power / Survival / Mobility / Style
+- [ ] Combo counter UI
+- [ ] Full HUD: health/mana/surge per hunter, currency, boss bar
+- [ ] Character select screen
+- [ ] Screen flow: Title → Hub → Shop → Portal → Zone → Boss → Victory
+
+**Milestone:** Buy upgrades, level up, visual aura changes on progression.
+
+---
+
+### Phase 6 — Polish + Deploy (Days 16–18)
+
+**Goal:** Playable public demo. Jam submission ready.
+
+- [ ] Audio: hit SFX, spell SFX, ambient zone audio, boss stingers
+- [ ] Combo audio feedback
+- [ ] Onboarding: control prompt on first load
+- [ ] 60fps performance pass — LOD, instanced meshes, particle caps
+- [ ] Max 20 enemies on screen at once enforced
+- [ ] Max 500 particles enforced
+- [ ] Deploy to single domain (no login, no signup, instant load)
+- [ ] Verify Vibe Jam widget is live and tracking
+- [ ] Portal webring (optional): exit portal → `https://vibej.am/portal/2026`
+- [ ] Final test: 1P and 4P local co-op run clear
+
+**Milestone:** Submitted to Vibe Jam 2026. Publicly playable.
+
+---
+
+## Post-MVP (After May 1)
+
+- Online multiplayer
+- Thunder Spire zone + Raiju boss
+- Additional hunters
+- Save/progression system
+- Quest and dialogue
+- Procedural generation
+- Complex inventory
+
+---
+
+## Asset Status
+
+| Hunter | Design Sheet | Animation | Blender Key | Atlas | In Engine |
+|---|---|---|---|---|---|
+| Dabik | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Benzu | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Sereisa | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Vesol | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+
+---
+
+## Source of Truth Rules
+
+> These rules exist to prevent design drift across documents.
+
+1. **`docs/HUNTERS.md`** is the master character document. All appearance, stats, spells sourced from here.
+2. **`docs/VISUAL-REFERENCE.md`** is the canonical design lock for asset generation. Read before any Mixboard/Grok/Kling prompt.
+3. **`docs/GDD.md`** is the master gameplay document. All mechanics sourced from here.
+4. **Individual hunter files** (`docs/hunters/`) are derived from HUNTERS.md — they embed prompts but do not override the master.
+5. **Never source character details from conversation history.** Always read the file.
+
+---
+
+## Jam Compliance Checklist
+
+- [ ] Widget script in HTML: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- [ ] Game on single domain or subdomain
+- [ ] No login, no signup required
+- [ ] Free to play
+- [ ] Instant browser load (no heavy loading screens)
+- [ ] New game — created during jam period (after April 1, 2026)
+- [ ] At least 90% of code written by AI
+- [ ] Submitted before May 1, 2026 @ 13:37 UTC
