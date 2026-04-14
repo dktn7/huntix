@@ -1,6 +1,6 @@
 # HUNTIX Hunter Character Document
 
-*Last updated April 13, 2026*
+*Last updated April 14, 2026*
 
 ## Overview
 
@@ -27,7 +27,9 @@ Born on a small island between the Caribbean Sea and the Atlantic, to a family w
 He reached S-Rank not through brute strength or flashy magic but through a principle he learned tracking in the forest as a child: the most dangerous thing is what you never see coming.
 
 ### Appearance
-Lean and controlled. Moves with an economy of motion that makes everyone else look wasteful. Dark skin, close-cut hair, eyes that don't miss anything. Wears minimal armour — dark fitted layers, nothing that catches light. His aura doesn't flare. It spreads like a shadow at dusk.
+Muscular and agile — compact power built for burst movement and lethal close-range pressure. Fast shoulders and forearms, not bulk for its own sake. Dark brown skin, short wild spiky white hair, purple eyes — calm, unnatural, with a faint glow when shadow powers activate. Wears minimal armour — dark fitted layers, slim hood or short coat, nothing that catches light. No tribal markings or decorative detail. His aura doesn't flare. It spreads like a shadow at dusk.
+
+**Visual note:** His white hair and purple eyes carry all the supernatural identity. Avoid tribal markings, extra ornament, or heavy gear.
 
 ### Personality
 Minimal. Observes everything, says very little. Not cold — just precise. In the field he is completely still until he isn't. Occasionally dry humour surfaces, usually at the worst moments. Trusted completely by the team because he has never once needed to be told something twice.
@@ -83,7 +85,9 @@ Grew up in Rio de Janeiro in a neighbourhood where strength was the only currenc
 He awakened mid-mission when a gate boss pinned his entire team. He picked up a piece of rubble the size of a car door and hit it until it stopped moving. The awakening just made that official. He rose through the ranks not because he was talented but because he was impossible to stop. Every S-Rank evaluation board said the same thing: *we have no protocol for this.*
 
 ### Appearance
-Enormous. Built like architecture. Dark brown skin, shaved head, a jaw that looks carved. His armour is heavy plate but custom — no manufacturer makes his size off the shelf. His aura doesn't shimmer — it pulses, deep red and gold, like something about to break through the ground. When he walks into a zone, enemies track him first. That's the point.
+Enormous. Built like architecture. Bronze-orange skin, long dirty-blonde mane — thick, heavy, worn loose or tied back. A jaw that looks carved. His armour is heavy plate but custom — no manufacturer makes his size off the shelf. His aura doesn't shimmer — it pulses, deep red and gold, like something about to break through the ground. When he walks into a zone, enemies track him first. That's the point.
+
+**Visual note:** The dirty-blonde hair contrasts cleanly against his bronze-orange skin, letting the aura and sheer size carry the visual identity. He should always feel like the biggest and heaviest object in the room.
 
 ### Personality
 Direct, warm, occasionally terrifying. The team's anchor in every sense. Laughs loudly, holds grudges never, hits things extremely hard. Has zero patience for strategy meetings but perfect instinct in the field. Protective of his team in a way that borders on immovable.
@@ -131,7 +135,7 @@ Take the hit. Then take everything else. Benzu's approach is pure attrition. He 
 | Element | Lightning |
 | Status Effect | Slow (electric shock) |
 | Aura Colour | Bright yellow with white crackling edges |
-| Weapon | Twin electro-blades — short, curved, permanently humming with charge |
+| Weapon | Single lightning rapier — slender, precise, permanently crackling with electric charge |
 
 ### Background
 Born in London to a British mother and Norwegian father, both academics. Grew up competing in fencing at national level, represented her country at under-21 championships. Studied sports science at university and was mid-PhD when the gates opened.
@@ -141,7 +145,9 @@ Her awakening happened during a charity gate-clearing event in the early days wh
 She qualified S-Rank in under eighteen months, the fastest progression in European gate authority history. The record still stands.
 
 ### Appearance
-Tall, lean, sharp-featured. Nordic colouring — pale skin, light eyes, platinum hair kept short and practical. Moves with the posture of someone who has trained in fencing halls since childhood — upright, deliberate, always balanced. Her aura crackles visibly around her hands and feet, sparking when she shifts her weight.
+Tall, lean, sharp-featured. Nordic colouring — pale skin, light eyes, platinum undercut kept short and practical. Moves with the posture of someone who has trained in fencing halls since childhood — upright, deliberate, always balanced. Her aura crackles visibly around her hands and feet, sparking when she shifts her weight. Fitted athletic gear, fencing-inspired and streamlined.
+
+**Visual note:** Her weapon should feel like speed and precision, not force. The single rapier keeps her silhouette clean and aerodynamic. Lightning trails on movement reinforce her speed identity.
 
 ### Personality
 Competitive, precise, occasionally insufferable about both. Has an answer for everything and is usually right, which makes it worse. Genuinely warm underneath the edge — she simply expresses care through showing up faster than anyone else when it matters. Has a running rivalry with Dabik about who is actually faster that neither of them will ever formally resolve.
@@ -199,7 +205,9 @@ The answer was her. The experiment concluded when she unconsciously incinerated 
 S-Rank certification came after her third gate solo run, which she completed in fourteen minutes and documented in a forty-page report afterwards.
 
 ### Appearance
-Composed. Still in a way that reads as dangerous rather than calm. Japanese-Filipino heritage — dark eyes, dark hair worn up and precise, structured clothing in dark blues and blacks with deep red lining. Her aura is unusual — it starts cold blue and shifts toward deep crimson the more mana she channels, giving the impression of something heating to critical point. In full Inferno state the blue vanishes entirely and she looks like she is standing in a furnace she built herself.
+Composed. Still in a way that reads as dangerous rather than calm. Japanese-Filipino heritage — dark eyes, dark hair worn up in a controlled bun with a few deliberate loose strands, structured clothing in dark blues and blacks with deep red lining. Her aura is unusual — it starts cold blue and shifts toward deep crimson the more mana she channels, giving the impression of something heating to critical point. In full Inferno state the blue vanishes entirely and she looks like she is standing in a furnace she built herself.
+
+**Visual note:** She should feel like the smartest person in the room without looking ornate. Let the aura shift carry the visual drama.
 
 ### Personality
 Measured, dry, observant. The quietest person in any room who is also somehow the most present. Speaks rarely in the field but when she does everyone listens. Has genuine warmth for the team expressed entirely through competence — she will always know where everyone is, what they need, and what is about to go wrong before it does. Finds Benzu's approach to strategy deeply irrational and deeply effective, which bothers her more than she admits.
@@ -244,3 +252,14 @@ Precision over power. Though precision at sufficient scale becomes power. Vesol 
 | **Benzu** | Trusts completely | — | Loud friendship, opposite energy | Affectionate exasperation |
 | **Sereisa** | Competitive, would die for him | Loud friendship | — | Intellectual sparring, deep respect |
 | **Vesol** | Professional trust | Fond of him, won't say so | Respects the footwork | — |
+
+---
+
+## Design Lock — Visual Reference
+
+| Hunter | Build | Skin | Hair | Eyes | Weapon | Palette | Core Read |
+|---|---|---|---|---|---|---|---|
+| Dabik | Muscular agile, compact | Dark brown | Short wild spiky white | Purple (faint glow in power states) | Twin curved daggers | Black, purple, muted silver | Silent predator |
+| Benzu | Massive fortress | Bronze-orange | Long dirty-blonde mane | Dark | Stone-forged gauntlets | Deep red, gold, ember black | Living wall |
+| Sereisa | Sleek athletic, speed-first | Pale Nordic | Platinum undercut | Light | Single lightning rapier | Bright yellow, white, pale steel | Speed duelist |
+| Vesol | Defined, poised, refined | Warm tan | Dark controlled bun | Dark | Gate crystal focus at wrist | Deep blue, crimson, dark charcoal | Arcane controller |
