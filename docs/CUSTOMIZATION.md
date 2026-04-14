@@ -49,35 +49,53 @@ The following must never change in the MVP:
 - Rank and role
 - Element and main aura behavior
 - Signature stance and animation set
+- Hair style and color
+- Eye color
 
 ---
 
 ## Hunter-Specific Rules
 
 ### Dabik
-Stay light and stealthy. Dark fabrics, subtle purple accents, slim coat or hood variants, minimal armor changes. Avoid heavy bulky clothing that would break his assassin silhouette.
+- **Build:** Muscular agile — compact power, fast and controlled. Never bulky or heavy.
+- **Hair:** Short wild spiky white — must not change.
+- **Eyes:** Purple — must not change. Faint glow in power states.
+- **Clothing rules:** Stay light and stealthy. Dark fabrics, subtle purple accents, slim coat or hood variants, minimal armor changes. Avoid heavy bulky clothing that would break his assassin silhouette.
+- **No tribal markings or decorative motifs** — his identity is carried by movement, hair, and eyes only.
+- **Allowed customization:** Dark hood variants, coat length, armor trim style, aura glow intensity, weapon glow tint.
 
 ### Benzu
-Support heavy armor themes. Large plate variants, reinforced bracers, shoulder trims, bold red-gold color shifts. Clothes can be bulkier, but his shape must still read as a fortress.
+- **Build:** Massive fortress — huge, broad, immovable. Always the biggest silhouette.
+- **Hair:** Long dirty-blonde mane — must not change.
+- **Skin:** Bronze-orange — must not change.
+- **Clothing rules:** Support heavy armor themes. Large plate variants, reinforced bracers, shoulder trims, bold red-gold color shifts. Clothes can be bulkier, but his shape must still read as a fortress.
+- **Allowed customization:** Armor plate variants, shoulder guard styles, color shifts within red-gold-black palette, aura intensity.
 
 ### Sereisa
-Feel sleek and athletic. Fitted jackets, fencing-inspired coats, streamlined armor panels, lightning color accents. Outfit changes should reinforce speed and precision.
+- **Build:** Sleek athletic — speed-first, narrow and precise.
+- **Hair:** Platinum undercut — must not change.
+- **Weapon:** Single lightning rapier — must remain a single precision weapon. No dual weapons.
+- **Clothing rules:** Feel sleek and athletic. Fitted jackets, fencing-inspired coats, streamlined armor panels, lightning color accents. Outfit changes should reinforce speed and precision.
+- **Allowed customization:** Jacket fit, collar or hood toggle, armor panel style, lightning color tint, aura crackle intensity, rapier glow color.
 
 ### Vesol
-Feel refined and arcane. Structured coats, layered robes, rune trims, wrist fittings, controlled flame-color variations. Clothing should look intelligent and deliberate.
+- **Build:** Defined, poised, refined — not bulky.
+- **Hair:** Dark controlled bun — must not change.
+- **Clothing rules:** Feel refined and arcane. Structured coats, layered robes, rune trims, wrist fittings, controlled flame-color variations. Clothing should look intelligent and deliberate.
+- **Allowed customization:** Coat structure, robe layering, wrist fitting style, aura color shift range (blue to crimson), flame glow intensity.
 
 ---
 
 ## Color Palettes
 
-| Hunter | Allowed Colors |
-|---|---|
-| Dabik | Black, purple, muted silver |
-| Benzu | Deep red, gold, ember black |
-| Sereisa | Bright yellow, white, pale steel |
-| Vesol | Deep blue, crimson, dark charcoal |
+| Hunter | Fixed Elements | Allowed Color Slots |
+|---|---|---|
+| Dabik | Black base, white hair, purple eyes | Purple accent, silver trim, aura glow |
+| Benzu | Bronze-orange skin, dirty-blonde hair | Red-gold trim, ember black, armor color |
+| Sereisa | Pale skin, platinum hair | Yellow-white lightning, pale steel, rapier glow |
+| Vesol | Warm tan skin, dark hair | Blue-crimson aura range, charcoal layers |
 
-Allow 1-2 accent slots per outfit rather than full unrestricted RGB, so the game stays coherent and stylish.
+Allow 1–2 accent slots per outfit rather than full unrestricted RGB, so the game stays coherent and stylish.
 
 ---
 
@@ -145,9 +163,9 @@ Each hunter stores:
 ---
 
 ## Suggested Limits (Per Hunter)
-- 3-5 color slots
-- 2-4 outfit variants
-- 1-2 accessory toggles
+- 3–5 color slots
+- 2–4 outfit variants
+- 1–2 accessory toggles
 - No gameplay-changing cosmetics in MVP
 
 ---
