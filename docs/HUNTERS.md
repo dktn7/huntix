@@ -85,7 +85,7 @@ Grew up in Rio de Janeiro in a neighbourhood where strength was the only currenc
 He awakened mid-mission when a gate boss pinned his entire team. He picked up a piece of rubble the size of a car door and hit it until it stopped moving. The awakening just made that official. He rose through the ranks not because he was talented but because he was impossible to stop. Every S-Rank evaluation board said the same thing: *we have no protocol for this.*
 
 ### Appearance
-Enormous. Built like architecture. Bronze-orange skin, long dirty-blonde mane — thick, heavy, worn loose or tied back. A jaw that looks carved. His armour is heavy plate but custom — no manufacturer makes his size off the shelf. His aura doesn't shimmer — it pulses, deep red and gold, like something about to break through the ground. When he walks into a zone, enemies track him first. That's the point.
+Enormous. Built like architecture. Bronze-orange skin, long dirty-blonde mane — thick, heavy, worn loose or tied back. A jaw that looks carved. His combat gear is heavy and custom — thick reinforced pauldrons, broad chest layer, no manufacturer makes his size off the shelf. His aura doesn't shimmer — it pulses, deep red and gold, like something about to break through the ground. When he walks into a zone, enemies track him first. That's the point.
 
 **Visual note:** The dirty-blonde hair contrasts cleanly against his bronze-orange skin, letting the aura and sheer size carry the visual identity. He should always feel like the biggest and heaviest object in the room.
 
@@ -205,7 +205,7 @@ The answer was her. The experiment concluded when she unconsciously incinerated 
 S-Rank certification came after her third gate solo run, which she completed in fourteen minutes and documented in a forty-page report afterwards.
 
 ### Appearance
-Composed. Still in a way that reads as dangerous rather than calm. Japanese-Filipino heritage — dark eyes, dark hair worn up in a controlled bun with a few deliberate loose strands, structured clothing in dark blues and blacks with deep red lining. Her aura is unusual — it starts cold blue and shifts toward deep crimson the more mana she channels, giving the impression of something heating to critical point. In full Inferno state the blue vanishes entirely and she looks like she is standing in a furnace she built herself.
+Composed. Still in a way that reads as dangerous rather than calm. Japanese-Filipino heritage — dark eyes, dark hair worn up in a controlled bun with one short loose strand at the temple, structured clothing in dark blues and blacks with deep red lining. Her aura is unusual — it starts cold blue and shifts toward deep crimson the more mana she channels, giving the impression of something heating to critical point. In full Inferno state the blue vanishes entirely and she looks like she is standing in a furnace she built herself.
 
 **Visual note:** She should feel like the smartest person in the room without looking ornate. Let the aura shift carry the visual drama.
 

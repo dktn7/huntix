@@ -108,7 +108,7 @@ Clothing tone:   Modern tailoring mixed with arcane battle gear —
                  Characters look like professionals, not fantasy heroes.
 Logo:            Huntix angular H symbol engraved/embossed on armour
                  as agency insignia — part of the world, not branding.
-NOT:             Chibi. Western cartoon. Anime generic. Tribal markings.
+NOT:             Chibi. Western cartoon. Tribal markings.
                  Casual streetwear. Twin blades on Sereisa.
 ```
 
