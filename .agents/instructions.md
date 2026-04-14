@@ -29,26 +29,45 @@ Never rely on a hardcoded phase label. The script is always correct. The codebas
 
 ## How to Use Skills
 
-Skills are in `.agents/skills/`. Load only what is relevant to the current task.
+Skills are in `.agents/skills/`. Load only what is relevant to the current task. Never load more than two at once.
 
-| Task | Skill to load |
-|------|---------------|
-| Building enemy AI or FSMs | `animation-fsm.md` |
+### Combat & Feel
+| Task | Skill |
+|------|-------|
 | Hit feedback, particles, screenshake | `game-feel-juice.md` |
+| Combo counter, signature moves, multiplier | `combo-system.md` |
+| Floating damage numbers, crit scaling | `damage-numbers.md` |
+| Enemy wind-up flash, stagger, death dissolve | `enemy-telegraphs.md` |
+| Kill freeze, zone fade, slow-mo, death flash | `screen-transitions.md` |
+| Boss entrance, name card, phase transition | `boss-intro.md` |
+| Player death ragdoll, co-op revive, i-frames | `death-and-respawn.md` |
+| Wave/boss clear fanfare, XP bar fill, loot spray | `level-clear-celebration.md` |
+
+### Systems
+| Task | Skill |
+|------|-------|
+| Enemy AI, FSMs, animation states | `animation-fsm.md` |
 | Co-op input, shared camera | `multiplayer-coop.md` |
+| XP, leveling, progression | `progression-xp.md` |
+| HUD, shop, combo UI | `game-hud-ui.md` |
+| Audio system | `spatial-audio.md` |
+| Colourblind mode, screenshake slider, input remap | `accessibility.md` |
+
+### Visuals & Build
+| Task | Skill |
+|------|-------|
 | Hunter/enemy meshes, LOD | `3d-model-optimization.md` |
 | Shaders, aura effects | `minimax-shader-dev.md` |
-| Audio system | `spatial-audio.md` |
-| HUD, shop, combo UI | `game-hud-ui.md` |
-| XP, leveling, progression | `progression-xp.md` |
 | Three.js advanced patterns | `threejs-builder/SKILL.md` |
 | Concept art, character refs | `fal-ai-image/SKILL.md` |
+
+### Debug & QA
+| Task | Skill |
+|------|-------|
 | Debugging a broken system | `systematic-debugging.md` + `root-cause-tracing.md` |
 | Finding bugs in existing code | `find-bugs.md` |
 | Before marking a task done | `verification-before-completion.md` |
 | Creating a PR | `create-pr.md` |
-
-Never load all skills at once. One or two per task maximum.
 
 ---
 

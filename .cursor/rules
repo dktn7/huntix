@@ -72,18 +72,34 @@ Never hardcode a phase assumption. The file tree is truth.
 
 ---
 
-## Skills (load only what is relevant)
+## Skills (load only what is relevant — max 2 per task)
 
-`.cursor/skills/` mirrors `.agents/skills/` — same files, same purpose.
-Load one skill at a time, only when the task needs it:
+`.cursor/skills/` mirrors `.agents/skills/` — same skills, leaner format.
 
+### Combat & Feel
+| Task | Skill |
+|------|-------|
+| Hit feedback, particles, screenshake | `game-feel-juice.md` |
+| Combo counter, signature moves, multiplier | `combo-system.md` |
+| Floating damage numbers, crit scaling | `damage-numbers.md` |
+| Enemy wind-up flash, stagger, death dissolve | `enemy-telegraphs.md` |
+| Kill freeze, zone fade, slow-mo, death flash | `screen-transitions.md` |
+| Boss entrance, name card, phase transition | `boss-intro.md` |
+| Player death ragdoll, co-op revive, i-frames | `death-and-respawn.md` |
+| Wave/boss clear fanfare, XP bar fill, loot spray | `level-clear-celebration.md` |
+
+### Systems
 | Task | Skill |
 |------|-------|
 | FSM / animation states | `animation-fsm.md` |
-| Hit feedback, juice | `game-feel-juice.md` |
 | Co-op, shared camera | `multiplayer-coop.md` |
-| Three.js patterns | `threejs-skills.md` |
 | HUD / UI | `game-hud-ui.md` |
+| Three.js patterns | `threejs-skills.md` |
+| Colourblind, screenshake slider, input remap | `accessibility.md` |
+
+### Debug & QA
+| Task | Skill |
+|------|-------|
 | Debugging | `systematic-debugging.md` |
 | Before marking done | `verification-before-completion.md` |
 
@@ -92,12 +108,12 @@ Load one skill at a time, only when the task needs it:
 ## Quick Reference (bottom of context — intentional)
 
 ### Hunters
-| Hunter  | HP  | Mana | Dodge           | Status |
-|---------|-----|------|-----------------|--------|
-| Dabik   | 80  | 120  | Blink           | Bleed  |
-| Benzu   | 160 | 70   | Shoulder Charge | Stun   |
-| Sereisa | 100 | 100  | Electric Dash   | Slow   |
-| Vesol   | 90  | 130  | Flame Scatter   | Burn   |
+| Hunter  | HP  | Mana | Dodge           | Status | Signature Combo |
+|---------|-----|------|-----------------|--------|-----------------|
+| Dabik   | 80  | 120  | Blink           | Bleed  | L→L→H teleport behind |
+| Benzu   | 160 | 70   | Shoulder Charge | Stun   | H→H→L AoE slam |
+| Sereisa | 100 | 100  | Electric Dash   | Slow   | L→H→L chain lightning |
+| Vesol   | 90  | 130  | Flame Scatter   | Burn   | L→L→L→H burn AoE |
 
 ### Input (P1 only until Phase 3)
 Keyboard: WASD move | J light | K heavy | Shift dodge | E special | F interact | Esc pause
@@ -111,8 +127,8 @@ Every hit: sparks + screenshake + stagger | Enemy telegraph before every attack
 | Phase | Unlocks |
 |-------|---------|
 | 1 | Core engine + combat input |
-| 2 | Enemy AI + juice |
+| 2 | Enemy AI + juice + combos + damage numbers + telegraphs |
 | 3 | Hunter models + 4P input |
-| 4 | Zones + bosses |
+| 4 | Zones + bosses + screen transitions + boss intro + level clear |
 | 5 | HUD + shop + XP |
 | 6 | Audio + deploy |
