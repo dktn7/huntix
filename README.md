@@ -294,40 +294,22 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ---
 
-## 🗺 MVP Scope
-
-**Build now:**
-- Hunter hub (character select, shop, portal select)
-- All 4 hunters — Dabik, Benzu, Sereisa, Vesol
-- 1–4 local players + optional AI companion
-- 3 enemy types + 1 mini-boss + 1 final boss
-- Shop with items + level-up system
-- 3 short portal zones (City Breach, Ruin Den, Shadow Core)
-- Vibe Jam widget embedded
-- Instant browser load, no login
-
-**Post-MVP:**
-- Online multiplayer
-- Thunder Spire (zone 4)
-- Additional hunters
-- Save system
-- Quest and dialogue
-- Procedural generation
-
----
-
 ## 📅 18-Day Build Plan
 
-> **Jam Deadline: 1 May 2026 @ 13:37 UTC**
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC**  
+> Legend: ✅ Complete · 🔄 In Progress · ⬜ Locked  
+> Auto-updated by `node scripts/update-readme.js` — run after each phase lands.
 
-| Phase | Days | Focus | Milestone |
-|-------|------|-------|-----------|
-| 1 — Core Engine | 1–3 | Three.js 2.5D setup, player controller, hub, widget | ✅ Solo hunter moves |
-| 2 — Combat Basics | 4–6 | Enemy AI, hit detection, status effects, juice | ✅ Fight grunt waves |
-| 3 — Hunters + Co-op | 7–9 | All 4 hunters, 1–4P input, AI companions | ✅ 4P hub + combat |
-| 4 — Zones + Bosses | 10–12 | 3 zones, portals, boss phases, Essence drops | ✅ Full run clearable |
-| 5 — Progression + UI | 13–15 | Shop, weapons, levelling, HUD, combo UI | ✅ Buy + upgrade loop |
-| 6 — Polish + Deploy | 16–18 | Audio, onboarding, 60fps, deploy to domain | ✅ Playable jam entry |
+<!-- PHASE-TABLE-START -->
+| Phase | Days | Focus | Progress | Milestone |
+|-------|------|-------|----------|-----------|
+| 🔄 **1 — Core Engine** | 1–3 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████░░░░░ 55%` | Solo hunter moves |
+| ⬜ **2 — Enemy AI & Juice** | 4–6 | Enemy AI, hit detection, status effects, combos, juice | `░░░░░ 0%` | Fight grunt waves |
+| ⬜ **3 — 4 Hunters & Co-op** | 7–9 | All 4 hunters, 1–4P input, AI companions | `░░░░░ 0%` | 4P hub + combat |
+| ⬜ **4 — Zones & Bosses** | 10–12 | 3 zones, portals, boss phases, Essence drops, screen transitions | `░░░░░ 0%` | Full run clearable |
+| ⬜ **5 — Hub, Shop & HUD** | 13–15 | Shop, weapons, levelling, HUD, combo UI | `░░░░░ 0%` | Buy + upgrade loop |
+| ⬜ **6 — Audio, Polish & Deploy** | 16–18 | Audio, onboarding, 60fps target, deploy to domain | `░░░░░ 0%` | Playable jam entry |
+<!-- PHASE-TABLE-END -->
 
 ---
 
