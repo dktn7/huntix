@@ -2,7 +2,7 @@
 
 > Hunt. Enter. Survive.
 
-*Last updated April 13, 2026*
+*Last updated April 15, 2026*
 *Team: Solo developer with AI assistance*
 
 ---
@@ -64,11 +64,13 @@ The objective is to clear zones, defeat bosses, collect rewards, and grow strong
 
 ### Spell Tiers
 
-| Tier | Mana Cost | Speed | Effect |
-|---|---|---|---|
-| Minor | Low | Instant | Quick status apply, short dash, small hit |
-| Advanced | Medium | Short wind-up | Area effect, combo extender, shield |
-| Ultimate | Full Surge bar | Cinematic wind-up | Hunter-specific, unstoppable moment |
+Spells are **unlocked through levelling**, not available from the start. See [PROGRESSION.md](./PROGRESSION.md) for full detail.
+
+| Tier | Unlocked At | Mana Cost | Effect |
+|------|------------|-----------|--------|
+| Minor | Level 1 (start) | Low | Quick status apply, short dash, small hit |
+| Advanced | Level 3 | Medium | Area effect, combo extender, shield |
+| Ultimate | Level 9 | Full Surge bar | Hunter-specific, unstoppable cinematic moment |
 
 ### Combat
 Close-range, fast, and feedback-heavy. Movement is constrained to the X/Y plane — classic brawler lane system. Each hunter changes attack speed, reach, and status effect — but all share core controls for simple multiplayer. Enemies telegraph attacks clearly. Combat includes hit sparks, stagger, screen shake, and hit stop.
@@ -86,7 +88,7 @@ Close-range, fast, and feedback-heavy. Movement is constrained to the X/Y plane 
 Simple arcade physics on the X/Y plane — responsive movement, light jumps, enemies pushed by hits, dodge grants brief safety. Z-axis is visual only (depth layering).
 
 ### Economy
-Enemies and bosses drop gold or essence spent at the hub shop between zones. Light economy focused on combat progression, not inventory simulation.
+Two currencies run in parallel. **Essence** 🟠 drops from enemies and is spent at the hub shop. **XP** ⚡ is earned automatically through skilled play and drives levelling. See [PROGRESSION.md](./PROGRESSION.md) for full economy math and item pool.
 
 ---
 
@@ -126,38 +128,44 @@ Zones are flat horizontal stages rendered in 2.5D — scrolling brawler-style ar
 | Zone | Description | Boss |
 |---|---|---|
 | Hunter Hub | Safe area, shop, portal access, character select | None |
-| City Breach | Ruined streets, introductory enemies | Fire Bruiser |
-| Ruin Den | Underground dungeon, aggressive waves | Earth Tank |
-| Shadow Core | Arcane corruption zone, most dramatic tone | Rogue Dabik |
-| Thunder Spire | Storm-struck tower peak, final zone | Raiju |
+| City Breach | Ruined streets, introductory enemies | VRAEL — Fire Bruiser |
+| Ruin Den | Underground dungeon, aggressive waves | ZARTH — Earth Tank |
+| Shadow Core | Arcane corruption zone, most dramatic tone | KIBAD — Rogue Angel |
+| Thunder Spire | Storm-struck tower peak, final zone | THYXIS — Thunder Beast |
 
 ---
 
 ## 8. Progression
 
-### Shop Items
+See **[PROGRESSION.md](./PROGRESSION.md)** for the full spec.
 
-| Category | Examples |
-|---|---|
-| Power | Damage boost, combo extender, special power upgrade |
-| Survival | Health restore, armor, recovery speed |
-| Utility | Mana regen boost, cooldown reduction, reroll |
-| Cosmetic | Aura colours, weapon skins, visual effects |
+### Summary
 
-### Level-Up System
+- **10 levels per run** — not 4. Levels 3 and 9 unlock spells. Levels 4 and 6 let you modify them. Level 7 locks your upgrade path. Level 10 delivers a capstone.
+- **Spells are earned, not given** — you start with only your Minor spell. Advanced and Ultimate are unlocked mid-run through play.
+- **Two currencies** — Essence (shop, drops from enemies) and XP (auto, rewards skill). They serve different purposes and never overlap.
+- **Shop shows 5 items**, max 2 buys per visit, reroll for 30 Essence. Spell-specific items appear after L3. Path-weighted items surface after L7.
+- **Upgrade paths** (Power / Survival / Mobility / Style) lock at L7 and shape the final 3 levels.
 
-| Level | Unlock |
-|---|---|
-| 1 | Base hunter kit |
-| 2 | Unlock a modifier |
-| 3 | Choose an upgrade path |
-| 4 | Strengthen chosen path |
+### XP Thresholds (Quick Reference)
+
+| Level | XP needed |
+|-------|-----------|
+| 2 | 300 |
+| 3 | 700 |
+| 4 | 1,300 |
+| 5 | 2,000 |
+| 6 | 3,000 |
+| 7 | 4,200 |
+| 8 | 5,600 |
+| 9 | 7,200 |
+| 10 | 9,000 |
 
 ### Upgrade Paths
-- **Power** — damage, combo length, special impact
-- **Survival** — health, shield, recovery
-- **Mobility** — dodge distance, speed, cooldown
-- **Style** — aura intensity, cosmetic flair, silent casting
+- **⚔️ Power** — damage, combo length, status amp, execute
+- **🛡 Survival** — health, shield, lifesteal, second wind
+- **💨 Mobility** — dodge distance, speed, extra charge, i-frames
+- **✨ Style** — aura escalation, spell synergies, silent casting, crit weave
 
 ---
 
@@ -212,8 +220,8 @@ See [AUDIO.md](./AUDIO.md) for full SFX list and music direction.
 - Optional AI companion
 - 3 enemy types (Grunt, Ranged, Bruiser)
 - 1 miniboss (Gate Warden), 1 final boss per zone (4 total)
-- Shop with items
-- Level-up power system (4 levels, 3 choices each)
+- Shop with items (see PROGRESSION.md)
+- **10-level spell-linked progression system**
 - **4 portal zones** (City Breach, Ruin Den, Shadow Core, Thunder Spire)
 - Required Vibe Jam widget
 - Instant browser loading
@@ -239,7 +247,7 @@ Built in Three.js using a 2.5D architecture. Key systems:
 - Combat, status effects, and synergies
 - Enemy AI and boss phases (lane-based pathing)
 - Mana, surge, and resource management
-- Shop and upgrade flow
+- **Shop, spell unlock, and 10-level upgrade flow** (see PROGRESSION.md)
 - Portal transitions
 - Parallax background layers (3 per zone)
 - Vibe Jam widget integration
