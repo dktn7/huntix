@@ -1,8 +1,10 @@
 # Huntix Animation Spec
 
-Defines animation states, frame budgets, and placeholder rules for each hunter. Used by Codex when building the animation state machine.
+Defines animation states, frame budgets, and placeholder rules for each hunter. Used by agents when building the animation state machine.
 
 *Last updated April 15, 2026*
+
+> **Animation model:** All hunter and enemy animations are **frame-based sprite sheet stepping** — not `THREE.AnimationMixer`, not GLTF clips, not bone rigs. See `docs/RENDERING.md` for the full sprite rendering model.
 
 ---
 
@@ -14,7 +16,7 @@ Defines animation states, frame budgets, and placeholder rules for each hunter. 
 - Idle poses must reflect each hunter's personality
 - Spell casts must be visually distinct from attacks — arm/body position changes clearly
 - Weapon swap must feel **instant** — no swap animation longer than 4 frames
-- MVP uses placeholder geometry (boxes) — animation state machine must be ready for real models in Phase 3
+- MVP uses placeholder geometry (boxes) — animation state machine must be ready for real sprites in Phase 3
 
 ---
 
@@ -80,7 +82,7 @@ Defines animation states, frame budgets, and placeholder rules for each hunter. 
 - **SPELL_MINOR (Shadow Step):** Body drops into crouch, shadow particles pull inward, blink — same dissolve as dodge but with purple shadow burst at destination
 - **SPELL_ADVANCED (Shadow Clone):** One hand raised, palm out — shadow splits from body sideways, clone materialises (6f), Dabik snaps back to idle
 - **WEAPON_SWAP:** Off-hand flicks to Slot 2 weapon position — 4f, no full animation
-- **ULTIMATE (Monarch's Domain):** Arms spread wide, head drops, shadow erupts outward from body — full arena freeze VFX, then Dabik fades to invisible
+- **ULTIMATE (Monarch’s Domain):** Arms spread wide, head drops, shadow erupts outward from body — full arena freeze VFX, then Dabik fades to invisible
 - **DOWNED:** Collapsed on side, one hand weakly reaching forward
 - **REVIVE:** Pushed up from ground by shadow energy beneath hands, stands in 18f
 
@@ -93,7 +95,7 @@ Defines animation states, frame budgets, and placeholder rules for each hunter. 
 - **SPELL_MINOR (Shield Bash):** Arm pulls back (wind-up 4f), explosive forward thrust — shockwave ring visible at hit point
 - **SPELL_ADVANCED (Seismic Slam):** Both knees bend, explosive upward jump (4f), hang at peak (2f), crash down — ground crack VFX radiates from landing point
 - **WEAPON_SWAP:** Gauntlet clenches, Slot 2 weapon appears at side — 4f
-- **ULTIMATE (Titan's Wrath):** Both fists raised overhead (wind-up 8f), slammed into ground simultaneously — full arena shatter VFX, Benzu glows deep red-gold throughout
+- **ULTIMATE (Titan’s Wrath):** Both fists raised overhead (wind-up 8f), slammed into ground simultaneously — full arena shatter VFX, Benzu glows deep red-gold throughout
 - **DOWNED:** Face down, one fist still pressed into ground — still trying
 - **REVIVE:** Pushes up from ground with one arm, rises to knees then standing in 18f — brief thunder spark on aura
 
@@ -151,7 +153,7 @@ Defines animation states, frame budgets, and placeholder rules for each hunter. 
 
 ## Placeholder Animation (Phase 1–2)
 
-Until 3D models are added in Phase 3, all animations are simulated with geometry transforms:
+Until sprite atlases are integrated in Phase 3, all animations are simulated with geometry transforms on the placeholder box mesh:
 
 | State | Placeholder Behaviour |
 |---|---|
@@ -170,14 +172,19 @@ Until 3D models are added in Phase 3, all animations are simulated with geometry
 
 ---
 
-## Animation State Machine Integration
+## Animation State Machine Integration (Phase 3)
 
-The `CombatController.js` (Phase 1) drives state. In Phase 3, `AnimationController.js` will:
+`CombatController.js` (Phase 1) drives state transitions. In Phase 3, `AnimationController.js` will:
 
 1. Subscribe to state changes from `PlayerState.js`
-2. Map states to Three.js `AnimationMixer` clips
-3. Blend transitions using `crossFadeTo()` with appropriate durations
+2. Map states to frame ranges in the hunter's sprite atlas JSON
+3. Call `SpriteAnimator.play(stateName)` to begin stepping through the correct frames
 4. Lock transitions during non-cancellable states (ULTIMATE, DEAD, DOWNED, SPELL_ADVANCED)
-5. Handle WEAPON_SWAP as a hard-cut blend (no crossfade — instant at 4f)
+5. Handle WEAPON_SWAP as a hard-cut to the new frame set (no blend — instant at 4f)
 
-**File to create in Phase 3:** `src/gameplay/AnimationController.js`
+**Files to create in Phase 3:**
+- `src/gameplay/AnimationController.js` — state machine wiring, subscribes to PlayerState
+- `src/visuals/SpriteAnimator.js` — UV frame stepper, driven by AnimationController
+- `src/visuals/HunterMeshes.js` — builds the PlaneGeometry sprite quad per hunter, loads atlas
+
+See `docs/RENDERING.md` for the full sprite atlas format and SpriteAnimator implementation reference.
