@@ -2,13 +2,15 @@
 
 Complete technical reference for every layer of the project. Read before writing any code.
 
+> **Rendering model:** Characters and enemies are **2D billboard sprites** in a 3D world. See `docs/RENDERING.md` for the full spec. There are no 3D character models, no GLTF files, no AnimationMixer.
+
 ---
 
 ## Core Stack
 
 | Layer | Choice | Reason |
 |---|---|---|
-| Renderer | Three.js r169 | 2.5D orthographic, 3D models, CDN — no build step |
+| Renderer | Three.js r169 | 2.5D orthographic, sprite-in-3D-world, CDN — no build step |
 | Camera | OrthographicCamera | Fixed, 2.5D readability, no rotation needed |
 | Module system | ES Modules (`type="module"`) | Native browser, no bundler |
 | Bundler | None | Instant load, jam rules, no npm |
@@ -36,8 +38,11 @@ Complete technical reference for every layer of the project. Read before writing
 **Version:** Three.js `0.169.0` — locked. Do not upgrade mid-jam.
 
 **Addons used:**
-- `three/addons/loaders/GLTFLoader.js` — 3D model loading (Phase 3)
 - `three/addons/controls/OrbitControls.js` — debug only, never shipped
+
+**Addons NOT used:**
+- `GLTFLoader` — no 3D models in this project
+- `AnimationMixer` — animation is frame-based sprite stepping, not GLTF clips
 
 ---
 
@@ -82,27 +87,32 @@ huntix/
 │   │   ├── Renderer.js
 │   │   ├── SceneManager.js
 │   │   └── InputManager.js
-│   └── gameplay/         # Game logic (combat, AI, spawner, state)
-│       ├── PlayerState.js       (Phase 1)
-│       ├── CombatController.js  (Phase 1)
-│       ├── Hitbox.js            (Phase 1)
-│       ├── ManaBar.js           (Phase 1)
-│       ├── EnemyAI.js           (Phase 2)
-│       ├── EnemySpawner.js      (Phase 2)
-│       ├── AnimationController.js (Phase 3)
-│       ├── HunterController.js  (Phase 3)
-│       ├── ZoneManager.js       (Phase 4)
-│       ├── PortalManager.js     (Phase 4)
-│       ├── ShopManager.js       (Phase 5)
-│       └── HUD.js               (Phase 5)
+│   ├── gameplay/         # Game logic (combat, AI, spawner, state)
+│   │   ├── PlayerState.js       (Phase 1)
+│   │   ├── CombatController.js  (Phase 1)
+│   │   ├── Hitbox.js            (Phase 1)
+│   │   ├── ManaBar.js           (Phase 1)
+│   │   ├── EnemyAI.js           (Phase 2)
+│   │   ├── EnemySpawner.js      (Phase 2)
+│   │   ├── AnimationController.js (Phase 3)
+│   │   ├── HunterController.js  (Phase 3)
+│   │   ├── ZoneManager.js       (Phase 4)
+│   │   ├── PortalManager.js     (Phase 4)
+│   │   ├── ShopManager.js       (Phase 5)
+│   │   └── HUD.js               (Phase 5)
+│   └── visuals/          # Sprite rendering helpers
+│       ├── HunterMeshes.js      (Phase 3) — builds PlaneGeometry sprites per hunter
+│       └── SpriteAnimator.js    (Phase 3) — drives UV frame stepping on sprite atlas
 ├── assets/
-│   ├── models/           # GLTF/GLB files (Phase 3+)
+│   ├── sprites/          # Sprite atlases (PNG + JSON) for hunters and enemies
 │   ├── audio/            # MP3 SFX and music (Phase 6)
-│   ├── textures/         # Baked AO maps, parallax layers
+│   ├── textures/         # Baked AO maps, parallax background layers
 │   └── logo-huntix.png   # Huntix logo
 ├── docs/                 # All design documentation
 └── .agents/              # AI coding agent context
 ```
+
+> `assets/sprites/` stores all sprite atlases. There is no `assets/models/` directory — do not create one.
 
 ---
 
@@ -111,7 +121,7 @@ huntix/
 | Target | Value |
 |---|---|
 | Frame rate | 60fps on Intel Iris / integrated GPU |
-| Max enemies | 20 simultaneous (instanced meshes) |
+| Max enemies | 20 simultaneous (instanced sprite meshes) |
 | Max particles | 500 per frame (pooled, reused) |
 | Draw calls | <50 per frame |
 | Initial load | <3s on 10Mbps connection |
@@ -121,11 +131,12 @@ huntix/
 
 ## Rendering Rules
 
-- **No dynamic shadows** — baked AO only (post-MVP)
+- **Characters are 2D billboard sprites** — `PlaneGeometry` + `MeshBasicMaterial` + sprite atlas. See `docs/RENDERING.md`.
+- **No dynamic shadows** — baked AO only on world geometry; drop shadow is a simple dark ellipse quad under each sprite
 - **Y-sort every frame:** `mesh.position.z = -worldY * 0.01`
-- **Instanced meshes** for grunts (up to 10 per draw call)
-- **LOD** on bosses: switch to low-poly mesh at >10 world units from camera
-- **Particle pool:** pre-allocate 500 `Points` objects, reuse — never `new` in game loop
+- **Instanced sprites** for grunts (up to 20 per `InstancedMesh`)
+- **No LOD for characters** — sprites already minimal; LOD only applies to heavy world geometry if needed
+- **Particle pool:** pre-allocate 500 `Points` objects or sprite quads, reuse — never `new` in game loop
 - **No `eval()`**, no runtime `import()`
 
 ---
@@ -153,6 +164,7 @@ if (keys['j']) { ... }
 - One class per file
 - `src/engine/` — core systems only (renderer, loop, input, scene)
 - `src/gameplay/` — all game logic
+- `src/visuals/` — sprite mesh builders and animation helpers
 - Use `dt` (delta time in seconds) for all movement and timers — always exactly `0.01667s` (fixed timestep)
 - State machines use string constants: `const STATES = { IDLE: 'IDLE', ... }`
 - No `console.log` in shipped code except behind `if (DEBUG)` flag
@@ -203,3 +215,6 @@ See [AUDIO.md](./AUDIO.md) for full SFX and music list.
 - Do not commit large binaries to repo root — use `assets/`
 - Do not upgrade Three.js mid-jam
 - Do not remove the Vibe Jam widget
+- **Do not load GLTF or GLB files** — there are no 3D character models
+- **Do not use `THREE.AnimationMixer`** — animation is frame-based sprite stepping
+- **Do not create `assets/models/`** — sprites live in `assets/sprites/`
