@@ -1,6 +1,6 @@
 # HUNTIX — MVP Build Plan
 
-*Last updated: April 14, 2026*
+*Last updated: April 16, 2026*
 
 ---
 
@@ -9,16 +9,18 @@
 | Area | Status | Notes |
 |---|---|---|
 | GDD | ✅ Complete | `docs/GDD.md` |
+| AGENTS.md | ✅ Complete | Repo root — read first every session |
 | Hunter designs | ✅ Complete | `docs/HUNTERS.md` — canonical source of truth |
 | Hunter individual files | ✅ Updated | `docs/hunters/` — corrected from HUNTERS.md |
-| Visual reference lock | ✅ New | `docs/VISUAL-REFERENCE.md` — read before any asset work |
+| Visual reference lock | ✅ Complete | `docs/VISUAL-REFERENCE.md` — read before any asset work |
+| Sprite pipeline doc | ✅ Complete | `docs/SPRITES.md` — rendering model, UV stepping, atlas format |
 | Character art prompts | ✅ In each hunter file | Mixboard + Grok prompts embedded |
-| Asset pipeline | 🔄 In progress | Mixboard → Kling/Grok → Blender → TexturePacker → Three.js |
+| Asset pipeline | 🔄 In progress | Mixboard → Kling/Grok → TexturePacker → Three.js |
 | Three.js engine | 🔲 Not started | Phase 1 |
 | Combat system | 🔲 Not started | Phase 2 |
 | All 4 hunters playable | 🔲 Not started | Phase 3 |
-| Zones (3) | 🔲 Not started | Phase 4 |
-| Bosses | 🔲 Not started | Phase 4 |
+| Zones (4) | 🔲 Not started | Phase 4 |
+| Bosses (4) | 🔲 Not started | Phase 4 |
 | Shop / progression | 🔲 Not started | Phase 5 |
 | Polish + deploy | 🔲 Not started | Phase 6 |
 | Vibe Jam widget | 🔲 Pending | Required — add to HTML before deploy |
@@ -32,7 +34,7 @@
 **Goal:** Solo hunter moves and attacks in a working Three.js scene.
 
 - [ ] Three.js project setup — public repo, single domain
-- [ ] 2.5D fixed-angle scene + camera (Castle Crashers angle)
+- [ ] 2.5D fixed orthographic scene + camera (Castle Crashers angle)
 - [ ] Basic player controller — WASD move, Space jump, LShift dodge
 - [ ] Hunter hub placeholder scene
 - [ ] Vibe Jam widget integration: `<script async src="https://vibej.am/2026/widget.js"></script>`
@@ -63,7 +65,7 @@
 
 ### Phase 3 — All Hunters + Co-op (Days 7–9)
 
-**Goal:** 4P hub and combat working.
+**Goal:** 4P hub and combat working, all ultimates fire.
 
 - [ ] All 4 hunters implemented: Dabik, Benzu, Sereisa, Vesol
 - [ ] Hunter stat differences active (speed, damage, defense)
@@ -72,7 +74,6 @@
 - [ ] Ultimate (full Surge) per hunter
 - [ ] Local 1–4P input handling
 - [ ] Camera pan/zoom for co-op visibility
-- [ ] Optional AI companion placeholder
 - [ ] Status effect synergies: Bleed+Slow, Stun+Wall, Slow+Blink, Burn+Slam
 - [ ] Co-op enemy HP scaling (+50% per additional player)
 
@@ -84,17 +85,18 @@
 
 **Goal:** Full run clearable from hub to final boss.
 
-- [ ] City Breach zone — ruined streets, intro enemies, Fire Bruiser miniboss
-- [ ] Ruin Den zone — underground dungeon, aggressive waves, Earth Tank boss
-- [ ] Shadow Core zone — final boss: Rogue Dabik (mirror hunter)
+- [ ] City Breach zone — ruined streets, intro enemies, VRAEL boss
+- [ ] Ruin Den zone — underground dungeon, aggressive waves, ZARTH boss
+- [ ] Shadow Core zone — KIBAD boss (mirror hunter)
+- [ ] Thunder Spire zone — THYXIS boss (stretch: ship as MVP zone 4 if time allows)
 - [ ] Zone portal transitions
-- [ ] Boss phase FSM (Phase 1 → Phase 2 on HP threshold)
-- [ ] Essence/gold drops from enemies and bosses
+- [ ] Boss phase FSM (Phase 1 → Phase 2 → Phase 3 on HP thresholds)
+- [ ] Essence drops from enemies and bosses (Boss: 200 Essence, 500 XP)
 - [ ] Boss HP bar HUD
 - [ ] Co-op boss HP scaling
 - [ ] Juice: slow-mo kill, tiered screen shake, aura ramp on boss
 
-**Milestone:** Full run: Hub → 3 zones → 3 bosses → Victory.
+**Milestone:** Full run: Hub → 3 zones → 3 bosses → Victory. Zone 4 if time allows.
 
 ---
 
@@ -102,10 +104,9 @@
 
 **Goal:** Buy, upgrade, and level loop working.
 
-- [ ] Hub shop (6–8 slots, 1 reroll)
+- [ ] Hub shop — 5 random items per visit, max 2 purchases, reroll costs 30 Essence
 - [ ] Shop categories: Power, Survival, Utility, Cosmetic
-- [ ] Level-up system (4 levels, 3 upgrade paths per hunter)
-- [ ] Upgrade paths: Power / Survival / Mobility / Style
+- [ ] Level-up system — 10 levels per run, 4 upgrade paths per hunter (Power / Survival / Mobility / Style)
 - [ ] Combo counter UI
 - [ ] Full HUD: health/mana/surge per hunter, currency, boss bar
 - [ ] Character select screen
@@ -122,7 +123,7 @@
 - [ ] Audio: hit SFX, spell SFX, ambient zone audio, boss stingers
 - [ ] Combo audio feedback
 - [ ] Onboarding: control prompt on first load
-- [ ] 60fps performance pass — LOD, instanced meshes, particle caps
+- [ ] 60fps performance pass — instanced sprite meshes, particle caps
 - [ ] Max 20 enemies on screen at once enforced
 - [ ] Max 500 particles enforced
 - [ ] Deploy to single domain (no login, no signup, instant load)
@@ -137,23 +138,35 @@
 ## Post-MVP (After May 1)
 
 - Online multiplayer
-- Thunder Spire zone + Raiju boss
+- Thunder Spire zone + Thyxis boss (if not shipped in MVP)
 - Additional hunters
 - Save/progression system
 - Quest and dialogue
 - Procedural generation
 - Complex inventory
+- AI companions
 
 ---
 
 ## Asset Status
 
-| Hunter | Design Sheet | Animation | Blender Key | Atlas | In Engine |
-|---|---|---|---|---|---|
-| Dabik | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
-| Benzu | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
-| Sereisa | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
-| Vesol | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Hunter | Design Sheet | Animation States | Atlas (TexturePacker) | In Engine |
+|---|---|---|---|---|
+| Dabik | 🔲 | 🔲 | 🔲 | 🔲 |
+| Benzu | 🔲 | 🔲 | 🔲 | 🔲 |
+| Sereisa | 🔲 | 🔲 | 🔲 | 🔲 |
+| Vesol | 🔲 | 🔲 | 🔲 | 🔲 |
+
+| Enemy | Design Sheet | Animation States | Atlas | In Engine |
+|---|---|---|---|---|
+| Grunt | 🔲 | 🔲 | 🔲 | 🔲 |
+| Ranged Unit | 🔲 | 🔲 | 🔲 | 🔲 |
+| Bruiser | 🔲 | 🔲 | 🔲 | 🔲 |
+| Gate Warden (miniboss) | 🔲 | 🔲 | 🔲 | 🔲 |
+| VRAEL | 🔲 | 🔲 | 🔲 | 🔲 |
+| ZARTH | 🔲 | 🔲 | 🔲 | 🔲 |
+| KIBAD | 🔲 | 🔲 | 🔲 | 🔲 |
+| THYXIS | 🔲 | 🔲 | 🔲 | 🔲 |
 
 ---
 
@@ -161,11 +174,29 @@
 
 > These rules exist to prevent design drift across documents.
 
-1. **`docs/HUNTERS.md`** is the master character document. All appearance, stats, spells sourced from here.
-2. **`docs/VISUAL-REFERENCE.md`** is the canonical design lock for asset generation. Read before any Mixboard/Grok/Kling prompt.
-3. **`docs/GDD.md`** is the master gameplay document. All mechanics sourced from here.
-4. **Individual hunter files** (`docs/hunters/`) are derived from HUNTERS.md — they embed prompts but do not override the master.
-5. **Never source character details from conversation history.** Always read the file.
+1. **`AGENTS.md`** (repo root) is the master entry point — read before every session.
+2. **`docs/HUNTERS.md`** is the master character document. All appearance, stats, spells sourced from here.
+3. **`docs/VISUAL-REFERENCE.md`** is the canonical design lock for asset generation. Read before any Mixboard/Grok/Kling prompt.
+4. **`docs/GDD.md`** is the master gameplay document. All mechanics sourced from here.
+5. **`docs/PROGRESSION.md`** owns all numbers: levels (10), shop slots (5), reroll cost (30 Essence), max purchases (2).
+6. **`docs/ENEMIES.md`** owns all enemy XP and Essence drop values. Boss XP = 500, Boss Essence = 200.
+7. **Individual hunter files** (`docs/hunters/`) are derived from HUNTERS.md — they embed prompts but do not override the master.
+8. **Never source character details from conversation history.** Always read the file.
+
+---
+
+## Canonical Numbers (Quick Reference)
+
+| Value | Number |
+|-------|--------|
+| Levels per run | 10 |
+| Shop items shown | 5 random |
+| Max shop purchases per visit | 2 |
+| Reroll cost | 30 Essence |
+| Boss XP | 500 |
+| Boss Essence | 200 |
+| Max enemies on screen | 20 |
+| Max particles per frame | 500 |
 
 ---
 

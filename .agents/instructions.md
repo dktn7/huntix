@@ -56,7 +56,7 @@ Skills are in `.agents/skills/`. Load only what is relevant to the current task.
 ### Visuals & Build
 | Task | Skill |
 |------|-------|
-| Hunter/enemy meshes, LOD | `3d-model-optimization.md` |
+| Sprite UV stepping, atlas loading, SpriteAnimator | `sprite-animation.md` |
 | Shaders, aura effects | `minimax-shader-dev.md` |
 | Three.js advanced patterns | `threejs-builder/SKILL.md` |
 | Concept art, character refs | `fal-ai-image/SKILL.md` |
@@ -91,6 +91,7 @@ When building a new system (e.g. HunterController, ZoneManager):
 - No loading screens, no login, free-to-play, single domain
 - Fixed timestep: dt is always 0.01667s — never variable
 - Orthographic camera — never perspective
+- Characters are 2D billboard sprites — no GLTF, no AnimationMixer, no 3D character models
 - Do not build ahead of current phase
 - Do not remove or modify the widget script
 - Max 20 enemies, max 500 particles, no new allocations in game loop
