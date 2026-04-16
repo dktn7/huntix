@@ -126,6 +126,7 @@ These values are locked. If any doc says otherwise, these win.
 huntix/
 ├── AGENTS.md             ← YOU ARE HERE
 ├── CHANGELOG.md          # Version history
+├── PORTAL-WEBRING.md     # Vibe Jam 2026 webring portal guide (optional feature)
 ├── index.html            # Entry point, importmap, widget
 ├── scripts/
 │   └── check-phase.js    # Phase detector — run before every session
@@ -138,7 +139,7 @@ huntix/
 │   ├── sprites/          # Sprite atlases PNG + JSON — NO models/ folder
 │   ├── audio/
 │   └── textures/
-├── docs/                 # All design documentation (54 files)
+├── docs/                 # All design documentation (55 files)
 └── .agents/
     ├── instructions.md   # Codex role and task protocol
     └── skills/           # Skill files — load max 2 at a time
@@ -178,6 +179,10 @@ All docs live in `docs/`. Key files by category:
 | `docs/SHOPMANAGER.md` | ✅ April 16, 2026 |
 | `docs/PORTAL.md` | ✅ April 16, 2026 |
 | `docs/LORE.md` | ✅ April 16, 2026 |
+| `PORTAL-WEBRING.md` | ✅ April 16, 2026 (moved to root) |
+| `src/visuals/RuinDenArena.js` | ✅ April 16, 2026 (stub) |
+| `src/visuals/ShadowCoreArena.js` | ✅ April 16, 2026 (stub) |
+| `src/visuals/ThunderSpireArena.js` | ✅ April 16, 2026 (stub) |
 
 Add new gaps here as they are discovered.
 
