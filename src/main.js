@@ -18,6 +18,7 @@ const loop = new GameLoop();
 
 loop.start((dt) => {
   scene.update(dt, input);
+  RunState.tick(dt);
   renderer.render(scene.getScene(), scene.getCamera());
 
   const panel = document.getElementById('debug-panel');
