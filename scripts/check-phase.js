@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 /**
- * scripts/check-phase.js
- * Run: node scripts/check-phase.js
+ * check-phase.js
+ * Detects the current Huntix build phase by inspecting which source files exist.
+ * Run this at the start of every Codex/Cursor session.
  *
- * Scans src/ and reports the current development phase based on which
- * files are present. The current phase is the lowest-numbered phase
- * that still has missing files. All output is machine-readable for
- * agents and human-readable for devs.
+ * Usage: node scripts/check-phase.js
  */
 
 import { existsSync } from 'fs';
@@ -16,138 +14,135 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 
-const exists = (p) => existsSync(resolve(root, p));
+const r = (p) => existsSync(resolve(root, p));
 
-const PHASES = [
+// Phase gate files — each phase requires ALL previous phase files to exist
+const phases = [
   {
-    number: 1,
+    phase: 1,
     name: 'Core Engine',
-    milestone: 'Solo hunter moves and attacks feel good with placeholder geometry',
-    docs: ['docs/GDD.md', 'docs/TECHSTACK.md', 'docs/INPUT.md'],
-    files: [
+    goal: 'Solo hunter moves and attacks in a working Three.js scene',
+    required: [
       'src/engine/GameLoop.js',
       'src/engine/Renderer.js',
-      'src/engine/SceneManager.js',
       'src/engine/InputManager.js',
-      'src/main.js',
+      'src/engine/SceneManager.js',
       'src/gameplay/PlayerState.js',
       'src/gameplay/CombatController.js',
       'src/gameplay/Hitbox.js',
+    ],
+  },
+  {
+    phase: 2,
+    name: 'Combat Basics',
+    goal: 'Fight grunt waves with status effects and feedback',
+    required: [
+      'src/gameplay/EnemyAI.js',
+      'src/gameplay/EnemySpawner.js',
       'src/gameplay/ManaBar.js',
     ],
   },
   {
-    number: 2,
-    name: 'Enemy AI & Juice',
-    milestone: 'Player can fight grunt waves with visible hit feedback',
-    docs: ['docs/ENEMIES.md', 'docs/GDD.md'],
-    files: [
-      'src/gameplay/EnemyAI.js',
-      'src/gameplay/EnemySpawner.js',
-      'src/gameplay/StatusEffects.js',
-      'src/gameplay/SparkPool.js',
-      'src/engine/CameraShake.js',
-    ],
-  },
-  {
-    number: 3,
-    name: '4 Hunters & Co-op',
-    milestone: '4 distinct hunters playable in local co-op',
-    docs: ['docs/HUNTERS.md', 'docs/COOP.md', 'docs/INPUT.md', 'docs/ANIMATIONS.md', 'docs/VISUAL-DESIGN.md'],
-    files: [
+    phase: 3,
+    name: 'All Hunters + Co-op',
+    goal: '4P hub and combat working, all ultimates fire',
+    required: [
       'src/gameplay/HunterController.js',
-      'src/gameplay/CoopManager.js',
+      'src/gameplay/AnimationController.js',
       'src/visuals/HunterMeshes.js',
-      'src/gameplay/AICompanion.js',
-      'src/gameplay/HunterDabik.js',
-      'src/gameplay/HunterBenzu.js',
-      'src/gameplay/HunterSereisa.js',
-      'src/gameplay/HunterVesol.js',
+      'src/visuals/SpriteAnimator.js',
     ],
   },
   {
-    number: 4,
-    name: 'Zones & Bosses',
-    milestone: 'Full run clear — all 4 zones + boss defeated',
-    docs: ['docs/ZONES.md', 'docs/BOSSES.md', 'docs/PORTAL-WEBRING.md'],
-    files: [
+    phase: 4,
+    name: 'Zones + Bosses',
+    goal: 'Full run clearable hub → final boss',
+    required: [
       'src/gameplay/ZoneManager.js',
-      'src/gameplay/PortalTransition.js',
-      'src/gameplay/BossController.js',
-      'src/gameplay/EssenceDrop.js',
-      'src/visuals/CityBreachArena.js',
+      'src/gameplay/PortalManager.js',
     ],
   },
   {
-    number: 5,
-    name: 'Hub, Shop & HUD',
-    milestone: 'Buy and upgrade loop fully working',
-    docs: ['docs/WEAPONS.md', 'docs/HUD.md', 'docs/CUSTOMIZATION.md'],
-    files: [
-      'src/gameplay/HubScene.js',
+    phase: 5,
+    name: 'Progression + UI',
+    goal: 'Buy, upgrade, and level loop working',
+    required: [
       'src/gameplay/ShopManager.js',
-      'src/gameplay/LevelingSystem.js',
-      'src/gameplay/ComboUI.js',
-      'src/gameplay/GameplayHUD.js',
+      'src/gameplay/HUD.js',
     ],
   },
   {
-    number: 6,
-    name: 'Audio, Polish & Deploy',
-    milestone: 'Playable jam submission — ship it',
-    docs: ['docs/AUDIO.md'],
-    files: [
-      'src/engine/AudioManager.js',
-      'src/gameplay/OnboardingFlow.js',
-      'src/gameplay/PerfMonitor.js',
+    phase: 6,
+    name: 'Polish + Deploy',
+    goal: 'Playable public demo. Jam submission ready.',
+    required: [
+      'assets/audio',
     ],
   },
 ];
 
-// --- Evaluate each phase ---
+function detectPhase() {
+  let currentPhase = 0;
 
-const results = PHASES.map((phase) => {
-  const checked = phase.files.map((f) => ({ file: f, present: exists(f) }));
-  const missing = checked.filter((c) => !c.present);
-  const complete = missing.length === 0;
-  return { ...phase, checked, missing, complete };
-});
+  for (const { phase, required } of phases) {
+    const allPresent = required.every(r);
+    if (allPresent) {
+      currentPhase = phase;
+    } else {
+      break;
+    }
+  }
 
-const currentPhase = results.find((p) => !p.complete) ?? results[results.length - 1];
-const completedPhases = results.filter((p) => p.complete && p.number < currentPhase.number);
+  return currentPhase;
+}
 
-// --- Output ---
+function getMissingFiles(phase) {
+  const entry = phases.find((p) => p.phase === phase);
+  if (!entry) return [];
+  return entry.required.filter((f) => !r(f));
+}
+
+const completed = detectPhase();
+const next = completed + 1;
+const nextEntry = phases.find((p) => p.phase === next);
+const missing = nextEntry ? getMissingFiles(next) : [];
 
 console.log('\n══════════════════════════════════════════');
 console.log('  HUNTIX — Phase Detector');
 console.log('══════════════════════════════════════════');
 
-for (const phase of results) {
-  const isCurrent = phase.number === currentPhase.number;
-  const icon = phase.complete ? '✅' : isCurrent ? '⚡' : '🔒';
-  const label = phase.complete ? 'DONE' : isCurrent ? 'IN PROGRESS' : 'LOCKED';
-  console.log(`\n${icon} Phase ${phase.number} — ${phase.name}  [${label}]`);
-
-  if (isCurrent) {
-    console.log(`   Milestone: ${phase.milestone}`);
-    console.log('   Files:');
-    for (const c of phase.checked) {
-      console.log(`     ${c.present ? '✓' : '✗'} ${c.file}`);
-    }
-    if (phase.missing.length > 0) {
-      console.log('\n   ⬇ BUILD NEXT (in order):');
-      phase.missing.forEach((m, i) => console.log(`     ${i + 1}. ${m.file}`));
-    }
-    console.log('\n   📚 Docs to read before building:');
-    phase.docs.forEach((d) => console.log(`     - ${d}`));
-  }
-}
-
-console.log('\n══════════════════════════════════════════');
-console.log(`  CURRENT PHASE: ${currentPhase.number} — ${currentPhase.name}`);
-if (currentPhase.missing.length > 0) {
-  console.log(`  NEXT FILE TO BUILD: ${currentPhase.missing[0].file}`);
+if (completed === 0) {
+  console.log('  Status : Phase 0 — Project not started');
+  console.log('  Next   : Phase 1 — Core Engine');
 } else {
-  console.log('  ALL PHASES COMPLETE — ready to ship!');
+  const completedEntry = phases.find((p) => p.phase === completed);
+  console.log(`  Status : Phase ${completed} COMPLETE — ${completedEntry.name}`);
+  console.log(`           "${completedEntry.goal}"`);
 }
-console.log('══════════════════════════════════════════\n');
+
+if (nextEntry) {
+  console.log(`\n  BUILD  : Phase ${next} — ${nextEntry.name}`);
+  console.log(`  Goal   : "${nextEntry.goal}"`);
+  if (missing.length > 0) {
+    console.log(`\n  Missing files for Phase ${next}:`);
+    missing.forEach((f) => console.log(`    ✗  ${f}`));
+  } else {
+    console.log(`\n  All Phase ${next} files present.`);
+  }
+} else {
+  console.log('\n  All phases complete. Ready for deploy.');
+}
+
+console.log('\n  Docs to read for current build:');
+const docMap = {
+  1: ['docs/TECHSTACK.md', 'docs/RENDERING.md', 'docs/SPRITES.md', 'docs/MOVEMENT.md', 'docs/CAMERA.md'],
+  2: ['docs/ENEMIES.md', 'docs/ATTACKSYSTEM.md', 'docs/COMBOSYSTEM.md', 'docs/DEBUFFS.md', 'docs/HUD.md'],
+  3: ['docs/HUNTERS.md', 'docs/SPELLS.md', 'docs/SPRITES.md', 'docs/COOP.md', 'docs/ANIMATIONS.md'],
+  4: ['docs/ZONES.md', 'docs/BOSSES.md', 'docs/MINIBOSS.md', 'docs/WAVEMANAGER.md', 'docs/RUNSTATE.md'],
+  5: ['docs/PROGRESSION.md', 'docs/HUD.md', 'docs/CARDSCREEN.md', 'docs/HUB.md', 'docs/SHOP.md'],
+  6: ['docs/AUDIO.md', 'docs/PARTICLES.md', 'docs/ENDSCREEN.md'],
+};
+const docsForPhase = docMap[next] || docMap[completed] || [];
+docsForPhase.forEach((d) => console.log(`    →  ${d}`));
+
+console.log('\n══════════════════════════════════════════\n');

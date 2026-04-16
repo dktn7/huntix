@@ -1,284 +1,167 @@
-# HUNTIX — Agent Context
+# HUNTIX — AGENTS.md
+
+> **This is the first file you read. Every session. No exceptions.**
+
+*Last updated April 16, 2026*
 
 ---
 
-## ⚡ STEP ZERO — DETECT CURRENT PHASE BEFORE ANYTHING ELSE
+## What Is Huntix
 
-**Before writing a single line of code, you MUST determine the current development phase by scanning the actual files in `src/`.** Do not trust any hardcoded phase label. The codebase is the source of truth.
+Huntix is a 2.5D local co-op brawler built in Three.js for Vibe Jam 2026. 1–4 players pick from 4 hunters and fight through 4 zones of enemy waves, ending each zone with a boss. Between zones players visit the Hunter Hub to shop and upgrade. A full run takes 10–20 minutes.
 
-### How to detect the phase:
-
-Check which files exist across the phase checklists below. The current phase is the **lowest-numbered phase that still has missing files**. Everything above that phase is off-limits.
-
-You can also run this to get an instant answer:
-```bash
-node scripts/check-phase.js
-```
-
-### Phase Completion Checklists
-
-**Phase 1 — Core Engine** ✅ complete when ALL exist:
-- `src/engine/GameLoop.js`
-- `src/engine/Renderer.js`
-- `src/engine/SceneManager.js`
-- `src/engine/InputManager.js`
-- `src/main.js`
-- `src/gameplay/PlayerState.js`
-- `src/gameplay/CombatController.js`
-- `src/gameplay/Hitbox.js`
-- `src/gameplay/ManaBar.js`
-
-**Phase 2 — Enemy AI & Juice** ✅ complete when ALL exist:
-- `src/gameplay/EnemyAI.js`
-- `src/gameplay/EnemySpawner.js`
-- `src/gameplay/StatusEffects.js`
-- `src/gameplay/SparkPool.js`
-- `src/engine/CameraShake.js`
-
-**Phase 3 — 4 Hunters & Co-op** ✅ complete when ALL exist:
-- `src/gameplay/HunterController.js`
-- `src/gameplay/CoopManager.js`
-- `src/gameplay/AICompanion.js`
-- `src/gameplay/HunterDabik.js`
-- `src/gameplay/HunterBenzu.js`
-- `src/gameplay/HunterSereisa.js`
-- `src/gameplay/HunterVesol.js`
-- `src/gameplay/AnimationController.js`
-- `src/visuals/HunterMeshes.js`
-- `src/visuals/SpriteAnimator.js`
-
-**Phase 4 — Zones & Bosses** ✅ complete when ALL exist:
-- `src/gameplay/ZoneManager.js`
-- `src/gameplay/PortalTransition.js`
-- `src/gameplay/BossController.js`
-- `src/gameplay/EssenceDrop.js`
-- `src/visuals/CityBreachArena.js`
-
-**Phase 5 — Hub, Shop & HUD** ✅ complete when ALL exist:
-- `src/gameplay/HubScene.js`
-- `src/gameplay/ShopManager.js`
-- `src/gameplay/LevelingSystem.js`
-- `src/gameplay/ComboUI.js`
-- `src/gameplay/GameplayHUD.js`
-
-**Phase 6 — Audio, Polish & Deploy** ✅ complete when ALL exist:
-- `src/engine/AudioManager.js`
-- `src/gameplay/OnboardingFlow.js`
-- `src/gameplay/PerfMonitor.js`
-
-### Blocked features per phase
-
-| Feature | Blocked until |
-|---------|---------------|
-| Sprite atlas integration / real hunter art | Phase 3 |
-| P2–P4 input / co-op wiring | Phase 3 |
-| Zone transitions / boss phases | Phase 4 |
-| HUD / shop UI / combo counter | Phase 5 |
-| Audio (SFX, music) | Phase 6 |
+**Core aesthetic:** Castle Crashers × Hades × Hunter × Hunter. High-energy, highly readable, stylised low-poly 2D sprites in a 3D parallax world.
 
 ---
 
-## What This Is
+## Rendering Model — Read This Before Touching Any Visual Code
 
-Huntix is a 2.5D browser action brawler built in Three.js for Vibe Jam 2026.
+> Characters, enemies, and bosses are **2D billboard sprites** rendered on `PlaneGeometry` quads inside a 3D Three.js scene. There are NO 3D character models, NO GLTF files, NO `AnimationMixer`.
 
-- Genre: beat ’em up / roguelite brawler
-- Perspective: 2.5D side-scroll with orthographic camera and Y-sort depth
-- Players: 1-4 local co-op (shared screen, keyboard + gamepad)
-- Engine: Three.js r169 via CDN importmap — no build step, no bundler
-- Target: instant browser load, 60fps on a mid-spec laptop, no login required
-- Deadline: 1 May 2026 @ 13:37 UTC (Vibe Jam 2026)
+- World geometry (floors, walls, parallax layers) is 3D
+- Characters/enemies/bosses are `PlaneGeometry` + `MeshBasicMaterial` + sprite atlas
+- Animation = UV frame stepping via `SpriteAnimator.js`
+- Camera = fixed `OrthographicCamera` at Z=100 looking at origin
+- See `docs/RENDERING.md` and `docs/SPRITES.md` for the full spec
 
----
-
-## Rendering Model (Critical — Read Before Any Visual Work)
-
-Huntix uses **2D billboard sprites in a 3D world**. This is non-negotiable.
-
-- **Characters and enemies** = 2D sprite sheets on `PlaneGeometry` with `MeshBasicMaterial` + texture atlas. Always face the camera. Never 3D meshes.
-- **World geometry** = 3D `BoxGeometry` / custom mesh for floors, walls, platforms. `MeshStandardMaterial` with baked AO.
-- **Parallax backgrounds** = `PlaneGeometry` quads at fixed Z offsets behind the play field.
-- **Animation** = frame-based UV stepping through the sprite atlas — NOT `THREE.AnimationMixer`, NOT GLTF clips.
-- **No `GLTFLoader`** — not imported anywhere in this project.
-- **No `assets/models/`** — sprites live in `assets/sprites/`.
-- **Y-sort every frame:** `mesh.position.z = -worldY * 0.01`
-
-Full spec: **`docs/RENDERING.md`** — read before touching any visual system.
+**Do not:**
+- Create `assets/models/`
+- Import `GLTFLoader`
+- Use `THREE.AnimationMixer`
+- Switch to a perspective camera
 
 ---
 
-## Vibe Jam Rules (Non-Negotiable)
+## Source of Truth Hierarchy
 
-- Widget script must stay in index.html at all times:
-  `<script async src="https://vibej.am/2026/widget.js"></script>`
-- No loading screens — game must be playable within seconds
-- Free-to-play, no login
-- Game must run on a single domain
-- New game created during the jam (April 2026 onwards)
+When two docs conflict, the lower number wins.
 
----
+| Priority | File | Covers |
+|----------|------|--------|
+| 1 | `docs/TECHSTACK.md` | All technical decisions, rendering model, code conventions |
+| 2 | `docs/RENDERING.md` | Sprite rendering spec |
+| 3 | `docs/SPRITES.md` | Sprite atlas format, UV stepping, adding new characters |
+| 4 | `docs/HUNTERS.md` | Canonical character stats, spells, appearance |
+| 5 | `docs/GDD.md` | Master gameplay document |
+| 6 | `docs/PROGRESSION.md` | Level table (10 levels), shop rules |
+| 7 | `docs/ENEMIES.md` | Enemy stats, XP, essence drops |
+| 8 | All other `docs/*.md` | System-specific detail |
 
-## Development Phases
-
-| Phase | Days | Focus | Milestone |
-|-------|------|-------|-----------|
-| 1 | 1-3 | Core engine, player controller, combat input, widget | Solo hunter moves and attacks |
-| 2 | 4-6 | Enemy AI, hit detection, status effects, juice (hitstop, shake, sparks) | Fight grunt waves |
-| 3 | 7-9 | Sprite atlas integration, 4 hunters, local 1-4P input, AI companion, camera | 4P hub and combat |
-| 4 | 10-12 | 4 zones, portal transitions, miniboss + boss phases, essence drops | Full run clear |
-| 5 | 13-15 | Hub shop, cosmetics, leveling, XP, HUD, combo UI | Buy and upgrade loop |
-| 6 | 16-18 | Audio SFX, onboarding, perf tweaks, deploy | Playable jam submission |
+> If `docs/BOSSES.md` contradicts `docs/ENEMIES.md` on XP/essence values — **ENEMIES.md wins**. Boss XP = 500. Boss essence = 200.
 
 ---
 
-## Project Spec Files
+## Current Phase
 
-All design documentation lives in `docs/`. Read the relevant doc before implementing any system.
+Run `node scripts/check-phase.js` to detect the current phase from actual source files. Never hardcode a phase assumption.
 
-| File | What It Covers |
-|------|----------------|
-| `docs/GDD.md` | Full game design document: mechanics, combat, zones, progression, all systems |
-| `docs/MVP-PLAN.md` | 18-day phased development roadmap with milestones and risk mitigations |
-| `docs/RENDERING.md` | **Rendering model — 2D billboard sprites in 3D world. Read before any visual work.** |
-| `docs/TECHSTACK.md` | Tech stack: Three.js version, importmap, project structure, perf rules, deploy |
-| `docs/HUNTERS.md` | All 4 hunters: Dabik, Benzu, Sereisa, Vesol — lore, stats, spells, upgrade paths |
-| `docs/BOSSES.md` | 4 boss designs with phases, attacks, telegraphs, co-op scaling, perf specs |
-| `docs/ENEMIES.md` | 3 enemy types + miniboss: FSM states, HP, AI notes, wave compositions per zone |
-| `docs/ZONES.md` | All 4 zones + hub: layout, parallax layers, dimensions, transition flow |
-| `docs/INPUT.md` | Full control scheme: P1 keyboard (J/K/Shift/E) + gamepad, P2-4 Phase 3 plan |
-| `docs/COOP.md` | Co-op rules: shared camera, HP scaling, AI fill, player colours, synergies |
-| `docs/WEAPONS.md` | 17 weapons with costs, stats, best hunter, shop economy |
-| `docs/HUD.md` | HUD layout: bar positions, combo counter, damage numbers, boss health bar |
-| `docs/AUDIO.md` | Full SFX list per action, hunter sounds, boss stings, music by zone |
-| `docs/ANIMATIONS.md` | Animation states, frame budgets, placeholder behaviour, sprite state machine spec |
-| `docs/VISUAL-DESIGN.md` | World tone, art direction, character philosophy, colour system, Mixboard/Grok prompts |
-| `docs/VISUAL-REFERENCE.md` | Canonical design lock — read before any asset generation |
-| `docs/CUSTOMIZATION.md` | Customisation system: colour slots, outfit variants, co-op readability rules |
-| `docs/PORTAL-WEBRING.md` | Vibe Jam portal webring implementation with Three.js exit/start portals |
-| `docs/ATTACKSYSTEM.md` | Full attack system: combo chains, hitstop, active frames, cancel windows |
-| `docs/COMBOSYSTEM.md` | Combo counter: scoring, multipliers, decay, UI display |
-| `docs/SPELLS.md` | All spells per hunter: minor, advanced, ultimate — costs, effects, hitboxes |
-| `docs/MOVEMENT.md` | Movement system: speed values, acceleration, sprint, wall bounds per zone |
-| `docs/HITBOX.md` | Hitbox spec: box dimensions per attack, active frames, hurtbox rules |
-| `docs/COLLISIONLAYERS.md` | Collision layers: what hits what, player vs enemy vs world vs projectile |
-| `docs/DEBUFFS.md` | Debuff system: Bleed, Stun, Slow, Burn — stacks, durations, synergies |
-| `docs/PARTICLES.md` | Particle system: pool rules, effect types, per-action specs, perf caps |
-| `docs/AURASYSTEM.md` | Aura rendering: per-hunter aura colours, states, intensity levels |
-| `docs/CAMERA.md` | Camera system: ortho values, co-op zoom, shake, follow rules |
-| `docs/GAMELOOP.md` | Game loop: fixed timestep, accumulator, dt rules |
-| `docs/SCENEMANAGER.md` | Scene manager: scene stack, transition flow, scene lifecycle |
-| `docs/RUNSTATE.md` | Run state: global run data, persistence across zones, death/restart |
-| `docs/WAVEMANAGER.md` | Wave manager: spawn waves, enemy composition, clear conditions |
-| `docs/MINIBOSS.md` | Miniboss designs: Fire Bruiser and others — phases, attacks, telegraphs |
-| `docs/PROGRESSION.md` | Leveling, XP, upgrade paths, stat scaling per hunter |
-| `docs/HUB.md` | Hub scene: layout, NPC positions, shop flow, portal placement |
-| `docs/DEATH.md` | Death and respawn: solo death, co-op downed state, run-end flow |
-| `docs/CARDSCREEN.md` | Card upgrade screen: post-wave card draw, card types, selection UI |
-| `docs/ENDSCREEN.md` | End screen: victory and defeat states, stats display, retry flow |
-| `docs/TITLESCREEN.md` | Title screen: layout, menu options, first-run flow |
-| `docs/PAUSEMENU.md` | Pause menu: options, audio controls, quit flow |
-| `docs/GAMELOOP.md` | Fixed timestep detail and accumulator reference |
+| Phase | Goal | Key files unlocked |
+|-------|------|--------------------|
+| 1 | Engine + single hunter moves | `GameLoop.js`, `Renderer.js`, `InputManager.js`, `PlayerState.js` |
+| 2 | Combat basics, grunt waves | `EnemyAI.js`, `EnemySpawner.js`, `Hitbox.js` |
+| 3 | All 4 hunters + co-op | `HunterController.js`, `AnimationController.js`, `HunterMeshes.js`, `SpriteAnimator.js` |
+| 4 | Zones + bosses | `ZoneManager.js`, `PortalManager.js` |
+| 5 | Progression + UI | `ShopManager.js`, `HUD.js` |
+| 6 | Polish + deploy | Audio, perf pass, jam submission |
+
+**Do not build ahead of the current phase.**
 
 ---
 
-## Tech Rules
+## Hard Rules (Non-Negotiable)
 
-See `docs/TECHSTACK.md` for the full tech reference. Summary:
-
-- Three.js r169 loaded via CDN importmap — no npm, no Vite, no bundler
-- ES modules only (`type="module"` in script tags)
-- **Characters = 2D billboard sprites** on `PlaneGeometry` — see `docs/RENDERING.md`
-- Max 20 enemies on screen — use `InstancedMesh` for grunt sprites
-- Max 500 particles — pool and reuse
-- No `GLTFLoader`, no `AnimationMixer`, no GLTF/GLB files
-- 60fps target on Intel Iris / integrated GPU
-- No dynamic shadows in combat scenes
-- Y-sort all game objects every frame: `mesh.position.z = -worldY * 0.01`
-- Orthographic camera — do not switch to perspective
-- Camera: `ORTHO_HEIGHT = 10`, `ORTHO_WIDTH ≈ 17.78`, positioned at `(0, 0, 100)`
-
----
-
-## Game Loop — Fixed Timestep (Critical)
-
-`GameLoop.js` uses a fixed-timestep accumulator. The `dt` passed to every `update()` call is **always exactly `1/60 = 0.01667s`** — it never varies.
-
-- Do NOT treat `dt` as a variable that changes frame to frame
-- Do NOT call `performance.now()` or measure elapsed time in gameplay code
-- The `MAX_DT` cap of `1/20` prevents spiral-of-death after tab switches
-- All gameplay physics, timers, and animations are fully deterministic as a result
-
-```js
-// GameLoop.js — for reference only, already implemented
-const FIXED_DT = 1 / 60;  // 0.01667s — always
-const MAX_DT   = 1 / 20;  // 50ms cap
-this._accum += Math.min(rawDt, MAX_DT);
-while (this._accum >= FIXED_DT) {
-  this._callback(FIXED_DT); // your update() always receives 0.01667
-  this._accum -= FIXED_DT;
-}
-```
-
----
-
-## Code Conventions
-
+- Widget MUST stay in `index.html`: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- No npm, no Vite, no bundler — Three.js r169 via CDN importmap only
+- No loading screens, no login, free-to-play, single domain
+- Fixed timestep: `dt` is always `0.01667s` — never variable
+- Orthographic camera only — never perspective
+- Max 20 enemies simultaneous
+- Max 500 particles per frame
+- No `new` allocations inside the game loop — pool everything
 - One class per file
-- Files live in `src/engine/` (core systems), `src/gameplay/` (game logic), or `src/visuals/` (sprite mesh builders)
-- `dt` in all `update(dt)` calls is always `0.01667s` (fixed timestep) — use it for all movement and timers
-- All input goes through `InputManager.isDown(action)` or `justPressed(action)` — never read raw keys directly
-- State machines use string constants, not magic strings inline
-- No `console.log` in shipped code except behind `debug` flag
-- Comment every public method with a one-line description
+- All input routed through `InputManager.js` — never read raw keys directly
+- No `console.log` in shipped code except behind `if (DEBUG)`
+- Do not upgrade Three.js mid-jam (locked at r169)
 
 ---
 
-## Hunter Summary
+## Key Number Reference (Canonical)
 
-| Hunter | Element | Weapon | Dodge | Status |
-|--------|---------|--------|-------|--------|
-| Dabik | Shadow | Twin daggers | Blink (teleports behind nearest enemy) | Bleed |
-| Benzu | Thunder/Earth | Gauntlets | Shoulder Charge (staggers enemies hit) | Stun |
-| Sereisa | Lightning | Electro-blades | Electric Dash (applies slow on contact) | Slow |
-| Vesol | Flame | Wrist focus | Flame Scatter (pushes enemies back) | Burn |
+These values are locked. If any doc says otherwise, these win.
 
-Status synergies: Bleed+Slow = setup/punish, Stun+Wall = trap, Slow+Blink = opening window, Burn+Slam = AoE control.
-
----
-
-## Resource System Per Hunter
-
-- **Health** — survival (varies per hunter: Dabik 80, Benzu 160, Sereisa 100, Vesol 90)
-- **Mana** — powers specials (Dabik 120, Benzu 70, Sereisa 100, Vesol 130)
-- **Surge** — unlocks ultimate (fills from kills/hits/streaks, drains on use)
-- **Stamina** — limits dodge and sprint (restores on hit, warns UI when low)
-
----
-
-## Combat Feel Rules
-
-- Light attack hitstop: freeze dt for 80ms
-- Heavy attack hitstop: freeze dt for 150ms
-- Dodge: 300ms duration, invincibility frames for 200ms, directional from moveVector
-- Every hit must produce: spark particles, screen nudge, stagger on enemy
-- Enemies must have visible attack telegraphs before every hit
-- No attack cancels except dodge cancel (can cancel any attack into dodge)
+| Value | Number | Source |
+|-------|--------|--------|
+| Levels per run | 10 | `docs/PROGRESSION.md` |
+| Shop items shown | 5 random | `docs/PROGRESSION.md` |
+| Max shop purchases per visit | 2 | `docs/PROGRESSION.md` |
+| Reroll cost | 30 Essence | `docs/PROGRESSION.md` |
+| Boss XP | 500 | `docs/ENEMIES.md` / `docs/PROGRESSION.md` |
+| Boss Essence | 200 | `docs/ENEMIES.md` |
+| Miniboss XP | 800 | `docs/ENEMIES.md` |
+| Max enemies on screen | 20 | `docs/TECHSTACK.md` |
+| Max particles per frame | 500 | `docs/TECHSTACK.md` |
+| Arena width | 40 world units | `docs/ZONES.md` |
+| Arena height | 10 world units | `docs/ZONES.md` |
+| Ortho height | 10 world units | `docs/TECHSTACK.md` |
+| Hitstop (light) | 40ms | `docs/ATTACKSYSTEM.md` |
+| Hitstop (heavy) | 80ms | `docs/ATTACKSYSTEM.md` |
+| Fixed timestep `dt` | 0.01667s | `docs/TECHSTACK.md` |
 
 ---
 
-## Do Not
+## Project Structure
 
-- Do not add any NPM packages or build tools
-- Do not switch to a perspective camera
-- Do not add loading screens or splash delays
-- Do not use `eval()` or dynamic `import()` at runtime
-- Do not commit large image or audio binaries to the repo root — use `assets/`
-- Do not create gameplay features that are not in the spec without flagging it first
-- Do not skip the widget script
-- Do not upgrade Three.js mid-jam
-- Do not implement P2–P4 input before Phase 3
-- Do not build HUD or shop UI before Phase 5
-- **Do not load GLTF or GLB files** — there are no 3D character models in this project
-- **Do not use `THREE.AnimationMixer`** — animation is sprite frame stepping via `SpriteAnimator.js`
-- **Do not create `assets/models/`** — all sprites live in `assets/sprites/`
-- **Do not build 3D character meshes** — hunters and enemies are always 2D billboard sprites
+```
+huntix/
+├── AGENTS.md             ← YOU ARE HERE
+├── index.html            # Entry point, importmap, widget
+├── scripts/
+│   └── check-phase.js    # Phase detector — run before every session
+├── src/
+│   ├── main.js
+│   ├── engine/           # Core systems — renderer, loop, input, scene
+│   ├── gameplay/         # Game logic — combat, AI, spawner, state
+│   └── visuals/          # Sprite mesh builders and animation helpers
+├── assets/
+│   ├── sprites/          # Sprite atlases PNG + JSON — NO models/ folder
+│   ├── audio/
+│   └── textures/
+├── docs/                 # All design documentation
+└── .agents/
+    ├── instructions.md   # Codex role and task protocol
+    └── skills/           # Skill files — load max 2 at a time
+```
+
+---
+
+## Skill Map (Quick Reference)
+
+Load skills from `.agents/skills/`. Load max 2 at a time.
+
+| What you are building | Load this skill |
+|-----------------------|-----------------|
+| Sprite animation, UV stepping, atlas | `sprite-animation.md` |
+| Hit feedback, particles, screenshake | `game-feel-juice.md` |
+| Combo counter, multiplier | `combo-system.md` |
+| Enemy AI, FSMs | `animation-fsm.md` |
+| Co-op input, shared camera | `multiplayer-coop.md` |
+| XP, levelling, progression | `progression-xp.md` |
+| HUD, shop, combo UI | `game-hud-ui.md` |
+| Shaders, aura effects | `minimax-shader-dev.md` |
+| Three.js patterns | `threejs-builder/SKILL.md` |
+| Boss entrance, phase transition | `boss-intro.md` |
+| Player death, co-op revive | `death-and-respawn.md` |
+| Debugging | `systematic-debugging.md` |
+
+---
+
+## Jam Compliance (Must Pass Before Deploy)
+
+- [ ] `<script async src="https://vibej.am/2026/widget.js"></script>` in `index.html`
+- [ ] Game on single domain/subdomain
+- [ ] No login, no signup
+- [ ] Free to play
+- [ ] Instant browser load — no loading screens
+- [ ] New game created after April 1, 2026
+- [ ] ≥90% of code written by AI
+- [ ] Submitted before May 1, 2026 @ 13:37 UTC
