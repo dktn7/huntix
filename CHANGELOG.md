@@ -12,6 +12,14 @@
 
 ---
 
+## [0.2.2] — 2026-04-16
+
+### Fixed
+- `assets/Futuristic HUNTIX logo design (1).png` renamed to `assets/huntix-logo.png` — clean slug, no spaces or parentheses
+- `CHANGELOG.md` Notes entry from [0.2.1] about manual rename resolved
+
+---
+
 ## [0.2.1] — 2026-04-16
 
 ### Added
@@ -25,9 +33,6 @@
 - `AGENTS.md` project structure tree updated to show `PORTAL-WEBRING.md` at root
 - `AGENTS.md` Docs Gap Tracker updated with all new/moved files
 - `docs/PORTAL-WEBRING.md` removed — superseded by root `PORTAL-WEBRING.md`
-
-### Notes
-- `huntik logo` file at repo root still needs manual rename to `assets/huntix-logo.png` (requires git CLI — cannot be done via API)
 
 ---
 
