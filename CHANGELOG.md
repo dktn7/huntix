@@ -12,6 +12,25 @@
 
 ---
 
+## [0.2.1] — 2026-04-16
+
+### Added
+- `src/visuals/RuinDenArena.js` — Phase 4 stub for Zone 2 (Ruin Den): earthy ruins, amber dust, parallax rubble layers
+- `src/visuals/ShadowCoreArena.js` — Phase 4 stub for Zone 3 (Shadow Core): void dimension, floating platforms, reduced ambient light
+- `src/visuals/ThunderSpireArena.js` — Phase 4 stub for Zone 4 (Thunder Spire): storm tower, fast cloud parallax, lightning flash overlay
+- `PORTAL-WEBRING.md` — Vibe Jam 2026 webring portal guide at repo root (Three.js sample code, query param spec, start+exit portal pattern)
+
+### Fixed
+- `AGENTS.md` doc count corrected from 54 → 55
+- `AGENTS.md` project structure tree updated to show `PORTAL-WEBRING.md` at root
+- `AGENTS.md` Docs Gap Tracker updated with all new/moved files
+- `docs/PORTAL-WEBRING.md` removed — superseded by root `PORTAL-WEBRING.md`
+
+### Notes
+- `huntik logo` file at repo root still needs manual rename to `assets/huntix-logo.png` (requires git CLI — cannot be done via API)
+
+---
+
 ## [0.2.0] — 2026-04-16
 
 ### Added
