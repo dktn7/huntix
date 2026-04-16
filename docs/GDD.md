@@ -2,7 +2,7 @@
 
 > Hunt. Enter. Survive.
 
-*Last updated April 15, 2026*
+*Last updated April 16, 2026*
 *Team: Solo developer with AI assistance*
 
 ---
@@ -18,7 +18,7 @@ Huntix is a browser-based **2.5D** action beat 'em up built in Three.js where 1 
 
 The game is a stand-alone browser experience with no login, no heavy downloads, and instant entry. Designed for short sessions, strong combat feedback, co-op chaos, and polished action-game presentation.
 
-> **Rendering approach:** Three.js with 3D models rendered on a fixed orthographic camera — 2.5D style. Movement is constrained to the X/Y plane. This gives the visual quality of 3D assets with the readability and simplicity of a 2D brawler.
+> **Rendering approach:** Three.js with 2D sprites billboarded inside a 3D world, viewed through a fixed orthographic camera — 2.5D style. Movement is constrained to the X/Y plane. This gives the visual clarity of 2D characters with the depth and atmosphere of a full 3D environment.
 
 ---
 
@@ -192,7 +192,7 @@ See [ANIMATIONS.md](./ANIMATIONS.md) for animation states and frame budgets.
 See [HUD.md](./HUD.md) for HUD layout and element specs.  
 See [AUDIO.md](./AUDIO.md) for full SFX list and music direction.
 
-- **Art** — dark, high contrast, stylized. 3D models lit for 2.5D presentation. Combat effects glow strongly against dark world. Auras intensify with level.
+- **Art** — dark, high contrast, stylized. 2D sprites billboarded in a 3D world, lit for 2.5D presentation. Combat effects glow strongly against dark world. Auras intensify with level.
 - **Audio** — punchy, arcade-like, responsive to hits, upgrades, and boss moments.
 - **Aura system** — aura intensity visually tied to level, darker and more dramatic as hunters grow stronger.
 - **Parallax backgrounds** — 3-layer depth system per zone (background / midground / foreground).

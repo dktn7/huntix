@@ -23,7 +23,7 @@
 
 Gates have opened. Elite hunters are the only answer.
 
-**Huntix** is a fast, polished **2.5D** brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Built in Three.js with 3D models on a fixed orthographic camera — the visual quality of 3D with the readability and tight feel of a classic beat 'em up. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
+**Huntix** is a fast, polished **2.5D** brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Built in Three.js with 2D sprites on a 3D world rendered through a fixed orthographic camera — the visual clarity of 2D characters with the depth and atmosphere of a 3D environment. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
 
 | Detail | Info |
 |--------|------|
@@ -282,10 +282,11 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 |-------|--------|
 | Engine | Three.js |
 | Camera | Fixed orthographic — 2.5D presentation |
+| Characters | 2D sprites billboarded in a 3D world |
 | Movement | X/Y plane only — Z is visual depth layering |
 | Collision | AABB (flat 2D hit boxes) |
 | Enemy AI | Lane-based pathing (Yuka.js or custom) |
-| Weapons | Bone-attach system |
+| Weapons | Sprite-attach system |
 | Status | Stackable (Bleed, Burn, Slow, Stun) |
 | Co-op | Local-first · 1–4 players · AI companions fill empty slots |
 | Performance | 60fps · max 20 enemies instanced · 500 particles |
