@@ -16,14 +16,15 @@
 | Sprite pipeline doc | ✅ Complete | `docs/SPRITES.md` — rendering model, UV stepping, atlas format |
 | Character art prompts | ✅ In each hunter file | Mixboard + Grok prompts embedded |
 | Asset pipeline | 🔄 In progress | Mixboard → Kling/Grok → TexturePacker → Three.js |
-| Three.js engine | 🔲 Not started | Phase 1 |
-| Combat system | 🔲 Not started | Phase 2 |
+| Three.js engine | ✅ Complete | Phase 1 — engine, renderer, game loop, scene manager in src/ |
+| Vibe Jam widget | ✅ Live | `<script async src="https://vibej.am/2026/widget.js"></script>` in index.html |
+| Combat system | 🔄 In progress | Phase 2 — hit detection, status effects, HUD bars present |
+| RunState | ✅ Complete | `src/core/RunState.js` — singleton, tick, zone lifecycle wired |
 | All 4 hunters playable | 🔲 Not started | Phase 3 |
-| Zones (4) | 🔲 Not started | Phase 4 |
+| Zones (4) | 🔄 In progress | Phase 4 — City Breach wired, hub return implemented |
 | Bosses (4) | 🔲 Not started | Phase 4 |
 | Shop / progression | 🔲 Not started | Phase 5 |
 | Polish + deploy | 🔲 Not started | Phase 6 |
-| Vibe Jam widget | 🔲 Pending | Required — add to HTML before deploy |
 
 ---
 
@@ -33,15 +34,15 @@
 
 **Goal:** Solo hunter moves and attacks in a working Three.js scene.
 
-- [ ] Three.js project setup — public repo, single domain
-- [ ] 2.5D fixed orthographic scene + camera (Castle Crashers angle)
-- [ ] Basic player controller — WASD move, Space jump, LShift dodge
-- [ ] Hunter hub placeholder scene
-- [ ] Vibe Jam widget integration: `<script async src="https://vibej.am/2026/widget.js"></script>`
-- [ ] Light attack chain (3 hits), heavy attack
-- [ ] Basic aura particle system placeholder
+- [x] Three.js project setup — public repo, single domain
+- [x] 2.5D fixed orthographic scene + camera (Castle Crashers angle)
+- [x] Basic player controller — WASD move, Space jump, LShift dodge
+- [x] Hunter hub placeholder scene
+- [x] Vibe Jam widget integration: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- [x] Light attack chain (3 hits), heavy attack
+- [x] Basic aura particle system placeholder
 
-**Milestone:** One hunter moves, attacks, and dodges. Widget live.
+**Milestone:** ✅ One hunter moves, attacks, and dodges. Widget live.
 
 ---
 
@@ -202,7 +203,7 @@
 
 ## Jam Compliance Checklist
 
-- [ ] Widget script in HTML: `<script async src="https://vibej.am/2026/widget.js"></script>`
+- [x] Widget script in HTML: `<script async src="https://vibej.am/2026/widget.js"></script>`
 - [ ] Game on single domain or subdomain
 - [ ] No login, no signup required
 - [ ] Free to play
