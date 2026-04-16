@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RunState } from '../core/RunState.js';
 import { ORTHO_WIDTH } from './Renderer.js';
 import { Actions } from './InputManager.js';
 import { CameraShake } from './CameraShake.js';
@@ -20,6 +21,10 @@ const SceneModes = {
   CITY_BREACH: 'CITY_BREACH',
 };
 
+const ZONE_CLEAR_RETURN_DELAY_MS = 2000;
+const ZONE_CLEAR_FADE_OUT_MS = 800;
+const ZONE_CLEAR_FADE_IN_MS = 500;
+
 export class SceneManager {
   /** Creates the Three.js scene, camera, arena, and Phase 1 gameplay systems. */
   constructor(renderer) {
@@ -27,6 +32,10 @@ export class SceneManager {
     this.camera = renderer.createCamera();
     this.mode = SceneModes.HUB;
     this.debugEnabled = false;
+    this._zoneReturnPending = false;
+    this._fadeOverlay = this._setupFadeOverlay();
+    this._handleZoneComplete = this._handleZoneComplete.bind(this);
+    RunState.on('zoneComplete', this._handleZoneComplete);
 
     this._setupLighting();
     this._setupArena();
@@ -195,7 +204,9 @@ export class SceneManager {
   }
 
   _enterCityBreach(input) {
+    RunState.onZoneEntry('city-breach');
     this.mode = SceneModes.CITY_BREACH;
+    this._zoneReturnPending = false;
     input.clearBuffer();
     this.player.position.x = -4;
     this.player.position.y = -2.2;
@@ -208,6 +219,61 @@ export class SceneManager {
     this._cityBreachArena.visible = true;
     this._playerAura.visible = true;
     this.spawner.startCityBreach();
+  }
+
+  _handleZoneComplete() {
+    if (this._zoneReturnPending) return;
+
+    this._zoneReturnPending = true;
+    setTimeout(() => {
+      this._returnToHubAfterZoneClear();
+    }, ZONE_CLEAR_RETURN_DELAY_MS);
+  }
+
+  async _returnToHubAfterZoneClear() {
+    await this._fadeTo(1, ZONE_CLEAR_FADE_OUT_MS);
+    this._switchToHub();
+    await this._fadeTo(0, ZONE_CLEAR_FADE_IN_MS);
+    this._zoneReturnPending = false;
+  }
+
+  _switchToHub() {
+    this.mode = SceneModes.HUB;
+    this.player.position.x = 0;
+    this.player.position.y = -2.2;
+    this._portalMesh.visible = true;
+    this._portalPedestal.visible = true;
+    this._hunterPad.visible = true;
+    for (const m of this._hubBackdrop) {
+      m.visible = true;
+    }
+    this._cityBreachArena.visible = false;
+    this._playerAura.visible = false;
+  }
+
+  _setupFadeOverlay() {
+    let overlay = document.getElementById('fade-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'fade-overlay';
+      document.body.appendChild(overlay);
+    }
+
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = '#000';
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    overlay.style.zIndex = '100';
+    return overlay;
+  }
+
+  _fadeTo(opacity, durationMs) {
+    return new Promise(resolve => {
+      this._fadeOverlay.style.transition = `opacity ${durationMs}ms ease`;
+      this._fadeOverlay.style.opacity = String(opacity);
+      setTimeout(resolve, durationMs);
+    });
   }
 
   /** Y-sorts aura with player mesh; advances aura shader time (call after player.update). */
@@ -257,6 +323,9 @@ export class SceneManager {
         this.cameraShake.request(0.35);
       } else if (event.type === 'waveClear') {
         this.hud.showWaveClear();
+        if (!event.hasNextWave) {
+          RunState.onZoneComplete('city-breach');
+        }
       } else if (event.type === 'ultimate') {
         this.cameraShake.request(0.6);
       } else if (event.type === 'spell') {
