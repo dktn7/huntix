@@ -2,12 +2,18 @@ import { Renderer } from './engine/Renderer.js';
 import { InputManager } from './engine/InputManager.js';
 import { GameLoop } from './engine/GameLoop.js';
 import { SceneManager } from './engine/SceneManager.js';
+import { RunState } from './core/RunState.js';
 
 const canvas = document.getElementById('game-canvas');
 
 const renderer = new Renderer(canvas);
 const input = new InputManager();
 const scene = new SceneManager(renderer);
+RunState.init([{
+  hunterId: 'dabik',
+  isAI: false,
+  carryEssence: 0,
+}]);
 const loop = new GameLoop();
 
 loop.start((dt) => {
