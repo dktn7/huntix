@@ -23,7 +23,7 @@
 
 Gates have opened. Elite hunters are the only answer.
 
-**Huntix** is a fast, polished **2.5D** brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Built in Three.js with 2D sprites on a 3D world rendered through a fixed orthographic camera — the visual clarity of 2D characters with the depth and atmosphere of a 3D environment. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
+**Huntix** is a fast, polished **2.5D** brawler where 1–4 players control S-Rank hunters through portal-linked combat zones. Built in Three.js with **2D billboard sprites** in a **3D parallax world** rendered through a fixed orthographic camera — the visual clarity of 2D characters with the depth and atmosphere of a 3D environment. Inspired by **Solo Leveling** (dark fantasy escalation), **Castle Crashers** (co-op chaos, readable characters), and **Dead Cells** (tight dodge timing, status synergies).
 
 | Detail | Info |
 |--------|------|
@@ -70,6 +70,8 @@ Four S-Rank hunters. Different worlds. One purpose — when the gates open, they
 | [→ Full Sheet](docs/hunters/VESOL.md) | [→ Full Sheet](docs/hunters/DABIK.md) | [→ Full Sheet](docs/hunters/BENZU.md) | [→ Full Sheet](docs/hunters/SEREISA.md) |
 
 ### Hunter Stats At A Glance
+
+> Stats shown as display-scale values (0–10). Canonical raw numbers are in [`docs/STATBLOCK.md`](docs/STATBLOCK.md).
 
 | Stat | 🌑 Dabik | 🔴 Benzu | ⚡ Sereisa | 🔥 Vesol |
 |------|---------|---------|----------|--------|
@@ -282,7 +284,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 |-------|--------|
 | Engine | Three.js |
 | Camera | Fixed orthographic — 2.5D presentation |
-| Characters | 2D sprites billboarded in a 3D world |
+| Characters | **2D sprites** (PlaneGeometry quads) in a **3D world** |
 | Movement | X/Y plane only — Z is visual depth layering |
 | Collision | AABB (flat 2D hit boxes) |
 | Enemy AI | Lane-based pathing (Yuka.js or custom) |
@@ -331,30 +333,117 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ## 📁 Docs
 
+### 🧠 Core Design
+
 | File | Contents |
 |------|----------|
+| [`docs/GDD.md`](docs/GDD.md) | Master game design document |
+| [`docs/MVP-PLAN.md`](docs/MVP-PLAN.md) | 18-day phased build plan |
+| [`docs/TECHSTACK.md`](docs/TECHSTACK.md) | All technical decisions, CDN, conventions |
+| [`docs/STATBLOCK.md`](docs/STATBLOCK.md) | Canonical raw stats for all entities |
+
+### 🧍 Hunters
+
+| File | Contents |
+|------|----------|
+| [`docs/HUNTERS.md`](docs/HUNTERS.md) | All hunters overview |
 | [`docs/hunters/VESOL.md`](docs/hunters/VESOL.md) | 🔥 Vesol — full character sheet |
 | [`docs/hunters/DABIK.md`](docs/hunters/DABIK.md) | 🌑 Dabik — full character sheet |
 | [`docs/hunters/BENZU.md`](docs/hunters/BENZU.md) | 🔴 Benzu — full character sheet |
 | [`docs/hunters/SEREISA.md`](docs/hunters/SEREISA.md) | ⚡ Sereisa — full character sheet |
-| [`docs/HUNTERS.md`](docs/HUNTERS.md) | All hunters overview |
-| [`docs/WEAPONS.md`](docs/WEAPONS.md) | Full weapon list, distribution, shop economy |
+| [`docs/SPELLS.md`](docs/SPELLS.md) | All spells per hunter, mana costs, tiers |
+| [`docs/WEAPONS.md`](docs/WEAPONS.md) | Full weapon list, shop distribution, economy rules |
+| [`docs/ANIMATIONS.md`](docs/ANIMATIONS.md) | Animation states per hunter |
 | [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.md) | Visual rules, locked identity elements, outfit system |
-| [`docs/VISUAL-DESIGN.md`](docs/VISUAL-DESIGN.md) | Art direction, aura system, palette |
+| [`docs/UPGRADEPATH.md`](docs/UPGRADEPATH.md) | Full upgrade tree per path per hunter |
+
+### 👾 Enemies & Bosses
+
+| File | Contents |
+|------|----------|
+| [`docs/ENEMIES.md`](docs/ENEMIES.md) | Enemy specs, XP, essence drops, AI states |
+| [`docs/BOSSES.md`](docs/BOSSES.md) | Boss index |
+| [`docs/MINIBOSS.md`](docs/MINIBOSS.md) | Gate Warden miniboss spec |
 | [`docs/bosses/VRAEL.md`](docs/bosses/VRAEL.md) | 🔥 VRAEL — full boss lore + combat spec |
 | [`docs/bosses/ZARTH.md`](docs/bosses/ZARTH.md) | 🪨 ZARTH — full boss lore + combat spec |
 | [`docs/bosses/KIBAD.md`](docs/bosses/KIBAD.md) | 🌑 KIBAD — full boss lore + combat spec |
 | [`docs/bosses/THYXIS.md`](docs/bosses/THYXIS.md) | ⚡ THYXIS — full boss lore + combat spec |
+
+### 🌍 Zones
+
+| File | Contents |
+|------|----------|
+| [`docs/ZONES.md`](docs/ZONES.md) | Zone layouts, pacing, parallax |
 | [`docs/zones/CITY-BREACH.md`](docs/zones/CITY-BREACH.md) | 🏙 City Breach — zone lore + enemy design |
 | [`docs/zones/RUIN-DEN.md`](docs/zones/RUIN-DEN.md) | 🏕 Ruin Den — zone lore + enemy design |
 | [`docs/zones/SHADOW-CORE.md`](docs/zones/SHADOW-CORE.md) | 🌑 Shadow Core — zone lore + enemy design |
 | [`docs/zones/THUNDER-SPIRE.md`](docs/zones/THUNDER-SPIRE.md) | ⚡ Thunder Spire — zone lore + enemy design |
-| [`docs/BOSSES.md`](docs/BOSSES.md) | Boss index |
-| [`docs/ZONES.md`](docs/ZONES.md) | Zone layouts, pacing, parallax |
-| [`docs/GDD.md`](docs/GDD.md) | Full game design document |
-| [`docs/ANIMATIONS.md`](docs/ANIMATIONS.md) | Animation states per hunter |
+| [`docs/SPAWNPOINTS.md`](docs/SPAWNPOINTS.md) | Spawn zones, lane assignments, wave plans |
+| [`docs/WAVEMANAGER.md`](docs/WAVEMANAGER.md) | Wave spawning logic, difficulty scaling |
+
+### ⚔️ Combat Systems
+
+| File | Contents |
+|------|----------|
+| [`docs/ATTACKSYSTEM.md`](docs/ATTACKSYSTEM.md) | Hit detection, hitstop, input buffer |
+| [`docs/COMBOSYSTEM.md`](docs/COMBOSYSTEM.md) | Combo counter, multiplier, window |
+| [`docs/HITBOX.md`](docs/HITBOX.md) | Hitbox shapes, AABB spec |
+| [`docs/COLLISIONLAYERS.md`](docs/COLLISIONLAYERS.md) | Collision layer matrix |
+| [`docs/PROJECTILES.md`](docs/PROJECTILES.md) | Projectile types, pooling, collision |
+| [`docs/STATUSEFFECTS.md`](docs/STATUSEFFECTS.md) | Bleed/Burn/Slow/Stun full spec |
+| [`docs/DEBUFFS.md`](docs/DEBUFFS.md) | Debuff implementation detail |
+| [`docs/MOVEMENT.md`](docs/MOVEMENT.md) | Player movement, physics, dodge |
+
+### 🤖 AI & Systems
+
+| File | Contents |
+|------|----------|
+| [`docs/AICONTROLLER.md`](docs/AICONTROLLER.md) | Enemy & companion AI state machine |
+| [`docs/GAMELOOP.md`](docs/GAMELOOP.md) | Fixed timestep, update order |
+| [`docs/RUNSTATE.md`](docs/RUNSTATE.md) | Run state machine |
+| [`docs/SCENEMANAGER.md`](docs/SCENEMANAGER.md) | Scene transitions |
+| [`docs/PROGRESSION.md`](docs/PROGRESSION.md) | 10-level XP table, shop rules, spell unlocks |
+| [`docs/ESSENCEECONOMY.md`](docs/ESSENCEECONOMY.md) | Drop values, shop costs, balance levers |
+| [`docs/COOP.md`](docs/COOP.md) | Co-op architecture, AI companion slots |
+
+### 🎨 Rendering & Visuals
+
+| File | Contents |
+|------|----------|
+| [`docs/RENDERING.md`](docs/RENDERING.md) | Sprite billboard system, PlaneGeometry spec |
+| [`docs/SPRITES.md`](docs/SPRITES.md) | Atlas format, UV stepping, adding new characters |
+| [`docs/PARTICLES.md`](docs/PARTICLES.md) | Particle system, pool size, effect types |
+| [`docs/AURASYSTEM.md`](docs/AURASYSTEM.md) | Aura visuals, level escalation |
+| [`docs/VISUAL-DESIGN.md`](docs/VISUAL-DESIGN.md) | Art direction, palette, aura system |
+| [`docs/VISUAL-REFERENCE.md`](docs/VISUAL-REFERENCE.md) | Visual reference sheet |
+| [`docs/ASSETPIPELINE.md`](docs/ASSETPIPELINE.md) | Sprite generation → atlas → Three.js workflow |
+| [`docs/PERFORMANCEBUDGET.md`](docs/PERFORMANCEBUDGET.md) | FPS targets, draw call caps, cut priority |
+| [`docs/CAMERA.md`](docs/CAMERA.md) | Orthographic camera spec |
+
+### 🖥️ UI & Screens
+
+| File | Contents |
+|------|----------|
 | [`docs/HUD.md`](docs/HUD.md) | HUD layout and UI flow |
+| [`docs/HUB.md`](docs/HUB.md) | Hunter Hub — shop, upgrades, zone select |
+| [`docs/TITLESCREEN.md`](docs/TITLESCREEN.md) | Title screen spec |
+| [`docs/CARDSCREEN.md`](docs/CARDSCREEN.md) | Card select screen |
+| [`docs/PAUSEMENU.md`](docs/PAUSEMENU.md) | Pause menu spec |
+| [`docs/ENDSCREEN.md`](docs/ENDSCREEN.md) | End screen flow |
+| [`docs/DEATH.md`](docs/DEATH.md) | Death + co-op revive flow |
+
+### 🔊 Audio & Input
+
+| File | Contents |
+|------|----------|
 | [`docs/AUDIO.md`](docs/AUDIO.md) | Audio design and SFX spec |
+| [`docs/INPUT.md`](docs/INPUT.md) | Full control scheme, keyboard + gamepad |
+
+### 🌐 Misc
+
+| File | Contents |
+|------|----------|
+| [`docs/PORTAL-WEBRING.md`](docs/PORTAL-WEBRING.md) | Portal webring feature |
 
 ---
 
