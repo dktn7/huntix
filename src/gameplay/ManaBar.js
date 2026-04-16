@@ -31,6 +31,21 @@ export class ManaBar {
     this.stamina = Math.min(this.maxStamina, this.stamina + this.staminaRegenPerSecond * dt);
   }
 
+  /** Syncs zone-entry resources from the authoritative run player state. */
+  syncZoneEntryFromRunState(runPlayer) {
+    this.maxHealth = runPlayer.hpMax;
+    this.maxMana = runPlayer.manaMax;
+    this.health = Math.min(runPlayer.hp, this.maxHealth);
+    this.mana = this.maxMana;
+    this.surge = 0;
+  }
+
+  /** Syncs live HP from the authoritative run player state after zone clear healing. */
+  syncHealthFromRunState(runPlayer) {
+    this.maxHealth = runPlayer.hpMax;
+    this.health = Math.min(runPlayer.hp, this.maxHealth);
+  }
+
   /** Returns true when at least amount mana is available. */
   canSpendMana(amount) {
     return this.mana >= amount;

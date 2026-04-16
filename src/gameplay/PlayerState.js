@@ -54,6 +54,7 @@ export class PlayerState {
   constructor(scene, resources) {
     this.resources = resources;
     this.state = PlayerStates.IDLE;
+    this.isDown = false;
     this.position = { x: 0, y: -2.2 };
     this.velocity = { x: 0, y: 0 };
     this.facing = 1;
@@ -159,6 +160,19 @@ export class PlayerState {
     const alive = this.resources.takeDamage(amount);
     this.transitionTo(alive ? PlayerStates.HURT : PlayerStates.DEAD, { knockback });
     return true;
+  }
+
+  /** Syncs transition-only downed state from RunState. */
+  syncDownState(isDown) {
+    this.isDown = isDown;
+    if (isDown || this.state !== PlayerStates.DEAD || this.resources.health <= 0) return;
+
+    this.state = PlayerStates.IDLE;
+    this._stateElapsed = 0;
+    this._stateDuration = 0;
+    this._dodgeIFrameTimer = 0;
+    this._knockback.x = 0;
+    this._knockback.y = 0;
   }
 
   /** Returns true while dodge invincibility frames are active. */

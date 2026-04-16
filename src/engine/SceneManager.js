@@ -34,8 +34,8 @@ export class SceneManager {
     this.debugEnabled = false;
     this._zoneReturnPending = false;
     this._fadeOverlay = this._setupFadeOverlay();
+    this._handleZoneEntry = this._handleZoneEntry.bind(this);
     this._handleZoneComplete = this._handleZoneComplete.bind(this);
-    RunState.on('zoneComplete', this._handleZoneComplete);
 
     this._setupLighting();
     this._setupArena();
@@ -43,6 +43,8 @@ export class SceneManager {
 
     this.resources = new ManaBar();
     this.player = new PlayerState(this.scene, this.resources);
+    RunState.on('zoneEntry', this._handleZoneEntry);
+    RunState.on('zoneComplete', this._handleZoneComplete);
     this.combat = new CombatController(this.resources);
     this.spawner = new EnemySpawner(this.scene, 1);
     this.collision = new CollisionResolver();
@@ -221,7 +223,18 @@ export class SceneManager {
     this.spawner.startCityBreach();
   }
 
+  _handleZoneEntry() {
+    const runPlayer = RunState.players[0];
+    if (!runPlayer) return;
+
+    this.resources.syncZoneEntryFromRunState(runPlayer);
+    this.player.syncDownState(runPlayer.isDown);
+  }
+
   _handleZoneComplete() {
+    const runPlayer = RunState.players[0];
+    if (runPlayer) this.resources.syncHealthFromRunState(runPlayer);
+
     if (this._zoneReturnPending) return;
 
     this._zoneReturnPending = true;
