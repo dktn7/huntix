@@ -60,7 +60,7 @@ When two docs conflict, the lower number wins.
 Run `node scripts/check-phase.js` to detect the current phase from actual source files. Never hardcode a phase assumption.
 
 | Phase | Goal | Key files unlocked |
-|-------|------|--------------------|
+|-------|------|-------------------|
 | 1 | Engine + single hunter moves | `GameLoop.js`, `Renderer.js`, `InputManager.js`, `PlayerState.js` |
 | 2 | Combat basics, grunt waves | `EnemyAI.js`, `EnemySpawner.js`, `Hitbox.js` |
 | 3 | All 4 hunters + co-op | `HunterController.js`, `AnimationController.js`, `HunterMeshes.js`, `SpriteAnimator.js` |
@@ -125,6 +125,7 @@ These values are locked. If any doc says otherwise, these win.
 ```
 huntix/
 ├── AGENTS.md             ← YOU ARE HERE
+├── CHANGELOG.md          # Version history
 ├── index.html            # Entry point, importmap, widget
 ├── scripts/
 │   └── check-phase.js    # Phase detector — run before every session
@@ -137,7 +138,7 @@ huntix/
 │   ├── sprites/          # Sprite atlases PNG + JSON — NO models/ folder
 │   ├── audio/
 │   └── textures/
-├── docs/                 # All design documentation (50 files)
+├── docs/                 # All design documentation (54 files)
 └── .agents/
     ├── instructions.md   # Codex role and task protocol
     └── skills/           # Skill files — load max 2 at a time
@@ -159,22 +160,26 @@ All docs live in `docs/`. Key files by category:
 | **AI & Systems** | `AICONTROLLER.md`, `GAMELOOP.md`, `RUNSTATE.md`, `SCENEMANAGER.md`, `PROGRESSION.md`, `ESSENCEECONOMY.md`, `COOP.md` |
 | **Rendering** | `RENDERING.md`, `SPRITES.md`, `PARTICLES.md`, `AURASYSTEM.md`, `CAMERA.md`, `ASSETPIPELINE.md`, `PERFORMANCEBUDGET.md` |
 | **Visuals** | `VISUAL-DESIGN.md`, `VISUAL-REFERENCE.md`, `CUSTOMIZATION.md`, `ANIMATIONS.md` |
-| **UI/Screens** | `HUD.md`, `HUB.md`, `TITLESCREEN.md`, `CARDSCREEN.md`, `PAUSEMENU.md`, `ENDSCREEN.md`, `DEATH.md` |
+| **UI/Screens** | `HUD.md`, `HUB.md`, `TITLESCREEN.md`, `CARDSCREEN.md`, `PAUSEMENU.md`, `ENDSCREEN.md`, `DEATH.md`, `SHOPMANAGER.md` |
+| **Narrative** | `LORE.md` |
+| **Systems** | `PORTAL.md`, `WEAPONS.md` |
 | **Audio/Input** | `AUDIO.md`, `INPUT.md` |
-| **Weapons** | `WEAPONS.md` |
+| **Meta** | `CHANGELOG.md` (root) |
 
 ---
 
 ## Docs Gap Tracker
 
-The following are known gaps — create these docs as work progresses:
+✅ **No known gaps.** All previously flagged missing docs have been created:
 
-| Missing Doc | Why Needed |
-|-------------|------------|
-| `docs/CHANGELOG.md` | Referenced in README footer — should track major changes |
-| `docs/SHOPMANAGER.md` | Shop UI logic, item weighting, path-lock filter rules |
-| `docs/PORTAL.md` | Portal transition animation, zone loading sequence |
-| `docs/LORE.md` | Hunter backstories referenced across docs but no single lore source |
+| Doc | Created |
+|-----|---------|
+| `CHANGELOG.md` | ✅ April 16, 2026 |
+| `docs/SHOPMANAGER.md` | ✅ April 16, 2026 |
+| `docs/PORTAL.md` | ✅ April 16, 2026 |
+| `docs/LORE.md` | ✅ April 16, 2026 |
+
+Add new gaps here as they are discovered.
 
 ---
 
