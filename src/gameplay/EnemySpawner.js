@@ -49,6 +49,7 @@ export class EnemySpawner {
     this._zoneClearDelay = 0;
     this._minibossDone = false;
     this._bossEncounter = null;
+    this._lastDefeatedBoss = null;
     this._bossSpawnEmitted = false;
     this._zoneClearEmitted = false;
 
@@ -103,6 +104,7 @@ export class EnemySpawner {
     this._bossSpawnEmitted = false;
     this._minibossDone = !zoneConfig?.miniboss;
     this._bossEncounter = null;
+    this._lastDefeatedBoss = null;
     this._encounterDelay = 0;
     this._zoneClearDelay = 0;
     this._resetWaveState();
@@ -246,10 +248,12 @@ export class EnemySpawner {
         if (event.kind === 'miniboss') {
           this._zoneState = 'miniboss';
           this._encounterDelay = DEFAULT_ENCOUNTER_DELAY;
+          this._lastDefeatedBoss = event.boss;
           this._events.push({ type: 'minibossDefeated', boss: event.boss, zoneId: this._zoneConfig?.id });
         } else {
           this._zoneState = 'complete';
           this._zoneClearDelay = DEFAULT_ZONE_CLEAR_DELAY;
+          this._lastDefeatedBoss = event.boss;
         }
         this._events.push(event);
         continue;
@@ -378,7 +382,7 @@ export class EnemySpawner {
       this._zoneClearDelay = Math.max(0, this._zoneClearDelay - dt);
       if (this._zoneClearDelay <= 0 && !this._zoneClearEmitted) {
         this._zoneClearEmitted = true;
-        this._events.push({ type: 'zoneClear', zoneId: this._zoneConfig.id, boss: this._bossEncounter });
+        this._events.push({ type: 'zoneClear', zoneId: this._zoneConfig.id, boss: this._lastDefeatedBoss || this._bossEncounter });
       }
     }
   }

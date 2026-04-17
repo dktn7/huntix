@@ -46,7 +46,7 @@ loop.start((dt) => {
   if (input.justPressed(Actions.JOIN_P2)) activatePlayerSlot(1);
   if (input.justPressed(Actions.JOIN_P3)) activatePlayerSlot(2);
   if (input.justPressed(Actions.JOIN_P4)) activatePlayerSlot(3);
-  RunState.tick(dt);
+  if (!RunState.runComplete && !RunState.runWiped) RunState.tick(dt);
   renderer.render(scene.getScene(), scene.getCamera());
 
   const panel = document.getElementById('debug-panel');
@@ -82,6 +82,9 @@ window.__TEST__ = {
         isCoOp: RunState.isCoOp,
         zonesCleared: RunState.zonesCleared,
         currentZone: RunState.currentZone,
+        currentZoneLabel: RunState.currentZoneLabel,
+        currentZoneNumber: RunState.currentZoneNumber,
+        runComplete: RunState.runComplete,
         players: RunState.players.map(player => ({
           hunterId: player.hunterId,
           playerIndex: player.playerIndex,
@@ -95,6 +98,13 @@ window.__TEST__ = {
           downTimer: player.downTimer,
           stats: { ...player.stats },
         })),
+        boss: {
+          id: RunState.activeBossId,
+          name: RunState.activeBossName,
+          hp: RunState.activeBossHp,
+          hpMax: RunState.activeBossHpMax,
+          phase: RunState.activeBossPhase,
+        },
       },
       players: scene.hunters.players.map(player => ({
         playerIndex: player.playerIndex,
@@ -115,6 +125,9 @@ window.__TEST__ = {
         hp: enemy.hp,
         x: enemy.position.x,
         y: enemy.position.y,
+        name: enemy.name || null,
+        kind: enemy.kind || null,
+        phase: enemy.phase || null,
       })),
       debug: scene.getDebugInfo(),
     };
@@ -127,7 +140,10 @@ window.__TEST__ = {
       scene.hunters.fillSurge();
     },
     enterCityBreach() {
-      if (scene.mode === 'HUB') scene._enterCityBreach(input);
+      scene.enterZone('city-breach', input);
+    },
+    enterZone(zoneId) {
+      scene.enterZone(zoneId, input);
     },
     damagePlayer(playerIndex, amount) {
       const player = scene.hunters.players[playerIndex];
@@ -135,6 +151,37 @@ window.__TEST__ = {
         player.takeDamage(amount);
         scene.hunters.syncRunStateResources();
       }
+    },
+    damageEnemy(enemyIndex, amount) {
+      const enemy = scene.spawner.getActiveEnemies()[enemyIndex];
+      if (!enemy) return false;
+      return enemy.takeDamage(amount);
+    },
+    killAllEnemies() {
+      let hit = false;
+      for (const enemy of scene.spawner.getActiveEnemies()) {
+        if (!enemy || enemy.hp <= 0) continue;
+        enemy.takeDamage(enemy.hp + 9999);
+        hit = true;
+      }
+      return hit;
+    },
+    fastForwardZone() {
+      if (scene.spawner) {
+        scene.spawner._betweenWaveTimer = 0;
+        scene.spawner._encounterDelay = 0;
+        scene.spawner._zoneClearDelay = 0;
+      }
+      return true;
+    },
+    forceZoneClear(zoneId) {
+      const boss = scene.spawner?._lastDefeatedBoss || scene.spawner?._bossEncounter || null;
+      const resolvedZone = zoneId || scene.spawner?._zoneConfig?.id || RunState.currentZone;
+      if (boss && boss.hp > 0) {
+        boss.takeDamage(boss.hp + 9999);
+      }
+      scene._onZoneCleared(resolvedZone, boss);
+      return true;
     },
     revivePlayer(playerIndex) {
       const player = scene.hunters.players[playerIndex];

@@ -51,9 +51,13 @@ export class BossEncounter {
     this.config = config;
     this.playerCount = Math.max(1, Math.min(4, playerCount));
     this.name = config.name || 'BOSS';
+    this.id = config.id || this.name;
+    this.type = config.type || 'BOSS';
     this.kind = config.kind || 'boss';
     this.zoneId = config.zoneId || 'zone';
     this.phase = 1;
+    this.state = 'IDLE';
+    this.isTelegraphing = false;
     this.hpMax = Math.max(1, Math.round((config.hp || 1000) * (BOSS_HP_MULTIPLIERS[this.playerCount] || 1)));
     this.hp = this.hpMax;
     this.position = { x: config.spawnX ?? 12, y: config.spawnY ?? -0.9 };
@@ -116,6 +120,8 @@ export class BossEncounter {
     }
 
     if (this.hp <= 0) {
+      this.state = 'DEAD';
+      this.isTelegraphing = false;
       this._deathTimer = Math.max(0, this._deathTimer - dt);
       this._removeTimer = Math.max(0, this._removeTimer - dt);
       this.mesh.scale.set(
@@ -150,16 +156,21 @@ export class BossEncounter {
     if (this._phaseFlash > 0) this._phaseFlash = Math.max(0, this._phaseFlash - dt);
 
     if (this._state === 'idle') {
+      this.state = 'IDLE';
       this._stateTimer = Math.max(0, this._stateTimer - dt);
       if (this._stateTimer <= 0) {
         this._beginAttack();
       }
     } else if (this._state === 'telegraph') {
+      this.state = 'TELEGRAPH';
+      this.isTelegraphing = true;
       this._telegraphTimer = Math.max(0, this._telegraphTimer - dt);
       if (this._telegraphTimer <= 0) {
         this._fireAttack(target, players);
       }
     } else if (this._state === 'recover') {
+      this.state = 'RECOVER';
+      this.isTelegraphing = false;
       this._recoverTimer = Math.max(0, this._recoverTimer - dt);
       if (this._recoverTimer <= 0) {
         this._state = 'idle';
@@ -180,6 +191,8 @@ export class BossEncounter {
     this.hp = Math.max(0, this.hp - amount);
     if (this.hp <= 0) {
       this._state = 'dead';
+      this.state = 'DEAD';
+      this.isTelegraphing = false;
       this._deathTimer = 0.7;
       this._removeTimer = 0.7;
       this._events.push({ type: 'kill', enemy: this, x: this.position.x, y: this.position.y, boss: true });
@@ -240,6 +253,8 @@ export class BossEncounter {
     this._currentAttack = attacks[this._attackCursor % attacks.length] || attacks[0];
     this._attackCursor += 1;
     this._state = 'telegraph';
+    this.state = 'TELEGRAPH';
+    this.isTelegraphing = true;
     this._telegraphTimer = this._currentAttack.telegraph || 0.6;
     this._events.push({
       type: 'bossTelegraph',
@@ -373,6 +388,8 @@ export class BossEncounter {
     }
 
     this._state = 'recover';
+    this.state = 'RECOVER';
+    this.isTelegraphing = false;
     this._recoverTimer = attack.recover || 0.5;
     this._events.push({ type: 'bossAttack', ...eventBase });
   }
@@ -386,6 +403,8 @@ export class BossEncounter {
       this.phase += 1;
       this._phaseFlash = 0.25;
       this._state = 'idle';
+      this.state = 'IDLE';
+      this.isTelegraphing = false;
       this._stateTimer = 0.45;
       this._telegraphTimer = 0;
       this._recoverTimer = 0;

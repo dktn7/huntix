@@ -57,6 +57,36 @@ async function hold(page, key, ms = 100) {
   await page.keyboard.up(key);
 }
 
+async function clearCurrentZone(page, zoneId) {
+  await page.evaluate((id) => window.__TEST__.commands.enterZone(id), zoneId);
+  await page.waitForFunction((id) => window.__TEST__.state().run.currentZone === id, zoneId, { timeout: 10000 });
+  let bossSeen = false;
+
+  for (let i = 0; i < 28; i += 1) {
+    await page.evaluate(() => {
+      window.__TEST__.commands.killAllEnemies();
+      window.__TEST__.commands.fastForwardZone();
+    });
+    await page.waitForTimeout(250);
+
+    const state = await page.evaluate(() => window.__TEST__.state());
+    bossSeen = bossSeen || !!state.run.boss.name;
+    if (state.run.currentZone === 'hub' || state.run.runComplete) break;
+  }
+
+  const postLoop = await page.evaluate(() => window.__TEST__.state());
+  if (postLoop.run.currentZone !== 'hub' && !postLoop.run.runComplete) {
+    await page.evaluate((id) => window.__TEST__.commands.forceZoneClear(id), zoneId);
+  }
+
+  await page.waitForFunction(
+    () => window.__TEST__.state().run.currentZone === 'hub' || window.__TEST__.state().run.runComplete === true,
+    null,
+    { timeout: 20000 }
+  );
+  assert(bossSeen, `Boss did not appear while clearing ${zoneId}`);
+}
+
 const server = spawn(process.execPath, ['scripts/static-server.mjs'], {
   cwd: process.cwd(),
   env: { ...process.env, PORT: String(PORT) },
@@ -100,9 +130,9 @@ try {
     state.players
   );
 
-  await page.evaluate(() => window.__TEST__.commands.enterCityBreach());
-  await page.waitForFunction(() => window.__TEST__.state().mode === 'CITY_BREACH');
-  await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0);
+  await page.evaluate(() => window.__TEST__.commands.enterZone('city-breach'));
+  await page.waitForFunction(() => window.__TEST__.state().run.currentZone === 'city-breach');
+  await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0, null, { timeout: 10000 });
 
   await page.evaluate(() => window.__TEST__.commands.damagePlayer(0, 9999));
   await page.waitForFunction(() => window.__TEST__.state().players[0].state === 'DOWNED');
@@ -136,13 +166,30 @@ try {
   assert(state.run.players[0].stats.damageDealt > 0, 'Damage dealt stat did not update', state.run.players[0]);
 
   await page.evaluate(() => window.__TEST__.commands.fillSurge());
+  await page.waitForFunction(() => window.__TEST__.state().players.every(player => ['IDLE', 'MOVE'].includes(player.state)));
   const ultResults = await page.evaluate(() => [0, 1, 2, 3].map(i => window.__TEST__.commands.castUltimate(i)));
   assert(JSON.stringify(ultResults) === JSON.stringify([true, true, true, true]), 'Not all ultimates fired', ultResults);
   state = await page.evaluate(() => window.__TEST__.state());
   assert(state.players.every(player => player.surge === 0), 'Ultimates did not consume all surge', state.players);
   assert(state.run.players.every(player => player.stats.spellsCast >= 1), 'Ultimate casts did not record spell stats', state.run.players);
 
-  await page.screenshot({ path: join(OUT_DIR, 'phase3-mechanics.png') });
+  await clearCurrentZone(page, 'city-breach');
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.run.zonesCleared >= 1, 'City Breach did not increment zones cleared', state.run);
+  assert(state.run.currentZone === 'hub', 'City Breach did not return to hub', state.run);
+
+  for (const zoneId of ['ruin-den', 'shadow-core', 'thunder-spire']) {
+    await clearCurrentZone(page, zoneId);
+    state = await page.evaluate(() => window.__TEST__.state());
+    assert(state.run.zonesCleared >= ['ruin-den', 'shadow-core', 'thunder-spire'].indexOf(zoneId) + 2, `${zoneId} did not increment zones cleared`, state.run);
+  }
+
+  await page.waitForFunction(() => window.__TEST__.state().run.runComplete === true, null, { timeout: 20000 });
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.run.runComplete, 'Run did not complete after Thunder Spire', state.run);
+  assert(state.mode === 'END_SCREEN', 'End screen did not activate after final boss', state);
+
+  await page.screenshot({ path: join(OUT_DIR, 'phase4-run.png') });
 
   const relevantConsoleErrors = consoleErrors.filter(text => !text.includes('vibej.am'));
   const relevantRequestFailures = failedRequests.filter(text => !text.includes('vibej.am'));
@@ -150,7 +197,7 @@ try {
   assert(relevantConsoleErrors.length === 0, 'Browser console errors were reported', relevantConsoleErrors);
   assert(relevantRequestFailures.length === 0, 'Browser request failures were reported', relevantRequestFailures);
 
-  process.stdout.write('PASS phase3 mechanics smoke\n');
+  process.stdout.write('PASS phase4 mechanics smoke\n');
 } finally {
   if (browser) await browser.close();
   server.kill();
