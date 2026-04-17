@@ -1,6 +1,8 @@
 import * as THREE from 'three';
-import { EnemyAI, EnemyStates, EnemyTypes } from './EnemyAI.js';
+import { EnemyAI, EnemyTypes } from './EnemyAI.js';
 import { Hitbox, HitboxOwners } from './Hitbox.js';
+import { BossEncounter } from './BossEncounter.js';
+import { ZONE_CONFIGS } from './ZoneManager.js';
 
 const MAX_ENEMIES = 20;
 const ENEMY_CAPACITY = 20;
@@ -10,19 +12,25 @@ const PROJECTILE_ARM_TIME = 3 / 60;
 const HP_MULTIPLIERS = {
   1: 1,
   2: 1.5,
-  3: 2,
-  4: 2.5,
+  3: 1.9,
+  4: 2.2,
 };
 
-const CITY_BREACH_WAVES = [
-  { grunts: 3 },
-  { grunts: 2, ranged: 1 },
-  { grunts: 2, bruisers: 1 },
-  { fireBruisers: 1, miniboss: true },
-];
+const DEFAULT_WAVE_DELAY = 1.4;
+const DEFAULT_ZONE_CLEAR_DELAY = 1.2;
+const DEFAULT_ENCOUNTER_DELAY = 0.6;
+
+function cloneComposition(base = {}, extraGrunts = 0) {
+  return {
+    grunts: (base.grunts || 0) + extraGrunts,
+    ranged: base.ranged || 0,
+    bruisers: base.bruisers || 0,
+    fireBruisers: base.fireBruisers || 0,
+  };
+}
 
 export class EnemySpawner {
-  /** Creates the Phase 2 enemy, projectile, wave, and status-light manager. */
+  /** Creates the enemy, projectile, wave, miniboss, and boss encounter manager. */
   constructor(scene, playerCount = 1) {
     this.scene = scene;
     this.playerCount = Math.max(1, Math.min(4, playerCount));
@@ -35,6 +43,14 @@ export class EnemySpawner {
     this._betweenWaveTimer = 0;
     this._pendingNextWave = false;
     this._waveClearEmitted = false;
+    this._zoneConfig = null;
+    this._zoneState = 'idle';
+    this._encounterDelay = 0;
+    this._zoneClearDelay = 0;
+    this._minibossDone = false;
+    this._bossEncounter = null;
+    this._bossSpawnEmitted = false;
+    this._zoneClearEmitted = false;
 
     this._matrix = new THREE.Matrix4();
     this._position = new THREE.Vector3();
@@ -74,15 +90,31 @@ export class EnemySpawner {
     scene.add(this._decoyMesh);
   }
 
-  /** Starts the scripted City Breach Phase 2 encounter. */
+  /** Starts the scripted City Breach Phase 4-compatible encounter flow. */
   startCityBreach() {
-    this._enemies.length = 0;
-    this._projectiles.length = 0;
-    this._waveIndex = -1;
-    this._betweenWaveTimer = 0;
-    this._pendingNextWave = false;
-    this._waveClearEmitted = false;
+    this.startZone(ZONE_CONFIGS['city-breach']);
+  }
+
+  /** Starts a configured zone run with waves, optional miniboss, and boss. */
+  startZone(zoneConfig) {
+    this._zoneConfig = zoneConfig || null;
+    this._zoneState = 'waves';
+    this._zoneClearEmitted = false;
+    this._bossSpawnEmitted = false;
+    this._minibossDone = !zoneConfig?.miniboss;
+    this._bossEncounter = null;
+    this._encounterDelay = 0;
+    this._zoneClearDelay = 0;
+    this._resetWaveState();
     this._spawnNextWave();
+  }
+
+  /** Updates the active human player count used for future co-op HP scaling. */
+  setPlayerCount(playerCount) {
+    this.playerCount = Math.max(1, Math.min(4, playerCount));
+    if (this._bossEncounter?.setPlayerCount) {
+      this._bossEncounter.setPlayerCount(this.playerCount);
+    }
   }
 
   /** Spawns a compatibility grunt wave, capped by the max enemy limit. */
@@ -96,7 +128,7 @@ export class EnemySpawner {
     this._syncInstances();
   }
 
-  /** Advances enemies, projectiles, decoys, and wave timers. */
+  /** Advances enemies, projectiles, decoys, and wave/boss timers. */
   update(dt, players) {
     this._events.length = 0;
     this._updateDecoys(dt);
@@ -107,9 +139,17 @@ export class EnemySpawner {
       this._handleEnemyEvents(events);
     }
 
+    if (this._bossEncounter) {
+      const events = this._bossEncounter.update(dt, targets);
+      this._handleBossEvents(events);
+      if (this._bossEncounter.canRemove()) {
+        this._bossEncounter = null;
+      }
+    }
+
     this._updateProjectiles(dt, players);
     this.clearDead();
-    this._updateWaveFlow(dt);
+    this._updateWaveFlow(dt, players);
     this._syncInstances();
     this._syncProjectiles();
     return this.consumeEvents();
@@ -117,7 +157,9 @@ export class EnemySpawner {
 
   /** Returns the active enemy objects for combat queries. */
   getActiveEnemies() {
-    return this._enemies;
+    return this._bossEncounter
+      ? this._enemies.concat([this._bossEncounter])
+      : this._enemies;
   }
 
   /** Returns active projectile hitboxes for debug and combat. */
@@ -143,6 +185,7 @@ export class EnemySpawner {
   /** Freezes all active enemies for the supplied duration. */
   freezeAll(seconds) {
     for (const enemy of this._enemies) enemy.freeze(seconds);
+    if (this._bossEncounter) this._bossEncounter.freeze(seconds);
   }
 
   /** Returns true when no living enemies remain in the current wave. */
@@ -159,6 +202,7 @@ export class EnemySpawner {
   syncVisuals() {
     this._syncInstances();
     this._syncProjectiles();
+    if (this._bossEncounter?.syncVisuals) this._bossEncounter.syncVisuals();
   }
 
   /** Returns and clears queued spawner events. */
@@ -170,8 +214,49 @@ export class EnemySpawner {
 
   _handleEnemyEvents(events) {
     for (const event of events) {
+      if (!event) continue;
       if (event.type === 'projectile') {
         this._spawnProjectile(event);
+      } else {
+        this._events.push(event);
+      }
+    }
+  }
+
+  _handleBossEvents(events) {
+    for (const event of events) {
+      if (!event) continue;
+
+      if (event.type === 'spawnAdds') {
+        this._spawnComposition(cloneComposition(event.composition));
+        continue;
+      }
+
+      if (event.type === 'bossPhase') {
+        this._events.push(event);
+        continue;
+      }
+
+      if (event.type === 'bossTelegraph' || event.type === 'bossAttack') {
+        this._events.push(event);
+        continue;
+      }
+
+      if (event.type === 'bossDefeated') {
+        if (event.kind === 'miniboss') {
+          this._zoneState = 'miniboss';
+          this._encounterDelay = DEFAULT_ENCOUNTER_DELAY;
+          this._events.push({ type: 'minibossDefeated', boss: event.boss, zoneId: this._zoneConfig?.id });
+        } else {
+          this._zoneState = 'complete';
+          this._zoneClearDelay = DEFAULT_ZONE_CLEAR_DELAY;
+        }
+        this._events.push(event);
+        continue;
+      }
+
+      if (event.type === 'kill') {
+        this._events.push(event);
       } else {
         this._events.push(event);
       }
@@ -239,40 +324,112 @@ export class EnemySpawner {
   }
 
   _updateWaveFlow(dt) {
-    if (this._waveIndex < 0) return;
+    if (!this._zoneConfig) return;
 
-    if (this.isCurrentWaveCleared() && !this._waveClearEmitted) {
-      this._waveClearEmitted = true;
-      this._pendingNextWave = this._waveIndex < CITY_BREACH_WAVES.length - 1;
-      this._betweenWaveTimer = this._pendingNextWave ? 2 : 0;
-      this._events.push({
-        type: 'waveClear',
-        wave: this._waveIndex + 1,
-        hasNextWave: this._pendingNextWave,
-      });
+    if (this._zoneState === 'waves') {
+      if (this.isCurrentWaveCleared() && !this._waveClearEmitted) {
+        this._waveClearEmitted = true;
+        this._pendingNextWave = this._waveIndex < this._zoneConfig.waves.length - 1;
+        this._betweenWaveTimer = this._pendingNextWave ? DEFAULT_WAVE_DELAY : 0;
+        this._events.push({
+          type: 'waveClear',
+          wave: this._waveIndex + 1,
+          hasNextWave: this._pendingNextWave,
+          zoneId: this._zoneConfig.id,
+        });
+      }
+
+      if (this._pendingNextWave) {
+        this._betweenWaveTimer = Math.max(0, this._betweenWaveTimer - dt);
+        if (this._betweenWaveTimer <= 0) {
+          this._pendingNextWave = false;
+          this._spawnNextWave();
+        }
+      } else if (this._waveClearEmitted && !this._pendingNextWave) {
+        this._encounterDelay = Math.max(0, this._encounterDelay - dt);
+        if (this._encounterDelay <= 0) {
+          if (!this._minibossDone && this._zoneConfig.miniboss) {
+            this._spawnBossEncounter(this._zoneConfig.miniboss, 'miniboss');
+            this._minibossDone = true;
+            this._zoneState = 'miniboss';
+          } else if (!this._bossEncounter && this._zoneConfig.boss) {
+            this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
+            this._bossSpawnEmitted = true;
+            this._zoneState = 'boss';
+          }
+        }
+      }
+      return;
     }
 
-    if (!this._pendingNextWave) return;
-    this._betweenWaveTimer = Math.max(0, this._betweenWaveTimer - dt);
-    if (this._betweenWaveTimer <= 0) {
-      this._pendingNextWave = false;
-      this._spawnNextWave();
+    if (this._zoneState === 'miniboss') {
+      if (!this._bossEncounter) {
+        this._encounterDelay = Math.max(0, this._encounterDelay - dt);
+        if (this._encounterDelay <= 0 && this._zoneConfig.boss) {
+          this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
+          this._bossSpawnEmitted = true;
+          this._zoneState = 'boss';
+        }
+      }
+      return;
+    }
+
+    if (this._zoneState === 'complete') {
+      this._zoneClearDelay = Math.max(0, this._zoneClearDelay - dt);
+      if (this._zoneClearDelay <= 0 && !this._zoneClearEmitted) {
+        this._zoneClearEmitted = true;
+        this._events.push({ type: 'zoneClear', zoneId: this._zoneConfig.id, boss: this._bossEncounter });
+      }
     }
   }
 
+  _spawnBossEncounter(config, kind = 'boss') {
+    const encounter = new BossEncounter(this.scene, {
+      ...config,
+      zoneId: this._zoneConfig?.id || config.zoneId || kind,
+    }, this.playerCount);
+    this._bossEncounter = encounter;
+    this._events.push({
+      type: kind === 'miniboss' ? 'minibossStart' : 'bossStart',
+      boss: encounter,
+      zoneId: this._zoneConfig?.id,
+    });
+    this._encounterDelay = kind === 'miniboss' ? DEFAULT_ENCOUNTER_DELAY : 0;
+  }
+
   _spawnNextWave() {
+    if (!this._zoneConfig?.waves) return;
+
     this._waveIndex += 1;
-    const wave = CITY_BREACH_WAVES[this._waveIndex];
+    const wave = this._zoneConfig.waves[this._waveIndex];
     if (!wave) return;
 
     this._waveClearEmitted = false;
+    const extraGrunts = Math.max(0, this.playerCount - 1);
+    const composition = cloneComposition(wave, extraGrunts);
     this._spawnComposition({
-      ...wave,
-      startX: wave.miniboss ? 3.2 : 2.2,
-      spacing: 1.25,
-      y: -2.2,
+      ...composition,
+      startX: wave.startX ?? 2.2,
+      spacing: wave.spacing ?? 1.25,
+      y: wave.y ?? -2.2,
     });
-    this._events.push({ type: 'waveStart', wave: this._waveIndex + 1, miniboss: !!wave.miniboss });
+    this._events.push({
+      type: 'waveStart',
+      wave: this._waveIndex + 1,
+      miniboss: !!wave.miniboss,
+      zoneId: this._zoneConfig.id,
+    });
+    this._encounterDelay = DEFAULT_ENCOUNTER_DELAY;
+  }
+
+  _resetWaveState() {
+    this._enemies.length = 0;
+    this._projectiles.length = 0;
+    this._waveIndex = -1;
+    this._betweenWaveTimer = 0;
+    this._pendingNextWave = false;
+    this._waveClearEmitted = false;
+    this._encounterDelay = 0;
   }
 
   _spawnComposition(config) {
@@ -356,9 +513,9 @@ export class EnemySpawner {
   _writeScaleFor(enemy) {
     const baseX = enemy.config.width / 0.8;
     const baseY = enemy.config.height / 1.1;
-    if (enemy.state === EnemyStates.DEAD) {
+    if (enemy.state === 'DEAD') {
       this._scale.set(baseX, 0.1, 1);
-    } else if (enemy.state === EnemyStates.HURT) {
+    } else if (enemy.state === 'HURT') {
       this._scale.set(baseX * 1.15, baseY * 0.9, 1);
     } else if (enemy.isTelegraphing) {
       this._scale.set(baseX * 1.25, baseY * 1.25, 1);
@@ -368,17 +525,17 @@ export class EnemySpawner {
   }
 
   _colorFor(enemy) {
-    if (enemy.state === EnemyStates.DEAD) return 0x222222;
-    if (enemy.state === EnemyStates.HURT) return 0xff5555;
+    if (enemy.state === 'DEAD') return 0x222222;
+    if (enemy.state === 'HURT') return 0xff5555;
     if (enemy.isTelegraphing) return 0xff3333;
-    if (enemy.statusEffects.getDisplayColor()) return enemy.statusEffects.getDisplayColor();
-    if (enemy.state === EnemyStates.AGGRO || enemy.state === EnemyStates.ATTACK) return 0x8c7a7a;
+    if (enemy.statusEffects?.getDisplayColor?.()) return enemy.statusEffects.getDisplayColor();
+    if (enemy.state === 'AGGRO' || enemy.state === 'ATTACK') return 0x8c7a7a;
     return enemy.config.color;
   }
 
   _syncStatusLight(index, enemy) {
     const light = this._statusLights[index];
-    const color = enemy.statusEffects.getDisplayColor();
+    const color = enemy.statusEffects?.getDisplayColor?.();
     light.visible = !!color || enemy.type === EnemyTypes.FIRE_BRUISER;
     if (!light.visible) return;
 

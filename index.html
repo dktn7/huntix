@@ -60,6 +60,60 @@
       opacity: 0;
       text-shadow: 0 0 14px #48f7ff, 0 3px 0 #000;
     }
+    .zone-title {
+      position: fixed;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      color: #fff;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.6), 0 0 8px rgba(72, 247, 255, 0.4);
+      opacity: 0;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+    .boss-hud {
+      position: fixed;
+      right: 24px;
+      bottom: 26px;
+      width: min(360px, 34vw);
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+    .boss-name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-align: right;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 0 #000;
+    }
+    .boss-bar {
+      position: relative;
+      height: 14px;
+      background: #2c2c2c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4) inset;
+    }
+    .boss-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 100%;
+      background: linear-gradient(90deg, #c0392b 0%, #ff735f 100%);
+      transition: width 80ms linear;
+    }
+    .boss-marks span {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.25);
+    }
     .damage-number {
       position: fixed;
       transform: translate(-50%, -50%);
@@ -75,6 +129,37 @@
     .damage-number.status {
       font-size: 18px;
       color: #f39c12;
+    }
+    .portal-card,
+    .results-card {
+      position: fixed;
+      left: 50%;
+      top: 18%;
+      transform: translateX(-50%);
+      padding: 16px 22px;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.35);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 200ms ease, transform 200ms ease;
+      pointer-events: none;
+    }
+    .portal-card.visible,
+    .results-card.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .portal-card .small,
+    .results-card .small {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      opacity: 0.8;
+      letter-spacing: 0.04em;
     }
   </style>
 </head>

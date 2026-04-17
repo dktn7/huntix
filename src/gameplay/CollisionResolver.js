@@ -3,17 +3,26 @@ const MAX_PUSH_PER_PAIR = 0.24;
 
 export class CollisionResolver {
   /** Softly separates active gameplay bodies without applying combat damage. */
-  resolve(player, enemies) {
-    if (!player || !Array.isArray(enemies)) return;
+  resolve(players, enemies) {
+    if (!players || !Array.isArray(enemies)) return;
 
+    const activePlayers = Array.isArray(players) ? players : [players];
     const liveEnemies = enemies.filter(enemy => enemy && !enemy.isDead?.());
-    for (const enemy of liveEnemies) {
-      this._resolvePair(player, enemy, 0.65, 0.35);
+    for (const player of activePlayers) {
+      for (const enemy of liveEnemies) {
+        this._resolvePair(player, enemy, 0.65, 0.35);
+      }
     }
 
     for (let i = 0; i < liveEnemies.length; i += 1) {
       for (let j = i + 1; j < liveEnemies.length; j += 1) {
         this._resolvePair(liveEnemies[i], liveEnemies[j], 0.5, 0.5);
+      }
+    }
+
+    for (let i = 0; i < activePlayers.length; i += 1) {
+      for (let j = i + 1; j < activePlayers.length; j += 1) {
+        this._resolvePair(activePlayers[i], activePlayers[j], 0.5, 0.5);
       }
     }
   }

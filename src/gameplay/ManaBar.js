@@ -1,4 +1,4 @@
-const DEFAULT_MAX_HEALTH = 80;
+const DEFAULT_MAX_HEALTH = 900;
 const DEFAULT_MAX_MANA = 120;
 const DEFAULT_MAX_SURGE = 100;
 const DEFAULT_MAX_STAMINA = 100;
@@ -10,6 +10,7 @@ export class ManaBar {
     maxMana = DEFAULT_MAX_MANA,
     maxSurge = DEFAULT_MAX_SURGE,
     maxStamina = DEFAULT_MAX_STAMINA,
+    manaRegenPerSecond = 3,
   } = {}) {
     this.maxHealth = maxHealth;
     this.maxMana = maxMana;
@@ -21,8 +22,32 @@ export class ManaBar {
     this.surge = 0;
     this.stamina = maxStamina;
 
-    this.manaRegenPerSecond = 8;
+    this.manaRegenPerSecond = manaRegenPerSecond;
     this.staminaRegenPerSecond = 40;
+  }
+
+  /** Applies a hunter stat block while preserving current resource ratios when requested. */
+  configure({
+    maxHealth = this.maxHealth,
+    maxMana = this.maxMana,
+    maxSurge = this.maxSurge,
+    maxStamina = this.maxStamina,
+    manaRegenPerSecond = this.manaRegenPerSecond,
+    refill = true,
+  } = {}) {
+    const healthRatio = this.maxHealth > 0 ? this.health / this.maxHealth : 1;
+    const manaRatio = this.maxMana > 0 ? this.mana / this.maxMana : 1;
+
+    this.maxHealth = maxHealth;
+    this.maxMana = maxMana;
+    this.maxSurge = maxSurge;
+    this.maxStamina = maxStamina;
+    this.manaRegenPerSecond = manaRegenPerSecond;
+
+    this.health = refill ? maxHealth : Math.min(maxHealth, Math.round(maxHealth * healthRatio));
+    this.mana = refill ? maxMana : Math.min(maxMana, Math.round(maxMana * manaRatio));
+    this.surge = Math.min(this.surge, maxSurge);
+    this.stamina = Math.min(this.stamina, maxStamina);
   }
 
   /** Regenerates mana and stamina for one fixed gameplay tick. */

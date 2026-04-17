@@ -1,11 +1,10 @@
 import * as THREE from 'three';
 import { RunState } from '../core/RunState.js';
-import { ORTHO_WIDTH } from './Renderer.js';
+import { ORTHO_HEIGHT, ORTHO_WIDTH } from './Renderer.js';
 import { Actions } from './InputManager.js';
 import { CameraShake } from './CameraShake.js';
-import { PlayerState } from '../gameplay/PlayerState.js';
+import { HunterController } from '../gameplay/HunterController.js';
 import { CombatController } from '../gameplay/CombatController.js';
-import { ManaBar } from '../gameplay/ManaBar.js';
 import { EnemySpawner } from '../gameplay/EnemySpawner.js';
 import { SparkPool } from '../gameplay/SparkPool.js';
 import { DebugHitboxes } from '../gameplay/DebugHitboxes.js';
@@ -13,7 +12,6 @@ import { GameplayHUD } from '../gameplay/GameplayHUD.js';
 import { CollisionResolver } from '../gameplay/CollisionResolver.js';
 import { createCityBreachArena } from '../visuals/CityBreachArena.js';
 import { createAura } from '../visuals/AuraShader.js';
-import { HUNTERS } from '../visuals/Palettes.js';
 import { HitFlarePool } from '../visuals/HitFlarePool.js';
 
 const SceneModes = {
@@ -36,17 +34,20 @@ export class SceneManager {
     this._fadeOverlay = this._setupFadeOverlay();
     this._handleZoneEntry = this._handleZoneEntry.bind(this);
     this._handleZoneComplete = this._handleZoneComplete.bind(this);
+    this._handlePlayerJoined = this._handlePlayerJoined.bind(this);
 
     this._setupLighting();
     this._setupArena();
     this._setupHubPortal();
 
-    this.resources = new ManaBar();
-    this.player = new PlayerState(this.scene, this.resources);
+    this.hunters = new HunterController(this.scene, RunState.players);
+    this.player = this.hunters.primaryPlayer;
+    this.resources = this.player.resources;
     RunState.on('zoneEntry', this._handleZoneEntry);
     RunState.on('zoneComplete', this._handleZoneComplete);
-    this.combat = new CombatController(this.resources);
-    this.spawner = new EnemySpawner(this.scene, 1);
+    RunState.on('playerJoined', this._handlePlayerJoined);
+    this.combat = new CombatController();
+    this.spawner = new EnemySpawner(this.scene, this.hunters.activeHumanPlayerCount);
     this.collision = new CollisionResolver();
     this.sparks = new SparkPool(this.scene);
     this.cameraShake = new CameraShake(this.camera);
@@ -54,14 +55,18 @@ export class SceneManager {
     this.hud = new GameplayHUD(document.getElementById('ui-overlay'));
     this._slowMoTicks = 0;
     this._slowMoScale = 1;
+    this._wipePending = false;
 
     this._cityBreachArena = createCityBreachArena();
     this._cityBreachArena.visible = false;
     this.scene.add(this._cityBreachArena);
 
-    this._playerAura = createAura(HUNTERS.Dabik.auraColor, 2.4);
-    this._playerAura.visible = false;
-    this.scene.add(this._playerAura);
+    this._playerAuras = this.hunters.entries.map(entry => {
+      const aura = createAura(entry.config.auraColor, 2.4);
+      aura.visible = false;
+      this.scene.add(aura);
+      return aura;
+    });
 
     this._hitFlares = new HitFlarePool(this.scene);
   }
@@ -75,6 +80,9 @@ export class SceneManager {
       document.body.classList.toggle('debug', this.debugEnabled);
       this.debugHitboxes.setEnabled(this.debugEnabled);
     }
+    if (this.debugEnabled && input.justPressed(Actions.DEBUG_SURGE)) {
+      this.hunters.fillSurge();
+    }
 
     if (this.mode === SceneModes.HUB) {
       this._updateHub(dt, input);
@@ -86,6 +94,7 @@ export class SceneManager {
     const inHitstop = this.combat.consumeHitstop(dt);
     if (inHitstop) {
       this.combat.advanceHitboxes(dt);
+      this.hunters.updateAnimations(dt);
       this.sparks.update(dt);
       this._hitFlares.update(dt);
       this.cameraShake.update(dt);
@@ -98,16 +107,24 @@ export class SceneManager {
     }
 
     const enemies = this.spawner.getActiveEnemies();
-    const hitEvents = this.combat.update(scaledDt, input, this.player, enemies, this.spawner);
+    const hitEvents = this.combat.update(
+      scaledDt,
+      this.hunters.getInputSnapshots(input),
+      this.hunters.players,
+      enemies,
+      this.spawner
+    );
     this._applyCombatEvents(hitEvents);
-    this.player.update(scaledDt, input);
-    const spawnerEvents = this.spawner.update(scaledDt, [this.player]);
+    this.hunters.update(scaledDt, input);
+    const spawnerEvents = this.spawner.update(scaledDt, this.hunters.players);
     this._applyCombatEvents(spawnerEvents);
-    this.collision.resolve(this.player, this.spawner.getActiveEnemies());
+    this.collision.resolve(this.hunters.players, this.spawner.getActiveEnemies());
     this.spawner.syncVisuals();
     this.sparks.update(scaledDt);
     this._hitFlares.update(scaledDt);
     this.cameraShake.update(scaledDt);
+    this._updateSharedCamera();
+    this._checkForWipe();
     this.hud.setCombo(this.combat.comboCount);
     this.hud.update(this.camera);
     this._syncCityBreachAura(scaledDt);
@@ -194,7 +211,7 @@ export class SceneManager {
   }
 
   _updateHub(dt, input) {
-    this.player.update(dt, input);
+    this.hunters.update(dt, input);
     this.sparks.update(dt);
     this.cameraShake.update(dt);
     this._animatePortal(dt);
@@ -209,9 +226,8 @@ export class SceneManager {
     RunState.onZoneEntry('city-breach');
     this.mode = SceneModes.CITY_BREACH;
     this._zoneReturnPending = false;
-    input.clearBuffer();
-    this.player.position.x = -4;
-    this.player.position.y = -2.2;
+    this.hunters.clearInputBuffers(input);
+    this.hunters.setFormation(-4, -2.2);
     this._portalMesh.visible = false;
     this._portalPedestal.visible = false;
     this._hunterPad.visible = false;
@@ -219,21 +235,16 @@ export class SceneManager {
       m.visible = false;
     }
     this._cityBreachArena.visible = true;
-    this._playerAura.visible = true;
+    for (const aura of this._playerAuras) aura.visible = true;
     this.spawner.startCityBreach();
   }
 
   _handleZoneEntry() {
-    const runPlayer = RunState.players[0];
-    if (!runPlayer) return;
-
-    this.resources.syncZoneEntryFromRunState(runPlayer);
-    this.player.syncDownState(runPlayer.isDown);
+    this.hunters.syncZoneEntry(RunState.players);
   }
 
   _handleZoneComplete() {
-    const runPlayer = RunState.players[0];
-    if (runPlayer) this.resources.syncHealthFromRunState(runPlayer);
+    this.hunters.syncZoneComplete(RunState.players);
 
     if (this._zoneReturnPending) return;
 
@@ -241,6 +252,25 @@ export class SceneManager {
     setTimeout(() => {
       this._returnToHubAfterZoneClear();
     }, ZONE_CLEAR_RETURN_DELAY_MS);
+  }
+
+  _handlePlayerJoined({ player }) {
+    const entry = this.hunters.addRunPlayer(player);
+    if (!entry) return;
+
+    const aura = createAura(entry.config.auraColor, 2.4);
+    aura.visible = this.mode !== SceneModes.HUB;
+    this.scene.add(aura);
+    this._playerAuras.push(aura);
+    this.spawner.setPlayerCount(this.hunters.activeHumanPlayerCount);
+
+    if (this.mode === SceneModes.HUB) {
+      this.hunters.setFormation(0, -2.2);
+    } else {
+      const primary = this.hunters.primaryPlayer;
+      entry.player.position.x = primary.position.x - 0.6 + entry.player.playerIndex * 0.4;
+      entry.player.position.y = primary.position.y;
+    }
   }
 
   async _returnToHubAfterZoneClear() {
@@ -252,8 +282,7 @@ export class SceneManager {
 
   _switchToHub() {
     this.mode = SceneModes.HUB;
-    this.player.position.x = 0;
-    this.player.position.y = -2.2;
+    this.hunters.setFormation(0, -2.2);
     this._portalMesh.visible = true;
     this._portalPedestal.visible = true;
     this._hunterPad.visible = true;
@@ -261,7 +290,8 @@ export class SceneManager {
       m.visible = true;
     }
     this._cityBreachArena.visible = false;
-    this._playerAura.visible = false;
+    for (const aura of this._playerAuras) aura.visible = false;
+    this._resetCameraFrustum();
   }
 
   _setupFadeOverlay() {
@@ -291,12 +321,17 @@ export class SceneManager {
 
   /** Y-sorts aura with player mesh; advances aura shader time (call after player.update). */
   _syncCityBreachAura(timeDelta) {
-    this._playerAura.position.set(
-      this.player.mesh.position.x,
-      this.player.mesh.position.y,
-      this.player.mesh.position.z - 0.05
-    );
-    this._playerAura.material.uniforms.uTime.value += timeDelta;
+    for (let i = 0; i < this._playerAuras.length; i += 1) {
+      const aura = this._playerAuras[i];
+      const player = this.hunters.players[i];
+      if (!aura || !player) continue;
+      aura.position.set(
+        player.mesh.position.x,
+        player.mesh.position.y,
+        player.mesh.position.z - 0.05
+      );
+      aura.material.uniforms.uTime.value += timeDelta;
+    }
   }
 
   _isPlayerNearPortal() {
@@ -320,7 +355,7 @@ export class SceneManager {
         this.cameraShake.request(event.intensity);
         this.hud.showDamageNumber(event.x, event.y, event.damage, event.attackType);
         if (event.killed) {
-          this.sparks.spawnEssence(event.x, event.y, this.player);
+          this.sparks.spawnEssence(event.x, event.y, event.player || this.player);
           if (this.spawner.isCurrentWaveCleared()) this._startKillSlowMo();
         }
       } else if (event.type === 'damage') {
@@ -328,7 +363,7 @@ export class SceneManager {
       } else if (event.type === 'statusDamage') {
         this.hud.showDamageNumber(event.x, event.y, event.damage, 'status');
       } else if (event.type === 'kill') {
-        this.sparks.spawnEssence(event.x, event.y, this.player);
+        this.sparks.spawnEssence(event.x, event.y, event.player || this.player);
         if (this.spawner.isCurrentWaveCleared()) this._startKillSlowMo();
       } else if (event.type === 'hitbox') {
         this.combat.addHitbox(event.hitbox);
@@ -337,19 +372,85 @@ export class SceneManager {
       } else if (event.type === 'waveClear') {
         this.hud.showWaveClear();
         if (!event.hasNextWave) {
+          this.hunters.syncRunStateResources();
           RunState.onZoneComplete('city-breach');
         }
       } else if (event.type === 'ultimate') {
         this.cameraShake.request(0.6);
       } else if (event.type === 'spell') {
         this.sparks.spawn(event.x, event.y, 0.25);
+      } else if (event.type === 'revive') {
+        this.sparks.spawn(event.x, event.y, 0.45);
       }
     }
+  }
+
+  _checkForWipe() {
+    if (this._wipePending || this.mode === SceneModes.HUB) return;
+    const players = this.hunters.players;
+    if (!players.length) return;
+
+    const wiped = players.every(player => player.state === 'DEAD' || player.state === 'DOWNED');
+    if (!wiped) return;
+
+    this._wipePending = true;
+    const keptEssence = RunState.onRunWipe();
+    setTimeout(() => {
+      RunState.resetAfterWipe(keptEssence);
+      this.hunters.syncAllFromRunState(RunState.players);
+      this._switchToHub();
+      this._wipePending = false;
+    }, 800);
   }
 
   _updateDebugHitboxes() {
     const activeHitboxes = this.combat.getActiveHitboxes().concat(this.spawner.getProjectileHitboxes());
     this.debugHitboxes.update(this.player, this.spawner.getActiveEnemies(), activeHitboxes);
+  }
+
+  _updateSharedCamera() {
+    const players = this.hunters.players.filter(player => player.state !== 'DEAD');
+    if (!players.length) return;
+
+    let minX = players[0].position.x;
+    let maxX = players[0].position.x;
+    let minY = players[0].position.y;
+    let maxY = players[0].position.y;
+    for (const player of players) {
+      minX = Math.min(minX, player.position.x);
+      maxX = Math.max(maxX, player.position.x);
+      minY = Math.min(minY, player.position.y);
+      maxY = Math.max(maxY, player.position.y);
+    }
+
+    const aspect = window.innerWidth / window.innerHeight;
+    const padding = 2.6;
+    const targetHeight = Math.max(
+      ORTHO_HEIGHT,
+      (maxY - minY) + padding,
+      ((maxX - minX) + padding) / aspect
+    );
+    const currentHeight = this.camera.top - this.camera.bottom;
+    const nextHeight = currentHeight + (targetHeight - currentHeight) * 0.08;
+    const halfHeight = nextHeight / 2;
+    const halfWidth = halfHeight * aspect;
+
+    this.camera.top = halfHeight;
+    this.camera.bottom = -halfHeight;
+    this.camera.left = -halfWidth;
+    this.camera.right = halfWidth;
+    this.camera.updateProjectionMatrix();
+  }
+
+  _resetCameraFrustum() {
+    const halfHeight = ORTHO_HEIGHT / 2;
+    const halfWidth = ORTHO_WIDTH / 2;
+    this.camera.top = halfHeight;
+    this.camera.bottom = -halfHeight;
+    this.camera.left = -halfWidth;
+    this.camera.right = halfWidth;
+    this.camera.position.set(0, 0, 100);
+    this.camera.updateProjectionMatrix();
   }
 
   _startKillSlowMo() {

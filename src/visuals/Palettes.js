@@ -46,6 +46,33 @@ export const CITY_BREACH = {
   backWall: 0x0d0d1a,
 };
 
+/** Ruin Den â€” dark stone, dust, red-gold fissures. */
+export const RUIN_DEN = {
+  floor: 0x2a231d,
+  stone: 0x4b4036,
+  fissure: 0xa35a33,
+  dust: 0xb79d86,
+  void: 0x17120f,
+};
+
+/** Shadow Core â€” void, violet, white-gold bloom. */
+export const SHADOW_CORE = {
+  floor: 0x08080d,
+  void: 0x040407,
+  violet: 0x4d2d7a,
+  bloom: 0xf4e9ff,
+  silver: 0xc8d0ff,
+};
+
+/** Thunder Spire â€” storm navy, electric blue, white lightning. */
+export const THUNDER_SPIRE = {
+  floor: 0x11182f,
+  storm: 0x22386b,
+  lightning: 0x67d8ff,
+  flash: 0xf7fbff,
+  slate: 0x303648,
+};
+
 /** Shared combat FX (hit sparks, essence magnet). */
 export const EFFECTS = {
   sparkHit: 0xfff2a8,

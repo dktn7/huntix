@@ -19,6 +19,7 @@
 
 # Logs
 *.log
+test-results/
 
 # Archives
 *.zip

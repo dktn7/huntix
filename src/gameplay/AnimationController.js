@@ -1,0 +1,46 @@
+import { PlayerStates } from './PlayerState.js';
+
+const STATE_MAP = {
+  [PlayerStates.IDLE]: { name: 'idle', loop: true },
+  [PlayerStates.MOVE]: { name: 'run', loop: true },
+  [PlayerStates.ATTACK_LIGHT]: { name: 'attack_light_1', loop: false },
+  [PlayerStates.ATTACK_HEAVY]: { name: 'attack_heavy', loop: false },
+  [PlayerStates.DODGE]: { name: 'dodge', loop: false },
+  [PlayerStates.SPELL_MINOR]: { name: 'spell_minor', loop: false },
+  [PlayerStates.SPELL_ADVANCED]: { name: 'spell_advanced', loop: false },
+  [PlayerStates.ULTIMATE]: { name: 'spell_ultimate', loop: false },
+  [PlayerStates.HURT]: { name: 'hurt', loop: false },
+  [PlayerStates.DEAD]: { name: 'dead', loop: false },
+  [PlayerStates.DOWNED]: { name: 'downed', loop: true },
+  [PlayerStates.REVIVE]: { name: 'revive', loop: false },
+};
+
+export class AnimationController {
+  /** Connects PlayerState transitions to a SpriteAnimator instance. */
+  constructor(playerState, animator = null) {
+    this.playerState = playerState;
+    this.animator = animator;
+    this._lastKey = null;
+  }
+
+  /** Advances animation state and sprite UV stepping. */
+  update(dt) {
+    if (!this.animator) return;
+
+    const mapped = this._mapState();
+    const key = this.playerState.animationKey || this.playerState.state;
+    if (this._lastKey !== key) {
+      this.animator.play(mapped.name, mapped.loop);
+      this._lastKey = key;
+    }
+
+    this.animator.update(dt);
+  }
+
+  _mapState() {
+    if (this.playerState.state === PlayerStates.ATTACK_LIGHT) {
+      return { name: `attack_light_${this.playerState.lightComboStep}`, loop: false };
+    }
+    return STATE_MAP[this.playerState.state] || STATE_MAP[PlayerStates.IDLE];
+  }
+}

@@ -26,12 +26,14 @@ export const EnemyStates = {
 
 const ENEMY_CONFIGS = {
   [EnemyTypes.GRUNT]: {
-    hp: 100,
+    hp: 120,
+    xp: 15,
+    essence: 10,
     width: 0.8,
     height: 1.1,
-    speed: 1.7,
+    speed: 1.8,
     patrolSpeed: 0.7,
-    attackDamage: 10,
+    attackDamage: 12,
     attackRange: 1.2,
     aggroRange: 8,
     cooldown: 1.8,
@@ -42,12 +44,14 @@ const ENEMY_CONFIGS = {
     hitboxHeight: 0.9,
   },
   [EnemyTypes.RANGED]: {
-    hp: 70,
+    hp: 80,
+    xp: 18,
+    essence: 15,
     width: 0.7,
     height: 1.05,
-    speed: 1.35,
+    speed: 1.4,
     patrolSpeed: 0.55,
-    attackDamage: 8,
+    attackDamage: 12,
     attackRange: 8,
     aggroRange: 12,
     cooldown: 3,
@@ -59,12 +63,14 @@ const ENEMY_CONFIGS = {
     retreatRange: 2,
   },
   [EnemyTypes.BRUISER]: {
-    hp: 200,
+    hp: 420,
+    xp: 40,
+    essence: 32,
     width: 1.3,
     height: 1.7,
     speed: 0.95,
     patrolSpeed: 0.35,
-    attackDamage: 25,
+    attackDamage: 28,
     attackRange: 1.8,
     aggroRange: 6,
     cooldown: 3,
@@ -75,7 +81,9 @@ const ENEMY_CONFIGS = {
     hitboxHeight: 1.5,
   },
   [EnemyTypes.FIRE_BRUISER]: {
-    hp: 300,
+    hp: 420,
+    xp: 40,
+    essence: 36,
     width: 1.45,
     height: 1.9,
     speed: 0.9,
@@ -270,6 +278,14 @@ export class EnemyAI {
     return this.state === EnemyStates.DEAD && this._removeTimer <= 0;
   }
 
+  /** Returns deterministic MVP rewards for this enemy type. */
+  getRewards() {
+    return {
+      xp: this.config.xp || 10,
+      essence: this.config.essence || 10,
+    };
+  }
+
   /** Returns and clears queued enemy events. */
   consumeEvents() {
     const events = this._events.slice();
@@ -281,7 +297,7 @@ export class EnemyAI {
     let best = null;
     let bestDistance = Infinity;
     for (const player of players) {
-      if (player.state === PlayerStates.DEAD) continue;
+      if (player.state === PlayerStates.DEAD || player.state === PlayerStates.DOWNED) continue;
       const distance = this._distanceTo(player);
       if (distance < bestDistance) {
         best = player;
@@ -292,8 +308,8 @@ export class EnemyAI {
   }
 
   _distanceTo(target) {
-    const dx = target.position.x - this.position.x;
-    const dy = target.position.y - this.position.y;
+    const dx = this._targetX(target) - this.position.x;
+    const dy = this._targetY(target) - this.position.y;
     return Math.hypot(dx, dy);
   }
 
@@ -334,7 +350,7 @@ export class EnemyAI {
   }
 
   _updateRangedSpacing(dt, player, distance) {
-    const dx = player.position.x - this.position.x;
+    const dx = this._targetX(player) - this.position.x;
     this.facing = dx >= 0 ? 1 : -1;
 
     if (distance < this.config.retreatRange) {
@@ -347,7 +363,7 @@ export class EnemyAI {
   }
 
   _updateTelegraph(player) {
-    const dx = player.position.x - this.position.x;
+    const dx = this._targetX(player) - this.position.x;
     this.facing = dx >= 0 ? 1 : -1;
     if (this._stateElapsed >= this.config.telegraph) {
       this._transitionTo(EnemyStates.ATTACK);
@@ -382,8 +398,8 @@ export class EnemyAI {
   }
 
   _moveToward(dt, target, speed) {
-    const dx = target.position.x - this.position.x;
-    const dy = target.position.y - this.position.y;
+    const dx = this._targetX(target) - this.position.x;
+    const dy = this._targetY(target) - this.position.y;
     const len = Math.hypot(dx, dy) || 1;
     const scaledSpeed = speed * this.statusEffects.getSpeedMultiplier();
 
@@ -393,8 +409,8 @@ export class EnemyAI {
   }
 
   _moveAway(dt, target, speed) {
-    const dx = this.position.x - target.position.x;
-    const dy = this.position.y - target.position.y;
+    const dx = this.position.x - this._targetX(target);
+    const dy = this.position.y - this._targetY(target);
     const len = Math.hypot(dx, dy) || 1;
     const scaledSpeed = speed * this.statusEffects.getSpeedMultiplier();
 
@@ -428,8 +444,8 @@ export class EnemyAI {
   }
 
   _createProjectileEvent(player) {
-    const dx = player.position.x - this.position.x;
-    const dy = player.position.y - this.position.y;
+    const dx = this._targetX(player) - this.position.x;
+    const dy = this._targetY(player) - this.position.y;
     const len = Math.hypot(dx, dy) || 1;
 
     return {
@@ -446,5 +462,13 @@ export class EnemyAI {
   _shouldStagger(hitMeta) {
     if (this.type !== EnemyTypes.BRUISER && this.type !== EnemyTypes.FIRE_BRUISER) return true;
     return hitMeta.attackType === 'heavy' || hitMeta.comboCount >= 3;
+  }
+
+  _targetX(target) {
+    return target.combatCenterX ?? target.position.x;
+  }
+
+  _targetY(target) {
+    return target.combatCenterY ?? target.position.y;
   }
 }

@@ -10,6 +10,12 @@ export class GameplayHUD {
     this.overlay = overlay;
     this._combo = 0;
     this._waveTicks = 0;
+    this._zoneTicks = 0;
+    this._bossVisible = false;
+    this._bossPhaseFlash = 0;
+    this._bossName = '';
+    this._bossHp = 0;
+    this._bossHpMax = 0;
     this._damageNumbers = [];
 
     this._comboEl = document.createElement('div');
@@ -21,6 +27,34 @@ export class GameplayHUD {
     this._waveEl.className = 'wave-flash';
     this._waveEl.textContent = 'WAVE CLEAR';
     overlay.appendChild(this._waveEl);
+
+    this._zoneEl = document.createElement('div');
+    this._zoneEl.className = 'zone-title';
+    this._zoneEl.textContent = 'CITY BREACH';
+    this._zoneEl.style.opacity = '0';
+    overlay.appendChild(this._zoneEl);
+
+    this._bossWrapEl = document.createElement('div');
+    this._bossWrapEl.className = 'boss-hud';
+    this._bossWrapEl.style.opacity = '0';
+    overlay.appendChild(this._bossWrapEl);
+
+    this._bossNameEl = document.createElement('div');
+    this._bossNameEl.className = 'boss-name';
+    this._bossNameEl.textContent = 'BOSS';
+    this._bossWrapEl.appendChild(this._bossNameEl);
+
+    this._bossBarEl = document.createElement('div');
+    this._bossBarEl.className = 'boss-bar';
+    this._bossWrapEl.appendChild(this._bossBarEl);
+
+    this._bossFillEl = document.createElement('div');
+    this._bossFillEl.className = 'boss-fill';
+    this._bossBarEl.appendChild(this._bossFillEl);
+
+    this._bossMarksEl = document.createElement('div');
+    this._bossMarksEl.className = 'boss-marks';
+    this._bossBarEl.appendChild(this._bossMarksEl);
 
     for (let i = 0; i < DAMAGE_POOL_SIZE; i += 1) {
       const el = document.createElement('div');
@@ -39,6 +73,8 @@ export class GameplayHUD {
   update(camera) {
     this._updateCombo();
     this._updateWaveFlash();
+    this._updateZoneTitle();
+    this._updateBossBar();
     this._updateDamageNumbers(camera);
   }
 
@@ -61,6 +97,52 @@ export class GameplayHUD {
   /** Flashes the wave-clear text. */
   showWaveClear() {
     this._waveTicks = WAVE_FLASH_TICKS;
+  }
+
+  /** Shows the zone title flash for the current zone entry. */
+  showZoneTitle(zoneLabel, zoneNumber = 0) {
+    const prefix = zoneNumber > 0 ? `ZONE ${zoneNumber} - ` : '';
+    this._zoneEl.textContent = `${prefix}${zoneLabel}`.toUpperCase();
+    this._zoneEl.style.opacity = '1';
+    this._zoneTicks = 120;
+  }
+
+  /** Shows the boss bar for the active encounter. */
+  setBossBar({ name, hp, hpMax, phaseThresholds = [] } = {}) {
+    this._bossVisible = true;
+    this._bossName = name || 'BOSS';
+    this._bossHp = Math.max(0, hp || 0);
+    this._bossHpMax = Math.max(1, hpMax || 1);
+    this._bossNameEl.textContent = this._bossName.toUpperCase();
+    this._bossMarksEl.innerHTML = '';
+
+    const widths = phaseThresholds
+      .filter(value => value > 0 && value < 1)
+      .map(value => `${(value * 100).toFixed(1)}%`);
+    for (const width of widths) {
+      const mark = document.createElement('span');
+      mark.style.left = width;
+      this._bossMarksEl.appendChild(mark);
+    }
+
+    this._bossWrapEl.style.opacity = '1';
+  }
+
+  /** Updates the boss bar from live boss state. */
+  updateBossBar(hp, hpMax, phase = 0) {
+    if (!this._bossVisible) return;
+    this._bossHp = Math.max(0, hp || 0);
+    this._bossHpMax = Math.max(1, hpMax || 1);
+    if (phase > 0) this._bossPhaseFlash = 14;
+  }
+
+  /** Hides the boss bar. */
+  clearBossBar() {
+    this._bossVisible = false;
+    this._bossHp = 0;
+    this._bossHpMax = 0;
+    this._bossName = '';
+    this._bossWrapEl.style.opacity = '0';
   }
 
   _updateCombo() {
@@ -88,6 +170,36 @@ export class GameplayHUD {
     const t = this._waveTicks / WAVE_FLASH_TICKS;
     this._waveEl.style.opacity = String(Math.min(1, t * 2));
     this._waveEl.style.transform = `translate(-50%, -50%) scale(${(1 + (1 - t) * 0.15).toFixed(2)})`;
+  }
+
+  _updateZoneTitle() {
+    if (this._zoneTicks <= 0) {
+      this._zoneEl.style.opacity = '0';
+      return;
+    }
+
+    this._zoneTicks -= 1;
+    const t = this._zoneTicks / 120;
+    this._zoneEl.style.opacity = String(Math.min(1, t * 2));
+    this._zoneEl.style.transform = `translate(-50%, -50%) scale(${(1 + (1 - t) * 0.08).toFixed(2)})`;
+  }
+
+  _updateBossBar() {
+    if (!this._bossVisible) {
+      this._bossWrapEl.style.opacity = '0';
+      return;
+    }
+
+    const pct = this._bossHpMax > 0 ? this._bossHp / this._bossHpMax : 0;
+    this._bossFillEl.style.width = `${Math.max(0, Math.min(1, pct)) * 100}%`;
+    this._bossWrapEl.style.opacity = '1';
+
+    if (this._bossPhaseFlash > 0) {
+      this._bossPhaseFlash -= 1;
+      this._bossBarEl.style.filter = 'brightness(1.45)';
+    } else {
+      this._bossBarEl.style.filter = '';
+    }
   }
 
   _updateDamageNumbers(camera) {

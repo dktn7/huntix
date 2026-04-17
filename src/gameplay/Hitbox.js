@@ -145,10 +145,12 @@ export class Hitbox {
       return { x: this.knockbackX, y: this.knockbackY };
     }
 
-    const targetPos = target.position || { x: this.x, y: this.y };
-    const sourcePos = source?.position || { x: this.x, y: this.y };
-    const dx = targetPos.x - sourcePos.x;
-    const dy = targetPos.y - sourcePos.y;
+    const targetX = target.combatCenterX ?? target.position?.x ?? this.x;
+    const targetY = target.combatCenterY ?? target.position?.y ?? this.y;
+    const sourceX = source?.combatCenterX ?? source?.position?.x ?? this.x;
+    const sourceY = source?.combatCenterY ?? source?.position?.y ?? this.y;
+    const dx = targetX - sourceX;
+    const dy = targetY - sourceY;
     const len = Math.hypot(dx, dy) || 1;
 
     return {

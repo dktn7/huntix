@@ -1,5 +1,5 @@
 import { Renderer } from './engine/Renderer.js';
-import { InputManager } from './engine/InputManager.js';
+import { Actions, InputManager } from './engine/InputManager.js';
 import { GameLoop } from './engine/GameLoop.js';
 import { SceneManager } from './engine/SceneManager.js';
 import { RunState } from './core/RunState.js';
@@ -8,16 +8,44 @@ const canvas = document.getElementById('game-canvas');
 
 const renderer = new Renderer(canvas);
 const input = new InputManager();
+
+const PLAYER_SLOT_CONFIGS = [
+  { hunterId: 'dabik', isAI: false, carryEssence: 0 },
+  { hunterId: 'benzu', isAI: false, carryEssence: 0 },
+  { hunterId: 'sereisa', isAI: false, carryEssence: 0 },
+  { hunterId: 'vesol', isAI: false, carryEssence: 0 },
+];
+
+RunState.init([PLAYER_SLOT_CONFIGS[0]]);
+
+function activatePlayerSlot(slotIndex) {
+  if (slotIndex < 1 || slotIndex >= PLAYER_SLOT_CONFIGS.length) return;
+  while (RunState.players.length <= slotIndex) {
+    const config = PLAYER_SLOT_CONFIGS[RunState.players.length];
+    if (!RunState.addPlayer(config)) return;
+  }
+}
+
+function activateConnectedGamepads() {
+  const gamepads = navigator.getGamepads?.() || [];
+  for (let i = 1; i < PLAYER_SLOT_CONFIGS.length; i += 1) {
+    if (gamepads[i]) activatePlayerSlot(i);
+  }
+}
+
+activateConnectedGamepads();
 const scene = new SceneManager(renderer);
-RunState.init([{
-  hunterId: 'dabik',
-  isAI: false,
-  carryEssence: 0,
-}]);
 const loop = new GameLoop();
+
+window.addEventListener('gamepadconnected', event => {
+  if (event.gamepad.index > 0) activatePlayerSlot(event.gamepad.index);
+});
 
 loop.start((dt) => {
   scene.update(dt, input);
+  if (input.justPressed(Actions.JOIN_P2)) activatePlayerSlot(1);
+  if (input.justPressed(Actions.JOIN_P3)) activatePlayerSlot(2);
+  if (input.justPressed(Actions.JOIN_P4)) activatePlayerSlot(3);
   RunState.tick(dt);
   renderer.render(scene.getScene(), scene.getCamera());
 
@@ -36,9 +64,88 @@ loop.start((dt) => {
       `Enemies: ${debug.enemies}`,
       `Combo: ${debug.combo}`,
       `Hitstop: ${(debug.hitstop * 1000).toFixed(0)}ms`,
-      `Input: ${[...input.pressed].join(', ') || 'none'}`,
+      `Input P1: ${[...input.getPlayerInput(0).pressed].join(', ') || 'none'}`,
     ].join('<br>');
   }
 });
 
 window.__huntix = { renderer, input, scene, loop };
+
+window.__TEST__ = {
+  get ready() {
+    return !!scene?.hunters?.primaryPlayer;
+  },
+  state() {
+    return {
+      mode: scene.mode,
+      run: {
+        isCoOp: RunState.isCoOp,
+        zonesCleared: RunState.zonesCleared,
+        currentZone: RunState.currentZone,
+        players: RunState.players.map(player => ({
+          hunterId: player.hunterId,
+          playerIndex: player.playerIndex,
+          hp: player.hp,
+          mana: player.mana,
+          surge: player.surge,
+          xp: player.xp,
+          level: player.level,
+          essence: player.essence,
+          isDown: player.isDown,
+          downTimer: player.downTimer,
+          stats: { ...player.stats },
+        })),
+      },
+      players: scene.hunters.players.map(player => ({
+        playerIndex: player.playerIndex,
+        hunterId: player.hunterConfig.id,
+        state: player.state,
+        x: player.position.x,
+        y: player.position.y,
+        hp: player.resources.health,
+        mana: player.resources.mana,
+        surge: player.resources.surge,
+        isDown: player.isDown,
+        downTimer: player.downTimer,
+      })),
+      enemies: scene.spawner.getActiveEnemies().map(enemy => ({
+        id: enemy.id,
+        type: enemy.type,
+        state: enemy.state,
+        hp: enemy.hp,
+        x: enemy.position.x,
+        y: enemy.position.y,
+      })),
+      debug: scene.getDebugInfo(),
+    };
+  },
+  commands: {
+    join(slotIndex) {
+      activatePlayerSlot(slotIndex);
+    },
+    fillSurge() {
+      scene.hunters.fillSurge();
+    },
+    enterCityBreach() {
+      if (scene.mode === 'HUB') scene._enterCityBreach(input);
+    },
+    damagePlayer(playerIndex, amount) {
+      const player = scene.hunters.players[playerIndex];
+      if (player) {
+        player.takeDamage(amount);
+        scene.hunters.syncRunStateResources();
+      }
+    },
+    revivePlayer(playerIndex) {
+      const player = scene.hunters.players[playerIndex];
+      const revived = player?.revive(0.3) || false;
+      if (revived) scene.hunters.syncRunStateResources();
+      return revived;
+    },
+    castUltimate(playerIndex) {
+      const player = scene.hunters.players[playerIndex];
+      if (!player) return false;
+      return scene.combat._castUltimate(player, scene.spawner.getActiveEnemies(), scene.spawner);
+    },
+  },
+};

@@ -40,17 +40,29 @@ Xbox / PS layout. Deadzone: 0.3 on all axes.
 
 ---
 
-## P2–P4 Input (Phase 3 — Not Yet Implemented)
+## P2–P4 Input (Phase 3)
 
-P2 keyboard layout (to be confirmed and added to `InputManager.js` in Phase 3):
+P2 keyboard layout:
 
 | Action | Key |
 |---|---|
-| Light Attack | H |
-| Heavy Attack | L |
-| Dodge | N |
-| Special | M |
-| Movement | TBD — confirm before implementing |
+| Move Left | Numpad 4 |
+| Move Right | Numpad 6 |
+| Move Up | Numpad 8 |
+| Move Down | Numpad 5 |
+| Light Attack | Numpad 1 |
+| Heavy Attack | Numpad 2 |
+| Dodge | Numpad 3 |
+| Special | Numpad 0 |
+| Interact / Revive | Numpad Decimal |
+
+Keyboard slot joins:
+
+| Action | Key |
+|---|---|
+| Join P2 | 2 |
+| Join P3 | 3 |
+| Join P4 | 4 |
 
 P2–P4 gamepads: `navigator.getGamepads()[playerIndex]` polled each frame.
 Never cache the gamepad object — always re-poll inside the animation loop.
