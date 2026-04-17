@@ -1,6 +1,6 @@
 # HUNTIX — Visual Reference & Source of Truth
 
-*Last updated: April 14, 2026*
+*Last updated: April 17, 2026*
 
 > **Rule: This document is the canonical design lock for all four hunters.**
 > Before writing any character prompt, description, or asset spec — read this first.
@@ -117,12 +117,18 @@ NOT:             Chibi. Western cartoon. Tribal markings.
 ## Asset Pipeline
 
 ```
-Mixboard (design sheet)
-  → Kling AI or Grok (animation — image-to-video)
-      → Blender (green screen key → PNG sequence)
-          → TexturePacker (atlas sheets)
-              → Three.js (assets/hunters/{name}/)
+Mixboard / GPT Image 1.5 (Step 1 — full-body reference sheet)
+  → Google Flow / Nano Banana 2 (Step 2 — game-master with reference image input)
+      → Google Flow / Nano Banana 2 (Step 3 — direction sheet L/R + F/B)
+          → Blender (green screen key → PNG sequence)
+              → TexturePacker (atlas sheets)
+                  → Three.js (assets/hunters/{name}/)
 ```
+
+> **Tool notes:**
+> - Step 1: Use Mixboard (GPT Image 1.5) for text-to-image generation of the initial reference.
+> - Steps 2–3: Use **Google Flow** with **Nano Banana 2** selected. Upload the previous step's output as the reference image. Google Flow supports reference-guided Nano Banana 2 generation for free.
+> - See `bonus/huntix-character-art/prompts/huntix-hunters-character-art-prompts.md` for ready-to-paste prompts.
 
 ### Asset Folder Structure
 ```

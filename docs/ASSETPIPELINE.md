@@ -1,6 +1,6 @@
 # ASSETPIPELINE — Art Asset Production Workflow
 
-*Last updated April 16, 2026*
+*Last updated April 17, 2026*
 
 ---
 
@@ -61,14 +61,26 @@ No `models/` folder. No `.glb`, `.fbx`, or `.obj` files.
 
 ### 1. Generate frames
 
-Use Grok or equivalent AI image tool with this prompt format:
+Use the following two-tool pipeline for all hunter character art:
+
+**Step 1 — Mixboard (GPT Image 1.5):** Generate the initial full-body reference sheet from text prompt.
+
+**Steps 2–3 — Google Flow (Nano Banana 2):** Upload the previous step's output as a reference image. Use Nano Banana 2 (available free in Google Flow) for game-master optimisation and the 4-direction sprite sheet.
+
+> Google Flow: [labs.google/flow](https://labs.google/flow)
+> Select Nano Banana 2 from the model dropdown. Use the image upload / reference image input for Steps 2 and 3.
+
+Ready-to-paste prompts for all four hunters are in:
+`bonus/huntix-character-art/prompts/huntix-hunters-character-art-prompts.md`
+
+General prompt format for custom enemies and non-hunter characters:
 
 ```
 2D character sprite art for a 2.5D side-scrolling brawler game.
 Character: [NAME], [DESCRIPTION].
 Animation: [STATE] — [FRAME COUNT] frames on a transparent background.
 Style: dark action-fantasy, high contrast, clean silhouette, no background.
-Output: individual frames on white or green screen background, side profile.
+Output: individual frames on chroma green #00FF00 background, side profile.
 ```
 
 Generate each animation state separately. Required states per hunter (see ANIMATIONS.md for full list):

@@ -1,7 +1,19 @@
 # Huntix Hunter Character Art Prompts
 
 Ready-to-run prompt templates for generating game-ready 2.5D character sprites
-for all four Huntix S-Rank hunters via fal.ai + GPT Image 1.5 + Nano Banana 2.
+for all four Huntix S-Rank hunters.
+
+## Tool Pipeline
+
+| Step | Tool | Purpose |
+|---|---|---|
+| Step 1 | **Mixboard** (GPT Image 1.5) | Full-body reference sheet from text prompt |
+| Step 2 | **Google Flow** (Nano Banana 2) | Game-master version — upload Step 1 output as reference image |
+| Step 3 | **Google Flow** (Nano Banana 2) | 4-direction sprite sheet — upload Step 2 output as reference image |
+
+> **Google Flow:** [labs.google/flow](https://labs.google/flow)
+> Select Nano Banana 2 from the model dropdown. Use the reference image upload for Steps 2 and 3.
+> Google Flow with Nano Banana 2 is free and supports reference-guided image generation.
 
 Before running any prompt: read the pipeline in `../README.md`.
 Phase gate: **Phase 3 (Days 7–9) only.**
@@ -51,7 +63,7 @@ It reads as part of the world, not as branding or a sports jersey patch.
 > Source: `docs/HUNTERS.md` — Dabik section
 > Aura: Black with deep purple edges · Weapon: Twin curved daggers · Element: Shadow · Status: Bleed
 
-### Step 1 — GPT Image 1.5: Full-Body Reference
+### Step 1 — Mixboard / GPT Image 1.5: Full-Body Reference
 
 ```text
 Create a full-body 2D game character sprite-style standing render of Dabik,
@@ -82,19 +94,11 @@ Format: full body, centered, clean readable silhouette, feet not cropped. Transp
 No environment, no text, no frame, no shadow on ground, no extra characters.
 ```
 
-**Invocation:**
-```bash
-set -a && source .env && set +a
-python3 .agents/skills/fal-ai-image/scripts/fal_queue_image_run.py \
-  --endpoint fal-ai/gpt-image-1.5/edit \
-  --prompt "<prompt above>" \
-  --out-dir experiments/fal-image/$(date +%Y-%m-%d)-dabik-full-body-v1 \
-  --size 1024x1536 --quality high --output-format png --background transparent
-```
-
 ---
 
-### Step 2 — Nano Banana 2: Game-Master with Downscale Optimisation
+### Step 2 — Google Flow / Nano Banana 2: Game-Master with Downscale Optimisation
+
+> Upload Step 1 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = identity and costume anchor (full-body reference from Step 1).
@@ -117,11 +121,11 @@ no texture, no green spill onto the character. Full body visible head to boots.
 No text, no frame, no environment, no extra props.
 ```
 
-**References:** Step 1 output (identity anchor)
-
 ---
 
-### Step 3 — Nano Banana 2: Direction Sheet (L/R + F/B)
+### Step 3 — Google Flow / Nano Banana 2: Direction Sheet (L/R + F/B)
+
+> Upload Step 2 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = game-master sprite reference for identity, proportions, and rendering style.
@@ -145,8 +149,6 @@ no gradient, no shadow, no floor, no labels, no text, no borders.
 All four panels at identical scale, figures anchored to the same bottom baseline.
 ```
 
-**References:** Step 2 output (game-master, identity anchor) + Step 1 output (secondary identity)
-
 **Post-processing:** Height-normalise all four frames to shared-height + shared-bottom-anchor before extracting.
 
 ---
@@ -156,7 +158,7 @@ All four panels at identical scale, figures anchored to the same bottom baseline
 > Source: `docs/HUNTERS.md` — Benzu section
 > Aura: Deep red with gold fractures · Weapon: Stone-forged gauntlets · Element: Thunder/Earth · Status: Stun
 
-### Step 1 — GPT Image 1.5: Full-Body Reference
+### Step 1 — Mixboard / GPT Image 1.5: Full-Body Reference
 
 ```text
 Create a full-body 2D game character sprite-style standing render of Benzu,
@@ -192,7 +194,9 @@ No environment, no text, no frame, no shadow on ground, no extra characters.
 
 ---
 
-### Step 2 — Nano Banana 2: Game-Master with Downscale Optimisation
+### Step 2 — Google Flow / Nano Banana 2: Game-Master with Downscale Optimisation
+
+> Upload Step 1 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = identity and costume anchor.
@@ -216,7 +220,9 @@ No text, no frame, no environment.
 
 ---
 
-### Step 3 — Nano Banana 2: Direction Sheet (L/R + F/B)
+### Step 3 — Google Flow / Nano Banana 2: Direction Sheet (L/R + F/B)
+
+> Upload Step 2 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = game-master sprite reference.
@@ -242,7 +248,7 @@ No labels, no text, no borders, no shadows.
 > Source: `docs/HUNTERS.md` — Sereisa section
 > Aura: Bright yellow with white crackling edges · Weapon: Single lightning rapier · Element: Lightning · Status: Slow
 
-### Step 1 — GPT Image 1.5: Full-Body Reference
+### Step 1 — Mixboard / GPT Image 1.5: Full-Body Reference
 
 ```text
 Create a full-body 2D game character sprite-style standing render of Sereisa,
@@ -276,7 +282,9 @@ No environment, no text, no frame, no ground shadow, no extra characters.
 
 ---
 
-### Step 2 — Nano Banana 2: Game-Master with Downscale Optimisation
+### Step 2 — Google Flow / Nano Banana 2: Game-Master with Downscale Optimisation
+
+> Upload Step 1 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = identity and costume anchor.
@@ -297,7 +305,9 @@ no texture, no green spill onto the character. Full body visible head to boots.
 
 ---
 
-### Step 3 — Nano Banana 2: Direction Sheet (L/R + F/B)
+### Step 3 — Google Flow / Nano Banana 2: Direction Sheet (L/R + F/B)
+
+> Upload Step 2 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = game-master sprite reference.
@@ -323,7 +333,7 @@ No labels, no text, no borders.
 > Source: `docs/HUNTERS.md` — Vesol section
 > Aura: Deep blue bleeding into crimson · Weapon: Gate crystal channelling focus at wrist · Element: Flame · Status: Burn
 
-### Step 1 — GPT Image 1.5: Full-Body Reference
+### Step 1 — Mixboard / GPT Image 1.5: Full-Body Reference
 
 ```text
 Create a full-body 2D game character sprite-style standing render of Vesol,
@@ -361,7 +371,9 @@ Transparent background. No environment, no text, no frame, no ground shadow.
 
 ---
 
-### Step 2 — Nano Banana 2: Game-Master with Downscale Optimisation
+### Step 2 — Google Flow / Nano Banana 2: Game-Master with Downscale Optimisation
+
+> Upload Step 1 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = identity and costume anchor.
@@ -384,7 +396,9 @@ no texture, no green spill onto the character. Full body visible head to boots.
 
 ---
 
-### Step 3 — Nano Banana 2: Direction Sheet (L/R + F/B)
+### Step 3 — Google Flow / Nano Banana 2: Direction Sheet (L/R + F/B)
+
+> Upload Step 2 output as reference image in Google Flow before running this prompt.
 
 ```text
 Image 1 = game-master sprite reference.
@@ -416,4 +430,4 @@ After generating direction sheets for any hunter:
 - [ ] Export as PNG with transparency at the target frame sizes: 256×384, 128×192, 64×96
 - [ ] Save under `assets/textures/characters/<hunter-name>/frames/`
 - [ ] Save chroma-key intermediate under `assets/textures/characters/<hunter-name>/direction-sheet-chroma.png`
-- [ ] Log experiment run in `experiments/fal-image/<timestamp>-<hunter>-direction-sheet/`
+- [ ] Log experiment run in `experiments/<timestamp>-<hunter>-direction-sheet/`
