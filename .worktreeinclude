@@ -1,0 +1,39 @@
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Dependencies (no npm in this project, but just in case)
+**/node_modules/
+
+# Build outputs (no build step, but just in case)
+**/dist/
+
+# Deployment
+**/.vercel/
+**/.next/
+
+# Env / secrets
+.env
+.env.local
+*.local
+
+# Logs
+*.log
+test-results/
+
+# Archives
+*.zip
+
+# 3D models — serve from CDN or static host, not git
+assets/models/
+*.glb
+*.gltf
+*.fbx
+*.obj
+
+# Audio — serve from CDN or static host, not git
+assets/audio/
+*.mp3
+*.wav
+*.ogg
+*.m4a

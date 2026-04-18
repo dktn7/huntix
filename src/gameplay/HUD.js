@@ -118,6 +118,11 @@ export class HUD {
     });
     overlay.appendChild(this._characterOverlay);
 
+    this._onboardingOverlay = document.createElement('div');
+    this._onboardingOverlay.className = 'phase-modal onboarding';
+    this._onboardingOverlay.setAttribute('aria-hidden', 'true');
+    overlay.appendChild(this._onboardingOverlay);
+
     for (let i = 0; i < DAMAGE_POOL_SIZE; i += 1) {
       const el = document.createElement('div');
       el.className = 'damage-number';
@@ -297,6 +302,26 @@ export class HUD {
     return this._characterSelectOpen;
   }
 
+  /** Opens the first-load onboarding controls overlay. */
+  showOnboarding() {
+    this._onboardingOpen = true;
+    this._renderOnboarding();
+    this._onboardingOverlay.classList.add('visible');
+    this._onboardingOverlay.setAttribute('aria-hidden', 'false');
+  }
+
+  /** Hides the onboarding overlay. */
+  hideOnboarding() {
+    this._onboardingOpen = false;
+    this._onboardingOverlay.classList.remove('visible');
+    this._onboardingOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  /** Returns true while onboarding is blocking hub input. */
+  isOnboardingOpen() {
+    return this._onboardingOpen;
+  }
+
   /** Returns a compact HUD state snapshot for tests. */
   getState() {
     return {
@@ -317,6 +342,7 @@ export class HUD {
       card: this.getCardState(),
       bossVisible: this._bossVisible,
       characterSelectOpen: this._characterSelectOpen,
+      onboardingOpen: this._onboardingOpen,
     };
   }
 
@@ -609,6 +635,40 @@ export class HUD {
     const help = document.createElement('div');
     help.className = 'modal-help';
     help.textContent = '1-4 or Mouse: select  |  Arrows/AD: choose  |  F/J: confirm';
+    panel.appendChild(help);
+  }
+
+  _renderOnboarding() {
+    this._onboardingOverlay.textContent = '';
+
+    const panel = document.createElement('div');
+    panel.className = 'modal-panel onboarding-panel';
+    this._onboardingOverlay.appendChild(panel);
+
+    const title = document.createElement('div');
+    title.className = 'modal-title';
+    title.textContent = 'HOW TO PLAY';
+    panel.appendChild(title);
+
+    const content = document.createElement('div');
+    content.className = 'character-detail';
+    content.style.fontSize = '14px';
+    content.style.lineHeight = '1.6';
+    content.innerHTML = `
+      <strong>MOVEMENT:</strong> WASD or Arrow Keys<br>
+      <strong>JUMP:</strong> Space Bar<br>
+      <strong>DODGE:</strong> Left Shift<br>
+      <strong>LIGHT ATTACK:</strong> J (or Left Click)<br>
+      <strong>HEAVY ATTACK:</strong> K (or Right Click)<br>
+      <strong>SPECIAL:</strong> E (Tap for Minor, Hold for Advanced)<br>
+      <strong>ULTIMATE:</strong> E (When Surge bar is 100%)<br>
+      <strong>INTERACT / SHOP:</strong> F or J
+    `;
+    panel.appendChild(content);
+
+    const help = document.createElement('div');
+    help.className = 'modal-help';
+    help.textContent = 'Press any key to start your hunt.';
     panel.appendChild(help);
   }
 

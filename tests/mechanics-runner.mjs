@@ -147,6 +147,10 @@ try {
   await page.waitForFunction(() => window.__TEST__?.ready === true, null, { timeout: 10000 });
   await page.waitForTimeout(250);
 
+  // Dismiss onboarding
+  await page.keyboard.press('Digit1');
+  await page.waitForTimeout(100);
+
   await hold(page, 'Digit2');
   await hold(page, 'Digit3');
   await hold(page, 'Digit4');

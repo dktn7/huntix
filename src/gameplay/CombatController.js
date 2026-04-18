@@ -353,6 +353,12 @@ export class CombatController {
       this._comboTimer = COMBO_TIMEOUT;
       if (hitbox.attackType === 'light') hitbox.owner.resources.gainMana(5);
       this.requestHitstop(hitbox.attackType === 'heavy' ? HEAVY_HITSTOP : LIGHT_HITSTOP);
+      
+      // Trigger audio ducking for heavy hits (80ms duration, 30% volume reduction)
+      if (hitbox.attackType === 'heavy' && window.__huntix?.audio) {
+        window.__huntix.audio.duckMusic(0.3, 80);
+      }
+      
       RunState.recordDamageDealt(hitbox.owner.playerIndex, damage);
       RunState.recordCombo(hitbox.owner.playerIndex, this._comboCount);
 
