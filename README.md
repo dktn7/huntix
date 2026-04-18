@@ -308,9 +308,9 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 |-------|-------|-------|----------|-----------|
 | ✅ **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
 | ✅ **2 — Enemy AI & Juice** | Apr 18–20 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
-| 🔄 **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 13%` | 4P hub + combat |
-| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `█░░░░ 20%` | Full run clearable |
-| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `█░░░░ 20%` | Buy + upgrade loop |
+| 🔄 **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 25%` | 4P hub + combat |
+| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `██░░░ 40%` | Full run clearable |
+| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `██░░░ 40%` | Buy + upgrade loop |
 | ⬜ **6 — Polish & Deploy** | Apr 30 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `░░░░░ 0%` | 🚢 Ship it |
 <!-- PHASE-TABLE-END -->
 
