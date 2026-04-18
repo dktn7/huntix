@@ -297,21 +297,30 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ---
 
-## 📅 Build Plan
+## 📅 Full Repo Phase Plan
 
-> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Started: 13 Apr 2026 · 18 days to ship  
-> Legend: ✅ Complete · 🔄 In Progress · ⬜ Locked  
-> Updated for current repo phase state
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Repo-wide plan mirrors `AGENTS.md`  
+> Legend: ✅ Done · 🔄 Current · 🔲 Locked
 
 <!-- PHASE-TABLE-START -->
-| Phase | Dates | Focus | Progress | Milestone |
-|-------|-------|-------|----------|-----------|
-| ✅ **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
-| ✅ **2 — Enemy AI & Juice** | Apr 16–17 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
-| ✅ **3 — 4 Hunters & Co-op** | Apr 17–18 | All 4 hunters, 1–4P input, AI companions | `█████ 100%` | 4P hub + combat |
-| ✅ **4 — Zones & Bosses** | Apr 18 | 4 zones, portals, boss phases, Essence drops, screen transitions | `█████ 100%` | Full run clearable |
-| ✅ **5 — Hub, Shop & HUD** | Apr 18 | Shop, weapons, levelling, HUD, combo UI | `█████ 100%` | Buy + upgrade loop |
-| 🔄 **6 — Polish & Deploy** | Apr 18 – May 1 | Title screen, hunter select, audio, onboarding, 60fps target, deploy | `██░░░ 35%` | 🚢 Ship it |
+| Phase | Status | Name | Goal |
+|-------|--------|------|------|
+| 1 | ✅ | Core Engine | Three.js scene, camera, game loop, player controller, widget live |
+| 2 | ✅ | Combat Basics | Hit detection, status effects, HUD bars, grunt enemy FSM |
+| 3 | ✅ | All 4 Hunters + Co-op | Hunter roster, co-op input, animation/controller scaffolding |
+| 4 | ✅ | Zones + Bosses | City Breach wired, hub return, all 4 arena stubs created, portals live |
+| 5 | ✅ | Progression + UI | ShopManager, HUD, ProgressionData, RunState wired |
+| 6 | 🔄 | Screen Flow & Loop Closure | Title → Hunter Select → Hub → Portal → Zone → Boss → Victory → Hub fully wired |
+| 7 | 🔲 | Hunter Sprite Pipeline | Final hunter sprite production pipeline and atlases in engine |
+| 8 | 🔲 | Enemy & Boss Sprite Pipeline | Enemy, boss, and FX sprite atlases produced and integrated |
+| 9 | 🔲 | Zone Background Art | 5 zones × 3 parallax layers generated and wired |
+| 10 | 🔲 | Animation State Machine Live | Real sprite states fully drive gameplay animation |
+| 11 | 🔲 | Spells, Surge & Combat Depth | All spell tiers, surge bar, ultimates, synergy pairs live |
+| 12 | 🔲 | Zones 1–2 Full | City Breach + Ruin Den fully complete with bosses and encounters |
+| 13 | 🔲 | Zones 3–4 Full | Shadow Core + Thunder Spire fully complete and polished |
+| 14 | 🔲 | Progression & Shop Live | Full 10-level XP, shop rules, upgrade path lock, aura scaling |
+| 15 | 🔲 | Audio | AudioManager, hit/spell/boss SFX, ambient zone audio, mix controls |
+| 16 | 🔲 | Deploy & Jam Submission | Performance pass, onboarding, compliance checks, deploy, submit |
 <!-- PHASE-TABLE-END -->
 
 ---
@@ -338,7 +347,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 | File | Contents |
 |------|----------|
 | [`docs/GDD.md`](docs/GDD.md) | Master game design document |
-| [`docs/MVP-PLAN.md`](docs/MVP-PLAN.md) | 18-day phased build plan |
+| [`docs/MVP-PLAN.md`](docs/MVP-PLAN.md) | 16-phase repo-wide build plan |
 | [`docs/TECHSTACK.md`](docs/TECHSTACK.md) | All technical decisions, CDN, conventions |
 | [`docs/STATBLOCK.md`](docs/STATBLOCK.md) | Canonical raw stats for all entities |
 
