@@ -8,6 +8,7 @@ export const Actions = {
   MOVE_DOWN: 'MOVE_DOWN',
   LIGHT: 'LIGHT',
   HEAVY: 'HEAVY',
+  JUMP: 'JUMP',
   DODGE: 'DODGE',
   SPECIAL: 'SPECIAL',
   INTERACT: 'INTERACT',
@@ -35,6 +36,7 @@ const KEY_MAP_P1 = {
   ArrowDown: Actions.MOVE_DOWN,
   KeyJ: Actions.LIGHT,
   KeyK: Actions.HEAVY,
+  Space: Actions.JUMP,
   ShiftLeft: Actions.DODGE,
   ShiftRight: Actions.DODGE,
   KeyE: Actions.SPECIAL,
@@ -54,6 +56,7 @@ const KEY_MAP_P2 = {
   Numpad5: Actions.MOVE_DOWN,
   Numpad1: Actions.LIGHT,
   Numpad2: Actions.HEAVY,
+  NumpadAdd: Actions.JUMP,
   Numpad3: Actions.DODGE,
   Numpad0: Actions.SPECIAL,
   NumpadDecimal: Actions.INTERACT,
@@ -67,6 +70,7 @@ const MOUSE_MAP = {
 const BUFFERED_ACTIONS = [
   Actions.LIGHT,
   Actions.HEAVY,
+  Actions.JUMP,
   Actions.DODGE,
   Actions.SPECIAL,
 ];
@@ -80,6 +84,7 @@ export class InputManager {
 
     this.pressed = this.players[0].pressed;
     this._keys = new Set();
+    this._prevKeys = new Set();
     this._mouseButtons = new Set();
 
     window.addEventListener('keydown', e => {
@@ -105,6 +110,7 @@ export class InputManager {
 
   /** Polls keyboard, mouse, and gamepads once per fixed tick. */
   poll() {
+    this._prevKeys = new Set(this._keys);
     for (const snapshot of this.players) {
       snapshot.beginFrame();
     }
@@ -117,6 +123,11 @@ export class InputManager {
     for (const snapshot of this.players) {
       snapshot.updateBuffer();
     }
+  }
+
+  /** Returns true if a specific raw key code was just pressed this frame. */
+  justPressedKey(code) {
+    return this._keys.has(code) && !this._prevKeys.has(code);
   }
 
   /** Returns the input snapshot for a player index. */
@@ -183,10 +194,11 @@ export class InputManager {
       if (ax[0] > DEADZONE) input.pressed.add(Actions.MOVE_RIGHT);
       if (ax[1] < -DEADZONE) input.pressed.add(Actions.MOVE_UP);
       if (ax[1] > DEADZONE) input.pressed.add(Actions.MOVE_DOWN);
-      if (b[0]?.pressed) input.pressed.add(Actions.INTERACT);
+      if (b[0]?.pressed) input.pressed.add(Actions.JUMP);
       if (b[1]?.pressed) input.pressed.add(Actions.DODGE);
       if (b[2]?.pressed) input.pressed.add(Actions.LIGHT);
       if (b[3]?.pressed) input.pressed.add(Actions.HEAVY);
+      if (b[4]?.pressed) input.pressed.add(Actions.INTERACT);
       if (b[5]?.pressed) input.pressed.add(Actions.SPECIAL);
       if (b[9]?.pressed) input.pressed.add(Actions.PAUSE);
     }

@@ -5,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HUNTIX</title>
   <style>
+    :root {
+      --hp-fill: #e05555;
+      --mana-fill: #5599e0;
+      --surge-fill: #e0c855;
+      --xp-fill: #9fd7ff;
+      --combo-text: #ffffff;
+      --combo-mid: #e0c855;
+      --combo-high: #e05555;
+      --hud-bg: rgba(0, 0, 0, 0.62);
+      --hud-border: rgba(255, 255, 255, 0.16);
+      --hud-text: #ffffff;
+      --hud-muted: rgba(255, 255, 255, 0.68);
+      --modal-bg: rgba(3, 6, 12, 0.82);
+      --p1-colour: #4488ff;
+      --p2-colour: #ffdd44;
+      --p3-colour: #44cc66;
+      --p4-colour: #ff4444;
+      --power-colour: #e05555;
+      --survival-colour: #5599e0;
+      --mobility-colour: #e0c855;
+      --style-colour: #ffffff;
+      --utility-colour: #7dff9b;
+      --cosmetic-colour: #d2a8ff;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #000;
@@ -60,6 +84,9 @@
       opacity: 0;
       text-shadow: 0 0 14px #48f7ff, 0 3px 0 #000;
     }
+    .combo-counter.visible { opacity: 1; color: var(--combo-text); }
+    .combo-counter.mid { color: var(--combo-mid); }
+    .combo-counter.high { color: var(--combo-high); }
     .zone-title {
       position: fixed;
       top: 38%;
@@ -84,6 +111,7 @@
       opacity: 0;
       transition: opacity 180ms ease;
     }
+    .boss-hud.visible { opacity: 1; }
     .boss-name {
       font-size: 13px;
       font-weight: 800;
@@ -100,6 +128,7 @@
       overflow: hidden;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4) inset;
     }
+    .boss-bar.phase-flash { filter: brightness(1.45); }
     .boss-fill {
       position: absolute;
       inset: 0 auto 0 0;
@@ -160,6 +189,298 @@
       font-size: 12px;
       opacity: 0.8;
       letter-spacing: 0.04em;
+    }
+    .player-hud {
+      position: fixed;
+      width: 168px;
+      padding: 8px;
+      color: var(--hud-text);
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      font-family: 'Courier New', Courier, monospace;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    .player-hud.visible { opacity: 1; }
+    .player-hud.downed {
+      opacity: 0.45;
+      border-color: var(--hp-fill);
+    }
+    .player-hud.p1 { top: 16px; left: 16px; border-left: 4px solid var(--p1-colour); }
+    .player-hud.p2 { top: 148px; left: 16px; border-left: 4px solid var(--p2-colour); }
+    .player-hud.p3 { top: 16px; right: 16px; border-left: 4px solid var(--p3-colour); }
+    .player-hud.p4 { top: 148px; right: 16px; border-left: 4px solid var(--p4-colour); }
+    .player-label {
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+    .resource-bar {
+      height: 8px;
+      margin-bottom: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+    .resource-fill {
+      width: 100%;
+      height: 100%;
+      transition: width 200ms ease-out;
+    }
+    .resource-bar.hp .resource-fill { background: var(--hp-fill); }
+    .resource-bar.mana .resource-fill { background: var(--mana-fill); }
+    .resource-bar.surge .resource-fill { background: var(--surge-fill); }
+    .xp-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .xp-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--xp-fill);
+      transition: width 200ms ease-out;
+    }
+    .level-label {
+      width: 44px;
+      font-size: 10px;
+      color: var(--hud-muted);
+      text-align: right;
+    }
+    .spell-slots {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .spell-slot {
+      min-width: 44px;
+      min-height: 24px;
+      padding: 4px;
+      font-size: 10px;
+      text-align: center;
+      border: 1px solid var(--hud-border);
+      color: var(--hud-text);
+    }
+    .spell-slot.locked {
+      opacity: 0.35;
+    }
+    .spell-slot.ready {
+      border-color: var(--surge-fill);
+      color: var(--surge-fill);
+    }
+    .essence-counter {
+      position: fixed;
+      left: 16px;
+      bottom: 24px;
+      padding: 8px 12px;
+      color: var(--hud-text);
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      z-index: 10;
+    }
+    .weapon-slots {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      color: var(--hud-text);
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      z-index: 10;
+    }
+    .weapon-slot {
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.62;
+    }
+    .weapon-slot.active {
+      opacity: 1;
+      color: var(--surge-fill);
+    }
+    .weapon-divider { color: var(--hud-muted); }
+    .phase-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: rgba(0, 0, 0, 0.42);
+      z-index: 20;
+      pointer-events: none;
+    }
+    .phase-modal.visible {
+      display: flex;
+      pointer-events: auto;
+    }
+    .card-hotkey {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--hud-border);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      color: var(--hud-muted);
+    }
+    .level-card {
+      position: relative;
+    }
+    .modal-panel {
+      width: min(920px, 92vw);
+      padding: 24px;
+      color: var(--hud-text);
+      background: var(--modal-bg);
+      border: 1px solid var(--hud-border);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
+      font-family: system-ui, sans-serif;
+    }
+    .modal-title {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .modal-help {
+      margin-top: 16px;
+      color: var(--hud-muted);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+    }
+    .card-row,
+    .shop-row,
+    .hunter-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .level-card,
+    .shop-card {
+      position: relative;
+    }
+    .level-card,
+    .shop-card,
+    .hunter-card {
+      min-height: 168px;
+      flex: 1;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--hud-border);
+      transition: border-color 180ms ease, opacity 180ms ease;
+    }
+    .level-card.selected,
+    .shop-card.selected,
+    .hunter-card.selected {
+      border-color: var(--hud-text);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.14);
+    }
+    .level-card.power,
+    .shop-card.power { border-top: 4px solid var(--power-colour); }
+    .level-card.survival,
+    .shop-card.survival { border-top: 4px solid var(--survival-colour); }
+    .level-card.mobility,
+    .shop-card.mobility { border-top: 4px solid var(--mobility-colour); }
+    .level-card.style,
+    .shop-card.spell { border-top: 4px solid var(--style-colour); }
+    .shop-card.utility,
+    .level-card.utility { border-top: 4px solid var(--utility-colour); }
+    .shop-card.cosmetic { border-top: 4px solid var(--cosmetic-colour); }
+    .shop-card.weapon { border-top: 4px solid var(--surge-fill); }
+    .card-name,
+    .shop-name {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .card-category,
+    .shop-category,
+    .shop-cost {
+      color: var(--hud-muted);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .card-description {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .build-panel,
+    .shop-detail,
+    .character-detail {
+      margin-top: 16px;
+      padding: 12px;
+      color: var(--hud-text);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--hud-border);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .shop-card.disabled {
+      opacity: 0.38;
+    }
+    .shop-card.purchased {
+      opacity: 0.5;
+      border-color: var(--utility-colour);
+    }
+    .hunter-card {
+      min-height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    @media (max-width: 800px) {
+      .player-hud {
+        width: 144px;
+      }
+      .player-hud.p2,
+      .player-hud.p4 {
+        top: 132px;
+      }
+      .card-row,
+      .shop-row,
+      .hunter-row {
+        flex-direction: column;
+      }
+      .level-card,
+      .shop-card,
+      .hunter-card {
+        min-height: 72px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .player-hud,
+      .resource-fill,
+      .xp-fill,
+      .level-card,
+      .shop-card,
+      .hunter-card,
+      .zone-title,
+      .boss-hud {
+        transition: none;
+      }
     }
   </style>
 </head>

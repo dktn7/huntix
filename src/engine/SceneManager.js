@@ -8,7 +8,8 @@ import { CombatController } from '../gameplay/CombatController.js';
 import { EnemySpawner } from '../gameplay/EnemySpawner.js';
 import { SparkPool } from '../gameplay/SparkPool.js';
 import { DebugHitboxes } from '../gameplay/DebugHitboxes.js';
-import { GameplayHUD } from '../gameplay/GameplayHUD.js';
+import { HUD } from '../gameplay/HUD.js';
+import { ShopManager } from '../gameplay/ShopManager.js';
 import { CollisionResolver } from '../gameplay/CollisionResolver.js';
 import { PortalManager } from '../gameplay/PortalManager.js';
 import { ZoneManager } from '../gameplay/ZoneManager.js';
@@ -26,6 +27,9 @@ const ZONE_CLEAR_RETURN_DELAY_MS = 1800;
 const ZONE_CLEAR_FADE_OUT_MS = 800;
 const ZONE_CLEAR_FADE_IN_MS = 500;
 const WIPE_RETURN_DELAY_MS = 800;
+const ROUTE_GATE_X = 7.45;
+const ROUTE_GATE_Y = -2.15;
+const ROUTE_GATE_RADIUS = 1.25;
 
 export class SceneManager {
   constructor(renderer) {
@@ -37,6 +41,10 @@ export class SceneManager {
     this._wipePending = false;
     this._activeZoneId = null;
     this._transitionLock = false;
+    this._deferredZoneClear = null;
+    this._zoneReturnTimer = null;
+    this._characterSelectDone = window.location.search.includes('test=1') || window.location.search.toLowerCase().includes('oneforall=1');
+    this._bossSeenZones = new Set();
 
     this.portalManager = new PortalManager(document.getElementById('ui-overlay'));
     this.zoneManager = new ZoneManager(this.scene);
@@ -44,23 +52,29 @@ export class SceneManager {
     this._setupLighting();
     this._setupHubBackdrop();
     this._setupHubPortals();
+    this._setupRouteGate();
 
     this.hunters = new HunterController(this.scene, RunState.players);
     this.player = this.hunters.primaryPlayer;
     this.resources = this.player.resources;
     this.combat = new CombatController();
-    this.spawner = new EnemySpawner(this.scene, this.hunters.activeHumanPlayerCount);
+    this.spawner = new EnemySpawner(this.scene, this.hunters.activePlayerCount);
     this.collision = new CollisionResolver();
     this.sparks = new SparkPool(this.scene);
     this.cameraShake = new CameraShake(this.camera);
     this.debugHitboxes = new DebugHitboxes(this.scene);
-    this.hud = new GameplayHUD(document.getElementById('ui-overlay'));
+    this.hud = new HUD(document.getElementById('ui-overlay'));
+    this.hud._onCardClick = (cardId) => this.chooseCurrentCard(cardId);
+    this.hud._onCharacterClick = () => this.confirmCharacterSelection();
+    this.shop = new ShopManager(document.getElementById('ui-overlay'));
     this._slowMoTicks = 0;
     this._slowMoScale = 1;
 
     RunState.on('playerJoined', this._handlePlayerJoined.bind(this));
+    RunState.on('levelupQueued', this._handleLevelUpQueued.bind(this));
     this._playerAuras = this.hunters.entries.map(entry => this._createAuraForEntry(entry));
     this._hitFlares = new HitFlarePool(this.scene);
+    if (!this._characterSelectDone) this.hud.showCharacterSelect(RunState.players[0]?.hunterId || 'dabik');
   }
 
   update(dt, input) {
@@ -117,6 +131,8 @@ export class SceneManager {
       bossHp: RunState.activeBossHp,
       bossHpMax: RunState.activeBossHpMax,
       bossPhase: RunState.activeBossPhase,
+      bossSeenZones: [...this._bossSeenZones],
+      route: this.spawner?.getRouteState?.() || null,
     };
   }
 
@@ -182,6 +198,19 @@ export class SceneManager {
   }
 
   _updateHub(dt, input) {
+    if (this.hud.isCharacterSelectOpen()) {
+      this._updateCharacterSelectInput(input);
+      this.hud.update(this.camera);
+      return;
+    }
+
+    if (this.shop.isOpen()) {
+      const result = this.shop.update(input.getPlayerInput(this.shop.playerIndex));
+      if (result?.ok && result.action === 'purchase') this.hunters.applyRunStateModifiers(RunState.players);
+      this.hud.update(this.camera);
+      return;
+    }
+
     this.hunters.update(dt, input);
     this.sparks.update(dt);
     this.cameraShake.update(dt);
@@ -190,6 +219,14 @@ export class SceneManager {
     this._syncHubPortals();
     this._updateDebugHitboxes();
 
+    if (!this._transitionLock) {
+      const shopPlayerIndex = this._findQuartermasterInteractor(input);
+      if (shopPlayerIndex !== null) {
+        this.shop.open(shopPlayerIndex, Math.max(1, RunState.zonesCleared + 1));
+        return;
+      }
+    }
+
     if (!this._transitionLock && input.justPressed(Actions.INTERACT)) {
       const portal = this._findNearestUnlockedPortal();
       if (portal) this._enterZone(portal.zoneId, input);
@@ -197,6 +234,12 @@ export class SceneManager {
   }
 
   _updateZone(dt, input) {
+    if (this.hud.isCardOpen()) {
+      this._updateCardInput(input);
+      this.hud.update(this.camera);
+      return;
+    }
+
     this._updateSlowMo(dt);
     const scaledDt = dt * this._slowMoScale;
     const inHitstop = this.combat.consumeHitstop(dt);
@@ -216,15 +259,16 @@ export class SceneManager {
     }
 
     const enemies = this.spawner.getActiveEnemies();
+    const playerInputs = this.hunters.prepareZoneInputs(scaledDt, input, enemies, this._getCompanionFlow());
     const hitEvents = this.combat.update(
       scaledDt,
-      this.hunters.getInputSnapshots(input),
+      playerInputs,
       this.hunters.players,
       enemies,
       this.spawner
     );
     this._applyCombatEvents(hitEvents);
-    this.hunters.update(scaledDt, input);
+    this.hunters.update(scaledDt, input, playerInputs);
     const spawnerEvents = this.spawner.update(scaledDt, this.hunters.players);
     this._applyCombatEvents(spawnerEvents);
     this.collision.resolve(this.hunters.players, this.spawner.getActiveEnemies());
@@ -234,6 +278,8 @@ export class SceneManager {
     this.cameraShake.update(scaledDt);
     this.zoneManager.update(scaledDt, this._getPlayerFocusX());
     this._updateSharedCamera();
+    this._updateRouteGateVisual(dt);
+    this._tryAdvanceRoute(input);
     this._checkForWipe();
     this.hud.setCombo(this.combat.comboCount);
     this.hud.update(this.camera);
@@ -245,10 +291,20 @@ export class SceneManager {
     const config = this.zoneManager.getZoneConfig(zoneId);
     if (!config) return;
 
+    if (this._zoneReturnTimer) {
+      clearTimeout(this._zoneReturnTimer);
+      this._zoneReturnTimer = null;
+      this._zoneReturnPending = false;
+    }
+
     this._activeZoneId = zoneId;
     RunState.onZoneEntry(zoneId);
     RunState.setZoneInfo({ zoneId, zoneLabel: config.label, zoneNumber: config.number });
     RunState.clearBossInfo();
+    this.hunters.syncZoneEntry(RunState.players);
+    this.hunters.applyRunStateModifiers(RunState.players);
+    this.shop.close();
+    this._setRouteGateVisible(false);
     this.mode = SceneModes.ZONE;
     this._zoneReturnPending = false;
     this._transitionLock = true;
@@ -274,7 +330,7 @@ export class SceneManager {
     if (!entry) return;
 
     this._playerAuras.push(this._createAuraForEntry(entry));
-    this.spawner.setPlayerCount(this.hunters.activeHumanPlayerCount);
+    this.spawner.setPlayerCount(this.hunters.activePlayerCount);
 
     if (this.mode === SceneModes.HUB) {
       this.hunters.setFormation(0, -2.2);
@@ -283,6 +339,13 @@ export class SceneManager {
       entry.player.position.x = primary.position.x - 0.6 + entry.player.playerIndex * 0.4;
       entry.player.position.y = primary.position.y;
     }
+  }
+
+  _handleLevelUpQueued() {
+    this._resolveAICardPicks();
+    if (this.mode === SceneModes.END_SCREEN || this.hud.isCardOpen()) return;
+    if (this.shop.isOpen?.() || this.hud.isCharacterSelectOpen?.()) return;
+    this._openNextCardScreen();
   }
 
   _applyCombatEvents(events) {
@@ -308,11 +371,16 @@ export class SceneManager {
       } else if (event.type === 'hitbox') {
         this.combat.addHitbox(event.hitbox);
       } else if (event.type === 'playerHit') {
+        this.combat.breakCombo();
         this.cameraShake.request(0.35);
       } else if (event.type === 'waveClear') {
         this.hud.showWaveClear();
+        this._openNextCardScreen();
+      } else if (event.type === 'routeGateOpen') {
+        this._showRouteGate(event.gateKind, event.nextArea);
       } else if (event.type === 'bossStart' || event.type === 'minibossStart') {
         const boss = event.boss;
+        if (event.type === 'bossStart' && this._activeZoneId) this._bossSeenZones.add(this._activeZoneId);
         RunState.setBossInfo({
           bossId: boss.config.id || boss.name,
           bossName: boss.name,
@@ -326,6 +394,9 @@ export class SceneManager {
           hpMax: boss.hpMax,
           phaseThresholds: boss._phaseThresholds || [],
         });
+        if (event.type === 'minibossStart') {
+          this.portalManager.showNameCard(boss.name, boss.config.flavor || '', 2000);
+        }
         this.cameraShake.request(0.45);
       } else if (event.type === 'bossPhase') {
         RunState.setBossInfo({
@@ -350,6 +421,7 @@ export class SceneManager {
           xp: event.boss.getRewards().xp,
           kills: 1,
         });
+        this._openNextCardScreen();
       } else if (event.type === 'bossDefeated') {
         this.hud.clearBossBar();
         RunState.clearBossInfo();
@@ -369,7 +441,10 @@ export class SceneManager {
     this._zoneReturnPending = true;
     const rewards = boss?.getRewards?.() || { xp: 0, essence: 0 };
     RunState.onZoneComplete(zoneId);
+    this.hunters.syncZoneComplete(RunState.players);
+    this.hunters.applyRunStateModifiers(RunState.players);
     this.hud.clearBossBar();
+    this._setRouteGateVisible(false);
     this.portalManager.showResultsOverlay({
       title: `${zoneId.replace('-', ' ').toUpperCase()} CLEAR`,
       essence: rewards.essence,
@@ -377,6 +452,15 @@ export class SceneManager {
       kills: boss ? 1 : 0,
     });
 
+    if (this._openNextCardScreen()) {
+      this._deferredZoneClear = { rewards, boss };
+      return;
+    }
+
+    this._finishZoneClear(rewards, boss);
+  }
+
+  _finishZoneClear(rewards, boss) {
     if (RunState.runComplete) {
       this.mode = SceneModes.END_SCREEN;
       this.spawner.startZone(null);
@@ -394,7 +478,9 @@ export class SceneManager {
     }
 
     this.spawner.startZone(null);
-    setTimeout(() => {
+    this._setRouteGateVisible(false);
+    this._zoneReturnTimer = setTimeout(() => {
+      this._zoneReturnTimer = null;
       this._returnToHubAfterZoneClear();
     }, ZONE_CLEAR_RETURN_DELAY_MS);
   }
@@ -413,6 +499,8 @@ export class SceneManager {
     this._syncHubPortals();
     this.hunters.setFormation(0, -2.2);
     this.hud.clearBossBar();
+    this.shop.close();
+    this._setRouteGateVisible(false);
     RunState.clearBossInfo();
     this.spawner.startZone(null);
     this._resetCameraFrustum();
@@ -455,6 +543,282 @@ export class SceneManager {
       }
     }
     return best;
+  }
+
+  _isNearQuartermaster(player = this.player) {
+    if (!player) return false;
+    return Math.hypot(player.position.x - -4.8, player.position.y - -2.2) <= 1.5;
+  }
+
+  _findQuartermasterInteractor(input) {
+    for (const player of this.hunters.players) {
+      const playerInput = input.getPlayerInput(player.playerIndex);
+      if (playerInput.justPressed(Actions.INTERACT) && this._isNearQuartermaster(player)) {
+        return player.playerIndex;
+      }
+    }
+    return null;
+  }
+
+  advanceZoneRoute(input = null) {
+    if (!this.spawner?.isRouteGateOpen?.()) return false;
+
+    this._setRouteGateVisible(false);
+    const advanced = this.spawner.advanceRoute();
+    if (!advanced) return false;
+
+    if (input) this.hunters.clearInputBuffers(input);
+    this.hunters.setFormation(-6.6, ROUTE_GATE_Y);
+    const route = this.spawner.getRouteState();
+    const label = route.zoneState === 'boss' || route.zoneState === 'miniboss'
+      ? 'Boss Gate'
+      : `Area ${route.areaIndex + 1}`;
+    this.portalManager.showZoneTitleCard(label, RunState.currentZoneNumber);
+    this.cameraShake.request(0.25);
+    return true;
+  }
+
+  _openNextCardScreen() {
+    this._resolveAICardPicks();
+    if (this.hud.isCardOpen()) return true;
+    const entry = this._nextHumanCardEntry();
+    if (!entry) return false;
+    return this.hud.showCardScreen(entry);
+  }
+
+  _updateCardInput(input) {
+    const cardState = this.hud.getCardState?.();
+    const entry = cardState?.open
+      ? RunState.pendingLevelUps.find(item => item.playerIndex === cardState.playerIndex)
+      : this._nextHumanCardEntry();
+    if (!entry) return;
+
+    const playerInput = input.getPlayerInput(entry.playerIndex);
+    if (playerInput.justPressed(Actions.MOVE_LEFT)) this.hud.moveCardSelection(-1);
+    if (playerInput.justPressed(Actions.MOVE_RIGHT)) this.hud.moveCardSelection(1);
+    
+    // Direct hotkey selection (A, B, C)
+    if (input.justPressedKey('KeyA')) this.chooseCurrentCard(entry.choices[0]?.id);
+    if (input.justPressedKey('KeyB')) this.chooseCurrentCard(entry.choices[1]?.id);
+    if (input.justPressedKey('KeyC')) this.chooseCurrentCard(entry.choices[2]?.id);
+
+    if (playerInput.justPressed(Actions.INTERACT) || playerInput.justPressed(Actions.LIGHT)) {
+      this.chooseCurrentCard();
+    }
+  }
+
+  chooseCurrentCard(cardId = null) {
+    const selected = this.hud.confirmCardSelection();
+    const entry = selected
+      ? RunState.pendingLevelUps.find(item => item.playerIndex === selected.playerIndex)
+      : this._nextHumanCardEntry();
+    const playerIndex = selected?.playerIndex ?? entry?.playerIndex ?? 0;
+    const resolvedCardId = cardId || selected?.cardId || entry?.choices?.[0]?.id;
+    if (!resolvedCardId || !RunState.applyCardChoice(playerIndex, resolvedCardId)) return false;
+
+    this.hunters.applyRunStateModifiers(RunState.players);
+    this._resolveAICardPicks();
+    if (RunState.pendingLevelUps.length > 0) {
+      const nextEntry = this._nextHumanCardEntry();
+      if (nextEntry) {
+        this.hud.showCardScreen(nextEntry);
+      } else {
+        this.hud.hideCardScreen();
+      }
+    } else {
+      this.hud.hideCardScreen();
+      if (this._deferredZoneClear) {
+        const deferred = this._deferredZoneClear;
+        this._deferredZoneClear = null;
+        this._finishZoneClear(deferred.rewards, deferred.boss);
+      }
+    }
+    return true;
+  }
+
+  _nextHumanCardEntry() {
+    return RunState.pendingLevelUps.find(entry => !RunState.players[entry.playerIndex]?.isAI) || null;
+  }
+
+  _resolveAICardPicks() {
+    let resolved = false;
+    for (let i = RunState.pendingLevelUps.length - 1; i >= 0; i -= 1) {
+      const entry = RunState.pendingLevelUps[i];
+      const runPlayer = RunState.players[entry.playerIndex];
+      if (!runPlayer?.isAI) continue;
+
+      const card = this._chooseAICard(runPlayer, entry.choices);
+      if (card && RunState.applyCardChoice(entry.playerIndex, card.id)) resolved = true;
+    }
+    if (resolved) this.hunters.applyRunStateModifiers(RunState.players);
+  }
+
+  _chooseAICard(runPlayer, choices = []) {
+    if (!choices.length) return null;
+
+    const priorities = {
+      benzu: ['survival', 'power', 'mobility', 'style', 'utility'],
+      sereisa: ['mobility', 'style', 'power', 'survival', 'utility'],
+      vesol: ['style', 'power', 'survival', 'mobility', 'utility'],
+      dabik: ['power', 'mobility', 'style', 'survival', 'utility'],
+    }[runPlayer.hunterId] || ['power', 'survival', 'mobility', 'style', 'utility'];
+
+    for (const category of priorities) {
+      const card = choices.find(choice => choice.category === category);
+      if (card) return card;
+    }
+    return choices[0];
+  }
+
+  _updateCharacterSelectInput(input) {
+    if (input.justPressed(Actions.MOVE_LEFT)) this.hud.moveCharacterSelection(-1);
+    if (input.justPressed(Actions.MOVE_RIGHT)) this.hud.moveCharacterSelection(1);
+    
+    // Direct numeric selection (1-4)
+    for (let i = 0; i < 4; i += 1) {
+      if (input.justPressedKey(`Digit${i + 1}`)) {
+        this.hud._characterSelected = i;
+        this.hud._renderCharacterSelect();
+        return this.confirmCharacterSelection();
+      }
+    }
+
+    if (input.justPressed(Actions.INTERACT) || input.justPressed(Actions.LIGHT)) {
+      this.confirmCharacterSelection();
+    }
+  }
+
+  confirmCharacterSelection() {
+    const hunterId = this.hud.confirmCharacterSelection();
+    if (!hunterId) return;
+    RunState.init([{ hunterId, isAI: false, carryEssence: 0 }]);
+    this._rebuildHuntersFromRunState();
+    this._characterSelectDone = true;
+  }
+
+  _rebuildHuntersFromRunState() {
+    for (const player of this.hunters.players) {
+      if (player.mesh?.parent) player.mesh.parent.remove(player.mesh);
+    }
+    for (const aura of this._playerAuras) {
+      if (aura?.parent) aura.parent.remove(aura);
+    }
+    this.hunters = new HunterController(this.scene, RunState.players);
+    this.player = this.hunters.primaryPlayer;
+    this.resources = this.player.resources;
+    this._playerAuras = this.hunters.entries.map(entry => this._createAuraForEntry(entry));
+    this.spawner.setPlayerCount(this.hunters.activePlayerCount);
+    this.hunters.setFormation(0, -2.2);
+  }
+
+  rebuildFromRunState() {
+    this.hud.hideCharacterSelect?.();
+    this._characterSelectDone = true;
+    this._rebuildHuntersFromRunState();
+  }
+
+  startNewRunFromRunState() {
+    if (this._zoneReturnTimer) {
+      clearTimeout(this._zoneReturnTimer);
+      this._zoneReturnTimer = null;
+    }
+    this._bossSeenZones.clear();
+    this._deferredZoneClear = null;
+    this._zoneReturnPending = false;
+    this._wipePending = false;
+    this._activeZoneId = null;
+    this.mode = SceneModes.HUB;
+    this.spawner.startZone(null);
+    this.zoneManager.showHub();
+    this.hud.clearBossBar();
+    this.hud.hideCharacterSelect?.();
+    this.shop.close();
+    this._setRouteGateVisible(false);
+    this._setHubVisible(true);
+    this._characterSelectDone = true;
+    this._rebuildHuntersFromRunState();
+    this.hunters.setFormation(0, -2.2);
+  }
+
+  _setupRouteGate() {
+    const geo = new THREE.TorusGeometry(0.72, 0.08, 8, 28);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0x48f7ff,
+      transparent: true,
+      opacity: 0.92,
+    });
+    this._routeGate = new THREE.Mesh(geo, mat);
+    this._routeGate.position.set(ROUTE_GATE_X, ROUTE_GATE_Y, 0.45);
+    this._routeGate.visible = false;
+    this.scene.add(this._routeGate);
+
+    const coreGeo = new THREE.PlaneGeometry(1.0, 1.4);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0x9fd7ff,
+      transparent: true,
+      opacity: 0.28,
+      depthWrite: false,
+    });
+    this._routeGateCore = new THREE.Mesh(coreGeo, coreMat);
+    this._routeGateCore.position.set(ROUTE_GATE_X, ROUTE_GATE_Y, 0.42);
+    this._routeGateCore.visible = false;
+    this.scene.add(this._routeGateCore);
+  }
+
+  _showRouteGate(kind, nextArea) {
+    if (!this._routeGate || !this._routeGateCore) return;
+
+    const isBossGate = kind === 'boss';
+    this._routeGate.material.color.setHex(isBossGate ? 0xff5555 : 0x48f7ff);
+    this._routeGateCore.material.color.setHex(isBossGate ? 0xffaa55 : 0x9fd7ff);
+    this._routeGate.position.set(ROUTE_GATE_X, ROUTE_GATE_Y, 0.45);
+    this._routeGateCore.position.set(ROUTE_GATE_X, ROUTE_GATE_Y, 0.42);
+    this._setRouteGateVisible(true);
+
+    this.portalManager.showResultsOverlay({
+      title: isBossGate ? 'Boss Gate Open' : `Area ${nextArea} Open`,
+      note: 'Move into the gate',
+    });
+  }
+
+  _setRouteGateVisible(visible) {
+    if (this._routeGate) this._routeGate.visible = visible;
+    if (this._routeGateCore) this._routeGateCore.visible = visible;
+  }
+
+  _updateRouteGateVisual(dt) {
+    if (!this._routeGate?.visible) return;
+
+    this._routeGate.rotation.z += dt * 2.8;
+    const pulse = 1 + Math.sin(performance.now() * 0.006) * 0.08;
+    this._routeGate.scale.setScalar(pulse);
+    this._routeGateCore.material.opacity = 0.22 + (pulse - 1) * 0.8;
+  }
+
+  _tryAdvanceRoute(input) {
+    if (!this.spawner?.isRouteGateOpen?.() || this.hud.isCardOpen()) return;
+
+    const player = this.player;
+    if (!player) return;
+
+    const dx = player.position.x - ROUTE_GATE_X;
+    const dy = player.position.y - ROUTE_GATE_Y;
+    const nearGate = Math.hypot(dx, dy) <= ROUTE_GATE_RADIUS || player.position.x >= ROUTE_GATE_X + 0.35;
+    if (nearGate || (Math.abs(dx) <= 2.2 && input.justPressed(Actions.INTERACT))) {
+      this.advanceZoneRoute(input);
+    }
+  }
+
+  _getCompanionFlow() {
+    const route = this.spawner?.getRouteState?.() || null;
+    return {
+      route,
+      routeGateOpen: !!this.spawner?.isRouteGateOpen?.(),
+      routeGateX: ROUTE_GATE_X,
+      routeGateY: ROUTE_GATE_Y,
+      bossActive: route?.zoneState === 'boss' || route?.zoneState === 'miniboss',
+      areaIndex: route?.areaIndex || 0,
+    };
   }
 
   _animateHubPortals(dt) {
