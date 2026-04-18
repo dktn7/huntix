@@ -2,6 +2,7 @@ import { ManaBar } from './ManaBar.js';
 import { PlayerState } from './PlayerState.js';
 import { AnimationController } from './AnimationController.js';
 import { StatusTypes } from './StatusEffects.js';
+import { CompanionAIController } from './CompanionAIController.js';
 import { createHunterMesh } from '../visuals/HunterMeshes.js';
 import { HUNTERS } from '../visuals/Palettes.js';
 
@@ -85,6 +86,8 @@ export class HunterController {
     this.scene = scene;
     this.entries = [];
     this.players = [];
+    this.companionAI = new CompanionAIController();
+    this._preparedInputs = [];
 
     const activeRunPlayers = runPlayers.length ? runPlayers : DEFAULT_PLAYERS;
     for (let i = 0; i < Math.min(4, activeRunPlayers.length); i += 1) {
@@ -93,11 +96,12 @@ export class HunterController {
   }
 
   /** Advances each active player and its sprite animation. */
-  update(dt, inputManager) {
-    const isCoOp = this.activeHumanPlayerCount > 1;
-    for (const entry of this.entries) {
+  update(dt, inputManager, preparedInputs = null) {
+    const isCoOp = this.activePlayerCount > 1;
+    for (let i = 0; i < this.entries.length; i += 1) {
+      const entry = this.entries[i];
       entry.player.setCoOpEnabled(isCoOp);
-      const input = inputManager.getPlayerInput(entry.player.playerIndex);
+      const input = preparedInputs?.[i] || inputManager.getPlayerInput(entry.player.playerIndex);
       entry.player.update(dt, input);
       entry.animation.update(dt);
     }
@@ -119,7 +123,23 @@ export class HunterController {
 
   /** Returns per-player input snapshots aligned to this.players. */
   getInputSnapshots(inputManager) {
-    return this.players.map(player => inputManager.getPlayerInput(player.playerIndex));
+    this._preparedInputs.length = 0;
+    for (const entry of this.entries) {
+      this._preparedInputs.push(inputManager.getPlayerInput(entry.player.playerIndex));
+    }
+    return this._preparedInputs;
+  }
+
+  /** Returns human snapshots plus AI-generated snapshots aligned to this.players. */
+  prepareZoneInputs(dt, inputManager, enemies, flow = null) {
+    this._preparedInputs.length = 0;
+    for (const entry of this.entries) {
+      const snapshot = entry.runPlayer?.isAI
+        ? this.companionAI.update(dt, entry.player, enemies, this.players, flow)
+        : inputManager.getPlayerInput(entry.player.playerIndex);
+      this._preparedInputs.push(snapshot);
+    }
+    return this._preparedInputs;
   }
 
   /** Clears combat buffers for every active human input slot. */
@@ -157,6 +177,26 @@ export class HunterController {
     }
   }
 
+  /** Applies RunState progression modifiers to live player configs and resources. */
+  applyRunStateModifiers(runPlayers) {
+    for (let i = 0; i < this.entries.length; i += 1) {
+      const runPlayer = runPlayers[i];
+      const entry = this.entries[i];
+      if (!runPlayer || !entry) continue;
+
+      const config = this._buildConfig(runPlayer.hunterId, runPlayer.modifiers);
+      entry.config = config;
+      entry.runPlayer = runPlayer;
+      entry.player.runPlayer = runPlayer;
+      entry.player.applyHunterConfig(config);
+      entry.resources.maxHealth = runPlayer.hpMax;
+      entry.resources.maxMana = runPlayer.manaMax;
+      entry.resources.health = Math.min(runPlayer.hp, entry.resources.maxHealth);
+      entry.resources.mana = Math.min(runPlayer.mana, entry.resources.maxMana);
+      entry.resources.surge = Math.min(runPlayer.surge, entry.resources.maxSurge);
+    }
+  }
+
   /** Pushes live combat resources back into the authoritative run player objects. */
   syncRunStateResources() {
     for (const entry of this.entries) {
@@ -185,13 +225,16 @@ export class HunterController {
       const runPlayer = runPlayers[i];
       if (!runPlayer) continue;
       const entry = this.entries[i];
+      const config = this._buildConfig(runPlayer.hunterId, runPlayer.modifiers);
+      entry.config = config;
       entry.runPlayer = runPlayer;
+      entry.player.runPlayer = runPlayer;
       entry.resources.maxHealth = runPlayer.hpMax;
       entry.resources.maxMana = runPlayer.manaMax;
       entry.resources.health = runPlayer.hp;
       entry.resources.mana = runPlayer.mana;
       entry.resources.surge = runPlayer.surge;
-      entry.player.resetForRunState(runPlayer);
+      entry.player.resetForRunState(runPlayer, config);
     }
   }
 
@@ -220,7 +263,7 @@ export class HunterController {
 
   _addPlayer(runPlayer, fallbackIndex) {
     const hunterId = runPlayer.hunterId || 'dabik';
-    const config = HUNTER_CONFIGS[hunterId] || HUNTER_CONFIGS.dabik;
+    const config = this._buildConfig(hunterId, runPlayer.modifiers);
     const resources = new ManaBar({
       maxHealth: runPlayer.hpMax || config.hp,
       maxMana: runPlayer.manaMax || config.mana,
@@ -235,6 +278,7 @@ export class HunterController {
     const player = new PlayerState(this.scene, resources, {
       playerIndex: runPlayer.playerIndex ?? fallbackIndex,
       hunterConfig: config,
+      runPlayer,
       mesh,
     });
     const animation = new AnimationController(player, mesh.userData.animator);
@@ -243,5 +287,35 @@ export class HunterController {
     this.entries.push(entry);
     this.players.push(player);
     return entry;
+  }
+
+  _buildConfig(hunterId, modifiers = {}) {
+    const base = HUNTER_CONFIGS[hunterId] || HUNTER_CONFIGS.dabik;
+    const damageMult = modifiers?.damageMult || 1;
+    const speedMult = modifiers?.speedMult || 1;
+    const spellDamageMult = modifiers?.spellDamageMult || 1;
+    const cooldownMult = Math.max(0.2, modifiers?.cooldownMult || 1);
+    const dodgeIFrameBonus = modifiers?.dodgeIFrameBonus || 0;
+
+    return {
+      ...base,
+      speed: Math.round(base.speed * speedMult),
+      lightDamage: Math.max(1, Math.round(base.lightDamage * damageMult)),
+      heavyDamage: Math.max(1, Math.round(base.heavyDamage * damageMult)),
+      dodgeIFrames: Math.max(1, base.dodgeIFrames + dodgeIFrameBonus),
+      minor: this._scaleSpell(base.minor, spellDamageMult, cooldownMult),
+      advanced: this._scaleSpell(base.advanced, spellDamageMult, cooldownMult),
+      ultimate: this._scaleSpell(base.ultimate, spellDamageMult, cooldownMult),
+      modifiers,
+    };
+  }
+
+  _scaleSpell(spell, damageMult, cooldownMult) {
+    const next = { ...spell };
+    if (typeof next.damage === 'number') next.damage = Math.max(1, Math.round(next.damage * damageMult));
+    if (typeof next.damagePerSecond === 'number') next.damagePerSecond = Math.max(1, Math.round(next.damagePerSecond * damageMult));
+    if (typeof next.dashDamage === 'number') next.dashDamage = Math.max(1, Math.round(next.dashDamage * damageMult));
+    if (typeof next.cooldown === 'number') next.cooldown = Math.max(0.2, next.cooldown * cooldownMult);
+    return next;
   }
 }

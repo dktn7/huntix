@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { ORTHO_WIDTH, ORTHO_HEIGHT } from '../engine/Renderer.js';
 import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { ySortHunterMesh } from '../visuals/HunterMeshes.js';
+import { clampBottomToVisibleArena } from './ArenaBounds.js';
 
 const TICK = 1 / 60;
 const PLAYER_WIDTH = 0.8;
@@ -11,6 +11,7 @@ const ATTACK_BODY_GAP = 0.08;
 const SPEED_TO_WORLD_UNITS = 64;
 const DOWNED_SECONDS = 8;
 const LIGHT_COMBO_WINDOW = 0.55;
+const JUMP_HEIGHT = 2.5;
 
 export const PlayerStates = {
   IDLE: 'IDLE',
@@ -20,6 +21,7 @@ export const PlayerStates = {
   SPELL_MINOR: 'SPELL_MINOR',
   SPELL_ADVANCED: 'SPELL_ADVANCED',
   ULTIMATE: 'ULTIMATE',
+  JUMP: 'JUMP',
   DODGE: 'DODGE',
   HURT: 'HURT',
   DOWNED: 'DOWNED',
@@ -33,6 +35,7 @@ const STATE_DURATIONS = {
   [PlayerStates.SPELL_MINOR]: 14 * TICK,
   [PlayerStates.SPELL_ADVANCED]: 24 * TICK,
   [PlayerStates.ULTIMATE]: 60 * TICK,
+  [PlayerStates.JUMP]: 30 * TICK,
   [PlayerStates.DODGE]: 18 * TICK,
   [PlayerStates.HURT]: 10 * TICK,
   [PlayerStates.REVIVE]: 18 * TICK,
@@ -79,6 +82,7 @@ export class PlayerState {
     this.id = options.playerIndex || 0;
     this.playerIndex = options.playerIndex || 0;
     this.hunterConfig = options.hunterConfig || DEFAULT_HUNTER_CONFIG;
+    this.runPlayer = options.runPlayer || null;
     this.resources = resources;
     this.state = PlayerStates.IDLE;
     this.isDown = false;
@@ -97,6 +101,7 @@ export class PlayerState {
     this._dodgeSpeed = 12;
     this._dodgeIFrameTimer = 0;
     this._dodgeCooldownTimer = 0;
+    this._jumpLift = 0;
     this._attackId = 0;
     this._knockback = { x: 0, y: 0 };
     this._visualTime = 0;
@@ -167,6 +172,9 @@ export class PlayerState {
 
     if (this.state === PlayerStates.IDLE || this.state === PlayerStates.MOVE) {
       this._updateFreeMovement(dt, input.moveVector);
+    } else if (this.state === PlayerStates.JUMP) {
+      this._updateJump(dt, input.moveVector);
+      this._updateTimedState(dt, input);
     } else if (this.state === PlayerStates.DODGE) {
       this._updateDodge(dt);
       this._updateTimedState(dt, input);
@@ -200,6 +208,10 @@ export class PlayerState {
       this._stateDuration /= this._attackSpeedMultiplier;
     }
 
+    if (state !== PlayerStates.JUMP) {
+      this._jumpLift = 0;
+    }
+
     if (state === PlayerStates.ATTACK_LIGHT) {
       this._lightComboStep = this._lightComboTimer > 0
         ? (this._lightComboStep % 3) + 1
@@ -223,6 +235,7 @@ export class PlayerState {
 
     if (state === PlayerStates.DEAD) {
       this._dodgeIFrameTimer = 0;
+      this._jumpLift = 0;
     }
 
     return true;
@@ -235,6 +248,14 @@ export class PlayerState {
     const alive = this.resources.takeDamage(amount);
     if (alive) {
       this.transitionTo(PlayerStates.HURT, { knockback });
+      return true;
+    }
+
+    if (this.runPlayer?.secondWindReady) {
+      this.runPlayer.secondWindReady = false;
+      this.resources.health = Math.max(1, Math.ceil(this.resources.maxHealth * 0.2));
+      this.setInvincible(2);
+      this.transitionTo(PlayerStates.HURT, { knockback, force: true });
       return true;
     }
 
@@ -252,6 +273,7 @@ export class PlayerState {
     this.isDown = isDown;
     if (isDown) {
       this.state = PlayerStates.DOWNED;
+      this._jumpLift = 0;
       this._animationRevision += 1;
       return;
     }
@@ -286,7 +308,9 @@ export class PlayerState {
   }
 
   /** Resets live state from RunState after a wipe or run reset. */
-  resetForRunState(runPlayer) {
+  resetForRunState(runPlayer, hunterConfig = null) {
+    this.runPlayer = runPlayer;
+    if (hunterConfig) this.applyHunterConfig(hunterConfig);
     this.isDown = !!runPlayer.isDown;
     this.downTimer = runPlayer.downTimer || 0;
     this.isEliminated = false;
@@ -295,10 +319,18 @@ export class PlayerState {
     this._stateDuration = 0;
     this._dodgeIFrameTimer = 0;
     this._dodgeCooldownTimer = 0;
+    this._jumpLift = 0;
     this._knockback.x = 0;
     this._knockback.y = 0;
     this._animationRevision += 1;
     this._syncMesh();
+  }
+
+  /** Applies a derived hunter config after progression changes. */
+  applyHunterConfig(config) {
+    this.hunterConfig = config;
+    this.baseMoveSpeed = this.hunterConfig.speed / SPEED_TO_WORLD_UNITS;
+    this.moveSpeed = this.baseMoveSpeed;
   }
 
   /** Returns the player's current body AABB for physical separation/debug only. */
@@ -375,7 +407,17 @@ export class PlayerState {
 
   /** Returns true when dodge is available and enough stamina exists. */
   canDodge(staminaCost) {
-    return this._dodgeCooldownTimer <= 0 && this.resources.stamina >= staminaCost;
+    return !this.isAirborne() && this._dodgeCooldownTimer <= 0 && this.resources.stamina >= staminaCost;
+  }
+
+  /** Returns true when jump can start from grounded movement states. */
+  canJump() {
+    return this.state === PlayerStates.IDLE || this.state === PlayerStates.MOVE;
+  }
+
+  /** Returns true while the player is in the evasive airborne jump state. */
+  isAirborne() {
+    return this.state === PlayerStates.JUMP;
   }
 
   /** Returns true when the current state is an attack state. */
@@ -453,10 +495,24 @@ export class PlayerState {
   _updateFreeMovement(dt, moveVector) {
     if (moveVector.x !== 0) this.facing = Math.sign(moveVector.x);
 
+    this._applyMoveVector(dt, moveVector);
+    this.state = moveVector.x !== 0 || moveVector.y !== 0 ? PlayerStates.MOVE : PlayerStates.IDLE;
+  }
+
+  _applyMoveVector(dt, moveVector) {
     const speed = this.moveSpeed * this._speedMultiplier;
     this.position.x += moveVector.x * speed * dt;
     this.position.y += moveVector.y * speed * dt * BASE_Y_SCALE;
-    this.state = moveVector.x !== 0 || moveVector.y !== 0 ? PlayerStates.MOVE : PlayerStates.IDLE;
+  }
+
+  _updateJump(dt, moveVector) {
+    if (moveVector.x !== 0) this.facing = Math.sign(moveVector.x);
+    this._applyMoveVector(dt, moveVector);
+
+    const progress = this._stateDuration > 0
+      ? Math.min(1, this._stateElapsed / this._stateDuration)
+      : 0;
+    this._jumpLift = Math.sin(progress * Math.PI) * JUMP_HEIGHT;
   }
 
   _updateDodge(dt) {
@@ -498,17 +554,14 @@ export class PlayerState {
     this._stateElapsed = 0;
     this._stateDuration = 0;
     this._dodgeIFrameTimer = 0;
+    this._jumpLift = 0;
     this._knockback.x = 0;
     this._knockback.y = 0;
     this._animationRevision += 1;
   }
 
   _clampToArena() {
-    const hw = ORTHO_WIDTH / 2 - PLAYER_WIDTH / 2;
-    const minY = -ORTHO_HEIGHT / 2;
-    const maxY = ORTHO_HEIGHT / 2 - PLAYER_HEIGHT;
-    this.position.x = Math.max(-hw, Math.min(hw, this.position.x));
-    this.position.y = Math.max(minY, Math.min(maxY, this.position.y));
+    clampBottomToVisibleArena(this.position, PLAYER_WIDTH, PLAYER_HEIGHT);
   }
 
   _syncMesh() {
@@ -539,6 +592,10 @@ export class PlayerState {
       const scale = this._attackScale(this.state === PlayerStates.ULTIMATE ? 1.6 : 1.25);
       this.mesh.scale.set(scale, scale, 1);
       this._setVisualColor(this.hunterConfig.auraColor);
+    } else if (this.state === PlayerStates.JUMP) {
+      this.mesh.position.y += this._jumpLift;
+      this.mesh.scale.set(0.96, 1.04, 1);
+      this._setVisualColor(0x9fe8ff);
     } else if (this.state === PlayerStates.DODGE) {
       this.mesh.rotation.z = this._dodgeDirection.x * -0.25;
       this.mesh.scale.set(1.15, 0.85, 1);

@@ -60,6 +60,15 @@ export class PortalManager {
     }, 1100);
   }
 
+  showNameCard(title, note = '', durationMs = 2000) {
+    this._card.innerHTML = `${title}<span class="small">${note}</span>`;
+    this._card.classList.add('visible');
+    clearTimeout(this._cardTimer);
+    this._cardTimer = setTimeout(() => {
+      this._card.classList.remove('visible');
+    }, durationMs);
+  }
+
   showResultsOverlay({ title = 'Zone Clear', essence = 0, xp = 0, kills = 0, note = '' } = {}) {
     this._results.innerHTML = `${title}<span class="small">Essence +${essence} | XP +${xp} | Kills ${kills}${note ? ` | ${note}` : ''}</span>`;
     this._results.classList.add('visible');

@@ -1,10 +1,24 @@
 import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { PlayerStates } from './PlayerState.js';
 import { StatusEffects, StatusTypes } from './StatusEffects.js';
+import {
+  centerMaxX,
+  centerMaxY,
+  centerMinX,
+  centerMinY,
+  clamp,
+  clampCenterToVisibleArena,
+} from './ArenaBounds.js';
 
 const BASE_Y_SCALE = 0.4;
 const BODY_WIDTH = 0.8;
 const BODY_HEIGHT = 1.1;
+const MELEE_RETARGET_SECONDS = 1.5;
+const RANGED_RETARGET_SECONDS = 0.8;
+const LANE_SPACING = 0.42;
+const RANGED_STRAFE_SECONDS = 0.9;
+const WAIT_RETRY_SECONDS = 0.5;
+const MELEE_Y_TOLERANCE = 0.85;
 
 export const EnemyTypes = {
   GRUNT: 'GRUNT',
@@ -20,6 +34,7 @@ export const EnemyStates = {
   TELEGRAPH: 'TELEGRAPH',
   ATTACK: 'ATTACK',
   RECOVER: 'RECOVER',
+  WAIT: 'WAIT',
   HURT: 'HURT',
   DEAD: 'DEAD',
 };
@@ -135,11 +150,22 @@ export class EnemyAI {
     this._knockback = { x: 0, y: 0 };
     this._removeTimer = 0.5;
     this._frozenTimer = 0;
+    this._target = null;
+    this._targetRefreshTimer = 0;
+    this._lastAttacker = null;
+    this._laneOffset = this._laneOffsetForType();
+    this._strafeDirection = this.id % 2 === 0 ? 1 : -1;
+    this._strafeTimer = RANGED_STRAFE_SECONDS;
+    this._waitRetryTimer = 0;
+    this._hasAttackToken = false;
+    this._aiContext = null;
     this._events = [];
+    this._clampToArena();
   }
 
   /** Advances this enemy and returns spawned combat events. */
-  update(dt, players) {
+  update(dt, players, aiContext = null) {
+    this._aiContext = aiContext;
     this._events.length = 0;
     this._events.push(...this.statusEffects.update(dt, this));
 
@@ -151,26 +177,32 @@ export class EnemyAI {
     if (this._isControlLocked()) {
       this._frozenTimer = Math.max(0, this._frozenTimer - dt);
       this.isTelegraphing = false;
+      this._releaseAttackToken();
       return this.consumeEvents();
     }
 
     if (this._cooldown > 0) this._cooldown = Math.max(0, this._cooldown - dt);
-    const player = this._nearestTarget(players);
-    if (!player) return this.consumeEvents();
+    const player = this._selectTarget(players, dt);
+    if (!player) {
+      this._releaseAttackToken();
+      this._clampToArena();
+      return this.consumeEvents();
+    }
 
     this._stateElapsed += dt;
     this.isTelegraphing = this.state === EnemyStates.TELEGRAPH;
 
     if (this.state === EnemyStates.HURT) {
       this._updateHurt(dt);
+      this._clampToArena();
       return this.consumeEvents();
     }
 
     const distance = this._distanceTo(player);
     if (this.state !== EnemyStates.TELEGRAPH && this.state !== EnemyStates.ATTACK) {
-      if (this._shouldAttack(distance)) {
+      if (this._shouldAttack(player, distance)) {
         this._transitionTo(EnemyStates.TELEGRAPH);
-      } else if (distance <= this.aggroRange) {
+      } else if (this.state !== EnemyStates.WAIT && distance <= this.aggroRange) {
         this._transitionTo(EnemyStates.AGGRO);
       } else if (this.state !== EnemyStates.PATROL && this.state !== EnemyStates.IDLE) {
         this._transitionTo(EnemyStates.PATROL);
@@ -181,6 +213,8 @@ export class EnemyAI {
       this._updatePatrol(dt);
     } else if (this.state === EnemyStates.AGGRO) {
       this._updateAggro(dt, player, distance);
+    } else if (this.state === EnemyStates.WAIT) {
+      this._updateWait(dt, player, distance);
     } else if (this.state === EnemyStates.TELEGRAPH) {
       this._updateTelegraph(player);
     } else if (this.state === EnemyStates.ATTACK) {
@@ -189,6 +223,7 @@ export class EnemyAI {
       this._transitionTo(distance <= this.aggroRange ? EnemyStates.AGGRO : EnemyStates.PATROL);
     }
 
+    this._clampToArena();
     return this.consumeEvents();
   }
 
@@ -199,6 +234,7 @@ export class EnemyAI {
     this.hp = Math.max(0, this.hp - amount);
 
     if (hitMeta.statusType) this.applyStatus(hitMeta.statusType);
+    if (hitMeta.source) this._lastAttacker = hitMeta.source;
 
     if (this.hp <= 0) {
       this._transitionTo(EnemyStates.DEAD);
@@ -211,6 +247,7 @@ export class EnemyAI {
       this._knockback = knockback;
       this._transitionTo(EnemyStates.HURT);
     }
+    this._clampToArena();
     return true;
   }
 
@@ -266,6 +303,7 @@ export class EnemyAI {
     if (this.state === EnemyStates.DEAD) return;
     this.position.x += dx;
     this.position.y += dy;
+    this._clampToArena();
   }
 
   /** Returns true once this enemy has entered the dead state. */
@@ -293,18 +331,38 @@ export class EnemyAI {
     return events;
   }
 
+  _selectTarget(players, dt) {
+    this._targetRefreshTimer = Math.max(0, this._targetRefreshTimer - dt);
+    if (this._isValidTarget(this._target) && this._targetRefreshTimer > 0) return this._target;
+
+    this._target = this._nearestTarget(players);
+    this._targetRefreshTimer = this.type === EnemyTypes.RANGED
+      ? RANGED_RETARGET_SECONDS
+      : MELEE_RETARGET_SECONDS;
+    return this._target;
+  }
+
   _nearestTarget(players) {
     let best = null;
     let bestDistance = Infinity;
     for (const player of players) {
-      if (player.state === PlayerStates.DEAD || player.state === PlayerStates.DOWNED) continue;
-      const distance = this._distanceTo(player);
-      if (distance < bestDistance) {
+      if (!this._isValidTarget(player)) continue;
+      const dx = Math.abs(this._targetX(player) - this.position.x);
+      const dy = Math.abs(this._targetY(player) - this.position.y);
+      let distance = dx + dy * 0.5;
+      if (player === this._lastAttacker) distance *= 0.75;
+      const hp = player.resources?.health ?? 9999;
+      const bestHp = best?.resources?.health ?? 9999;
+      if (distance < bestDistance || (Math.abs(distance - bestDistance) < 0.1 && hp < bestHp)) {
         best = player;
         bestDistance = distance;
       }
     }
     return best;
+  }
+
+  _isValidTarget(player) {
+    return !!player && player.state !== PlayerStates.DEAD && player.state !== PlayerStates.DOWNED;
   }
 
   _distanceTo(target) {
@@ -319,14 +377,31 @@ export class EnemyAI {
     this._stateElapsed = 0;
     this._hasAttacked = false;
     this.isTelegraphing = state === EnemyStates.TELEGRAPH;
+    if (state === EnemyStates.WAIT) this._waitRetryTimer = WAIT_RETRY_SECONDS;
+    if (
+      state !== EnemyStates.TELEGRAPH &&
+      state !== EnemyStates.ATTACK &&
+      state !== EnemyStates.RECOVER
+    ) {
+      this._releaseAttackToken();
+    }
   }
 
-  _shouldAttack(distance) {
+  _shouldAttack(player, distance) {
     if (this._cooldown > 0) return false;
     if (this.type === EnemyTypes.RANGED) {
-      return distance <= this.config.preferredMax;
+      if (distance > this.config.preferredMax) return false;
+      if (this._requestAttackToken()) return true;
+      this._transitionTo(EnemyStates.WAIT);
+      return false;
     }
-    return distance <= this.attackRange;
+
+    const dx = Math.abs(this._targetX(player) - this.position.x);
+    const dy = Math.abs(this._targetY(player) - this.position.y);
+    if (dx > this.attackRange || dy > MELEE_Y_TOLERANCE) return false;
+    if (this._requestAttackToken()) return true;
+    this._transitionTo(EnemyStates.WAIT);
+    return false;
   }
 
   _isControlLocked() {
@@ -336,8 +411,11 @@ export class EnemyAI {
   _updatePatrol(dt) {
     const speed = this.patrolSpeed * this.statusEffects.getSpeedMultiplier();
     this.position.x += this.facing * speed * dt;
-    if (this.position.x <= this._patrolMinX) this.facing = 1;
-    if (this.position.x >= this._patrolMaxX) this.facing = -1;
+    const minX = Math.max(this._patrolMinX, centerMinX(this.config.width));
+    const maxX = Math.min(this._patrolMaxX, centerMaxX(this.config.width));
+    if (this.position.x <= minX) this.facing = 1;
+    if (this.position.x >= maxX) this.facing = -1;
+    this.position.x = clamp(this.position.x, minX, maxX);
   }
 
   _updateAggro(dt, player, distance) {
@@ -346,19 +424,54 @@ export class EnemyAI {
       return;
     }
 
-    this._moveToward(dt, player, this.speed);
+    this._moveTowardSlot(dt, player, this.speed);
+  }
+
+  _updateWait(dt, player, distance) {
+    this._waitRetryTimer = Math.max(0, this._waitRetryTimer - dt);
+    if (distance > this.aggroRange) {
+      this._transitionTo(EnemyStates.PATROL);
+      return;
+    }
+
+    if (this._waitRetryTimer <= 0 && this._shouldAttack(player, distance)) {
+      this._transitionTo(EnemyStates.TELEGRAPH);
+      return;
+    }
+
+    const speed = this.patrolSpeed * 1.15;
+    if (this.type === EnemyTypes.RANGED) {
+      this._strafeVertical(dt, player, speed);
+    } else {
+      this._moveTowardSlot(dt, player, speed);
+    }
   }
 
   _updateRangedSpacing(dt, player, distance) {
     const dx = this._targetX(player) - this.position.x;
     this.facing = dx >= 0 ? 1 : -1;
+    this._strafeTimer = Math.max(0, this._strafeTimer - dt);
+    if (this._strafeTimer <= 0) {
+      this._strafeDirection *= -1;
+      this._strafeTimer = RANGED_STRAFE_SECONDS;
+    }
 
     if (distance < this.config.retreatRange) {
+      if (this._atHorizontalBoundary()) {
+        this._strafeVertical(dt, player, this.speed * 1.25);
+        return;
+      }
       this._moveAway(dt, player, this.speed * 1.25);
     } else if (distance > this.config.preferredMax) {
-      this._moveToward(dt, player, this.speed);
+      this._moveTowardSlot(dt, player, this.speed);
     } else if (this._cooldown <= 0) {
-      this._transitionTo(EnemyStates.TELEGRAPH);
+      this._transitionTo(this._requestAttackToken() ? EnemyStates.TELEGRAPH : EnemyStates.WAIT);
+    } else {
+      this._strafeVertical(dt, player, this.speed);
+      if (Math.abs(dx) < this.config.preferredMin) {
+        const scaledSpeed = this.speed * this.statusEffects.getSpeedMultiplier();
+        this.position.x -= this.facing * scaledSpeed * dt * 0.35;
+      }
     }
   }
 
@@ -408,6 +521,19 @@ export class EnemyAI {
     this.position.y += (dy / len) * scaledSpeed * dt * BASE_Y_SCALE;
   }
 
+  _moveTowardSlot(dt, target, speed) {
+    const desiredX = this._slotX(target);
+    const desiredY = this._slotY(target);
+    const dx = desiredX - this.position.x;
+    const dy = desiredY - this.position.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const scaledSpeed = speed * this.statusEffects.getSpeedMultiplier();
+
+    this.facing = this._targetX(target) >= this.position.x ? 1 : -1;
+    this.position.x += (dx / len) * scaledSpeed * dt;
+    this.position.y += (dy / len) * scaledSpeed * dt * BASE_Y_SCALE;
+  }
+
   _moveAway(dt, target, speed) {
     const dx = this.position.x - this._targetX(target);
     const dy = this.position.y - this._targetY(target);
@@ -417,6 +543,78 @@ export class EnemyAI {
     this.facing = dx >= 0 ? -1 : 1;
     this.position.x += (dx / len) * scaledSpeed * dt;
     this.position.y += (dy / len) * scaledSpeed * dt * BASE_Y_SCALE;
+  }
+
+  _strafeVertical(dt, target, speed) {
+    const scaledSpeed = speed * this.statusEffects.getSpeedMultiplier();
+    const desiredY = this._slotY(target);
+    const edgePadding = 0.08;
+    if (this.position.y <= centerMinY(this.config.height) + edgePadding) this._strafeDirection = 1;
+    if (this.position.y >= centerMaxY(this.config.height) - edgePadding) this._strafeDirection = -1;
+
+    const dy = desiredY - this.position.y;
+    const lanePull = Math.abs(dy) > 0.75 ? Math.sign(dy) : this._strafeDirection;
+    this.position.y += lanePull * scaledSpeed * dt * BASE_Y_SCALE;
+  }
+
+  _slotX(target) {
+    const targetX = this._targetX(target);
+    const side = this.position.x >= targetX ? 1 : -1;
+
+    if (this.type === EnemyTypes.RANGED) {
+      const range = (this.config.preferredMin + this.config.preferredMax) * 0.5;
+      return clamp(targetX + side * range, centerMinX(this.config.width), centerMaxX(this.config.width));
+    }
+
+    const distance = this.type === EnemyTypes.GRUNT
+      ? Math.max(0.85, this.attackRange * 0.78)
+      : Math.max(1.25, this.attackRange * 0.86);
+    return clamp(targetX + side * distance, centerMinX(this.config.width), centerMaxX(this.config.width));
+  }
+
+  _slotY(target) {
+    return clamp(
+      this._targetY(target) + this._laneOffset,
+      centerMinY(this.config.height),
+      centerMaxY(this.config.height)
+    );
+  }
+
+  _laneOffsetForType() {
+    if (this.type === EnemyTypes.BRUISER || this.type === EnemyTypes.FIRE_BRUISER) {
+      return (this.id % 2 === 0 ? 1 : -1) * 0.65;
+    }
+    if (this.type === EnemyTypes.RANGED) {
+      return ((this.id % 3) - 1) * 0.55;
+    }
+    return ((this.id % 3) - 1) * LANE_SPACING;
+  }
+
+  _atHorizontalBoundary() {
+    const minX = centerMinX(this.config.width);
+    const maxX = centerMaxX(this.config.width);
+    return this.position.x <= minX + 0.08 || this.position.x >= maxX - 0.08;
+  }
+
+  _requestAttackToken() {
+    if (this._hasAttackToken) return true;
+    if (!this._aiContext?.requestAttackToken) return true;
+    const granted = this._aiContext.requestAttackToken(this);
+    this._hasAttackToken = granted;
+    if (!granted) this._waitRetryTimer = WAIT_RETRY_SECONDS;
+    return granted;
+  }
+
+  _releaseAttackToken() {
+    if (!this._hasAttackToken) return;
+    this._hasAttackToken = false;
+    this._aiContext?.releaseAttackToken?.(this);
+  }
+
+  _clampToArena() {
+    clampCenterToVisibleArena(this.position, this.config.width, this.config.height);
+    if (this.position.x <= centerMinX(this.config.width)) this.facing = 1;
+    if (this.position.x >= centerMaxX(this.config.width)) this.facing = -1;
   }
 
   _createMeleeHitbox() {

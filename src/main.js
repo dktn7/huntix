@@ -17,6 +17,7 @@ const PLAYER_SLOT_CONFIGS = [
 ];
 
 RunState.init([PLAYER_SLOT_CONFIGS[0]]);
+let scene = null;
 
 function activatePlayerSlot(slotIndex) {
   if (slotIndex < 1 || slotIndex >= PLAYER_SLOT_CONFIGS.length) return;
@@ -33,8 +34,21 @@ function activateConnectedGamepads() {
   }
 }
 
+function activateOneForAll() {
+  RunState.init(PLAYER_SLOT_CONFIGS.map((config, index) => ({
+    ...config,
+    isAI: index > 0,
+  })));
+  scene?.startNewRunFromRunState();
+  return RunState.players;
+}
+
 activateConnectedGamepads();
-const scene = new SceneManager(renderer);
+scene = new SceneManager(renderer);
+const params = new URLSearchParams(window.location.search);
+if (params.get('oneForAll') === '1' || params.get('oneforall') === '1') {
+  activateOneForAll();
+}
 const loop = new GameLoop();
 
 window.addEventListener('gamepadconnected', event => {
@@ -85,15 +99,34 @@ window.__TEST__ = {
         currentZoneLabel: RunState.currentZoneLabel,
         currentZoneNumber: RunState.currentZoneNumber,
         runComplete: RunState.runComplete,
+        pendingLevelUps: RunState.pendingLevelUps.map(entry => ({
+          playerIndex: entry.playerIndex,
+          level: entry.level,
+          choices: entry.choices.map(card => card.id),
+        })),
         players: RunState.players.map(player => ({
           hunterId: player.hunterId,
           playerIndex: player.playerIndex,
+          isAI: player.isAI,
           hp: player.hp,
           mana: player.mana,
           surge: player.surge,
           xp: player.xp,
           level: player.level,
           essence: player.essence,
+          upgradePath: player.upgradePath,
+          minorSpellId: player.minorSpellId,
+          advancedSpellId: player.advancedSpellId,
+          ultimateSpellId: player.ultimateSpellId,
+          minorMod: player.minorMod,
+          advancedMod: player.advancedMod,
+          ownedCards: [...player.ownedCards],
+          activeShopItems: [...player.activeShopItems],
+          modifiers: { ...player.modifiers },
+          slot1WeaponId: player.slot1WeaponId,
+          slot2WeaponId: player.slot2WeaponId,
+          activeSlot: player.activeSlot,
+          shopBuysThisVisit: player.shopBuysThisVisit,
           isDown: player.isDown,
           downTimer: player.downTimer,
           stats: { ...player.stats },
@@ -104,17 +137,24 @@ window.__TEST__ = {
           hp: RunState.activeBossHp,
           hpMax: RunState.activeBossHpMax,
           phase: RunState.activeBossPhase,
+          seenZones: [...scene._bossSeenZones],
         },
       },
       players: scene.hunters.players.map(player => ({
         playerIndex: player.playerIndex,
         hunterId: player.hunterConfig.id,
+        isAI: !!player.runPlayer?.isAI,
         state: player.state,
+        airborne: player.isAirborne?.() || false,
         x: player.position.x,
         y: player.position.y,
         hp: player.resources.health,
         mana: player.resources.mana,
         surge: player.resources.surge,
+        speed: player.hunterConfig.speed,
+        lightDamage: player.hunterConfig.lightDamage,
+        heavyDamage: player.hunterConfig.heavyDamage,
+        modifiers: { ...(player.hunterConfig.modifiers || {}) },
         isDown: player.isDown,
         downTimer: player.downTimer,
       })),
@@ -130,11 +170,18 @@ window.__TEST__ = {
         phase: enemy.phase || null,
       })),
       debug: scene.getDebugInfo(),
+      route: scene.spawner.getRouteState?.() || null,
+      hud: scene.hud.getState(),
+      shop: scene.shop.getState(),
     };
   },
   commands: {
     join(slotIndex) {
       activatePlayerSlot(slotIndex);
+    },
+    oneForAll() {
+      activateOneForAll();
+      return window.__TEST__.state();
     },
     fillSurge() {
       scene.hunters.fillSurge();
@@ -157,6 +204,13 @@ window.__TEST__ = {
       if (!enemy) return false;
       return enemy.takeDamage(amount);
     },
+    setPlayerPosition(playerIndex, x, y) {
+      const player = scene.hunters.players[playerIndex];
+      if (!player) return false;
+      player.position.x = x;
+      player.position.y = y;
+      return true;
+    },
     killAllEnemies() {
       let hit = false;
       for (const enemy of scene.spawner.getActiveEnemies()) {
@@ -171,8 +225,13 @@ window.__TEST__ = {
         scene.spawner._betweenWaveTimer = 0;
         scene.spawner._encounterDelay = 0;
         scene.spawner._zoneClearDelay = 0;
+        scene.spawner._routeGateTimer = 0;
+        if (scene.spawner.isRouteGateOpen?.()) scene.advanceZoneRoute(input);
       }
       return true;
+    },
+    advanceRoute() {
+      return scene.advanceZoneRoute(input);
     },
     forceZoneClear(zoneId) {
       const boss = scene.spawner?._lastDefeatedBoss || scene.spawner?._bossEncounter || null;
@@ -193,6 +252,62 @@ window.__TEST__ = {
       const player = scene.hunters.players[playerIndex];
       if (!player) return false;
       return scene.combat._castUltimate(player, scene.spawner.getActiveEnemies(), scene.spawner);
+    },
+    grantEssence(playerIndex, amount) {
+      RunState.addEssence(playerIndex, amount);
+      return RunState.players[playerIndex]?.essence || 0;
+    },
+    grantXP(playerIndex, amount) {
+      RunState.addXP(playerIndex, amount);
+      return {
+        level: RunState.players[playerIndex]?.level || 0,
+        pendingLevelUps: RunState.pendingLevelUps.length,
+      };
+    },
+    openShop(playerIndex = 0) {
+      scene.shop.open(playerIndex, Math.max(1, RunState.zonesCleared + 1));
+      return scene.shop.getState();
+    },
+    closeShop() {
+      scene.shop.close();
+      return scene.shop.getState();
+    },
+    purchaseShopItem(index = null) {
+      const result = scene.shop.purchaseSelected(index ?? scene.shop.selectedIndex);
+      if (result?.ok) scene.hunters.applyRunStateModifiers(RunState.players);
+      return {
+        ok: !!result?.ok,
+        reason: result?.reason || null,
+        shop: scene.shop.getState(),
+        player: RunState.players[scene.shop.playerIndex],
+      };
+    },
+    rerollShop() {
+      const result = scene.shop.reroll();
+      return {
+        ok: !!result?.ok,
+        reason: result?.reason || null,
+        shop: scene.shop.getState(),
+      };
+    },
+    forceWipeReset() {
+      const keptEssence = RunState.onRunWipe();
+      RunState.resetAfterWipe(keptEssence);
+      scene.hunters.syncAllFromRunState(RunState.players);
+      return window.__TEST__.state();
+    },
+    openNextCard() {
+      return scene._openNextCardScreen();
+    },
+    chooseLevelCard(cardId = null) {
+      if (!scene.hud.isCardOpen()) scene._openNextCardScreen();
+      return scene.chooseCurrentCard(cardId);
+    },
+    hudState() {
+      return scene.hud.getState();
+    },
+    shopState() {
+      return scene.shop.getState();
     },
   },
 };

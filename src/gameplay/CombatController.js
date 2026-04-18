@@ -88,6 +88,12 @@ export class CombatController {
     return this._hitstopTimer;
   }
 
+  /** Clears the active combo chain after the player takes damage. */
+  breakCombo() {
+    this._comboCount = 0;
+    this._comboTimer = 0;
+  }
+
   _handleInput(dt, input, player, enemies, spawner) {
     if (!input || !player) return;
 
@@ -97,6 +103,17 @@ export class CombatController {
       player.state === PlayerStates.HURT ||
       this._isCommittedCast(player.state)
     ) {
+      this._cancelSpecialInput(player);
+      return;
+    }
+
+    if (player.canJump?.() && input.consumeBuffered(Actions.JUMP, 15)) {
+      this._cancelSpecialInput(player);
+      player.transitionTo(PlayerStates.JUMP);
+      return;
+    }
+
+    if (player.isAirborne?.()) {
       this._cancelSpecialInput(player);
       return;
     }
@@ -341,8 +358,9 @@ export class CombatController {
 
       const enemyEvents = enemy.consumeEvents();
       const killed = !wasDead && enemy.isDead();
+      this._applyPlayerHitProgression(hitbox.owner, damage, hitbox.attackType);
       if (killed) {
-        hitbox.owner.resources.gainSurge(20);
+        hitbox.owner.resources.gainSurge(20 * this._surgeGainMult(hitbox.owner));
         RunState.grantKillRewards(
           hitbox.owner.playerIndex,
           enemy.getRewards?.(),
@@ -371,9 +389,11 @@ export class CombatController {
       const targetId = `player-${player.playerIndex}`;
       const hurtbox = player.getHurtbox();
       if (!hurtbox || hitbox.hasHit(targetId) || !hitbox.intersects(hurtbox)) continue;
+      if (hitbox.jumpable && player.isAirborne?.()) continue;
 
       hitbox.markHit(targetId);
       if (hitbox.applyHit(player, hitbox.owner)) {
+        this.breakCombo();
         RunState.recordDamageTaken(player.playerIndex, hitbox.damage);
         this.hitEvents.push({
           type: 'playerHit',
@@ -415,11 +435,12 @@ export class CombatController {
       attackType,
       ownerTag: HitboxOwners.PLAYER,
       statusType: null,
+      source: player,
     });
     const killed = !wasDead && enemy.isDead();
     RunState.recordDamageDealt(player.playerIndex, damage);
     if (killed) {
-      if (attackType !== 'ultimate') player.resources.gainSurge(20);
+      if (attackType !== 'ultimate') player.resources.gainSurge(20 * this._surgeGainMult(player));
       RunState.grantKillRewards(player.playerIndex, enemy.getRewards?.(), attackType, this._comboCount);
     }
     this.hitEvents.push({
@@ -624,6 +645,25 @@ export class CombatController {
 
   _startCooldown(player, spell) {
     this._spellCooldowns.set(this._cooldownKey(player, spell), spell.cooldown || 0);
+  }
+
+  _applyPlayerHitProgression(player, damage, attackType) {
+    if (attackType !== 'light') return;
+
+    const lifesteal = player?.hunterConfig?.modifiers?.lifesteal || 0;
+    if (lifesteal > 0) {
+      const heal = Math.floor(damage * lifesteal);
+      if (heal <= 0) return;
+
+      player.resources.health = Math.min(
+        player.resources.maxHealth,
+        player.resources.health + heal
+      );
+    }
+  }
+
+  _surgeGainMult(player) {
+    return player?.hunterConfig?.modifiers?.surgeGainMult || 1;
   }
 
   _advanceCooldowns(dt) {

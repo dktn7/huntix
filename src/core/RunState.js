@@ -1,3 +1,12 @@
+import {
+  MAX_LEVEL,
+  XP_THRESHOLDS,
+  createDefaultModifiers,
+  getCardChoices,
+  getShopItemById,
+  shouldQueueCardLevel,
+} from '../gameplay/ProgressionData.js';
+
 const HUNTER_BASE_STATS = {
   dabik: {
     hp: 900,
@@ -33,19 +42,6 @@ const HUNTER_BASE_STATS = {
   },
 };
 
-const XP_THRESHOLDS = {
-  2: 300,
-  3: 700,
-  4: 1300,
-  5: 2000,
-  6: 3000,
-  7: 4200,
-  8: 5600,
-  9: 7200,
-  10: 9000,
-};
-
-const MAX_LEVEL = 10;
 const ZONE_CLEAR_HP_RESTORE = 30;
 const WIPE_ESSENCE_KEEP_RATE = 0.5;
 
@@ -118,6 +114,10 @@ function createPlayer(config, playerIndex) {
     activeSlot: 0,
     essence: config.carryEssence || 0,
     shopBuysThisVisit: 0,
+    ownedCards: [],
+    activeShopItems: [],
+    modifiers: createDefaultModifiers(),
+    secondWindReady: false,
     stats: {
       kills: 0,
       damageDealt: 0,
@@ -129,6 +129,56 @@ function createPlayer(config, playerIndex) {
     isDown: false,
     downTimer: 0,
   };
+}
+
+function applyModifierDelta(player, delta = {}) {
+  const mods = player.modifiers || createDefaultModifiers();
+  player.modifiers = mods;
+
+  for (const [key, value] of Object.entries(delta)) {
+    if (key === 'secondWind') {
+      mods.secondWind = mods.secondWind || !!value;
+      player.secondWindReady = player.secondWindReady || !!value;
+    } else if (key === 'cosmeticAura') {
+      mods.cosmeticAura = value || mods.cosmeticAura;
+    } else if (typeof value === 'number') {
+      mods[key] = (mods[key] ?? 0) + value;
+    }
+  }
+}
+
+function applyEffect(player, effect = {}) {
+  if (effect.modifiers) applyModifierDelta(player, effect.modifiers);
+
+  if (effect.upgradePath) player.upgradePath = effect.upgradePath;
+  if (effect.minorMod) player.minorMod = effect.minorMod;
+  if (effect.advancedMod) player.advancedMod = effect.advancedMod;
+  if (effect.slot2WeaponId) player.slot2WeaponId = effect.slot2WeaponId;
+
+  if (effect.modifiers?.maxHpBonus) {
+    player.hpMax += effect.modifiers.maxHpBonus;
+  }
+  if (effect.modifiers?.maxManaBonus) {
+    player.manaMax += effect.modifiers.maxManaBonus;
+  }
+  if (effect.heal) {
+    player.hp = Math.min(player.hpMax, player.hp + effect.heal);
+  }
+  if (effect.mana) {
+    player.mana = Math.min(player.manaMax, player.mana + effect.mana);
+  }
+  if (effect.surge) {
+    player.surge = Math.min(100, player.surge + effect.surge);
+  }
+}
+
+function refreshQueuedCardChoices(playerIndex) {
+  const player = getPlayer(playerIndex);
+  for (const entry of RunState.pendingLevelUps) {
+    if (entry.playerIndex === playerIndex) {
+      entry.choices = getCardChoices(player, entry.level);
+    }
+  }
 }
 
 export const RunState = {
@@ -143,6 +193,7 @@ export const RunState = {
   runWiped: false,
   pendingCardPick: false,
   cardLevel: null,
+  pendingLevelUps: [],
   activeBossId: null,
   activeBossName: null,
   activeBossHp: 0,
@@ -166,6 +217,7 @@ export const RunState = {
     this.runWiped = false;
     this.pendingCardPick = false;
     this.cardLevel = null;
+    this.pendingLevelUps = [];
     this.activeBossId = null;
     this.activeBossName = null;
     this.activeBossHp = 0;
@@ -190,15 +242,18 @@ export const RunState = {
     const player = getPlayer(playerIndex);
     player.xp += amount;
 
-    const nextLevel = player.level + 1;
-    if (nextLevel <= MAX_LEVEL && player.xp >= XP_THRESHOLDS[nextLevel]) {
+    let nextLevel = player.level + 1;
+    while (nextLevel <= MAX_LEVEL && player.xp >= XP_THRESHOLDS[nextLevel]) {
       this.levelUp(playerIndex);
+      nextLevel = player.level + 1;
     }
   },
 
   addEssence(playerIndex, amount) {
     const player = getPlayer(playerIndex);
-    player.essence += amount;
+    const mult = amount > 0 ? player.modifiers?.essenceGainMult || 1 : 1;
+    const delta = amount > 0 ? Math.round(amount * mult) : amount;
+    player.essence = Math.max(0, player.essence + delta);
     this.emit('essenceChanged', { playerIndex, essence: player.essence });
   },
 
@@ -277,6 +332,7 @@ export const RunState = {
     this.runWiped = false;
     this.pendingCardPick = false;
     this.cardLevel = null;
+    this.pendingLevelUps = [];
     this.activeBossId = null;
     this.activeBossName = null;
     this.activeBossHp = 0;
@@ -295,6 +351,7 @@ export const RunState = {
       const player = this.players[i];
       player.hp = Math.min(player.hp + ZONE_CLEAR_HP_RESTORE, player.hpMax);
       player.shopBuysThisVisit = 0;
+      player.secondWindReady = !!player.modifiers?.secondWind;
     }
     this.currentZone = 'hub';
     this.currentZoneLabel = 'Hub';
@@ -326,6 +383,7 @@ export const RunState = {
       player.isDown = false;
       player.downTimer = 0;
       player.shopBuysThisVisit = 0;
+      player.secondWindReady = !!player.modifiers?.secondWind;
     }
     this.emit('zoneEntry', { zoneId });
   },
@@ -352,6 +410,68 @@ export const RunState = {
     this.activeBossPhase = 0;
   },
 
+  queueLevelUp(playerIndex, level) {
+    const player = getPlayer(playerIndex);
+    const choices = getCardChoices(player, level);
+    if (!choices.length) return null;
+
+    const entry = {
+      playerIndex,
+      level,
+      choices,
+    };
+    this.pendingLevelUps.push(entry);
+    this.pendingCardPick = true;
+    this.cardLevel = this.pendingLevelUps[0]?.level || level;
+    this.emit('levelupQueued', entry);
+    return entry;
+  },
+
+  applyCardChoice(playerIndex, cardId) {
+    const pendingIndex = this.pendingLevelUps.findIndex(entry => entry.playerIndex === playerIndex);
+    if (pendingIndex === -1) return false;
+
+    const pending = this.pendingLevelUps[pendingIndex];
+    const card = pending.choices.find(choice => choice.id === cardId) || pending.choices[0];
+    if (!card) return false;
+
+    const player = getPlayer(playerIndex);
+    if (!player.ownedCards.includes(card.id)) player.ownedCards.push(card.id);
+    applyEffect(player, card.effect);
+
+    this.pendingLevelUps.splice(pendingIndex, 1);
+    refreshQueuedCardChoices(playerIndex);
+    this.pendingCardPick = this.pendingLevelUps.length > 0;
+    this.cardLevel = this.pendingLevelUps[0]?.level || null;
+    this.emit('cardApplied', { playerIndex, card, player });
+    return true;
+  },
+
+  applyShopItem(playerIndex, itemId, { free = false } = {}) {
+    const item = getShopItemById(itemId);
+    if (!item) return { ok: false, reason: 'unknown-item' };
+
+    const player = getPlayer(playerIndex);
+    const paid = !free && !item.cosmetic;
+    if (paid && player.shopBuysThisVisit >= 2) return { ok: false, reason: 'purchase-limit' };
+    if (paid && player.essence < item.cost) return { ok: false, reason: 'insufficient-essence' };
+    if (!item.consumable && player.activeShopItems.includes(item.id)) {
+      return { ok: false, reason: 'already-owned' };
+    }
+
+    if (paid) {
+      player.essence -= item.cost;
+      player.shopBuysThisVisit += 1;
+    }
+    if (!item.consumable && !player.activeShopItems.includes(item.id)) {
+      player.activeShopItems.push(item.id);
+    }
+    applyEffect(player, item.effect);
+    this.emit('shopItemApplied', { playerIndex, item, player });
+    this.emit('essenceChanged', { playerIndex, essence: player.essence });
+    return { ok: true, item, player };
+  },
+
   levelUp(playerIndex) {
     const player = getPlayer(playerIndex);
     if (player.level >= MAX_LEVEL) return;
@@ -364,8 +484,9 @@ export const RunState = {
       player.ultimateSpellId = HUNTER_BASE_STATS[player.hunterId].ultimateSpell;
     }
 
-    this.pendingCardPick = true;
-    this.cardLevel = player.level;
+    if (shouldQueueCardLevel(player.level)) {
+      this.queueLevelUp(playerIndex, player.level);
+    }
     this.emit('levelup', { playerIndex, level: player.level });
   },
 

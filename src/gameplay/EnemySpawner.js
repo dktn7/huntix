@@ -3,6 +3,7 @@ import { EnemyAI, EnemyTypes } from './EnemyAI.js';
 import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { BossEncounter } from './BossEncounter.js';
 import { ZONE_CONFIGS } from './ZoneManager.js';
+import { pointInsideVisibleArena } from './ArenaBounds.js';
 
 const MAX_ENEMIES = 20;
 const ENEMY_CAPACITY = 20;
@@ -19,6 +20,12 @@ const HP_MULTIPLIERS = {
 const DEFAULT_WAVE_DELAY = 1.4;
 const DEFAULT_ZONE_CLEAR_DELAY = 1.2;
 const DEFAULT_ENCOUNTER_DELAY = 0.6;
+const ATTACK_TOKENS_BY_PLAYER_COUNT = {
+  1: 2,
+  2: 3,
+  3: 4,
+  4: 5,
+};
 
 function cloneComposition(base = {}, extraGrunts = 0) {
   return {
@@ -43,6 +50,11 @@ export class EnemySpawner {
     this._betweenWaveTimer = 0;
     this._pendingNextWave = false;
     this._waveClearEmitted = false;
+    this._areaIndex = 0;
+    this._routeGateOpen = false;
+    this._routeGateKind = null;
+    this._routeGateTimer = 0;
+    this._routeGateEmitted = false;
     this._zoneConfig = null;
     this._zoneState = 'idle';
     this._encounterDelay = 0;
@@ -52,6 +64,11 @@ export class EnemySpawner {
     this._lastDefeatedBoss = null;
     this._bossSpawnEmitted = false;
     this._zoneClearEmitted = false;
+    this._attackTokens = new Set();
+    this._aiContext = {
+      requestAttackToken: enemy => this._requestAttackToken(enemy),
+      releaseAttackToken: enemy => this._releaseAttackToken(enemy),
+    };
 
     this._matrix = new THREE.Matrix4();
     this._position = new THREE.Vector3();
@@ -103,6 +120,11 @@ export class EnemySpawner {
     this._zoneClearEmitted = false;
     this._bossSpawnEmitted = false;
     this._minibossDone = !zoneConfig?.miniboss;
+    this._areaIndex = 0;
+    this._routeGateOpen = false;
+    this._routeGateKind = null;
+    this._routeGateTimer = 0;
+    this._routeGateEmitted = false;
     this._bossEncounter = null;
     this._lastDefeatedBoss = null;
     this._encounterDelay = 0;
@@ -137,7 +159,7 @@ export class EnemySpawner {
     const targets = this._decoys.length > 0 ? players.concat(this._decoys) : players;
 
     for (const enemy of this._enemies) {
-      const events = enemy.update(dt, targets);
+      const events = enemy.update(dt, targets, this._aiContext);
       this._handleEnemyEvents(events);
     }
 
@@ -195,6 +217,55 @@ export class EnemySpawner {
     return this._enemies.every(enemy => enemy.isDead());
   }
 
+  /** Returns true while the in-zone route gate is waiting for players to advance. */
+  isRouteGateOpen() {
+    return this._routeGateOpen;
+  }
+
+  /** Returns compact route progress for HUD, tests, and debug overlays. */
+  getRouteState() {
+    return {
+      areaIndex: this._areaIndex,
+      gateOpen: this._routeGateOpen,
+      gateKind: this._routeGateKind,
+      waveIndex: this._waveIndex,
+      zoneState: this._zoneState,
+    };
+  }
+
+  /** Advances through an opened route gate into the next combat area or boss arena. */
+  advanceRoute() {
+    if (!this._routeGateOpen || !this._zoneConfig) return false;
+
+    const gateKind = this._routeGateKind;
+    this._routeGateOpen = false;
+    this._routeGateKind = null;
+    this._routeGateTimer = 0;
+    this._routeGateEmitted = false;
+    this._areaIndex += 1;
+
+    if (gateKind === 'wave') {
+      this._pendingNextWave = false;
+      this._spawnNextWave();
+      return true;
+    }
+
+    if (gateKind === 'boss') {
+      if (!this._minibossDone && this._zoneConfig.miniboss) {
+        this._spawnBossEncounter(this._zoneConfig.miniboss, 'miniboss');
+        this._minibossDone = true;
+        this._zoneState = 'miniboss';
+      } else if (!this._bossEncounter && this._zoneConfig.boss) {
+        this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
+        this._bossSpawnEmitted = true;
+        this._zoneState = 'boss';
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   /** Removes dead enemies after their brief death cleanup delay. */
   clearDead() {
     this._enemies = this._enemies.filter(enemy => !enemy.canRemove());
@@ -247,7 +318,7 @@ export class EnemySpawner {
       if (event.type === 'bossDefeated') {
         if (event.kind === 'miniboss') {
           this._zoneState = 'miniboss';
-          this._encounterDelay = DEFAULT_ENCOUNTER_DELAY;
+          this._openRouteGate('boss', DEFAULT_ENCOUNTER_DELAY);
           this._lastDefeatedBoss = event.boss;
           this._events.push({ type: 'minibossDefeated', boss: event.boss, zoneId: this._zoneConfig?.id });
         } else {
@@ -334,7 +405,8 @@ export class EnemySpawner {
       if (this.isCurrentWaveCleared() && !this._waveClearEmitted) {
         this._waveClearEmitted = true;
         this._pendingNextWave = this._waveIndex < this._zoneConfig.waves.length - 1;
-        this._betweenWaveTimer = this._pendingNextWave ? DEFAULT_WAVE_DELAY : 0;
+        this._betweenWaveTimer = this._pendingNextWave ? DEFAULT_WAVE_DELAY : DEFAULT_ENCOUNTER_DELAY;
+        this._openRouteGate(this._pendingNextWave ? 'wave' : 'boss', this._betweenWaveTimer);
         this._events.push({
           type: 'waveClear',
           wave: this._waveIndex + 1,
@@ -343,37 +415,13 @@ export class EnemySpawner {
         });
       }
 
-      if (this._pendingNextWave) {
-        this._betweenWaveTimer = Math.max(0, this._betweenWaveTimer - dt);
-        if (this._betweenWaveTimer <= 0) {
-          this._pendingNextWave = false;
-          this._spawnNextWave();
-        }
-      } else if (this._waveClearEmitted && !this._pendingNextWave) {
-        this._encounterDelay = Math.max(0, this._encounterDelay - dt);
-        if (this._encounterDelay <= 0) {
-          if (!this._minibossDone && this._zoneConfig.miniboss) {
-            this._spawnBossEncounter(this._zoneConfig.miniboss, 'miniboss');
-            this._minibossDone = true;
-            this._zoneState = 'miniboss';
-          } else if (!this._bossEncounter && this._zoneConfig.boss) {
-            this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
-            this._bossSpawnEmitted = true;
-            this._zoneState = 'boss';
-          }
-        }
-      }
+      this._updateRouteGate(dt);
       return;
     }
 
     if (this._zoneState === 'miniboss') {
       if (!this._bossEncounter) {
-        this._encounterDelay = Math.max(0, this._encounterDelay - dt);
-        if (this._encounterDelay <= 0 && this._zoneConfig.boss) {
-          this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
-          this._bossSpawnEmitted = true;
-          this._zoneState = 'boss';
-        }
+        this._updateRouteGate(dt);
       }
       return;
     }
@@ -390,6 +438,7 @@ export class EnemySpawner {
   _spawnBossEncounter(config, kind = 'boss') {
     const encounter = new BossEncounter(this.scene, {
       ...config,
+      kind,
       zoneId: this._zoneConfig?.id || config.zoneId || kind,
     }, this.playerCount);
     this._bossEncounter = encounter;
@@ -399,6 +448,29 @@ export class EnemySpawner {
       zoneId: this._zoneConfig?.id,
     });
     this._encounterDelay = kind === 'miniboss' ? DEFAULT_ENCOUNTER_DELAY : 0;
+  }
+
+  _openRouteGate(kind, delay = DEFAULT_WAVE_DELAY) {
+    this._routeGateKind = kind;
+    this._routeGateTimer = Math.max(0, delay);
+    this._routeGateOpen = false;
+    this._routeGateEmitted = false;
+  }
+
+  _updateRouteGate(dt) {
+    if (!this._routeGateKind || this._routeGateOpen) return;
+
+    this._routeGateTimer = Math.max(0, this._routeGateTimer - dt);
+    if (this._routeGateTimer > 0 || this._routeGateEmitted) return;
+
+    this._routeGateOpen = true;
+    this._routeGateEmitted = true;
+    this._events.push({
+      type: 'routeGateOpen',
+      gateKind: this._routeGateKind,
+      nextArea: this._areaIndex + 2,
+      zoneId: this._zoneConfig?.id,
+    });
   }
 
   _spawnNextWave() {
@@ -433,6 +505,10 @@ export class EnemySpawner {
     this._betweenWaveTimer = 0;
     this._pendingNextWave = false;
     this._waveClearEmitted = false;
+    this._routeGateOpen = false;
+    this._routeGateKind = null;
+    this._routeGateTimer = 0;
+    this._routeGateEmitted = false;
     this._encounterDelay = 0;
   }
 

@@ -31,6 +31,7 @@ export class Hitbox {
     attackId = 0,
     attackType = '',
     statusType = null,
+    jumpable = false,
   } = {}) {
     this.shape = shape;
     this.x = x;
@@ -52,6 +53,7 @@ export class Hitbox {
     this.attackId = attackId;
     this.attackType = attackType;
     this.statusType = statusType;
+    this.jumpable = jumpable;
     this._hitIds = new Set();
   }
 
@@ -95,6 +97,7 @@ export class Hitbox {
       attackId: this.attackId,
       ownerTag: this.ownerTag,
       statusType: this.statusType,
+      source,
       ...hitMeta,
     });
     return true;
@@ -123,6 +126,7 @@ export class Hitbox {
       attackId: this.attackId,
       attackType: this.attackType,
       statusType: this.statusType,
+      jumpable: this.jumpable,
     });
   }
 

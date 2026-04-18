@@ -45,6 +45,10 @@ function nearestPlayer(players, origin) {
   return best;
 }
 
+function livingPlayers(players) {
+  return players.filter(player => player && player.state !== 'DEAD' && player.state !== 'DOWNED');
+}
+
 export class BossEncounter {
   constructor(scene, config, playerCount = 1) {
     this.scene = scene;
@@ -83,8 +87,10 @@ export class BossEncounter {
     this._speed = config.speed || 0.85;
     this._moveRange = config.moveRange || 0.22;
     this._attackCursor = 0;
+    this._targetCursor = 0;
     this._phaseAnnounced = 1;
     this._bossDefeatedEmitted = false;
+    this._scriptedMoments = new Set();
 
     const width = config.width || 3.0;
     const height = config.height || 3.2;
@@ -100,6 +106,7 @@ export class BossEncounter {
     scene.add(this.mesh);
 
     this._baseScale = { x: width, y: height };
+    this._stateTimer = this._nextIdleDelay();
   }
 
   setPlayerCount(playerCount) {
@@ -138,7 +145,7 @@ export class BossEncounter {
       return this.consumeEvents();
     }
 
-    const target = nearestPlayer(players, this.position);
+    const target = this._selectTarget(players);
     if (target) {
       const dx = target.position.x - this.position.x;
       const dy = target.position.y - this.position.y;
@@ -159,7 +166,7 @@ export class BossEncounter {
       this.state = 'IDLE';
       this._stateTimer = Math.max(0, this._stateTimer - dt);
       if (this._stateTimer <= 0) {
-        this._beginAttack();
+        this._beginAttack(target);
       }
     } else if (this._state === 'telegraph') {
       this.state = 'TELEGRAPH';
@@ -174,7 +181,7 @@ export class BossEncounter {
       this._recoverTimer = Math.max(0, this._recoverTimer - dt);
       if (this._recoverTimer <= 0) {
         this._state = 'idle';
-        this._stateTimer = 0.9;
+        this._stateTimer = this._nextIdleDelay();
       }
     }
 
@@ -227,6 +234,7 @@ export class BossEncounter {
 
   getHurtbox() {
     if (this.hp <= 0) return null;
+    if (this._isTombCrawler() && this._state === 'idle') return null;
     return this.getBodyBounds();
   }
 
@@ -248,10 +256,11 @@ export class BossEncounter {
     return events;
   }
 
-  _beginAttack() {
+  _beginAttack(target = null) {
     const attacks = this._patterns[this.phase] || this._patterns[1] || DEFAULT_PATTERNS[1];
-    this._currentAttack = attacks[this._attackCursor % attacks.length] || attacks[0];
-    this._attackCursor += 1;
+    this._currentAttack = this._scriptedAttackForCurrentHp() || attacks[this._attackCursor % attacks.length] || attacks[0];
+    if (!this._currentAttack.scripted) this._attackCursor += 1;
+    if (this._isTombCrawler()) this._prepareTombCrawlerAttack(this._currentAttack, target);
     this._state = 'telegraph';
     this.state = 'TELEGRAPH';
     this.isTelegraphing = true;
@@ -269,6 +278,7 @@ export class BossEncounter {
 
   _fireAttack(target, players) {
     const attack = this._currentAttack || {};
+    const targets = livingPlayers(players);
     const eventBase = {
       boss: this,
       bossId: this.config.id || this.name,
@@ -278,7 +288,158 @@ export class BossEncounter {
       attack: attack.key || attack.kind || 'attack',
     };
 
-    if (attack.kind === 'arc') {
+    if (attack.kind === 'blink' && target) {
+      const side = target.position.x >= this.position.x ? -1 : 1;
+      this.position.x = target.position.x + side * (attack.blinkOffset || 1.15);
+      this.position.y = target.position.y + 0.1;
+      this.facing = side > 0 ? -1 : 1;
+      this._events.push({
+        type: 'hitbox',
+        hitbox: new Hitbox({
+          shape: HitboxShapes.ARC,
+          centerX: this.position.x,
+          centerY: this.position.y,
+          radius: attack.radius || 2.0,
+          facing: this.facing,
+          arcCos: attack.arcCos ?? -0.2,
+          damage: attack.damage || 42,
+          knockbackX: this.facing * (attack.knockbackX || 2.8),
+          knockbackY: attack.knockbackY || 0.45,
+          owner: this,
+          ownerTag: HitboxOwners.ENEMY,
+          targetTag: HitboxOwners.PLAYER,
+          lifetime: 0.16,
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
+        }),
+      });
+    } else if (attack.kind === 'emerge-bite') {
+      const length = attack.length || 2.0;
+      const height = attack.height || 1.1;
+      const x = this.facing > 0 ? this.position.x : this.position.x - length;
+      this._events.push({
+        type: 'hitbox',
+        hitbox: new Hitbox({
+          x,
+          y: this.position.y - height / 2,
+          width: length,
+          height,
+          damage: attack.damage || 35,
+          knockbackX: this.facing * (attack.knockbackX || 2.5),
+          knockbackY: attack.knockbackY || 0.45,
+          owner: this,
+          ownerTag: HitboxOwners.ENEMY,
+          targetTag: HitboxOwners.PLAYER,
+          lifetime: attack.lifetime || 0.3,
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
+        }),
+      });
+    } else if (attack.kind === 'pool') {
+      const count = Math.max(1, attack.count || (this.playerCount >= 4 ? 3 : 2));
+      for (let i = 0; i < count; i += 1) {
+        const player = targets[i % Math.max(1, targets.length)] || target;
+        const x = (player?.position.x ?? this.position.x) + (i - 1) * 1.2;
+        const y = (player?.position.y ?? this.position.y) + 0.45;
+        const radius = attack.radius || 1.5;
+        this._events.push({
+          type: 'hitbox',
+          hitbox: new Hitbox({
+            x: x - radius / 2,
+            y: y - radius / 2,
+            width: radius,
+            height: radius,
+            damage: attack.damage || 36,
+            knockbackX: (i % 2 === 0 ? -1 : 1) * (attack.knockbackX || 1.4),
+            knockbackY: attack.knockbackY || 0.45,
+            owner: this,
+            ownerTag: HitboxOwners.ENEMY,
+            targetTag: HitboxOwners.PLAYER,
+            lifetime: attack.lifetime || 0.75,
+            attackType: attack.attackType || 'floor',
+            statusType: attack.statusType || null,
+            jumpable: attack.jumpable ?? true,
+          }),
+        });
+      }
+    } else if (attack.kind === 'wall') {
+      const width = attack.width || 1.2;
+      const height = attack.height || 6.0;
+      const x = this.position.x + this.facing * (attack.offset || 1.5) - width / 2;
+      this._events.push({
+        type: 'hitbox',
+        hitbox: new Hitbox({
+          x,
+          y: -3.9,
+          width,
+          height,
+          damage: attack.damage || 42,
+          knockbackX: this.facing * (attack.knockbackX || 3.0),
+          knockbackY: attack.knockbackY || 0.35,
+          owner: this,
+          ownerTag: HitboxOwners.ENEMY,
+          targetTag: HitboxOwners.PLAYER,
+          lifetime: attack.lifetime || 0.45,
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
+        }),
+      });
+    } else if (attack.kind === 'chain') {
+      const maxTargets = Math.min(targets.length, attack.targets || this.playerCount || 1);
+      for (let i = 0; i < maxTargets; i += 1) {
+        const player = targets[i];
+        if (!player) continue;
+        const radius = attack.radius || 1.8;
+        this._events.push({
+          type: 'hitbox',
+          hitbox: new Hitbox({
+            x: player.position.x - radius / 2,
+            y: player.position.y - radius / 2,
+            width: radius,
+            height: radius,
+            damage: attack.damage || 58,
+            knockbackX: (player.position.x >= this.position.x ? 1 : -1) * (attack.knockbackX || 2.1),
+            knockbackY: attack.knockbackY || 0.6,
+            owner: this,
+            ownerTag: HitboxOwners.ENEMY,
+            targetTag: HitboxOwners.PLAYER,
+            lifetime: 0.25,
+            attackType: attack.attackType || 'spell',
+            statusType: attack.statusType || null,
+            jumpable: !!attack.jumpable,
+          }),
+        });
+      }
+    } else if (attack.kind === 'storm') {
+      const count = Math.max(2, attack.count || 3);
+      for (let i = 0; i < count; i += 1) {
+        const player = targets[i % Math.max(1, targets.length)] || target;
+        const x = (player?.position.x ?? this.position.x) + (i - 1) * 1.5;
+        const radius = attack.radius || 1.6;
+        this._events.push({
+          type: 'hitbox',
+          hitbox: new Hitbox({
+            x: x - radius / 2,
+            y: (player?.position.y ?? -2.2) - 0.2,
+            width: radius,
+            height: radius,
+            damage: attack.damage || 44,
+            knockbackX: (i % 2 === 0 ? -1 : 1) * (attack.knockbackX || 1.8),
+            knockbackY: attack.knockbackY || 0.6,
+            owner: this,
+            ownerTag: HitboxOwners.ENEMY,
+            targetTag: HitboxOwners.PLAYER,
+            lifetime: attack.lifetime || 0.8,
+            attackType: attack.attackType || 'floor',
+            statusType: attack.statusType || null,
+            jumpable: attack.jumpable ?? true,
+          }),
+        });
+      }
+    } else if (attack.kind === 'arc') {
       this._events.push({
         type: 'hitbox',
         hitbox: new Hitbox({
@@ -295,7 +456,9 @@ export class BossEncounter {
           ownerTag: HitboxOwners.ENEMY,
           targetTag: HitboxOwners.PLAYER,
           lifetime: 0.18,
-          attackType: 'heavy',
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
         }),
       });
     } else if (attack.kind === 'dash') {
@@ -313,10 +476,38 @@ export class BossEncounter {
           owner: this,
           ownerTag: HitboxOwners.ENEMY,
           targetTag: HitboxOwners.PLAYER,
-          lifetime: 0.12,
-          attackType: 'heavy',
+          lifetime: attack.lifetime || 0.12,
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
         }),
       });
+      if (attack.trail) {
+        const trailLength = attack.trailLength || Math.max(8, attack.width || 2.2);
+        const trailHeight = attack.trailWidth || 1.0;
+        this._events.push({
+          type: 'hitbox',
+          hitbox: new Hitbox({
+            x: this.position.x - trailLength / 2,
+            y: this.position.y - trailHeight / 2,
+            width: trailLength,
+            height: trailHeight,
+            damage: attack.trailDamage || 4,
+            knockbackX: 0,
+            knockbackY: 0.25,
+            owner: this,
+            ownerTag: HitboxOwners.ENEMY,
+            targetTag: HitboxOwners.PLAYER,
+            lifetime: attack.trailLifetime || 4,
+            attackType: attack.trailAttackType || 'floor',
+            statusType: attack.statusType || null,
+            jumpable: true,
+          }),
+        });
+      }
+      if (attack.travel) {
+        this.position.x = clamp(this.position.x + this.facing * attack.travel, -12, 12);
+      }
     } else if (attack.kind === 'line') {
       this._events.push({
         type: 'hitbox',
@@ -331,19 +522,24 @@ export class BossEncounter {
           owner: this,
           ownerTag: HitboxOwners.ENEMY,
           targetTag: HitboxOwners.PLAYER,
-          lifetime: 0.15,
-          attackType: 'spell',
+          lifetime: attack.lifetime || 0.15,
+          attackType: attack.attackType || 'spell',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
         }),
       });
     } else if (attack.kind === 'multi') {
       const radius = attack.radius || 2.8;
-      const offsets = [-1, 1];
-      for (const off of offsets) {
+      const count = Math.max(2, attack.count || 2);
+      const baseX = target?.position.x ?? this.position.x;
+      const baseY = target?.position.y ?? this.position.y;
+      for (let i = 0; i < count; i += 1) {
+        const off = i - (count - 1) / 2;
         this._events.push({
           type: 'hitbox',
           hitbox: new Hitbox({
-            x: this.position.x + off * radius * 0.55 - radius / 2,
-            y: this.position.y - radius / 2,
+            x: baseX + off * radius * 0.95 - radius / 2,
+            y: baseY - radius / 2,
             width: radius,
             height: radius,
             damage: attack.damage || 60,
@@ -352,8 +548,10 @@ export class BossEncounter {
             owner: this,
             ownerTag: HitboxOwners.ENEMY,
             targetTag: HitboxOwners.PLAYER,
-            lifetime: 0.2,
-            attackType: 'ultimate',
+            lifetime: attack.lifetime || 0.2,
+            attackType: attack.attackType || 'ultimate',
+            statusType: attack.statusType || null,
+            jumpable: !!attack.jumpable,
           }),
         });
       }
@@ -372,13 +570,22 @@ export class BossEncounter {
           owner: this,
           ownerTag: HitboxOwners.ENEMY,
           targetTag: HitboxOwners.PLAYER,
-          lifetime: 0.16,
-          attackType: 'heavy',
+          lifetime: attack.lifetime || 0.16,
+          attackType: attack.attackType || 'heavy',
+          statusType: attack.statusType || null,
+          jumpable: !!attack.jumpable,
         }),
       });
     }
 
-    if (this._phaseAdds[this.phase]) {
+    if (attack.adds) {
+      this._events.push({
+        type: 'spawnAdds',
+        boss: this,
+        composition: attack.adds,
+        zoneId: this.zoneId,
+      });
+    } else if (this._phaseAdds[this.phase]) {
       this._events.push({
         type: 'spawnAdds',
         boss: this,
@@ -392,6 +599,80 @@ export class BossEncounter {
     this.isTelegraphing = false;
     this._recoverTimer = attack.recover || 0.5;
     this._events.push({ type: 'bossAttack', ...eventBase });
+  }
+
+  _isTombCrawler() {
+    return this.config.id === 'tomb-crawler';
+  }
+
+  _nextIdleDelay() {
+    if (!this._isTombCrawler()) return 0.9;
+    return this.phase >= 2 ? 1.0 : 1.5;
+  }
+
+  _scriptedAttackForCurrentHp() {
+    if (this.phase < 2 || this.hpMax <= 0) return null;
+
+    const ratio = this.hp / this.hpMax;
+    if (this.config.id === 'stampede' && ratio <= 0.45 && !this._scriptedMoments.has('wall-break')) {
+      this._scriptedMoments.add('wall-break');
+      return {
+        key: 'wall-break',
+        kind: 'dash',
+        scripted: true,
+        telegraph: 1.0,
+        recover: 1.0,
+        damage: 35,
+        width: 42,
+        height: 1.4,
+        lifetime: 0.5,
+        knockbackX: 4.5,
+        knockbackY: 0.45,
+        travel: 18,
+      };
+    }
+
+    if (this.config.id === 'tomb-crawler' && ratio <= 0.3 && !this._scriptedMoments.has('full-surface')) {
+      this._scriptedMoments.add('full-surface');
+      return {
+        key: 'full-surface',
+        kind: 'line',
+        scripted: true,
+        telegraph: 1.5,
+        recover: 1.0,
+        damage: 40,
+        width: 17,
+        height: 1.5,
+        lifetime: 0.45,
+        attackType: 'floor',
+        jumpable: true,
+      };
+    }
+
+    return null;
+  }
+
+  _prepareTombCrawlerAttack(attack, target) {
+    if (!target) return;
+
+    if (attack.key === 'tail-whip') {
+      this.position.x = target.position.x >= 0 ? 10.8 : -10.8;
+      this.position.y = clamp(target.position.y, -4.0, 2.8);
+      this.facing = this.position.x >= target.position.x ? -1 : 1;
+      return;
+    }
+
+    if (attack.key === 'full-surface') {
+      this.position.x = 0;
+      this.position.y = clamp(target.position.y, -3.4, 2.4);
+      this.facing = target.position.x >= 0 ? -1 : 1;
+      return;
+    }
+
+    const side = target.position.x >= 0 ? -1 : 1;
+    this.position.x = clamp(target.position.x + side * 1.1, -10.8, 10.8);
+    this.position.y = clamp(target.position.y, -4.0, 2.8);
+    this.facing = side < 0 ? 1 : -1;
   }
 
   _checkPhaseTransitions() {
@@ -430,7 +711,20 @@ export class BossEncounter {
     }
   }
 
+  _selectTarget(players) {
+    const candidates = livingPlayers(players);
+    if (!candidates.length) return null;
+
+    if (this.phase === 2 && candidates.length > 1) {
+      this._targetCursor = (this._targetCursor + 1) % candidates.length;
+      return candidates[this._targetCursor];
+    }
+
+    return nearestPlayer(candidates, this.position);
+  }
+
   _syncMesh() {
+    this.mesh.visible = this.hp <= 0 || !(this._isTombCrawler() && this._state === 'idle');
     this.mesh.position.set(this.position.x, this.position.y, -this.position.y * 0.01 + 0.3);
     const phaseScale = this.phase === 1 ? 1 : this.phase === 2 ? 1.08 : 1.16;
     const flash = this._phaseFlash > 0 ? 1.08 : 1;

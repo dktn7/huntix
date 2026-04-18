@@ -5,6 +5,7 @@ const STATE_MAP = {
   [PlayerStates.MOVE]: { name: 'run', loop: true },
   [PlayerStates.ATTACK_LIGHT]: { name: 'attack_light_1', loop: false },
   [PlayerStates.ATTACK_HEAVY]: { name: 'attack_heavy', loop: false },
+  [PlayerStates.JUMP]: { name: 'jump', loop: false },
   [PlayerStates.DODGE]: { name: 'dodge', loop: false },
   [PlayerStates.SPELL_MINOR]: { name: 'spell_minor', loop: false },
   [PlayerStates.SPELL_ADVANCED]: { name: 'spell_advanced', loop: false },
