@@ -66,7 +66,7 @@ Four S-Rank hunters. Different worlds. One purpose — when the gates open, they
 | *"The gate burns."* | *"Silence is the last thing you hear."* | *"I don't dodge."* | *"You blinked."* |
 | Flame · Burn | Shadow · Bleed | Thunder/Earth · Stun | Lightning · Slow |
 | HP 90 · Mana 130 | HP 80 · Mana 120 | HP 160 · Mana 70 | HP 100 · Mana 100 |
-| Wrist Crystal Focus | Twin Curved Daggers | Stone Gauntlets | Twin Electro-Blades |
+| Wrist Crystal Focus | Twin Curved Daggers | Stone Gauntlets | Lightning Rapier |
 | [→ Full Sheet](docs/hunters/VESOL.md) | [→ Full Sheet](docs/hunters/DABIK.md) | [→ Full Sheet](docs/hunters/BENZU.md) | [→ Full Sheet](docs/hunters/SEREISA.md) |
 
 ### Hunter Stats At A Glance
@@ -301,17 +301,17 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 > **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Started: 13 Apr 2026 · 18 days to ship  
 > Legend: ✅ Complete · 🔄 In Progress · ⬜ Locked  
-> Auto-updated by GitHub Actions on every push to `src/`
+> Updated for current repo phase state
 
 <!-- PHASE-TABLE-START -->
 | Phase | Dates | Focus | Progress | Milestone |
 |-------|-------|-------|----------|-----------|
 | ✅ **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
-| ✅ **2 — Enemy AI & Juice** | Apr 18–20 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
-| 🔄 **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 25%` | 4P hub + combat |
-| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `██░░░ 40%` | Full run clearable |
-| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `██░░░ 40%` | Buy + upgrade loop |
-| ⬜ **6 — Polish & Deploy** | Apr 30 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `██░░░ 33%` | 🚢 Ship it |
+| ✅ **2 — Enemy AI & Juice** | Apr 16–17 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
+| ✅ **3 — 4 Hunters & Co-op** | Apr 17–18 | All 4 hunters, 1–4P input, AI companions | `█████ 100%` | 4P hub + combat |
+| ✅ **4 — Zones & Bosses** | Apr 18 | 4 zones, portals, boss phases, Essence drops, screen transitions | `█████ 100%` | Full run clearable |
+| ✅ **5 — Hub, Shop & HUD** | Apr 18 | Shop, weapons, levelling, HUD, combo UI | `█████ 100%` | Buy + upgrade loop |
+| 🔄 **6 — Polish & Deploy** | Apr 18 – May 1 | Title screen, hunter select, audio, onboarding, 60fps target, deploy | `██░░░ 35%` | 🚢 Ship it |
 <!-- PHASE-TABLE-END -->
 
 ---
@@ -427,6 +427,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 | [`docs/HUD.md`](docs/HUD.md) | HUD layout and UI flow |
 | [`docs/HUB.md`](docs/HUB.md) | Hunter Hub — shop, upgrades, zone select |
 | [`docs/TITLESCREEN.md`](docs/TITLESCREEN.md) | Title screen spec |
+| [`docs/TITLESCREEN-DESIGN.md`](docs/TITLESCREEN-DESIGN.md) | Canonical visual, font, FX, audio, and Hunter Select design spec |
 | [`docs/CARDSCREEN.md`](docs/CARDSCREEN.md) | Card select screen |
 | [`docs/PAUSEMENU.md`](docs/PAUSEMENU.md) | Pause menu spec |
 | [`docs/ENDSCREEN.md`](docs/ENDSCREEN.md) | End screen flow |
