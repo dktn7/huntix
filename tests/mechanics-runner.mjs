@@ -163,6 +163,44 @@ try {
   await page.evaluate(() => window.__TEST__.commands.enterZone('city-breach'));
   await page.waitForFunction(() => window.__TEST__.state().run.currentZone === 'city-breach');
   await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0, null, { timeout: 10000 });
+  const arenaBoundsCheck = await page.evaluate(async () => {
+    const { VISIBLE_ARENA_BOUNDS } = await import('/src/gameplay/ArenaBounds.js');
+    const { BossEncounter } = await import('/src/gameplay/BossEncounter.js');
+    const scene = window.__huntix.scene;
+    const enemy = scene.spawner.getActiveEnemies()[0];
+    enemy.position.x = 99;
+    enemy.position.y = -99;
+    enemy.displace(0, 0);
+    const enemyBox = enemy.getBodyBounds();
+
+    const boss = new BossEncounter(scene.scene, {
+      id: 'bounds-smoke',
+      name: 'Bounds Smoke',
+      hp: 10,
+      spawnX: 99,
+      spawnY: 99,
+      width: 3,
+      height: 3,
+    });
+    const bossBox = boss.getBodyBounds();
+    scene.scene.remove(boss.mesh);
+
+    const inside = box =>
+      box.x >= VISIBLE_ARENA_BOUNDS.minX &&
+      box.x + box.width <= VISIBLE_ARENA_BOUNDS.maxX &&
+      box.y >= VISIBLE_ARENA_BOUNDS.minY &&
+      box.y + box.height <= VISIBLE_ARENA_BOUNDS.maxY;
+
+    return {
+      enemyInside: inside(enemyBox),
+      bossInside: inside(bossBox),
+      enemyBox: { x: enemyBox.x, y: enemyBox.y, width: enemyBox.width, height: enemyBox.height },
+      bossBox: { x: bossBox.x, y: bossBox.y, width: bossBox.width, height: bossBox.height },
+      bounds: VISIBLE_ARENA_BOUNDS,
+    };
+  });
+  assert(arenaBoundsCheck.enemyInside, 'Enemy body was allowed outside the visible arena bounds', arenaBoundsCheck);
+  assert(arenaBoundsCheck.bossInside, 'Boss body was allowed outside the visible arena bounds', arenaBoundsCheck);
   await page.evaluate(() => {
     const player = window.__huntix.scene.hunters.players[0];
     for (const enemy of window.__huntix.scene.spawner.getActiveEnemies()) {

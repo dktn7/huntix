@@ -107,7 +107,7 @@ export class ShopManager {
 
     // Direct numeric selection (1-5)
     for (let i = 0; i < SHOP_SIZE; i += 1) {
-      if (input.justPressedKey(`Digit${i + 1}`)) {
+      if (typeof input.justPressedKey === 'function' && input.justPressedKey(`Digit${i + 1}`)) {
         return this.purchaseSelected(i);
       }
     }

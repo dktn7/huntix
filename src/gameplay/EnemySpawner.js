@@ -139,6 +139,7 @@ export class EnemySpawner {
     if (this._bossEncounter?.setPlayerCount) {
       this._bossEncounter.setPlayerCount(this.playerCount);
     }
+    this._pruneAttackTokens();
   }
 
   /** Spawns a compatibility grunt wave, capped by the max enemy limit. */
@@ -269,6 +270,7 @@ export class EnemySpawner {
   /** Removes dead enemies after their brief death cleanup delay. */
   clearDead() {
     this._enemies = this._enemies.filter(enemy => !enemy.canRemove());
+    this._pruneAttackTokens();
   }
 
   /** Updates instanced enemy matrices without advancing AI. */
@@ -359,6 +361,10 @@ export class EnemySpawner {
       projectile.y += projectile.vy * dt;
       projectile.age += dt;
       projectile.life = Math.max(0, projectile.life - dt);
+      if (!pointInsideVisibleArena(projectile.x, projectile.y, 0.4)) {
+        projectile.life = 0;
+        continue;
+      }
       if (projectile.age < PROJECTILE_ARM_TIME) continue;
 
       const hitbox = this._projectileHitbox(projectile);
@@ -501,6 +507,7 @@ export class EnemySpawner {
   _resetWaveState() {
     this._enemies.length = 0;
     this._projectiles.length = 0;
+    this._attackTokens.clear();
     this._waveIndex = -1;
     this._betweenWaveTimer = 0;
     this._pendingNextWave = false;
@@ -541,6 +548,32 @@ export class EnemySpawner {
     }
 
     return slot;
+  }
+
+  _requestAttackToken(enemy) {
+    if (!enemy || enemy.isDead?.()) return false;
+    this._pruneAttackTokens();
+    if (this._attackTokens.has(enemy.id)) return true;
+
+    const maxTokens = ATTACK_TOKENS_BY_PLAYER_COUNT[this.playerCount] || ATTACK_TOKENS_BY_PLAYER_COUNT[1];
+    if (this._attackTokens.size >= maxTokens) return false;
+
+    this._attackTokens.add(enemy.id);
+    return true;
+  }
+
+  _releaseAttackToken(enemy) {
+    if (!enemy) return;
+    this._attackTokens.delete(enemy.id);
+  }
+
+  _pruneAttackTokens() {
+    if (this._attackTokens.size === 0) return;
+
+    for (const id of this._attackTokens) {
+      const enemy = this._enemies.find(candidate => candidate.id === id);
+      if (!enemy || enemy.isDead?.()) this._attackTokens.delete(id);
+    }
   }
 
   _updateDecoys(dt) {
@@ -609,6 +642,7 @@ export class EnemySpawner {
     if (enemy.state === 'HURT') return 0xff5555;
     if (enemy.isTelegraphing) return 0xff3333;
     if (enemy.statusEffects?.getDisplayColor?.()) return enemy.statusEffects.getDisplayColor();
+    if (enemy.state === 'WAIT') return 0x4f4a4a;
     if (enemy.state === 'AGGRO' || enemy.state === 'ATTACK') return 0x8c7a7a;
     return enemy.config.color;
   }

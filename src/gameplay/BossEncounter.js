@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Hitbox, HitboxOwners, HitboxShapes } from './Hitbox.js';
+import { clamp, clampCenterToVisibleArena, centerMaxX, centerMinX } from './ArenaBounds.js';
 
 const BOSS_HP_MULTIPLIERS = {
   1: 1,
@@ -24,10 +25,6 @@ const DEFAULT_PATTERNS = {
     { key: 'pressure', kind: 'multi', telegraph: 0.85, recover: 0.65, damage: 60, radius: 2.8, knockbackX: 2.4, knockbackY: 0.6 },
   ],
 };
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function nearestPlayer(players, origin) {
   let best = null;
@@ -64,7 +61,6 @@ export class BossEncounter {
     this.isTelegraphing = false;
     this.hpMax = Math.max(1, Math.round((config.hp || 1000) * (BOSS_HP_MULTIPLIERS[this.playerCount] || 1)));
     this.hp = this.hpMax;
-    this.position = { x: config.spawnX ?? 12, y: config.spawnY ?? -0.9 };
     this.facing = -1;
     this._events = [];
     this._phaseIndex = 0;
@@ -94,6 +90,9 @@ export class BossEncounter {
 
     const width = config.width || 3.0;
     const height = config.height || 3.2;
+    this._baseScale = { x: width, y: height };
+    this.position = { x: config.spawnX ?? 12, y: config.spawnY ?? -0.9 };
+    this._clampToArena();
     const geo = new THREE.PlaneGeometry(width, height);
     const mat = new THREE.MeshBasicMaterial({
       color: config.color || 0xc0392b,
@@ -105,7 +104,6 @@ export class BossEncounter {
     this.mesh.position.set(this.position.x, this.position.y, 0.3);
     scene.add(this.mesh);
 
-    this._baseScale = { x: width, y: height };
     this._stateTimer = this._nextIdleDelay();
   }
 
@@ -155,6 +153,7 @@ export class BossEncounter {
       if (this._state !== 'telegraph') {
         this.position.x += moveX * dt;
         this.position.y += moveY * dt;
+        this._clampToArena();
       }
     }
 
@@ -209,6 +208,7 @@ export class BossEncounter {
     if (knockback) {
       this.position.x += clamp(knockback.x || 0, -0.4, 0.4);
       this.position.y += clamp(knockback.y || 0, -0.18, 0.18);
+      this._clampToArena();
     }
     return true;
   }
@@ -261,6 +261,7 @@ export class BossEncounter {
     this._currentAttack = this._scriptedAttackForCurrentHp() || attacks[this._attackCursor % attacks.length] || attacks[0];
     if (!this._currentAttack.scripted) this._attackCursor += 1;
     if (this._isTombCrawler()) this._prepareTombCrawlerAttack(this._currentAttack, target);
+    this._clampToArena();
     this._state = 'telegraph';
     this.state = 'TELEGRAPH';
     this.isTelegraphing = true;
@@ -292,6 +293,7 @@ export class BossEncounter {
       const side = target.position.x >= this.position.x ? -1 : 1;
       this.position.x = target.position.x + side * (attack.blinkOffset || 1.15);
       this.position.y = target.position.y + 0.1;
+      this._clampToArena();
       this.facing = side > 0 ? -1 : 1;
       this._events.push({
         type: 'hitbox',
@@ -506,7 +508,11 @@ export class BossEncounter {
         });
       }
       if (attack.travel) {
-        this.position.x = clamp(this.position.x + this.facing * attack.travel, -12, 12);
+        this.position.x = clamp(
+          this.position.x + this.facing * attack.travel,
+          centerMinX(this._baseScale.x),
+          centerMaxX(this._baseScale.x)
+        );
       }
     } else if (attack.kind === 'line') {
       this._events.push({
@@ -658,6 +664,7 @@ export class BossEncounter {
     if (attack.key === 'tail-whip') {
       this.position.x = target.position.x >= 0 ? 10.8 : -10.8;
       this.position.y = clamp(target.position.y, -4.0, 2.8);
+      this._clampToArena();
       this.facing = this.position.x >= target.position.x ? -1 : 1;
       return;
     }
@@ -665,6 +672,7 @@ export class BossEncounter {
     if (attack.key === 'full-surface') {
       this.position.x = 0;
       this.position.y = clamp(target.position.y, -3.4, 2.4);
+      this._clampToArena();
       this.facing = target.position.x >= 0 ? -1 : 1;
       return;
     }
@@ -672,6 +680,7 @@ export class BossEncounter {
     const side = target.position.x >= 0 ? -1 : 1;
     this.position.x = clamp(target.position.x + side * 1.1, -10.8, 10.8);
     this.position.y = clamp(target.position.y, -4.0, 2.8);
+    this._clampToArena();
     this.facing = side < 0 ? 1 : -1;
   }
 
@@ -724,6 +733,7 @@ export class BossEncounter {
   }
 
   _syncMesh() {
+    this._clampToArena();
     this.mesh.visible = this.hp <= 0 || !(this._isTombCrawler() && this._state === 'idle');
     this.mesh.position.set(this.position.x, this.position.y, -this.position.y * 0.01 + 0.3);
     const phaseScale = this.phase === 1 ? 1 : this.phase === 2 ? 1.08 : 1.16;
@@ -744,5 +754,9 @@ export class BossEncounter {
 
   syncVisuals() {
     this._syncMesh();
+  }
+
+  _clampToArena() {
+    clampCenterToVisibleArena(this.position, this._baseScale.x, this._baseScale.y);
   }
 }
