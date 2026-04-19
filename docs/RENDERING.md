@@ -3,6 +3,8 @@
 > **This is the canonical source of truth for how characters, enemies, and the world are rendered.**
 > All other docs defer to this file on rendering approach. Agents must read this before touching any visual system.
 
+*Last updated: April 18, 2026 — GLTFLoader scope clarified: world geometry only*
+
 ---
 
 ## Core Rule: 2D Billboard Sprites in a 3D World
@@ -15,21 +17,22 @@ Huntix uses a **hybrid rendering model**:
 | Enemies | 2D billboard sprite | `PlaneGeometry` + `MeshBasicMaterial`, instanced for grunts |
 | Attacks / hit VFX | 2D billboard | `PlaneGeometry` or `Points` |
 | Aura effects | 2D billboard particle | Pooled `PlaneGeometry` quads with additive blending |
-| Zone floors / walls / platforms | 3D mesh geometry | `BoxGeometry` / custom mesh, `MeshStandardMaterial`, baked AO |
+| Zone floors / walls / platforms / props | **3D GLTF mesh** | `.glb` files, `MeshStandardMaterial`, baked AO — see `WORLD3D.md` |
 | Parallax backgrounds | 2D plane layers | `PlaneGeometry` quads at fixed Z offsets behind the play field |
 | HUD | HTML overlay | DOM elements absolutely positioned over `renderer.domElement` |
 
-Characters and enemies are **never 3D meshes**. There are no GLTF models, no bone rigs, no `AnimationMixer`, no `GLTFLoader` in this project.
+Characters and enemies are **never 3D meshes**. There are no GLTF models for characters, no bone rigs, no `AnimationMixer`, no character `.glb` files in this project. World geometry is the **only** place GLTF is used.
 
 ---
 
 ## Why This Model
 
 - **Silhouette clarity** — 2D sprites give full pixel control over the hunter silhouette. A 3D mesh rotated slightly off-axis loses the dagger profile or the coat shape. A sprite never does.
-- **Aura systems** — per-hunter aura colours, glow crackles, and animation-state effects (lightning on Sereisa's blade, shadow drift at Dabik's feet) are sprite frame swaps and particle overlays. The equivalent in 3D requires custom shaders and material blending.
-- **Performance** — 60fps on Intel Iris is the target. Sprite quads with an atlas are the lightest possible character draw path. Four hunters + 20 enemies as rigged 3D meshes would blow the draw call and fill rate budgets.
-- **Asset pipeline** — the art pipeline is Mixboard → Grok → TexturePacker → sprite atlas → Three.js. There is no 3D modelling step.
-- **Inspirations** — Castle Crashers (the direct gameplay template) uses exactly this model: flat 2D sprites in a 3D scrolling world with Y-sort depth.
+- **World depth** — 3D GLTF environment meshes with baked AO give the zones weight, atmosphere, and environmental storytelling that flat `BoxGeometry` cannot. This is the Dead Cells and Hades model: 2D characters in a real 3D world.
+- **Aura systems** — per-hunter aura colours, glow crackles, and animation-state effects are sprite frame swaps and particle overlays. The equivalent in 3D requires custom shaders and material blending.
+- **Performance** — 60fps on Intel Iris is the target. Sprite quads with an atlas are the lightest possible character draw path. Four hunters + 20 enemies as rigged 3D meshes would blow the draw call and fill rate budgets. World geometry is low-poly (15,000 tri budget per zone) and fully baked.
+- **Asset pipeline** — characters follow Mixboard → Google Flow → TexturePacker → sprite atlas. World geometry follows Blender/Meshy → GLTF export → GLTFLoader. See `WORLDASSETPIPELINE.md`.
+- **Inspirations** — Castle Crashers (gameplay template), Dead Cells, and Hades all use exactly this hybrid: 2D or flat-shaded characters in a detailed 3D environment world.
 
 ---
 
@@ -47,7 +50,32 @@ scene.add(sprite);
 
 // WRONG — never do this for characters
 const loader = new GLTFLoader();
-loader.load('assets/models/dabik.glb', ...);
+loader.load('assets/models/characters/dabik.glb', ...); // characters are NEVER GLTF
+```
+
+---
+
+## GLTFLoader — Scope
+
+`GLTFLoader` is used in this project for **world geometry only**.
+
+| System | Uses GLTFLoader? |
+|--------|------------------|
+| Hunters | ❌ No — 2D sprite atlas |
+| Enemies | ❌ No — 2D sprite atlas |
+| Bosses | ❌ No — 2D sprite atlas |
+| Zone floors / walls / props | ✅ Yes — GLTF `.glb` meshes |
+| Portals | ✅ Yes — GLTF `.glb` mesh + emissive |
+
+World GLTF assets live in `assets/models/world/`. Full spec in `WORLD3D.md` and `WORLDASSETPIPELINE.md`.
+
+```js
+// CORRECT — GLTFLoader for world geometry only
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const loader = new GLTFLoader();
+loader.load('./assets/models/world/city-breach/cb-floor.glb', (gltf) => {
+  scene.add(gltf.scene);
+});
 ```
 
 ---
@@ -56,8 +84,8 @@ loader.load('assets/models/dabik.glb', ...);
 
 All character and enemy animations are packed into texture atlases using TexturePacker.
 
-- **Source frames:** exported from Grok animation output (green screen #00FF00 removed)
-- **Format:** PNG sprite sheet with accompanying JSON frame data
+- **Source frames:** exported from Google Flow animation output (green screen #00FF00 removed)
+- **Format:** WebP sprite sheet with accompanying JSON frame data
 - **Location:** `assets/sprites/` (not `assets/models/`)
 - **Per hunter:** one atlas per hunter covering all animation states
 - **Per enemy type:** one atlas per enemy type
@@ -65,20 +93,41 @@ All character and enemy animations are packed into texture atlases using Texture
 ```
 assets/
   sprites/
-    dabik.png         — full sprite sheet
-    dabik.json        — frame data (x, y, w, h per frame)
-    benzu.png
-    benzu.json
-    sereisa.png
-    sereisa.json
-    vesol.png
-    vesol.json
-    enemy-grunt.png
-    enemy-grunt.json
-    enemy-ranged.png
-    enemy-ranged.json
-    enemy-bruiser.png
-    enemy-bruiser.json
+    hunters/
+      dabik-atlas.webp
+      dabik-atlas.json
+      benzu-atlas.webp
+      benzu-atlas.json
+      sereisa-atlas.webp
+      sereisa-atlas.json
+      vesol-atlas.webp
+      vesol-atlas.json
+    enemies/
+      grunt-atlas.webp
+      grunt-atlas.json
+      ranged-atlas.webp
+      ranged-atlas.json
+      bruiser-atlas.webp
+      bruiser-atlas.json
+    bosses/
+      vrael-atlas.webp
+      vrael-atlas.json
+      zarth-atlas.webp
+      zarth-atlas.json
+      kibad-atlas.webp
+      kibad-atlas.json
+      thyxis-atlas.webp
+      thyxis-atlas.json
+    particles/
+      fx-atlas.webp
+      fx-atlas.json
+  models/
+    world/               ← ONLY valid models directory
+      city-breach/
+      ruin-den/
+      shadow-core/
+      thunder-spire/
+      hub/
 ```
 
 ---
@@ -111,7 +160,7 @@ class SpriteAnimator {
 
 - State transitions: swap `play(newState)` call — instant hard cut or handled by the transition rules in `ANIMATIONS.md`
 - Blending: not used — hard cuts between states only (appropriate for a brawler)
-- `AnimationController.js` (Phase 3) wraps `SpriteAnimator` per hunter and subscribes to `PlayerState.js` changes
+- `AnimationController.js` wraps `SpriteAnimator` per hunter and subscribes to `PlayerState.js` changes
 
 ---
 
@@ -144,7 +193,7 @@ const shadowMat = new THREE.MeshBasicMaterial({
   depthWrite: false
 });
 const shadow = new THREE.Mesh(shadowGeo, shadowMat);
-shadow.position.set(x, floorY + 0.01, z + 0.001); // just above floor, just behind sprite
+shadow.position.set(x, floorY + 0.01, z + 0.001);
 ```
 
 ---
@@ -164,16 +213,17 @@ const BG_NEAR_Z  =  0;   // play field floor
 
 ---
 
-## What Is Never Used
+## What Is Never Used (Character Pipeline Only)
 
-- `GLTFLoader` — not imported, not used
-- `THREE.AnimationMixer` — not used
+These restrictions apply **to characters, enemies, and bosses only**. World geometry uses GLTF — see above.
+
+- `THREE.AnimationMixer` — not used (characters use frame stepping)
 - `THREE.SkinnedMesh` — not used
 - `THREE.Bone` — not used
-- GLTF / GLB files — not in this project
-- `assets/models/` directory — does not exist; use `assets/sprites/`
+- Character GLTF / GLB files — characters are sprites, not meshes
+- `assets/models/characters/` — does not exist; characters use `assets/sprites/`
 - Perspective camera — not used (orthographic only)
-- Dynamic shadows (`THREE.DirectionalLight` shadow maps) — not used
+- Dynamic shadow maps (`THREE.DirectionalLight` shadow maps) — not used (baked AO only)
 
 ---
 
@@ -186,7 +236,6 @@ const gruntGeo = new THREE.PlaneGeometry(1, 1);
 const gruntMat = new THREE.MeshBasicMaterial({ map: gruntAtlas, transparent: true });
 const gruntPool = new THREE.InstancedMesh(gruntGeo, gruntMat, 20); // max 20
 scene.add(gruntPool);
-// Update each instance matrix per frame
 ```
 
 ---
@@ -194,14 +243,18 @@ scene.add(gruntPool);
 ## Source of Truth Chain
 
 ```
-VISUAL-DESIGN.md   — art direction, colour system, Mixboard prompts
+VISUAL-DESIGN.md      — art direction, colour system, Mixboard prompts
      ↓
-VISUAL-REFERENCE.md — design lock (read before asset generation)
+VISUAL-REFERENCE.md   — design lock (read before asset generation)
      ↓
-ANIMATIONS.md      — frame budgets, state machine, per-hunter notes
+ANIMATIONS.md         — frame budgets, state machine, per-hunter notes
      ↓
-RENDERING.md       — THIS FILE — how sprites are built and rendered in Three.js
+RENDERING.md          — THIS FILE — hybrid model: 2D sprites + 3D world
      ↓
-src/visuals/HunterMeshes.js — implementation
-src/gameplay/AnimationController.js — state machine wiring
+WORLD3D.md            — 3D world mesh spec, zone environment design
+WORLDASSETPIPELINE.md — how to create and export world meshes
+     ↓
+src/visuals/HunterMeshes.js       — character sprite implementation
+src/visuals/[Zone]Arena.js        — world GLTF loading per zone
+src/gameplay/AnimationController.js — animation state wiring
 ```
