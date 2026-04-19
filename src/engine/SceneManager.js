@@ -1,97 +1,58 @@
-// src/engine/SceneManager.js
-// ... (previous content) ...
+import { TitleScreen } from '../screens/TitleScreen.js';
+import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
+import { HubScreen } from '../screens/HubScreen.js';
+import { ZoneScreen } from '../screens/ZoneScreen.js';
+import { BossScreen } from '../screens/BossScreen.js';
+import { EndScreen } from '../screens/EndScreen.js';
+import { RunState } from '../core/RunState.js';
+import { HunterController } from '../gameplay/HunterController.js';
+import { CombatController } from '../gameplay/CombatController.js';
+import { EnemySpawner } from '../gameplay/EnemySpawner.js';
+import { AudioManager } from './AudioManager.js';
+import { HUD } from '../gameplay/HUD.js';
+import { ZoneManager } from '../gameplay/ZoneManager.js';
 
-// Add pause state management
-this.isPaused = false;
-this.pauseMenu = null;
+export class SceneManager {
+  constructor(renderer) {
+    this.scene = new THREE.Scene();
+    this.camera = renderer.createCamera();
+    this.audio = new AudioManager();
+    this.hud = new HUD(document.getElementById('ui-overlay'));
+    this.zoneManager = new ZoneManager(this.scene);
+    this.hunters = new HunterController(this.scene, RunState.players);
+    this.spawner = new EnemySpawner(this.scene, this.hunters.activePlayerCount);
+    this.combat = new CombatController();
 
-// ... (rest of constructor) ...
-
-// Add pause methods
-this.togglePause = () => {
-  if (this.isPaused) {
-    this.resume();
-  } else {
-    this.pause();
+    this.scenes = {
+      title: new TitleScreen(),
+      hunterSelect: new HunterSelectScreen(),
+      hub: new HubScreen(),
+      zone: new ZoneScreen(),
+      boss: new BossScreen(),
+      end: new EndScreen()
+    };
+    
+    this.currentScene = 'title';
+    this.scenes.title.initialize?.();
   }
-};
-
-this.pause = () => {
-  if (this.isPaused) return;
   
-  this.isPaused = true;
-  
-  // Create pause menu if it doesn't exist
-  if (!this.pauseMenu) {
-    this.pauseMenu = new PauseMenu(document.getElementById('ui-overlay'));
-  }
-  
-  // Show pause menu
-  this.pauseMenu.show();
-  
-  // Pause game logic
-  this._pauseGameLogic();
-};
-
-this.resume = () => {
-  if (!this.isPaused) return;
-  
-  this.isPaused = false;
-  
-  // Hide pause menu
-  this.pauseMenu.hide();
-  
-  // Resume game logic
-  this._resumeGameLogic();
-};
-
-// ... (rest of the file) ...
-
-// Update method to handle pause state
-update(dt, input) {
-  input.poll();
-
-  // Browser audio policy: init on first interaction
-  if (input.anyJustPressed()) {
-    this.audio.init();
-    if (this.hud.isOnboardingOpen()) {
-      this.hud.hideOnboarding();
-      this._onboardingDone = true;
-      if (!this._characterSelectDone) {
-        this.hud.showCharacterSelect(RunState.players[0]?.hunterId || 'dabik');
-      }
+  transition(sceneName) {
+    if (this.scenes[this.currentScene]) {
+      this.scenes[this.currentScene].destroy?.();
+    }
+    
+    this.currentScene = sceneName;
+    
+    if (this.scenes[sceneName]) {
+      this.scenes[sceneName].initialize?.();
     }
   }
 
-  if (this.hud.isOnboardingOpen()) {
-    return;
+  update(dt, input) {
+    input.poll();
+    if (input.anyJustPressed()) {
+      this.audio.init();
+    }
+    // Scene update logic will call current scene's update()
   }
-
-  // Handle pause state
-  if (this.isPaused) {
-    return;
-  }
-
-  // ... (rest of update logic) ...
 }
-
-// ... (rest of the file) ...
-
-// Add methods to pause/resume game logic
-_pauseGameLogic() {
-  // Pause all game systems
-  this.hunters.pause();
-  this.spawner.pause();
-  this.combat.pause();
-  this.audio.duckMusic(0.3, 200); // Duck music when paused
-}
-
-_resumeGameLogic() {
-  // Resume all game systems
-  this.hunters.resume();
-  this.spawner.resume();
-  this.combat.resume();
-  this.audio.duckMusic(1.0, 200); // Restore music when resumed
-}
-
-// ... (rest of the file) ...
