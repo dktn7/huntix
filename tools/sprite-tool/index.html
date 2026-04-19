@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Huntix Sprite Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <script async src="https://vibej.am/2026/widget.js"></script>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Huntix tools</p>
+        <h1>Sprite Prep Tool</h1>
+        <p class="subcopy">Clean reference images, split direction sheets, preview exports, and download game-ready PNGs without wrestling the UI.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="resetAllBtn" class="btn btn-ghost">Reset</button>
+        <button id="downloadZipBtn" class="btn btn-primary" disabled>Download ZIP</button>
+      </div>
+    </header>
+
+    <section class="stepper" aria-label="Workflow steps">
+      <button class="step active" data-step="upload">1. Upload</button>
+      <button class="step" data-step="review">2. Review</button>
+      <button class="step" data-step="export">3. Export</button>
+    </section>
+
+    <main class="workspace">
+      <aside class="sidebar card">
+        <section class="panel-block">
+          <div class="panel-title-row">
+            <h2>Upload</h2>
+            <span id="fileCountBadge" class="badge">0 files</span>
+          </div>
+          <label id="dropzone" class="dropzone">
+            <input id="fileInput" type="file" accept="image/*" multiple />
+            <div class="dropzone-inner">
+              <div class="drop-icon">⬆</div>
+              <strong>Drop images here</strong>
+              <span>Add single sprites or 4-panel sheets</span>
+            </div>
+          </label>
+          <p class="help-text">Tip: use one clean full-body image per hunter or a 4-direction strip if you already have one.</p>
+        </section>
+
+        <section class="panel-block">
+          <div class="panel-title-row">
+            <h2>Mode</h2>
+          </div>
+          <div class="segmented" id="globalModeRow">
+            <button class="seg active" data-global-mode="single">Single sprite</button>
+            <button class="seg" data-global-mode="sheet">4-panel sheet</button>
+          </div>
+          <p class="help-text">Use this as the starting default for newly added files. You can still override per file.</p>
+        </section>
+
+        <section class="panel-block">
+          <div class="panel-title-row">
+            <h2>Export sizes</h2>
+          </div>
+          <div class="toggle-grid" id="sizeRow">
+            <button class="toggle active" data-size="full">Full</button>
+            <button class="toggle active" data-size="game">128×192</button>
+            <button class="toggle" data-size="ui">64×96</button>
+          </div>
+        </section>
+
+        <section class="panel-block advanced-wrap">
+          <button id="advancedToggle" class="collapse-trigger" aria-expanded="false">Advanced cleanup</button>
+          <div id="advancedPanel" class="advanced-panel hidden">
+            <label class="field">
+              <span>Default chroma key</span>
+              <input id="defaultColor" type="color" value="#00ff00" />
+            </label>
+            <label class="field">
+              <span>Default tolerance</span>
+              <input id="defaultTolerance" type="range" min="0" max="180" value="40" />
+              <small id="defaultToleranceValue">40</small>
+            </label>
+            <label class="checkline">
+              <input id="defaultFeather" type="checkbox" checked />
+              <span>Feather edges</span>
+            </label>
+            <label class="checkline">
+              <input id="defaultAutoColor" type="checkbox" checked />
+              <span>Auto-detect chroma</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel-block actions-block">
+          <button id="processBtn" class="btn btn-primary" disabled>Process files</button>
+          <p id="globalStatus" class="help-text">Nothing loaded yet.</p>
+        </section>
+      </aside>
+
+      <section class="content">
+        <section class="card preview-card">
+          <div class="panel-title-row">
+            <div>
+              <h2>Preview</h2>
+              <p class="panel-subtitle">Pick a file to inspect it before exporting.</p>
+            </div>
+            <div class="preview-tabs">
+              <button class="tab active" data-preview-tab="original">Original</button>
+              <button class="tab" data-preview-tab="processed">Processed</button>
+            </div>
+          </div>
+
+          <div id="emptyPreview" class="empty-state large-empty">
+            <strong>No file selected</strong>
+            <span>Upload one or more images to begin.</span>
+          </div>
+
+          <div id="previewPane" class="preview-pane hidden">
+            <div class="big-preview-wrap">
+              <canvas id="mainPreviewCanvas" class="big-preview" aria-label="Selected file preview"></canvas>
+            </div>
+            <div class="preview-meta">
+              <div class="meta-card">
+                <span>Status</span>
+                <strong id="selectedStatus">Ready</strong>
+              </div>
+              <div class="meta-card">
+                <span>Quality</span>
+                <strong id="selectedQuality">-</strong>
+              </div>
+              <div class="meta-card">
+                <span>Trim box</span>
+                <strong id="selectedTrim">-</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card queue-card">
+          <div class="panel-title-row">
+            <div>
+              <h2>Queue</h2>
+              <p class="panel-subtitle">Tidy, predictable controls per file.</p>
+            </div>
+          </div>
+          <div id="fileList" class="file-list"></div>
+          <div id="emptyQueue" class="empty-state">
+            <strong>No images loaded yet</strong>
+            <span>Add single sprites or 4-panel direction sheets.</span>
+          </div>
+        </section>
+
+        <section id="resultsSection" class="card results-card hidden">
+          <div class="panel-title-row">
+            <div>
+              <h2>Outputs</h2>
+              <p class="panel-subtitle">Processed files ready to download.</p>
+            </div>
+          </div>
+          <div id="resultsGrid" class="results-grid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
