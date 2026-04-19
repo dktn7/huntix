@@ -18,7 +18,7 @@ export class HUD {
   /** Creates Phase 5 DOM HUD and modal overlays inside the existing UI overlay. */
   constructor(overlay) {
     this.overlay = overlay;
-    this._combo = 0;
+    this._combos = new Array(PLAYER_SLOTS).fill(0);
     this._waveTicks = 0;
     this._zoneTicks = 0;
     this._bossVisible = false;
@@ -36,11 +36,6 @@ export class HUD {
     for (let i = 0; i < PLAYER_SLOTS; i += 1) {
       this._playerSlots.push(this._createPlayerSlot(i));
     }
-
-    this._comboEl = document.createElement('div');
-    this._comboEl.className = 'combo-counter';
-    this._comboEl.textContent = 'x0';
-    overlay.appendChild(this._comboEl);
 
     this._waveEl = document.createElement('div');
     this._waveEl.className = 'wave-flash';
@@ -138,16 +133,22 @@ export class HUD {
   /** Advances transient HUD animations and syncs panels from RunState. */
   update(camera) {
     this._updatePlayers();
-    this._updateCombo();
     this._updateWaveFlash();
     this._updateZoneTitle();
     this._updateBossBar();
     this._updateDamageNumbers(camera);
   }
 
-  /** Sets the currently visible combo count. */
+  /** Sets P1 combo count (backward-compatible helper). */
   setCombo(count) {
-    this._combo = count;
+    this._combos[0] = Math.max(0, count || 0);
+  }
+
+  /** Sets combo counts for all player slots by index. */
+  setPlayerCombos(comboCounts = []) {
+    for (let i = 0; i < PLAYER_SLOTS; i += 1) {
+      this._combos[i] = Math.max(0, comboCounts[i] || 0);
+    }
   }
 
   /** Shows a pooled floating damage number at a world position. */
@@ -340,6 +341,7 @@ export class HUD {
         activeSlot: player.activeSlot,
       })),
       card: this.getCardState(),
+      combos: [...this._combos],
       bossVisible: this._bossVisible,
       characterSelectOpen: this._characterSelectOpen,
       onboardingOpen: this._onboardingOpen,
@@ -382,7 +384,12 @@ export class HUD {
     const advanced = this._createSpellSlot(spells, 'Adv');
     const ultimate = this._createSpellSlot(spells, 'Ult');
 
-    return { wrap, label, hpFill, manaFill, surgeFill, xpFill, level, minor, advanced, ultimate };
+    const combo = document.createElement('div');
+    combo.className = 'player-combo';
+    combo.textContent = '';
+    wrap.appendChild(combo);
+
+    return { wrap, label, hpFill, manaFill, surgeFill, xpFill, level, minor, advanced, ultimate, combo };
   }
 
   _createBar(parent, kind) {
@@ -422,6 +429,7 @@ export class HUD {
       slot.advanced.classList.toggle('locked', !player.advancedSpellId);
       slot.ultimate.classList.toggle('locked', !player.ultimateSpellId);
       slot.ultimate.classList.toggle('ready', player.surge >= 100 && !!player.ultimateSpellId);
+      this._updatePlayerCombo(slot, this._combos[i] || 0);
     }
 
     const primary = RunState.players[0];
@@ -441,21 +449,6 @@ export class HUD {
     this._weaponTwoEl.textContent = `S2 ${slot2}`;
     this._weaponOneEl.classList.toggle('active', player.activeSlot === 0);
     this._weaponTwoEl.classList.toggle('active', player.activeSlot === 1);
-  }
-
-  _updateCombo() {
-    if (this._combo <= 0) {
-      this._comboEl.classList.remove('visible', 'mid', 'high');
-      return;
-    }
-
-    const t = Math.min(1, this._combo / 20);
-    const scale = 1 + t * 2;
-    this._comboEl.textContent = `x${this._combo}`;
-    this._comboEl.classList.toggle('mid', this._combo >= 8 && this._combo < 16);
-    this._comboEl.classList.toggle('high', this._combo >= 16);
-    this._comboEl.classList.add('visible');
-    this._comboEl.style.transform = `translateX(-50%) scale(${scale.toFixed(2)})`;
   }
 
   _updateWaveFlash() {
@@ -670,6 +663,20 @@ export class HUD {
     help.className = 'modal-help';
     help.textContent = 'Press any key to start your hunt.';
     panel.appendChild(help);
+  }
+
+  _updatePlayerCombo(slot, comboCount) {
+    if (!slot?.combo) return;
+
+    if (!comboCount || comboCount <= 0) {
+      slot.combo.textContent = '';
+      slot.combo.classList.remove('mid', 'high');
+      return;
+    }
+
+    slot.combo.textContent = `Combo x${comboCount}`;
+    slot.combo.classList.toggle('mid', comboCount >= 8 && comboCount < 16);
+    slot.combo.classList.toggle('high', comboCount >= 16);
   }
 
   _pct(value, max) {

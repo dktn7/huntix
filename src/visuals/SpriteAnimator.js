@@ -21,6 +21,7 @@ export class SpriteAnimator {
     this.W = this.meta.size?.w || 1;
     this.H = this.meta.size?.h || 1;
 
+    this.requestedState = null;
     this.currentState = null;
     this.currentFrame = 0;
     this.elapsed = 0;
@@ -32,16 +33,19 @@ export class SpriteAnimator {
 
   /** Starts playing a named animation state. */
   play(state, loop = true, onComplete = null) {
-    if (this.currentState === state && this.loop === loop) return;
+    if (this.requestedState === state && this.loop === loop) return;
 
+    this.requestedState = state;
     this.currentState = state;
     this.currentFrame = 0;
     this.elapsed = 0;
     this.loop = loop;
     this.onComplete = onComplete;
-    this.frameList = Object.keys(this.frames)
-      .filter(key => key.startsWith(`${state}_`))
-      .sort();
+    this.frameList = this._collectFramesForState(state);
+    if (!this.frameList.length && state !== 'idle') {
+      this.currentState = 'idle';
+      this.frameList = this._collectFramesForState('idle');
+    }
     this.fps = FPS_OVERRIDES[state] || DEFAULT_FPS;
     this._applyFrame();
   }
@@ -79,6 +83,36 @@ export class SpriteAnimator {
     return this.currentState === state;
   }
 
+  _collectFramesForState(state) {
+    const matches = [];
+    for (const key of Object.keys(this.frames)) {
+      const frameIndex = this._extractFrameIndex(key, state);
+      if (frameIndex === null) continue;
+      matches.push({ key, frameIndex });
+    }
+
+    matches.sort((a, b) => (a.frameIndex - b.frameIndex) || a.key.localeCompare(b.key));
+    return matches.map(match => match.key);
+  }
+
+  _extractFrameIndex(frameKey, state) {
+    const normalizedKey = this._normalizeFrameKey(frameKey);
+    const normalizedState = String(state || '').toLowerCase();
+    if (!normalizedState) return null;
+    const pattern = new RegExp(`(?:^|_)${escapeRegExp(normalizedState)}_(\\d+)$`);
+    const match = normalizedKey.match(pattern);
+    if (!match) return null;
+
+    const index = Number.parseInt(match[1], 10);
+    return Number.isFinite(index) ? index : null;
+  }
+
+  _normalizeFrameKey(frameKey) {
+    const normalizedPath = String(frameKey || '').replace(/\\/g, '/');
+    const fileName = normalizedPath.split('/').pop() || '';
+    return fileName.replace(/\.[^/.]+$/, '').toLowerCase();
+  }
+
   _applyFrame() {
     if (!this.material?.map || !this.frameList.length) return;
 
@@ -89,4 +123,8 @@ export class SpriteAnimator {
     this.material.map.offset.set(frame.x / this.W, 1 - (frame.y + frame.h) / this.H);
     this.material.map.repeat.set(frame.w / this.W, frame.h / this.H);
   }
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

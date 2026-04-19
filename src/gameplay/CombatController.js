@@ -22,8 +22,8 @@ export class CombatController {
     this._spellCooldowns = new Map();
     this._areaEffects = [];
     this._reviveProgress = new Map();
-    this._comboCount = 0;
-    this._comboTimer = 0;
+    this._comboCounts = new Map();
+    this._comboTimers = new Map();
     this.hitEvents = [];
   }
 
@@ -32,8 +32,7 @@ export class CombatController {
     this.hitEvents.length = 0;
     this._advanceCooldowns(dt);
     this._updateAreaEffects(dt, enemies);
-    this._comboTimer = Math.max(0, this._comboTimer - dt);
-    if (this._comboTimer <= 0) this._comboCount = 0;
+    this._advanceComboTimers(dt);
 
     this._updateRevives(dt, playerInputs, players);
 
@@ -80,7 +79,28 @@ export class CombatController {
 
   /** Returns the active combo count. */
   get comboCount() {
-    return this._comboCount;
+    return this.getComboCount(0);
+  }
+
+  /** Returns the active combo count for a specific player index. */
+  getComboCount(playerIndex = 0) {
+    return this._comboCounts.get(playerIndex) || 0;
+  }
+
+  /** Returns combo counts for all players in index order. */
+  getComboCounts() {
+    const highestIndex = Math.max(
+      -1,
+      ...this._comboCounts.keys(),
+      ...this._comboTimers.keys()
+    );
+    if (highestIndex < 0) return [];
+
+    const out = [];
+    for (let i = 0; i <= highestIndex; i += 1) {
+      out.push(this.getComboCount(i));
+    }
+    return out;
   }
 
   /** Returns the remaining hitstop duration in seconds. */
@@ -89,9 +109,14 @@ export class CombatController {
   }
 
   /** Clears the active combo chain after the player takes damage. */
-  breakCombo() {
-    this._comboCount = 0;
-    this._comboTimer = 0;
+  breakCombo(playerIndex = null) {
+    if (playerIndex === null || playerIndex === undefined) {
+      this._comboCounts.clear();
+      this._comboTimers.clear();
+      return;
+    }
+    this._comboCounts.set(playerIndex, 0);
+    this._comboTimers.set(playerIndex, 0);
   }
 
   _handleInput(dt, input, player, enemies, spawner) {
@@ -344,13 +369,15 @@ export class CombatController {
       const wasDead = enemy.isDead();
       hitbox.markHit(enemy.id);
       const damage = this._damageForHit(hitbox, enemy);
+      const ownerIndex = hitbox.owner.playerIndex;
+      const nextCombo = this.getComboCount(ownerIndex) + 1;
       const originalDamage = hitbox.damage;
       hitbox.damage = damage;
-      hitbox.applyHit(enemy, hitbox.owner, { comboCount: this._comboCount + 1 });
+      hitbox.applyHit(enemy, hitbox.owner, { comboCount: nextCombo });
       hitbox.damage = originalDamage;
 
-      this._comboCount += 1;
-      this._comboTimer = COMBO_TIMEOUT;
+      this._comboCounts.set(ownerIndex, nextCombo);
+      this._comboTimers.set(ownerIndex, COMBO_TIMEOUT);
       if (hitbox.attackType === 'light') hitbox.owner.resources.gainMana(5);
       this.requestHitstop(hitbox.attackType === 'heavy' ? HEAVY_HITSTOP : LIGHT_HITSTOP);
       
@@ -360,7 +387,7 @@ export class CombatController {
       }
       
       RunState.recordDamageDealt(hitbox.owner.playerIndex, damage);
-      RunState.recordCombo(hitbox.owner.playerIndex, this._comboCount);
+      RunState.recordCombo(hitbox.owner.playerIndex, nextCombo);
 
       const enemyEvents = enemy.consumeEvents();
       const killed = !wasDead && enemy.isDead();
@@ -371,7 +398,7 @@ export class CombatController {
           hitbox.owner.playerIndex,
           enemy.getRewards?.(),
           hitbox.attackType,
-          this._comboCount
+          nextCombo
         );
       }
 
@@ -380,7 +407,7 @@ export class CombatController {
         player: hitbox.owner,
         damage,
         attackType: hitbox.attackType,
-        combo: this._comboCount,
+        combo: nextCombo,
         killed,
       });
 
@@ -399,7 +426,7 @@ export class CombatController {
 
       hitbox.markHit(targetId);
       if (hitbox.applyHit(player, hitbox.owner)) {
-        this.breakCombo();
+        this.breakCombo(player.playerIndex);
         RunState.recordDamageTaken(player.playerIndex, hitbox.damage);
         this.hitEvents.push({
           type: 'playerHit',
@@ -447,7 +474,12 @@ export class CombatController {
     RunState.recordDamageDealt(player.playerIndex, damage);
     if (killed) {
       if (attackType !== 'ultimate') player.resources.gainSurge(20 * this._surgeGainMult(player));
-      RunState.grantKillRewards(player.playerIndex, enemy.getRewards?.(), attackType, this._comboCount);
+      RunState.grantKillRewards(
+        player.playerIndex,
+        enemy.getRewards?.(),
+        attackType,
+        this.getComboCount(player.playerIndex)
+      );
     }
     this.hitEvents.push({
       type: 'hit',
@@ -723,5 +755,13 @@ export class CombatController {
       intensity,
       ...extra,
     });
+  }
+
+  _advanceComboTimers(dt) {
+    for (const [playerIndex, timer] of this._comboTimers) {
+      const next = Math.max(0, timer - dt);
+      this._comboTimers.set(playerIndex, next);
+      if (next <= 0) this._comboCounts.set(playerIndex, 0);
+    }
   }
 }

@@ -3,7 +3,7 @@ import { PlayerState } from './PlayerState.js';
 import { AnimationController } from './AnimationController.js';
 import { StatusTypes } from './StatusEffects.js';
 import { CompanionAIController } from './CompanionAIController.js';
-import { createHunterMesh } from '../visuals/HunterMeshes.js';
+import { createHunterMesh, loadHunterAtlas } from '../visuals/HunterMeshes.js';
 import { HUNTERS } from '../visuals/Palettes.js';
 
 export const HUNTER_CONFIGS = {
@@ -80,6 +80,58 @@ const DEFAULT_PLAYERS = [
   { hunterId: 'dabik', playerIndex: 0, isAI: false },
 ];
 
+const HUNTER_ATLAS_MANIFEST_PATH = 'assets/sprites/hunters/manifest.json';
+const HUNTER_ATLAS_CACHE = new Map();
+const HUNTER_ATLAS_LOADING = new Map();
+let hunterAtlasManifest = null;
+let hunterAtlasManifestPromise = null;
+
+function loadHunterAtlasCached(hunterId) {
+  const id = String(hunterId || 'dabik').toLowerCase();
+  if (HUNTER_ATLAS_CACHE.has(id)) return Promise.resolve(HUNTER_ATLAS_CACHE.get(id));
+  if (HUNTER_ATLAS_LOADING.has(id)) return HUNTER_ATLAS_LOADING.get(id);
+
+  const pending = loadHunterAtlas(id)
+    .then((atlas) => {
+      HUNTER_ATLAS_CACHE.set(id, atlas);
+      HUNTER_ATLAS_LOADING.delete(id);
+      return atlas;
+    })
+    .catch((error) => {
+      HUNTER_ATLAS_LOADING.delete(id);
+      throw error;
+    });
+
+  HUNTER_ATLAS_LOADING.set(id, pending);
+  return pending;
+}
+
+function getHunterAtlasManifest() {
+  if (hunterAtlasManifest) return Promise.resolve(hunterAtlasManifest);
+  if (hunterAtlasManifestPromise) return hunterAtlasManifestPromise;
+
+  hunterAtlasManifestPromise = fetch(HUNTER_ATLAS_MANIFEST_PATH)
+    .then((response) => {
+      if (!response.ok) return { atlases: {} };
+      return response.json();
+    })
+    .catch(() => ({ atlases: {} }))
+    .then((manifest) => {
+      const atlases = manifest?.atlases && typeof manifest.atlases === 'object'
+        ? manifest.atlases
+        : {};
+      hunterAtlasManifest = { atlases };
+      return hunterAtlasManifest;
+    });
+
+  return hunterAtlasManifestPromise;
+}
+
+function isHunterAtlasReady(hunterId) {
+  const id = String(hunterId || 'dabik').toLowerCase();
+  return getHunterAtlasManifest().then((manifest) => manifest.atlases[id] === true);
+}
+
 export class HunterController {
   /** Owns active hunters, their resources, input slots, and animation controllers. */
   constructor(scene, runPlayers = DEFAULT_PLAYERS) {
@@ -93,6 +145,7 @@ export class HunterController {
     for (let i = 0; i < Math.min(4, activeRunPlayers.length); i += 1) {
       this._addPlayer(activeRunPlayers[i], i);
     }
+    this._warmAtlasCache();
   }
 
   /** Advances each active player and its sprite animation. */
@@ -184,6 +237,8 @@ export class HunterController {
       const entry = this.entries[i];
       if (!runPlayer || !entry) continue;
 
+      this._ensureEntryHunterVisual(entry, runPlayer.hunterId);
+
       const config = this._buildConfig(runPlayer.hunterId, runPlayer.modifiers);
       entry.config = config;
       entry.runPlayer = runPlayer;
@@ -225,6 +280,7 @@ export class HunterController {
       const runPlayer = runPlayers[i];
       if (!runPlayer) continue;
       const entry = this.entries[i];
+      this._ensureEntryHunterVisual(entry, runPlayer.hunterId);
       const config = this._buildConfig(runPlayer.hunterId, runPlayer.modifiers);
       entry.config = config;
       entry.runPlayer = runPlayer;
@@ -283,9 +339,17 @@ export class HunterController {
     });
     const animation = new AnimationController(player, mesh.userData.animator);
 
-    const entry = { player, resources, animation, config, runPlayer };
+    const entry = {
+      player,
+      resources,
+      animation,
+      config,
+      runPlayer,
+      hunterId: String(hunterId).toLowerCase(),
+    };
     this.entries.push(entry);
     this.players.push(player);
+    this._upgradeEntryToAtlas(entry, entry.hunterId);
     return entry;
   }
 
@@ -317,5 +381,49 @@ export class HunterController {
     if (typeof next.dashDamage === 'number') next.dashDamage = Math.max(1, Math.round(next.dashDamage * damageMult));
     if (typeof next.cooldown === 'number') next.cooldown = Math.max(0.2, next.cooldown * cooldownMult);
     return next;
+  }
+
+  _warmAtlasCache() {
+    getHunterAtlasManifest().then((manifest) => {
+      for (const hunterId of Object.keys(HUNTER_CONFIGS)) {
+        if (manifest.atlases[hunterId] !== true) continue;
+        loadHunterAtlasCached(hunterId).catch(() => {
+          // Keep fallback meshes if atlas loading fails.
+        });
+      }
+    });
+  }
+
+  _ensureEntryHunterVisual(entry, hunterId) {
+    const targetHunter = String(hunterId || 'dabik').toLowerCase();
+    if (entry.hunterId === targetHunter) return;
+
+    entry.hunterId = targetHunter;
+    const fallbackMesh = createHunterMesh({ hunterId: targetHunter });
+    entry.player.setMesh(fallbackMesh);
+    entry.animation.setAnimator(fallbackMesh.userData.animator);
+    this._upgradeEntryToAtlas(entry, targetHunter);
+  }
+
+  _upgradeEntryToAtlas(entry, hunterId) {
+    const targetHunter = String(hunterId || 'dabik').toLowerCase();
+    isHunterAtlasReady(targetHunter)
+      .then((ready) => {
+        if (!ready || entry.hunterId !== targetHunter) return null;
+        return loadHunterAtlasCached(targetHunter);
+      })
+      .then((atlas) => {
+        if (!atlas || entry.hunterId !== targetHunter) return;
+        const atlasMesh = createHunterMesh({
+          hunterId: targetHunter,
+          atlasTexture: atlas.texture,
+          atlasData: atlas.atlasData,
+        });
+        entry.player.setMesh(atlasMesh);
+        entry.animation.setAnimator(atlasMesh.userData.animator);
+      })
+      .catch(() => {
+        // Keep fallback mesh when assets are unavailable.
+      });
   }
 }

@@ -24,6 +24,12 @@ export class AnimationController {
     this._lastKey = null;
   }
 
+  /** Replaces the bound SpriteAnimator and restarts state sync. */
+  setAnimator(animator) {
+    this.animator = animator;
+    this._lastKey = null;
+  }
+
   /** Advances animation state and sprite UV stepping. */
   update(dt) {
     if (!this.animator) return;

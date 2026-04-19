@@ -59,7 +59,7 @@ When two docs conflict, the lower number wins.
 
 Run `node scripts/check-phase.js` to detect the current phase from actual source files. Never hardcode a phase assumption.
 
-**Current phase: 6 — Screen Flow & Loop Closure**
+**Current phase: 7 — Hunter Sprite Pipeline**
 
 | Phase | Status | Name | Goal | Key Files |
 |-------|--------|------|------|-----------|
@@ -68,8 +68,8 @@ Run `node scripts/check-phase.js` to detect the current phase from actual source
 | 3 | ✅ Done | All 4 Hunters + Co-op | Hunter stubs, stat differences, co-op input, `AnimationController`, `SpriteAnimator`, `HunterMeshes` present as files | `HunterController.js`, `AnimationController.js`, `HunterMeshes.js`, `SpriteAnimator.js` |
 | 4 | ✅ Done | Zones + Bosses | City Breach wired, hub return, all 4 arena stubs created, `ZoneManager`, `PortalManager` | `ZoneManager.js`, `PortalManager.js`, arena stubs |
 | 5 | ✅ Done | Progression + UI | `ShopManager.js`, `HUD.js`, `ProgressionData.js`, `RunState.js` wired | `ShopManager.js`, `HUD.js`, `ProgressionData.js` |
-| 6 | 🔄 **CURRENT** | Screen Flow & Loop Closure | Title → Hunter Select → Hub → Portal → Zone → Boss → Victory → Hub fully wired end-to-end. Every transition in `SceneManager.js` working. No dead ends. | `SceneManager.js`, `TitleScreen`, `HunterSelectScreen`, `EndScreen` |
-| 7 | 🔲 | Hunter Sprite Pipeline | Mixboard → Google Flow (Nano Banana 2) for all 4 hunters. 8 animation states each. Background removal, TexturePacker atlas, loaded into `HunterMeshes.js`. Real sprites replace placeholder boxes. | `assets/sprites/hunters/`, `HunterMeshes.js` |
+| 6 | ✅ Done | Screen Flow & Loop Closure | Title → Hunter Select → Hub → Portal → Zone → Boss → Victory → Hub fully wired end-to-end. Every transition in `SceneManager.js` working. No dead ends. | `SceneManager.js`, `TitleScreen`, `HunterSelectScreen`, `EndScreen` |
+| 7 | 🔄 **CURRENT** | Hunter Sprite Pipeline | Mixboard → Google Flow (Nano Banana 2) for all 4 hunters. 8 animation states each. Background removal, TexturePacker atlas, loaded into `HunterMeshes.js`. Real sprites replace placeholder boxes. | `assets/sprites/hunters/`, `HunterMeshes.js` |
 | 8 | 🔲 | Enemy & Boss Sprite Pipeline | Grunt, Ranged, Bruiser sprites. All 4 boss sprites (VRAEL, ZARTH, KIBAD, THYXIS). Particle FX atlas (spark/smoke/blood/lightning/fire/shadow/glow-ring). | `assets/sprites/enemies/`, `assets/sprites/bosses/`, `assets/sprites/particles/fx-atlas` |
 | 9 | 🔲 | Zone Background Art | Mixboard → Google Flow for 3-layer parallax backgrounds per zone. All 5 zones × 3 layers = 15 WebP files at 2048×512px. Wired into parallax renderer. | `assets/backgrounds/`, `RENDERING.md` parallax values |
 | 10 | 🔲 | Animation State Machine Live | `AnimationController.js` + `SpriteAnimator.js` fully wired. All 14 states per hunter driving from `PlayerState.js`. Real sprites replace all placeholder geometry. | `AnimationController.js`, `SpriteAnimator.js` |

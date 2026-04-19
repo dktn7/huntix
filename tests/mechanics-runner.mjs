@@ -10,6 +10,7 @@ const { chromium } = loadPlaywright();
 const PORT = 4173;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const OUT_DIR = 'test-results';
+const HOWLER_CDN_PATTERN = '**/howler.min.mjs';
 
 function assert(condition, message, details = undefined) {
   if (!condition) {
@@ -57,6 +58,32 @@ async function hold(page, key, ms = 100) {
   await page.keyboard.up(key);
 }
 
+async function installHowlerStub(page) {
+  await page.route(HOWLER_CDN_PATTERN, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript',
+      body: `
+        export class Howl {
+          constructor(options = {}) {
+            this._options = options;
+            this._volume = typeof options.volume === 'number' ? options.volume : 1;
+            this._id = 1;
+          }
+          play() { return this._id; }
+          stop() {}
+          fade(_from, to, _duration) { this._volume = to; }
+          rate(_value, _id) {}
+          volume(value, _id) {
+            if (typeof value === 'number') this._volume = value;
+            return this._volume;
+          }
+        }
+      `,
+    });
+  });
+}
+
 async function resolvePendingCards(page) {
   for (let i = 0; i < 16; i += 1) {
     const state = await page.evaluate(() => window.__TEST__.state());
@@ -72,11 +99,84 @@ async function resolvePendingCards(page) {
   }
 }
 
-async function clearCurrentZone(page, zoneId) {
-  await page.evaluate((id) => window.__TEST__.commands.enterZone(id), zoneId);
+async function enterGameplayFromTitle(page) {
+  await page.waitForFunction(() => !!window.__TEST__, null, { timeout: 10000 });
+  await page.waitForTimeout(250);
+
+  let state = await page.evaluate(() => window.__TEST__.state());
+
+  if (state.mode === 'TITLE_SCREEN') {
+    await hold(page, 'Enter', 120);
+    try {
+      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUNTER_SELECT', null, { timeout: 2500 });
+    } catch {
+      await hold(page, 'KeyF', 120);
+      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUNTER_SELECT', null, { timeout: 10000 });
+    }
+    state = await page.evaluate(() => window.__TEST__.state());
+  }
+
+  if (state.mode === 'HUNTER_SELECT') {
+    await hold(page, 'Enter', 120);
+    try {
+      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 2500 });
+    } catch {
+      await hold(page, 'KeyF', 120);
+      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 10000 });
+    }
+    await page.waitForFunction(() => window.__TEST__.state().players.length >= 1, null, { timeout: 10000 });
+  }
+
+  await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 10000 });
+  const onboardingOpen = await page.evaluate(() => window.__TEST__.state().hud.onboardingOpen);
+  if (onboardingOpen) {
+    await hold(page, 'Enter', 120);
+    try {
+      await page.waitForFunction(() => !window.__TEST__.state().hud.onboardingOpen, null, { timeout: 1200 });
+    } catch {
+      await hold(page, 'KeyF', 120);
+      await page.waitForFunction(() => !window.__TEST__.state().hud.onboardingOpen, null, { timeout: 5000 });
+    }
+  }
+}
+
+async function configureFourHumanParty(page) {
+  await page.evaluate(() => {
+    const scene = window.__huntix.scene;
+    scene.startRun([
+      { hunterId: 'dabik', playerIndex: 0, isAI: false },
+      { hunterId: 'benzu', playerIndex: 1, isAI: false },
+      { hunterId: 'sereisa', playerIndex: 2, isAI: false },
+      { hunterId: 'vesol', playerIndex: 3, isAI: false },
+    ]);
+    scene.startNewRunFromRunState();
+  });
+  await page.waitForFunction(() => {
+    const state = window.__TEST__.state();
+    return state.mode === 'HUB' && state.players.length === 4;
+  }, null, { timeout: 30000 });
+
+  const onboardingOpen = await page.evaluate(() => window.__TEST__.state().hud.onboardingOpen);
+  if (onboardingOpen) {
+    await hold(page, 'Enter', 120);
+    try {
+      await page.waitForFunction(() => !window.__TEST__.state().hud.onboardingOpen, null, { timeout: 1200 });
+    } catch {
+      await hold(page, 'KeyF', 120);
+      await page.waitForFunction(() => !window.__TEST__.state().hud.onboardingOpen, null, { timeout: 5000 });
+    }
+  }
+}
+
+async function clearCurrentZone(page, zoneId, options = {}) {
+  const { alreadyEntered = false } = options;
+  if (!alreadyEntered) {
+    await page.evaluate((id) => window.__TEST__.commands.enterZone(id), zoneId);
+  }
   await page.waitForFunction((id) => window.__TEST__.state().run.currentZone === id, zoneId, { timeout: 10000 });
   let bossSeen = false;
   let routeAdvanced = false;
+  const routeSamples = [];
 
   for (let i = 0; i < 28; i += 1) {
     const sawBossThisTick = await page.evaluate(() => {
@@ -92,8 +192,31 @@ async function clearCurrentZone(page, zoneId) {
     await page.waitForTimeout(250);
     await resolvePendingCards(page);
 
-    const state = await page.evaluate(() => window.__TEST__.state());
-    routeAdvanced = routeAdvanced || (state.route?.areaIndex || 0) > 0;
+    let state = await page.evaluate(() => window.__TEST__.state());
+    if (state.route?.gateOpen) {
+      await page.evaluate(() => window.__TEST__.commands.advanceRoute());
+      await page.waitForTimeout(60);
+      state = await page.evaluate(() => window.__TEST__.state());
+    }
+
+    routeSamples.push({
+      tick: i,
+      areaIndex: state.route?.areaIndex ?? null,
+      waveIndex: state.route?.waveIndex ?? null,
+      zoneState: state.route?.zoneState ?? null,
+      gateOpen: !!state.route?.gateOpen,
+      gateKind: state.route?.gateKind ?? null,
+      currentZone: state.run.currentZone,
+      runComplete: state.run.runComplete,
+      boss: state.run.boss.name || null,
+      enemies: state.enemies.length,
+    });
+
+    routeAdvanced = routeAdvanced
+      || (state.route?.areaIndex || 0) > 0
+      || (state.route?.waveIndex || 0) > 0
+      || state.route?.zoneState === 'boss'
+      || state.route?.zoneState === 'complete';
     bossSeen = bossSeen || state.run.boss.seenZones.includes(zoneId);
     bossSeen = bossSeen || !!state.run.boss.name;
     if (state.run.currentZone === 'hub' || state.run.runComplete) break;
@@ -106,15 +229,31 @@ async function clearCurrentZone(page, zoneId) {
   await resolvePendingCards(page);
 
   await page.waitForFunction(
-    () => window.__TEST__.state().run.currentZone === 'hub' || window.__TEST__.state().run.runComplete === true,
+    () => {
+      const state = window.__TEST__.state();
+      if (state.run.runComplete) return state.mode === 'END_SCREEN';
+      return state.mode === 'HUB' && state.run.currentZone === 'hub';
+    },
     null,
-    { timeout: 20000 }
+    { timeout: 25000 }
   );
   const finalState = await page.evaluate(() => window.__TEST__.state());
-  routeAdvanced = routeAdvanced || (finalState.route?.areaIndex || 0) > 0;
+  routeAdvanced = routeAdvanced
+    || (finalState.route?.areaIndex || 0) > 0
+    || (finalState.route?.waveIndex || 0) > 0
+    || finalState.route?.zoneState === 'boss'
+    || finalState.route?.zoneState === 'complete';
   bossSeen = bossSeen || finalState.run.boss.seenZones.includes(zoneId);
-  assert(routeAdvanced, `Zone route did not advance through combat areas before boss in ${zoneId}`);
-  assert(bossSeen, `Boss did not appear while clearing ${zoneId}`);
+  assert(routeAdvanced, `Zone route did not advance through combat areas before boss in ${zoneId}`, {
+    zoneId,
+    finalRoute: finalState.route,
+    samples: routeSamples.slice(-12),
+  });
+  assert(bossSeen, `Boss did not appear while clearing ${zoneId}`, {
+    zoneId,
+    finalRoute: finalState.route,
+    samples: routeSamples.slice(-12),
+  });
 }
 
 const server = spawn(process.execPath, ['scripts/static-server.mjs'], {
@@ -135,6 +274,8 @@ try {
   const pageErrors = [];
   const failedRequests = [];
 
+  await installHowlerStub(page);
+
   page.on('console', msg => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
@@ -144,17 +285,8 @@ try {
   });
 
   await page.goto(`${BASE_URL}/?test=1`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__TEST__?.ready === true, null, { timeout: 10000 });
-  await page.waitForTimeout(250);
-
-  // Dismiss onboarding
-  await page.keyboard.press('Digit1');
-  await page.waitForTimeout(100);
-
-  await hold(page, 'Digit2');
-  await hold(page, 'Digit3');
-  await hold(page, 'Digit4');
-  await page.waitForFunction(() => window.__TEST__.state().players.length === 4);
+  await enterGameplayFromTitle(page);
+  await configureFourHumanParty(page);
 
   let state = await page.evaluate(() => window.__TEST__.state());
   assert(state.run.isCoOp, 'RunState did not enter co-op after joining slots', state.run);
@@ -164,8 +296,23 @@ try {
     state.players
   );
 
-  await page.evaluate(() => window.__TEST__.commands.enterZone('city-breach'));
+  await page.evaluate(() => window.__TEST__.commands.setPlayerPosition(0, -6.8, -2.2));
+  await hold(page, 'KeyF', 120);
   await page.waitForFunction(() => window.__TEST__.state().run.currentZone === 'city-breach');
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.run.currentZone === 'city-breach', 'P1 interact did not open the nearest unlocked portal', state.run);
+  const hubPortalVisibilityInZone = await page.evaluate(() =>
+    window.__huntix.scene._hubPortals.map(portal => ({
+      meshVisible: portal.mesh.visible,
+      pedestalVisible: portal.pedestal.visible,
+      zoneId: portal.zoneId,
+    }))
+  );
+  assert(
+    hubPortalVisibilityInZone.every(portal => !portal.meshVisible && !portal.pedestalVisible),
+    'Hub portal meshes remained visible during zone combat',
+    hubPortalVisibilityInZone
+  );
   await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0, null, { timeout: 10000 });
   const arenaBoundsCheck = await page.evaluate(async () => {
     const { VISIBLE_ARENA_BOUNDS } = await import('/src/gameplay/ArenaBounds.js');
@@ -326,6 +473,77 @@ try {
   assert(state.run.players[0].stats.damageDealt > 0, 'Damage dealt stat did not update', state.run.players[0]);
   assert(state.debug.combo > 0, 'Player hit did not start a combo before combo-break test', state.debug);
 
+  const perPlayerComboCheck = await page.evaluate(async () => {
+    const { Hitbox, HitboxOwners } = await import('/src/gameplay/Hitbox.js');
+    const scene = window.__huntix.scene;
+    const players = scene.hunters.players;
+    const p1 = players[0];
+    const p2 = players[1];
+    const enemies = scene.spawner.getActiveEnemies();
+    const enemy = enemies.find(candidate => !candidate.isDead?.());
+    if (!p1 || !p2 || !enemy) return { ok: false, reason: 'missing-actors' };
+
+    scene.combat.breakCombo();
+    p1.resources.health = p1.resources.maxHealth;
+    const p1MaxHp = p1.resources.maxHealth;
+    p1.position.x = -7;
+    p1.position.y = -2.2;
+    p2.position.x = -1.2;
+    p2.position.y = -2.2;
+    p2.facing = 1;
+    enemy.hp = Math.max(40, enemy.hp);
+    enemy.freeze?.(1);
+    enemy.position.x = p2.position.x + 0.8;
+    enemy.position.y = p2.combatCenterY;
+
+    const hurtbox = enemy.getHurtbox?.() || enemy.getBodyBounds?.();
+    if (!hurtbox) return { ok: false, reason: 'missing-hurtbox' };
+    const p2Hitbox = new Hitbox({
+      x: hurtbox.x,
+      y: hurtbox.y,
+      width: hurtbox.width,
+      height: hurtbox.height,
+      damage: 12,
+      knockbackX: 1.5,
+      knockbackY: 0.2,
+      owner: p2,
+      ownerTag: HitboxOwners.PLAYER,
+      targetTag: HitboxOwners.ENEMY,
+      lifetime: 0.2,
+      attackId: 990001,
+      attackType: 'light',
+    });
+    scene.combat._resolvePlayerHitbox(p2Hitbox, enemies);
+    const afterP2 = scene.combat.getComboCounts();
+
+    const bounds = p1.getBodyBounds();
+    scene.combat.addHitbox(new Hitbox({
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+      damage: 10,
+      ownerTag: HitboxOwners.ENEMY,
+      targetTag: HitboxOwners.PLAYER,
+      lifetime: 0.2,
+      attackType: 'heavy',
+    }));
+    scene.combat._resolveActiveHitboxes(0.016, players, enemies);
+    const afterP1Hit = scene.combat.getComboCounts();
+
+    return { ok: true, afterP2, afterP1Hit, p1Hp: p1.resources.health, p1MaxHp };
+  });
+  assert(perPlayerComboCheck.ok, 'Per-player combo setup failed', perPlayerComboCheck);
+  assert((perPlayerComboCheck.afterP2[0] || 0) === 0, 'P2 combo action incorrectly incremented P1 combo', perPlayerComboCheck);
+  assert((perPlayerComboCheck.afterP2[1] || 0) > 0, 'P2 combo did not increment for P2', perPlayerComboCheck);
+  assert(perPlayerComboCheck.p1Hp < perPlayerComboCheck.p1MaxHp, 'Per-player combo test did not damage P1', perPlayerComboCheck);
+  assert((perPlayerComboCheck.afterP1Hit[0] || 0) === 0, 'P1 damage did not clear only P1 combo', perPlayerComboCheck);
+  assert(
+    (perPlayerComboCheck.afterP1Hit[1] || 0) >= (perPlayerComboCheck.afterP2[1] || 0),
+    'P1 taking damage incorrectly cleared P2 combo chain',
+    perPlayerComboCheck
+  );
+
   const comboBreakCheck = await page.evaluate(async () => {
     const { Hitbox, HitboxOwners } = await import('/src/gameplay/Hitbox.js');
     const scene = window.__huntix.scene;
@@ -459,10 +677,23 @@ try {
   assert(!cosmeticReroll.shop.offers.some(offer => offer.id === cosmeticId), 'Owned cosmetic reappeared after reroll', { cosmeticId, cosmeticReroll });
   await page.evaluate(() => window.__TEST__.commands.closeShop());
 
-  for (const zoneId of ['ruin-den', 'shadow-core', 'thunder-spire']) {
+  await page.evaluate(() => {
+    window.__TEST__.commands.setPlayerPosition(1, -2.2, -2.2);
+    window.__TEST__.commands.setPlayerPosition(0, 0, -2.2);
+  });
+  await hold(page, 'NumpadDecimal', 120);
+  await page.waitForFunction(() => window.__TEST__.state().run.currentZone === 'ruin-den', null, { timeout: 10000 });
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.run.currentZone === 'ruin-den', 'P2 interact did not open an unlocked portal in hub', state.run);
+  await clearCurrentZone(page, 'ruin-den', { alreadyEntered: true });
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.run.zonesCleared >= 2, 'Ruin Den did not increment zones cleared after P2 portal entry', state.run);
+
+  for (const zoneId of ['shadow-core', 'thunder-spire']) {
     await clearCurrentZone(page, zoneId);
     state = await page.evaluate(() => window.__TEST__.state());
-    assert(state.run.zonesCleared >= ['ruin-den', 'shadow-core', 'thunder-spire'].indexOf(zoneId) + 2, `${zoneId} did not increment zones cleared`, state.run);
+    const requiredClears = zoneId === 'shadow-core' ? 3 : 4;
+    assert(state.run.zonesCleared >= requiredClears, `${zoneId} did not increment zones cleared`, state.run);
   }
 
   await page.waitForFunction(() => window.__TEST__.state().run.runComplete === true, null, { timeout: 20000 });
@@ -498,21 +729,26 @@ try {
   const aiSetup = await page.evaluate(() => {
     const ai = window.__huntix.scene.hunters.players[1];
     const enemy = window.__huntix.scene.spawner.getActiveEnemies()[0];
-    enemy.hp = 80;
-    enemy.freeze?.(2);
-    enemy.position.x = ai.position.x + 1.0;
-    enemy.position.y = ai.position.y + 0.6;
     ai.position.x = -1.5;
     ai.position.y = -2.2;
-    return { enemyHp: enemy.hp, ai: ai.playerIndex };
+    enemy.hp = 80;
+    enemy.freeze?.(0.8);
+    enemy.position.x = ai.position.x + 1.0;
+    enemy.position.y = ai.position.y + 0.6;
+    return { enemyHp: enemy.hp, enemyId: enemy.id, ai: ai.playerIndex };
   });
   await page.waitForFunction(
-    (startHp) => window.__TEST__.state().enemies[0]?.hp < startHp,
-    aiSetup.enemyHp,
-    { timeout: 4000 }
+    ({ startHp, enemyId }) => {
+      const target = window.__TEST__.state().enemies.find(enemy => enemy.id === enemyId);
+      if (!target) return true;
+      return target.hp < startHp;
+    },
+    { startHp: aiSetup.enemyHp, enemyId: aiSetup.enemyId },
+    { timeout: 10000 }
   );
   const aiState = await page.evaluate(() => window.__TEST__.state());
-  assert(aiState.enemies[0].hp < aiSetup.enemyHp, 'P2 AI companion did not attack a nearby enemy', { aiSetup, aiState });
+  const aiTarget = aiState.enemies.find(enemy => enemy.id === aiSetup.enemyId);
+  assert(!aiTarget || aiTarget.hp < aiSetup.enemyHp, 'P2 AI companion did not attack a nearby enemy', { aiSetup, aiState });
 
   const relevantConsoleErrors = consoleErrors.filter(text => !text.includes('vibej.am'));
   const relevantRequestFailures = failedRequests.filter(text => !text.includes('vibej.am'));

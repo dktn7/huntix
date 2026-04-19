@@ -18,29 +18,34 @@ export class AudioManager {
 
     // SFX definitions from docs/AUDIO.md
     this._sfxConfigs = {
-      'hit-light': { src: 'assets/audio/hit-light.mp3', volume: 0.6 },
-      'hit-heavy': { src: 'assets/audio/hit-heavy.mp3', volume: 0.9 },
-      'dodge-dabik': { src: 'assets/audio/dodge-shadow.mp3', volume: 0.5 },
-      'dodge-benzu': { src: 'assets/audio/dodge-thud.mp3', volume: 0.7 },
-      'dodge-sereisa': { src: 'assets/audio/dodge-zap.mp3', volume: 0.6 },
-      'dodge-vesol': { src: 'assets/audio/dodge-flare.mp3', volume: 0.6 },
-      'player-hurt': { src: 'assets/audio/player-hurt.mp3', volume: 0.8 },
-      'kill-slowmo': { src: 'assets/audio/kill-slowmo.mp3', volume: 1.0 },
-      'wave-clear': { src: 'assets/audio/wave-clear.mp3', volume: 0.8 },
-      'boss-intro': { src: 'assets/audio/boss-intro.mp3', volume: 1.0 },
-      'level-up': { src: 'assets/audio/level-up.mp3', volume: 0.9 },
-      'essence': { src: 'assets/audio/essence-collect.mp3', volume: 0.4 },
-      'click': { src: 'assets/audio/ui-click.mp3', volume: 0.5 },
+      'hit-light': { src: 'assets/audio/sfx/hit-light.mp3', volume: 0.6 },
+      'hit-heavy': { src: 'assets/audio/sfx/hit-heavy.mp3', volume: 0.9 },
+      'dodge-dabik': { src: 'assets/audio/sfx/dodge-shadow.mp3', volume: 0.5 },
+      'dodge-benzu': { src: 'assets/audio/sfx/dodge-thud.mp3', volume: 0.7 },
+      'dodge-sereisa': { src: 'assets/audio/sfx/dodge-zap.mp3', volume: 0.6 },
+      'dodge-vesol': { src: 'assets/audio/sfx/dodge-flare.mp3', volume: 0.6 },
+      'player-hurt': { src: 'assets/audio/sfx/player-hurt.mp3', volume: 0.8 },
+      'kill-slowmo': { src: 'assets/audio/sfx/kill-slowmo.mp3', volume: 1.0 },
+      'wave-clear': { src: 'assets/audio/sfx/wave-clear.mp3', volume: 0.8 },
+      'boss-intro': { src: 'assets/audio/sfx/boss-intro.mp3', volume: 1.0 },
+      'level-up': { src: 'assets/audio/sfx/level-up.mp3', volume: 0.9 },
+      'essence': { src: 'assets/audio/sfx/essence-collect.mp3', volume: 0.4 },
+      'ui-navigate': { src: 'assets/audio/sfx/ui-navigate.mp3', volume: 0.4 },
+      'ui-confirm': { src: 'assets/audio/sfx/ui-confirm.mp3', volume: 0.6 },
+      'hunter-hover': { src: 'assets/audio/sfx/hunter-hover.mp3', volume: 0.5 },
+      'hunter-confirm': { src: 'assets/audio/sfx/hunter-confirm.mp3', volume: 0.7 },
+      'click': { src: 'assets/audio/sfx/ui-click.mp3', volume: 0.5 },
     };
 
     // Music definitions from docs/AUDIO.md
     this._musicConfigs = {
-      'hub': 'assets/audio/music-hub.mp3',
-      'city-breach': 'assets/audio/music-city.mp3',
-      'ruin-den': 'assets/audio/music-ruins.mp3',
-      'shadow-core': 'assets/audio/music-shadow.mp3',
-      'thunder-spire': 'assets/audio/music-thunder.mp3',
-      'boss': 'assets/audio/music-boss.mp3',
+      'title': 'assets/audio/music/title-theme.mp3',
+      'hub': 'assets/audio/music/hub.mp3',
+      'city-breach': 'assets/audio/music/city-breach.mp3',
+      'ruin-den': 'assets/audio/music/ruin-den.mp3',
+      'shadow-core': 'assets/audio/music/shadow-core.mp3',
+      'thunder-spire': 'assets/audio/music/thunder-spire.mp3',
+      'boss': 'assets/audio/music/boss.mp3',
     };
   }
 

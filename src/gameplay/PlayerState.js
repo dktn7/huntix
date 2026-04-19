@@ -10,7 +10,7 @@ const BASE_Y_SCALE = 0.4;
 const ATTACK_BODY_GAP = 0.08;
 const SPEED_TO_WORLD_UNITS = 64;
 const DOWNED_SECONDS = 8;
-const LIGHT_COMBO_WINDOW = 0.55;
+const LIGHT_COMBO_WINDOW = 0.45;
 const JUMP_HEIGHT = 2.5;
 
 export const PlayerStates = {
@@ -30,14 +30,14 @@ export const PlayerStates = {
 };
 
 const STATE_DURATIONS = {
-  [PlayerStates.ATTACK_LIGHT]: 10 * TICK,
-  [PlayerStates.ATTACK_HEAVY]: 18 * TICK,
-  [PlayerStates.SPELL_MINOR]: 14 * TICK,
-  [PlayerStates.SPELL_ADVANCED]: 24 * TICK,
-  [PlayerStates.ULTIMATE]: 60 * TICK,
-  [PlayerStates.JUMP]: 30 * TICK,
-  [PlayerStates.DODGE]: 18 * TICK,
-  [PlayerStates.HURT]: 10 * TICK,
+  [PlayerStates.ATTACK_LIGHT]: 8 * TICK,
+  [PlayerStates.ATTACK_HEAVY]: 14 * TICK,
+  [PlayerStates.SPELL_MINOR]: 10 * TICK,
+  [PlayerStates.SPELL_ADVANCED]: 20 * TICK,
+  [PlayerStates.ULTIMATE]: 50 * TICK,
+  [PlayerStates.JUMP]: 25 * TICK,
+  [PlayerStates.DODGE]: 14 * TICK,
+  [PlayerStates.HURT]: 8 * TICK,
   [PlayerStates.REVIVE]: 18 * TICK,
   [PlayerStates.DEAD]: 24 * TICK,
 };
@@ -79,6 +79,7 @@ const DEFAULT_HUNTER_CONFIG = {
 export class PlayerState {
   /** Creates the player state machine and its placeholder mesh. */
   constructor(scene, resources, options = {}) {
+    this.scene = scene;
     this.id = options.playerIndex || 0;
     this.playerIndex = options.playerIndex || 0;
     this.hunterConfig = options.hunterConfig || DEFAULT_HUNTER_CONFIG;
@@ -119,7 +120,7 @@ export class PlayerState {
     this._visualBody = this.mesh.userData?.bodyMesh || this.mesh;
     this._baseMaterial = this._visualBody.material || null;
     this.mesh.position.set(this.position.x, this.position.y, 0);
-    if (!this.mesh.parent) scene.add(this.mesh);
+    if (!this.mesh.parent) this.scene.add(this.mesh);
   }
 
   /** Advances movement, state timers, resources, and placeholder animation. */
@@ -196,7 +197,10 @@ export class PlayerState {
     if (this.state === PlayerStates.HURT && state !== PlayerStates.DEAD && !options.force) return false;
     if (this.state === PlayerStates.ULTIMATE && state !== PlayerStates.DEAD && !options.force) return false;
     if (this.state === PlayerStates.DODGE && state !== PlayerStates.DEAD && !options.force) return false;
-    if (this._isCommittedState() && state !== PlayerStates.DEAD && state !== PlayerStates.HURT && !options.force) return false;
+
+    // Allow cancelling committed states (attacks) with dodge or jump
+    const isCancelling = this._isCommittedState() && (state === PlayerStates.DODGE || state === PlayerStates.JUMP);
+    if (this._isCommittedState() && !isCancelling && !options.force) return false;
 
     this.state = state;
     this._animationRevision += 1;
@@ -481,6 +485,30 @@ export class PlayerState {
   /** Returns true while Storm Surge is active. */
   isStormSurging() {
     return this._stormSurgeTimer > 0;
+  }
+
+  /** Replaces the live mesh while preserving scene placement and gameplay state. */
+  setMesh(nextMesh) {
+    if (!nextMesh || nextMesh === this.mesh) return false;
+
+    const prevMesh = this.mesh;
+    nextMesh.position.copy(prevMesh.position);
+    nextMesh.rotation.copy(prevMesh.rotation);
+    nextMesh.scale.copy(prevMesh.scale);
+
+    if (prevMesh.parent) {
+      const parent = prevMesh.parent;
+      parent.add(nextMesh);
+      parent.remove(prevMesh);
+    } else if (!nextMesh.parent) {
+      this.scene.add(nextMesh);
+    }
+
+    this.mesh = nextMesh;
+    this._visualBody = this.mesh.userData?.bodyMesh || this.mesh;
+    this._baseMaterial = this._visualBody.material || null;
+    this._syncMesh();
+    return true;
   }
 
   /** Nudges the player body during collision resolution without applying damage. */

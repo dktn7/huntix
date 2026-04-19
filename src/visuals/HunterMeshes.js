@@ -3,6 +3,9 @@ import { SpriteAnimator } from './SpriteAnimator.js';
 import { HUNTERS } from './Palettes.js';
 
 const SPRITE_HEIGHT = 1.5;
+const HUNTER_SPRITES_DIR = 'assets/sprites/hunters';
+const SHARED_SPRITES_DIR = 'assets/sprites';
+const textureLoader = new THREE.TextureLoader();
 
 const FALLBACKS = {
   dabik: { label: 'Dabik', width: 0.65, height: 1.25, bodyColor: 0x2d0040, lightColor: 0x8b4ddb },
@@ -14,18 +17,8 @@ const FALLBACKS = {
 /** Loads one TexturePacker atlas and applies Huntix sprite texture settings. */
 export async function loadHunterAtlas(hunterId) {
   const id = hunterId.toLowerCase();
-  const response = await fetch(`assets/sprites/${id}.json`);
-  if (!response.ok) throw new Error(`Missing atlas data for ${id}`);
-
-  const atlasData = await response.json();
-  const texture = await new Promise((resolve, reject) => {
-    new THREE.TextureLoader().load(
-      `assets/sprites/${id}.png`,
-      resolve,
-      undefined,
-      reject
-    );
-  });
+  const atlasData = await loadAtlasJson(id);
+  const texture = await loadAtlasTexture(id);
 
   texture.magFilter = THREE.NearestFilter;
   texture.minFilter = THREE.NearestFilter;
@@ -37,8 +30,9 @@ export async function loadHunterAtlas(hunterId) {
 
 /** Creates a hunter sprite group with atlas animation when assets exist, otherwise a placeholder fallback. */
 export function createHunterMesh({ hunterId = 'dabik', atlasTexture = null, atlasData = null } = {}) {
-  if (atlasTexture && atlasData?.frames) {
-    return createAtlasHunterMesh(hunterId, atlasTexture, atlasData);
+  const normalizedAtlas = normalizeAtlasData(atlasData);
+  if (atlasTexture && Object.keys(normalizedAtlas.frames).length > 0) {
+    return createAtlasHunterMesh(hunterId, atlasTexture, normalizedAtlas);
   }
 
   return createFallbackHunterMesh(hunterId);
@@ -47,7 +41,8 @@ export function createHunterMesh({ hunterId = 'dabik', atlasTexture = null, atla
 /** Creates the real PlaneGeometry sprite quad for a hunter atlas. */
 export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   const group = new THREE.Group();
-  const firstFrame = Object.values(atlasData.frames)[0];
+  const normalizedAtlas = normalizeAtlasData(atlasData);
+  const firstFrame = Object.values(normalizedAtlas.frames)[0];
   const sourceSize = firstFrame?.sourceSize || firstFrame?.frame || { w: 64, h: 96 };
   const width = SPRITE_HEIGHT * (sourceSize.w / sourceSize.h);
 
@@ -73,7 +68,7 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   group.userData.spriteMesh = sprite;
   group.userData.bodyMesh = sprite;
   group.userData.shadowMesh = shadow;
-  group.userData.animator = new SpriteAnimator(material, atlasData);
+  group.userData.animator = new SpriteAnimator(material, normalizedAtlas);
   return group;
 }
 
@@ -154,4 +149,75 @@ function createDropShadow(width) {
   shadow.position.set(0, 0.01, -0.02);
   shadow.renderOrder = -1;
   return shadow;
+}
+
+async function loadAtlasJson(hunterId) {
+  const candidates = [
+    `${HUNTER_SPRITES_DIR}/${hunterId}-atlas.json`,
+    `${HUNTER_SPRITES_DIR}/${hunterId}.json`,
+    `${SHARED_SPRITES_DIR}/${hunterId}.json`,
+  ];
+
+  for (const path of candidates) {
+    try {
+      const response = await fetch(path);
+      if (!response.ok) continue;
+      const atlasData = await response.json();
+      return normalizeAtlasData(atlasData);
+    } catch {
+      // Try next candidate path.
+    }
+  }
+
+  throw new Error(`Missing atlas data for ${hunterId}`);
+}
+
+async function loadAtlasTexture(hunterId) {
+  const candidates = [
+    `${HUNTER_SPRITES_DIR}/${hunterId}-atlas.webp`,
+    `${HUNTER_SPRITES_DIR}/${hunterId}-atlas.png`,
+    `${HUNTER_SPRITES_DIR}/${hunterId}.webp`,
+    `${HUNTER_SPRITES_DIR}/${hunterId}.png`,
+    `${SHARED_SPRITES_DIR}/${hunterId}.webp`,
+    `${SHARED_SPRITES_DIR}/${hunterId}.png`,
+  ];
+
+  for (const path of candidates) {
+    try {
+      const texture = await new Promise((resolve, reject) => {
+        textureLoader.load(path, resolve, undefined, reject);
+      });
+      return texture;
+    } catch {
+      // Try next candidate path.
+    }
+  }
+
+  throw new Error(`Missing atlas texture for ${hunterId}`);
+}
+
+function normalizeAtlasData(atlasData) {
+  if (!atlasData || typeof atlasData !== 'object') {
+    return { frames: {}, meta: { size: { w: 1, h: 1 } } };
+  }
+
+  let frames = atlasData.frames;
+  if (Array.isArray(frames)) {
+    const mapped = {};
+    for (const frame of frames) {
+      if (!frame || typeof frame !== 'object') continue;
+      const key = frame.filename || frame.name || frame.id;
+      if (!key) continue;
+      mapped[key] = frame;
+    }
+    frames = mapped;
+  } else if (!frames || typeof frames !== 'object') {
+    frames = {};
+  }
+
+  return {
+    ...atlasData,
+    frames,
+    meta: atlasData.meta || { size: { w: 1, h: 1 } },
+  };
 }

@@ -9,58 +9,58 @@ const canvas = document.getElementById('game-canvas');
 const renderer = new Renderer(canvas);
 const input = new InputManager();
 
-const PLAYER_SLOT_CONFIGS = [
-  { hunterId: 'dabik', isAI: false, carryEssence: 0 },
-  { hunterId: 'benzu', isAI: false, carryEssence: 0 },
-  { hunterId: 'sereisa', isAI: false, carryEssence: 0 },
-  { hunterId: 'vesol', isAI: false, carryEssence: 0 },
-];
+let scene = new SceneManager(renderer);
+const loop = new GameLoop();
+const TEST_HUNTER_ROSTER = ['dabik', 'benzu', 'sereisa', 'vesol'];
 
-RunState.init([PLAYER_SLOT_CONFIGS[0]]);
-let scene = null;
-
-function activatePlayerSlot(slotIndex) {
-  if (slotIndex < 1 || slotIndex >= PLAYER_SLOT_CONFIGS.length) return;
-  while (RunState.players.length <= slotIndex) {
-    const config = PLAYER_SLOT_CONFIGS[RunState.players.length];
-    if (!RunState.addPlayer(config)) return;
-  }
+function syncLiveSystemsFromRunState() {
+  scene.hunters.syncAllFromRunState(RunState.players);
+  scene.hunters.applyRunStateModifiers(RunState.players);
+  scene.spawner.setPlayerCount(scene.hunters.activeHumanPlayerCount);
 }
 
-function activateConnectedGamepads() {
-  const gamepads = navigator.getGamepads?.() || [];
-  for (let i = 1; i < PLAYER_SLOT_CONFIGS.length; i += 1) {
-    if (gamepads[i]) activatePlayerSlot(i);
+function ensureHumanRunStarted() {
+  if (RunState.players.length > 0) return;
+  scene.startRun([{ hunterId: TEST_HUNTER_ROSTER[0], playerIndex: 0, isAI: false }]);
+  scene.startNewRunFromRunState();
+}
+
+function activatePlayerSlot(slotIndex) {
+  const idx = Number(slotIndex);
+  if (!Number.isInteger(idx) || idx < 0 || idx >= TEST_HUNTER_ROSTER.length) return false;
+
+  ensureHumanRunStarted();
+  while (RunState.players.length <= idx) {
+    const nextIndex = RunState.players.length;
+    const added = RunState.addPlayer({
+      hunterId: TEST_HUNTER_ROSTER[nextIndex],
+      playerIndex: nextIndex,
+      isAI: false,
+    });
+    if (!added) return false;
   }
+
+  RunState.players[idx].isAI = false;
+  RunState.isCoOp = RunState.players.filter(player => !player.isAI).length > 1;
+  syncLiveSystemsFromRunState();
+  return true;
 }
 
 function activateOneForAll() {
-  RunState.init(PLAYER_SLOT_CONFIGS.map((config, index) => ({
-    ...config,
+  const configs = TEST_HUNTER_ROSTER.map((hunterId, index) => ({
+    hunterId,
+    playerIndex: index,
     isAI: index > 0,
-  })));
-  scene?.startNewRunFromRunState();
-  return RunState.players;
+  }));
+  scene.startRun(configs);
+  scene.startNewRunFromRunState();
+  scene.hud.hideOnboarding();
+  return true;
 }
-
-activateConnectedGamepads();
-scene = new SceneManager(renderer);
-const params = new URLSearchParams(window.location.search);
-if (params.get('oneForAll') === '1' || params.get('oneforall') === '1') {
-  activateOneForAll();
-}
-const loop = new GameLoop();
-
-window.addEventListener('gamepadconnected', event => {
-  if (event.gamepad.index > 0) activatePlayerSlot(event.gamepad.index);
-});
 
 loop.start((dt) => {
   scene.update(dt, input);
-  if (input.justPressed(Actions.JOIN_P2)) activatePlayerSlot(1);
-  if (input.justPressed(Actions.JOIN_P3)) activatePlayerSlot(2);
-  if (input.justPressed(Actions.JOIN_P4)) activatePlayerSlot(3);
-  if (!RunState.runComplete && !RunState.runWiped) RunState.tick(dt);
+  if (!RunState.runComplete && !RunState.runWiped && RunState.players.length > 0) RunState.tick(dt);
   renderer.render(scene.getScene(), scene.getCamera());
 
   const panel = document.getElementById('debug-panel');
@@ -76,7 +76,8 @@ loop.start((dt) => {
       `Surge: ${debug.surge.toFixed(0)} / ${debug.maxSurge}`,
       `Stamina: ${debug.stamina.toFixed(0)} / ${debug.maxStamina}`,
       `Enemies: ${debug.enemies}`,
-      `Combo: ${debug.combo}`,
+      `Combo P1: ${debug.combo}`,
+      `Combo All: ${(debug.comboByPlayer || []).join(', ') || '0'}`,
       `Hitstop: ${(debug.hitstop * 1000).toFixed(0)}ms`,
       `Input P1: ${[...input.getPlayerInput(0).pressed].join(', ') || 'none'}`,
     ].join('<br>');
@@ -177,7 +178,7 @@ window.__TEST__ = {
   },
   commands: {
     join(slotIndex) {
-      activatePlayerSlot(slotIndex);
+      return activatePlayerSlot(slotIndex);
     },
     oneForAll() {
       activateOneForAll();

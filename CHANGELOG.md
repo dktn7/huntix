@@ -9,6 +9,7 @@
 ### In Progress
 - Phase 3: All 4 hunters + co-op input
 - HunterController.js, SpriteAnimator.js, AnimationController.js
+- Phase 7 kickoff: hunter atlas manifest gate, atlas hot-swap runtime wiring, and flexible frame-name parsing
 
 ---
 
