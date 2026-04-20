@@ -5,22 +5,35 @@
  * Usage:
  *   node process_sprites.js
  *
- * Expects this input folder structure:
+ * SIMPLE MODE (recommended):
+ *   Just dump all Flow outputs for each hunter into one flat folder.
+ *   The script reads the state name from the filename automatically.
+ *
  *   flow_output/
- *     dabik/
- *       idle/           <- PNG or JPG frames from Google Flow
- *       run/
- *       attack_light/
- *       ... (all 13 states)
+ *     dabik/    ← dump everything here, e.g. dabik_idle_001.png, run_02.jpg
  *     benzu/
  *     sereisa/
  *     vesol/
  *
+ * ORGANISED MODE (also works):
+ *   If you prefer, you can pre-sort into subfolders:
+ *
+ *   flow_output/
+ *     dabik/
+ *       idle/
+ *       run/
+ *       ...
+ *
+ * Files MUST contain the state name somewhere in the filename, e.g.:
+ *   dabik_idle_001.png
+ *   idle_01.png
+ *   IDLE.PNG
+ *   attack_light_frame3.jpg
+ *
  * Outputs keyed transparent PNGs to:
  *   assets/hunters/{hunter}/{state}/
  *
- * Optionally runs TexturePacker CLI to pack per-hunter atlases.
- * Set PACK_ATLAS = true below if TexturePacker is installed.
+ * Set PACK_ATLAS = true to also run TexturePacker CLI after keying.
  *
  * Requirements:
  *   npm install sharp
@@ -56,33 +69,89 @@ const STATES = [
 ];
 
 // Green screen colour from all prompts: #00FF00
-// Threshold: how close to pure green a pixel must be to get keyed out.
-// Lower = stricter (only exact green). Higher = catches edge fringing.
-// Recommended: 40. Increase to 60 if you see green fringing on edges.
+// Lower = stricter. Higher = catches more edge fringing.
+// Recommended: 40. Increase to 60 if edges look green after keying.
 const THRESHOLD = 40;
 
 // Set to true if TexturePacker CLI is installed and on your PATH.
-// Download from https://www.codeandweb.com/texturepacker
 const PACK_ATLAS = false;
 
-// TexturePacker output format. Options: json-array, json-hash, xml, phaser3, etc.
 const ATLAS_FORMAT = 'json-array';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
-// ─── GREEN KEY ───────────────────────────────────────────────────────────────
+// ─── STATE DETECTION ─────────────────────────────────────────────────────────
 
 /**
- * Keys the #00FF00 green background from a single image.
- * Uses Sharp to read raw pixel data, zeroes alpha on green pixels, saves as PNG.
+ * Detects which animation state a file belongs to by reading its filename.
+ * Checks for state names longest-first to avoid 'dead' matching 'downed' etc.
+ * Returns the state string or null if no match found.
  */
+function detectState(filename) {
+  const lower = filename.toLowerCase();
+  // Sort by length descending so 'attack_light' matches before 'attack'
+  const sorted = [...STATES].sort((a, b) => b.length - a.length);
+  for (const state of sorted) {
+    if (lower.includes(state)) return state;
+  }
+  return null;
+}
+
+/**
+ * Scans a flat hunter folder and groups files by detected state.
+ * Also handles pre-sorted subfolders — if a subfolder name matches a state,
+ * all files inside are assigned to that state.
+ * Returns: { [state]: [absolute file paths] }
+ */
+function groupFilesByState(hunterDir) {
+  const groups = {};
+  for (const state of STATES) groups[state] = [];
+
+  const entries = fs.readdirSync(hunterDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(hunterDir, entry.name);
+
+    if (entry.isDirectory()) {
+      // Pre-sorted subfolder — check if folder name is a state
+      const folderState = STATES.includes(entry.name) ? entry.name : detectState(entry.name);
+      if (!folderState) {
+        console.log(`  — Subfolder '${entry.name}' doesn't match any state, skipping`);
+        continue;
+      }
+      const subFiles = fs.readdirSync(fullPath)
+        .filter(f => IMAGE_EXTENSIONS.has(path.extname(f).toLowerCase()))
+        .sort()
+        .map(f => path.join(fullPath, f));
+      groups[folderState].push(...subFiles);
+
+    } else if (entry.isFile() && IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      // Flat file — detect state from filename
+      const state = detectState(entry.name);
+      if (state) {
+        groups[state].push(fullPath);
+      } else {
+        console.log(`  ⚠ '${entry.name}' — no state detected in filename, skipping`);
+        console.log(`    Rename to include the state, e.g. idle_${entry.name}`);
+      }
+    }
+  }
+
+  // Sort each group so frames are in order
+  for (const state of STATES) groups[state].sort();
+
+  return groups;
+}
+
+// ─── GREEN KEY ───────────────────────────────────────────────────────────────
+
 async function keyGreenScreen(inputPath, outputPath) {
   const { data, info } = await sharp(inputPath)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
 
-  const { width, height, channels } = info; // channels = 4 (RGBA)
+  const { width, height, channels } = info;
   const buf = Buffer.from(data);
 
   for (let i = 0; i < buf.length; i += channels) {
@@ -91,7 +160,7 @@ async function keyGreenScreen(inputPath, outputPath) {
     const b = buf[i + 2];
     const gap = g - 200;
     if (g > 200 && r < THRESHOLD + gap && b < THRESHOLD + gap) {
-      buf[i + 3] = 0; // zero alpha
+      buf[i + 3] = 0;
     }
   }
 
@@ -100,41 +169,10 @@ async function keyGreenScreen(inputPath, outputPath) {
     .toFile(outputPath);
 }
 
-// ─── FOLDER PROCESSING ───────────────────────────────────────────────────────
+// ─── PROCESSING ───────────────────────────────────────────────────────────────
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
-}
-
-function getImageFiles(dirPath) {
-  return fs
-    .readdirSync(dirPath)
-    .filter(f => IMAGE_EXTENSIONS.has(path.extname(f).toLowerCase()))
-    .sort();
-}
-
-async function processState(inputDir, outputDir) {
-  if (!fs.existsSync(inputDir)) return 0;
-
-  const files = getImageFiles(inputDir);
-  if (files.length === 0) return 0;
-
-  ensureDir(outputDir);
-  let count = 0;
-
-  for (const file of files) {
-    const inputPath = path.join(inputDir, file);
-    const outputPath = path.join(outputDir, path.basename(file, path.extname(file)) + '.png');
-    try {
-      await keyGreenScreen(inputPath, outputPath);
-      console.log(`  ✓ ${file} → ${outputPath}`);
-      count++;
-    } catch (err) {
-      console.error(`  ✗ ${file} — ERROR: ${err.message}`);
-    }
-  }
-
-  return count;
 }
 
 async function processHunter(hunter) {
@@ -142,20 +180,38 @@ async function processHunter(hunter) {
   console.log(`  HUNTER: ${hunter.toUpperCase()}`);
   console.log('─'.repeat(50));
 
+  const hunterDir = path.join(INPUT_ROOT, hunter);
+  const groups = groupFilesByState(hunterDir);
   let total = 0;
 
   for (const state of STATES) {
-    const inputDir = path.join(INPUT_ROOT, hunter, state);
-    const outputDir = path.join(OUTPUT_ROOT, hunter, state);
+    const files = groups[state];
 
-    if (!fs.existsSync(inputDir)) {
-      console.log(`  — ${state.padEnd(20)} (no input folder, skipping)`);
+    if (files.length === 0) {
+      console.log(`  — ${state.padEnd(20)} (no files found)`);
       continue;
     }
 
-    console.log(`  Processing: ${state}`);
-    const count = await processState(inputDir, outputDir);
-    console.log(`  → ${count} frame(s) keyed`);
+    const outputDir = path.join(OUTPUT_ROOT, hunter, state);
+    ensureDir(outputDir);
+
+    console.log(`  Processing: ${state} (${files.length} file(s))`);
+
+    let count = 0;
+    for (let i = 0; i < files.length; i++) {
+      const inputPath = files[i];
+      const frameNum = String(i + 1).padStart(4, '0');
+      const outputPath = path.join(outputDir, `${state}_${frameNum}.png`);
+      try {
+        await keyGreenScreen(inputPath, outputPath);
+        console.log(`  ✓ ${path.basename(inputPath)} → ${path.basename(outputPath)}`);
+        count++;
+      } catch (err) {
+        console.error(`  ✗ ${path.basename(inputPath)} — ERROR: ${err.message}`);
+      }
+    }
+
+    console.log(`  → ${count} frame(s) keyed into assets/hunters/${hunter}/${state}/`);
     total += count;
   }
 
@@ -210,11 +266,15 @@ async function main() {
   console.log('║   HUNTIX SPRITE PIPELINE                     ║');
   console.log('║   Green Screen Keyer + TexturePacker          ║');
   console.log('╚══════════════════════════════════════════════╝');
+  console.log('');
+  console.log('  Files are sorted into states by filename.');
+  console.log('  Make sure each filename contains the state name.');
+  console.log('  e.g. dabik_idle_001.png, run_02.jpg, attack_light.png');
 
   if (!fs.existsSync(INPUT_ROOT)) {
     console.error(`\n✗ Input folder '${INPUT_ROOT}' not found.`);
-    console.error('  Create it and drop your Flow outputs in:');
-    console.error('  flow_output/{hunter}/{state}/*.png');
+    console.error('  Create a flow_output/ folder at the repo root.');
+    console.error('  Then drop your Flow outputs into flow_output/{hunter}/');
     process.exit(1);
   }
 
@@ -229,15 +289,13 @@ async function main() {
     const total = await processHunter(hunter);
     grandTotal += total;
 
-    if (PACK_ATLAS) {
-      packAtlas(hunter);
-    }
+    if (PACK_ATLAS) packAtlas(hunter);
   }
 
   console.log(`\n${'═'.repeat(50)}`);
-  console.log(`  ALL DONE — ${grandTotal} total frames keyed across all hunters`);
+  console.log(`  ALL DONE — ${grandTotal} total frames keyed`);
   if (PACK_ATLAS) {
-    console.log('  Atlas files written to assets/hunters/{hunter}/atlas.png + .json');
+    console.log('  Atlas files → assets/hunters/{hunter}/atlas.png + .json');
   } else {
     console.log('  Tip: set PACK_ATLAS = true to auto-pack atlases after keying');
   }
