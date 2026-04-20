@@ -6,34 +6,28 @@
  *   node process_sprites.js
  *
  * SIMPLE MODE (recommended):
- *   Just dump all Flow outputs for each hunter into one flat folder.
+ *   Dump all Flow outputs for a hunter into one flat folder.
  *   The script reads the state name from the filename automatically.
  *
  *   flow_output/
- *     dabik/    ← dump everything here, e.g. dabik_idle_001.png, run_02.jpg
+ *     dabik/    ← e.g. dabik_idle_001.png, run_02.jpg, attack_light.png
  *     benzu/
  *     sereisa/
  *     vesol/
  *
  * ORGANISED MODE (also works):
- *   If you prefer, you can pre-sort into subfolders:
- *
- *   flow_output/
- *     dabik/
- *       idle/
- *       run/
- *       ...
+ *   Pre-sort into state subfolders if you prefer:
+ *   flow_output/dabik/idle/, flow_output/dabik/run/, etc.
  *
  * Files MUST contain the state name somewhere in the filename, e.g.:
- *   dabik_idle_001.png
- *   idle_01.png
- *   IDLE.PNG
- *   attack_light_frame3.jpg
+ *   dabik_idle_001.png  |  idle_01.png  |  IDLE.PNG  |  attack_light_frame3.jpg
  *
- * Outputs keyed transparent PNGs to:
- *   assets/hunters/{hunter}/{state}/
+ * Output location (matches RENDERING.md spec exactly):
+ *   assets/sprites/hunters/{hunter}/{state}/{state}_0001.webp
  *
- * Set PACK_ATLAS = true to also run TexturePacker CLI after keying.
+ * Atlas output (matches RENDERING.md spec exactly):
+ *   assets/sprites/hunters/{hunter}-atlas.webp
+ *   assets/sprites/hunters/{hunter}-atlas.json
  *
  * Requirements:
  *   npm install sharp
@@ -47,8 +41,8 @@ const { execSync } = require('child_process');
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 
-const INPUT_ROOT = path.resolve('flow_output');
-const OUTPUT_ROOT = path.resolve('assets/hunters');
+const INPUT_ROOT  = path.resolve('flow_output');
+const OUTPUT_ROOT = path.resolve('assets/sprites/hunters'); // matches RENDERING.md
 
 const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol'];
 
@@ -69,40 +63,31 @@ const STATES = [
 ];
 
 // Green screen colour from all prompts: #00FF00
-// Lower = stricter. Higher = catches more edge fringing.
-// Recommended: 40. Increase to 60 if edges look green after keying.
+// Lower = stricter. Increase to 60 if edges still look green after keying.
 const THRESHOLD = 40;
 
 // Set to true if TexturePacker CLI is installed and on your PATH.
+// https://www.codeandweb.com/texturepacker
 const PACK_ATLAS = false;
 
+// Must match what SpriteAnimator.js expects. json-array is the default.
 const ATLAS_FORMAT = 'json-array';
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
 // ─── STATE DETECTION ─────────────────────────────────────────────────────────
 
-/**
- * Detects which animation state a file belongs to by reading its filename.
- * Checks for state names longest-first to avoid 'dead' matching 'downed' etc.
- * Returns the state string or null if no match found.
- */
+// Sort longest first so 'attack_light' matches before 'attack', 'downed' before 'dead'
+const STATES_BY_LENGTH = [...STATES].sort((a, b) => b.length - a.length);
+
 function detectState(filename) {
   const lower = filename.toLowerCase();
-  // Sort by length descending so 'attack_light' matches before 'attack'
-  const sorted = [...STATES].sort((a, b) => b.length - a.length);
-  for (const state of sorted) {
+  for (const state of STATES_BY_LENGTH) {
     if (lower.includes(state)) return state;
   }
   return null;
 }
 
-/**
- * Scans a flat hunter folder and groups files by detected state.
- * Also handles pre-sorted subfolders — if a subfolder name matches a state,
- * all files inside are assigned to that state.
- * Returns: { [state]: [absolute file paths] }
- */
 function groupFilesByState(hunterDir) {
   const groups = {};
   for (const state of STATES) groups[state] = [];
@@ -113,7 +98,6 @@ function groupFilesByState(hunterDir) {
     const fullPath = path.join(hunterDir, entry.name);
 
     if (entry.isDirectory()) {
-      // Pre-sorted subfolder — check if folder name is a state
       const folderState = STATES.includes(entry.name) ? entry.name : detectState(entry.name);
       if (!folderState) {
         console.log(`  — Subfolder '${entry.name}' doesn't match any state, skipping`);
@@ -126,20 +110,17 @@ function groupFilesByState(hunterDir) {
       groups[folderState].push(...subFiles);
 
     } else if (entry.isFile() && IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
-      // Flat file — detect state from filename
       const state = detectState(entry.name);
       if (state) {
         groups[state].push(fullPath);
       } else {
-        console.log(`  ⚠ '${entry.name}' — no state detected in filename, skipping`);
+        console.log(`  ⚠ '${entry.name}' — no state name found in filename, skipping`);
         console.log(`    Rename to include the state, e.g. idle_${entry.name}`);
       }
     }
   }
 
-  // Sort each group so frames are in order
   for (const state of STATES) groups[state].sort();
-
   return groups;
 }
 
@@ -164,8 +145,9 @@ async function keyGreenScreen(inputPath, outputPath) {
     }
   }
 
+  // Output as WebP with alpha — matches RENDERING.md sprite atlas format
   await sharp(buf, { raw: { width, height, channels } })
-    .png()
+    .webp({ lossless: true })
     .toFile(outputPath);
 }
 
@@ -201,7 +183,7 @@ async function processHunter(hunter) {
     for (let i = 0; i < files.length; i++) {
       const inputPath = files[i];
       const frameNum = String(i + 1).padStart(4, '0');
-      const outputPath = path.join(outputDir, `${state}_${frameNum}.png`);
+      const outputPath = path.join(outputDir, `${state}_${frameNum}.webp`);
       try {
         await keyGreenScreen(inputPath, outputPath);
         console.log(`  ✓ ${path.basename(inputPath)} → ${path.basename(outputPath)}`);
@@ -211,7 +193,7 @@ async function processHunter(hunter) {
       }
     }
 
-    console.log(`  → ${count} frame(s) keyed into assets/hunters/${hunter}/${state}/`);
+    console.log(`  → ${count} frame(s) → assets/sprites/hunters/${hunter}/${state}/`);
     total += count;
   }
 
@@ -223,8 +205,9 @@ async function processHunter(hunter) {
 
 function packAtlas(hunter) {
   const hunterDir = path.join(OUTPUT_ROOT, hunter);
-  const sheetPath = path.join(hunterDir, 'atlas.png');
-  const dataPath = path.join(hunterDir, 'atlas.json');
+  // Atlas naming matches RENDERING.md: {hunter}-atlas.webp + {hunter}-atlas.json
+  const sheetPath = path.join(OUTPUT_ROOT, `${hunter}-atlas.webp`);
+  const dataPath  = path.join(OUTPUT_ROOT, `${hunter}-atlas.json`);
 
   const stateFolders = STATES
     .map(state => path.join(hunterDir, state))
@@ -251,8 +234,8 @@ function packAtlas(hunter) {
   console.log(`\n  Packing atlas for ${hunter.toUpperCase()}...`);
   try {
     execSync(cmd, { stdio: 'inherit' });
-    console.log(`  ✓ Atlas packed → ${sheetPath}`);
-    console.log(`  ✓ Data file   → ${dataPath}`);
+    console.log(`  ✓ ${hunter}-atlas.webp → assets/sprites/hunters/`);
+    console.log(`  ✓ ${hunter}-atlas.json → assets/sprites/hunters/`);
   } catch (err) {
     console.error('  ✗ TexturePacker error — is it installed and on your PATH?');
     console.error('    https://www.codeandweb.com/texturepacker');
@@ -267,14 +250,17 @@ async function main() {
   console.log('║   Green Screen Keyer + TexturePacker          ║');
   console.log('╚══════════════════════════════════════════════╝');
   console.log('');
-  console.log('  Files are sorted into states by filename.');
-  console.log('  Make sure each filename contains the state name.');
-  console.log('  e.g. dabik_idle_001.png, run_02.jpg, attack_light.png');
+  console.log('  Output format : WebP (lossless, transparent)');
+  console.log('  Output path   : assets/sprites/hunters/');
+  console.log('  Atlas naming  : {hunter}-atlas.webp + {hunter}-atlas.json');
+  console.log('');
+  console.log('  Files sorted by state name in filename.');
+  console.log('  e.g. dabik_idle_001.png  run_02.jpg  attack_light.png');
 
   if (!fs.existsSync(INPUT_ROOT)) {
     console.error(`\n✗ Input folder '${INPUT_ROOT}' not found.`);
-    console.error('  Create a flow_output/ folder at the repo root.');
-    console.error('  Then drop your Flow outputs into flow_output/{hunter}/');
+    console.error('  Create flow_output/ at the repo root.');
+    console.error('  Drop Flow outputs into flow_output/{hunter}/');
     process.exit(1);
   }
 
@@ -288,14 +274,13 @@ async function main() {
     }
     const total = await processHunter(hunter);
     grandTotal += total;
-
     if (PACK_ATLAS) packAtlas(hunter);
   }
 
   console.log(`\n${'═'.repeat(50)}`);
   console.log(`  ALL DONE — ${grandTotal} total frames keyed`);
   if (PACK_ATLAS) {
-    console.log('  Atlas files → assets/hunters/{hunter}/atlas.png + .json');
+    console.log('  Atlases → assets/sprites/hunters/{hunter}-atlas.webp + .json');
   } else {
     console.log('  Tip: set PACK_ATLAS = true to auto-pack atlases after keying');
   }
