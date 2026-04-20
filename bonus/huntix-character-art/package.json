@@ -1,0 +1,15 @@
+{
+  "name": "huntix-sprite-pipeline",
+  "version": "1.0.0",
+  "description": "Green screen keyer and TexturePacker automation for Huntix sprite assets",
+  "main": "process_sprites.js",
+  "scripts": {
+    "process": "node process_sprites.js"
+  },
+  "dependencies": {
+    "sharp": "^0.33.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
