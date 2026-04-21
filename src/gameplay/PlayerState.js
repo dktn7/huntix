@@ -450,9 +450,9 @@ export class PlayerState {
 
   /** Returns true while the player is in the evasive airborne jump state. */
   isAirborne() {
-    return this.state === PlayerStates.JUMP ||
-      this.state === PlayerStates.JUMP_RISE ||
-      this.state === PlayerStates.JUMP_FALL;
+    return this.state === PlayerStates.JUMP
+      || this.state === PlayerStates.JUMP_RISE
+      || this.state === PlayerStates.JUMP_FALL;
   }
 
   /** Returns true when the current state is an attack state. */
@@ -567,9 +567,9 @@ export class PlayerState {
   _updateJump(dt, moveVector) {
     if (moveVector.x !== 0) this.facing = Math.sign(moveVector.x);
     this._applyMoveVector(dt, moveVector);
+    this._stateElapsed += dt;
 
     if (this.state === PlayerStates.JUMP) {
-      this._stateElapsed += dt;
       if (this._stateElapsed >= this._stateDuration) this.transitionTo(PlayerStates.JUMP_RISE, { force: true });
       return;
     }
@@ -672,8 +672,9 @@ export class PlayerState {
       this.mesh.scale.set(1.04, 0.94, 1);
       this._setVisualColor(0x9fe8ff);
     } else if (this.state === PlayerStates.JUMP_RISE || this.state === PlayerStates.JUMP_FALL) {
+      const isRising = this.state === PlayerStates.JUMP_RISE;
       this.mesh.position.y += this._jumpLift;
-      this.mesh.scale.set(this.state === PlayerStates.JUMP_RISE ? 0.96 : 1.02, this.state === PlayerStates.JUMP_RISE ? 1.04 : 0.98, 1);
+      this.mesh.scale.set(isRising ? 0.96 : 1.02, isRising ? 1.04 : 0.98, 1);
       this._setVisualColor(0x9fe8ff);
     } else if (this.state === PlayerStates.LAND) {
       this.mesh.scale.set(1.08, 0.92, 1);
