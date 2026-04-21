@@ -12,6 +12,10 @@ const SPEED_TO_WORLD_UNITS = 64;
 const DOWNED_SECONDS = 8;
 const LIGHT_COMBO_WINDOW = 0.45;
 const JUMP_HEIGHT = 2.5;
+const JUMP_START_SECONDS = 2 * TICK;
+const LAND_SECONDS = 4 * TICK;
+const JUMP_GRAVITY = 80;
+const JUMP_LAUNCH_VELOCITY = 20;
 
 export const PlayerStates = {
   IDLE: 'IDLE',
@@ -22,6 +26,9 @@ export const PlayerStates = {
   SPELL_ADVANCED: 'SPELL_ADVANCED',
   ULTIMATE: 'ULTIMATE',
   JUMP: 'JUMP',
+  JUMP_RISE: 'JUMP_RISE',
+  JUMP_FALL: 'JUMP_FALL',
+  LAND: 'LAND',
   DODGE: 'DODGE',
   HURT: 'HURT',
   DOWNED: 'DOWNED',
@@ -35,7 +42,8 @@ const STATE_DURATIONS = {
   [PlayerStates.SPELL_MINOR]: 10 * TICK,
   [PlayerStates.SPELL_ADVANCED]: 20 * TICK,
   [PlayerStates.ULTIMATE]: 50 * TICK,
-  [PlayerStates.JUMP]: 25 * TICK,
+  [PlayerStates.JUMP]: JUMP_START_SECONDS,
+  [PlayerStates.LAND]: LAND_SECONDS,
   [PlayerStates.DODGE]: 14 * TICK,
   [PlayerStates.HURT]: 8 * TICK,
   [PlayerStates.REVIVE]: 18 * TICK,
@@ -103,6 +111,7 @@ export class PlayerState {
     this._dodgeIFrameTimer = 0;
     this._dodgeCooldownTimer = 0;
     this._jumpLift = 0;
+    this._jumpVelocity = 0;
     this._attackId = 0;
     this._knockback = { x: 0, y: 0 };
     this._visualTime = 0;
@@ -173,8 +182,13 @@ export class PlayerState {
 
     if (this.state === PlayerStates.IDLE || this.state === PlayerStates.MOVE) {
       this._updateFreeMovement(dt, input.moveVector);
-    } else if (this.state === PlayerStates.JUMP) {
+    } else if (
+      this.state === PlayerStates.JUMP ||
+      this.state === PlayerStates.JUMP_RISE ||
+      this.state === PlayerStates.JUMP_FALL
+    ) {
       this._updateJump(dt, input.moveVector);
+    } else if (this.state === PlayerStates.LAND) {
       this._updateTimedState(dt, input);
     } else if (this.state === PlayerStates.DODGE) {
       this._updateDodge(dt);
@@ -212,8 +226,9 @@ export class PlayerState {
       this._stateDuration /= this._attackSpeedMultiplier;
     }
 
-    if (state !== PlayerStates.JUMP) {
+    if (state !== PlayerStates.JUMP && state !== PlayerStates.JUMP_RISE && state !== PlayerStates.JUMP_FALL) {
       this._jumpLift = 0;
+      this._jumpVelocity = 0;
     }
 
     if (state === PlayerStates.ATTACK_LIGHT) {
@@ -233,6 +248,16 @@ export class PlayerState {
       this._dodgeCooldownTimer = 48 * TICK;
     }
 
+    if (state === PlayerStates.JUMP) {
+      this._jumpLift = 0;
+      this._jumpVelocity = JUMP_LAUNCH_VELOCITY;
+    }
+
+    if (state === PlayerStates.LAND) {
+      this._jumpLift = 0;
+      this._jumpVelocity = 0;
+    }
+
     if (state === PlayerStates.HURT) {
       this._knockback = options.knockback || { x: 0, y: 0 };
     }
@@ -240,6 +265,7 @@ export class PlayerState {
     if (state === PlayerStates.DEAD) {
       this._dodgeIFrameTimer = 0;
       this._jumpLift = 0;
+      this._jumpVelocity = 0;
     }
 
     return true;
@@ -278,6 +304,7 @@ export class PlayerState {
     if (isDown) {
       this.state = PlayerStates.DOWNED;
       this._jumpLift = 0;
+      this._jumpVelocity = 0;
       this._animationRevision += 1;
       return;
     }
@@ -289,6 +316,7 @@ export class PlayerState {
     this._dodgeIFrameTimer = 0;
     this._knockback.x = 0;
     this._knockback.y = 0;
+    this._jumpVelocity = 0;
   }
 
   /** Returns true while dodge invincibility frames are active. */
@@ -324,6 +352,7 @@ export class PlayerState {
     this._dodgeIFrameTimer = 0;
     this._dodgeCooldownTimer = 0;
     this._jumpLift = 0;
+    this._jumpVelocity = 0;
     this._knockback.x = 0;
     this._knockback.y = 0;
     this._animationRevision += 1;
@@ -421,7 +450,9 @@ export class PlayerState {
 
   /** Returns true while the player is in the evasive airborne jump state. */
   isAirborne() {
-    return this.state === PlayerStates.JUMP;
+    return this.state === PlayerStates.JUMP ||
+      this.state === PlayerStates.JUMP_RISE ||
+      this.state === PlayerStates.JUMP_FALL;
   }
 
   /** Returns true when the current state is an attack state. */
@@ -537,10 +568,26 @@ export class PlayerState {
     if (moveVector.x !== 0) this.facing = Math.sign(moveVector.x);
     this._applyMoveVector(dt, moveVector);
 
-    const progress = this._stateDuration > 0
-      ? Math.min(1, this._stateElapsed / this._stateDuration)
-      : 0;
-    this._jumpLift = Math.sin(progress * Math.PI) * JUMP_HEIGHT;
+    if (this.state === PlayerStates.JUMP) {
+      this._stateElapsed += dt;
+      if (this._stateElapsed >= this._stateDuration) this.transitionTo(PlayerStates.JUMP_RISE, { force: true });
+      return;
+    }
+
+    this._jumpVelocity -= JUMP_GRAVITY * dt;
+    this._jumpLift += this._jumpVelocity * dt;
+    this._jumpLift = Math.min(this._jumpLift, JUMP_HEIGHT);
+
+    if (this.state === PlayerStates.JUMP_RISE && this._jumpVelocity <= 0) {
+      this.transitionTo(PlayerStates.JUMP_FALL, { force: true });
+      return;
+    }
+
+    if (this._jumpLift <= 0) {
+      this._jumpLift = 0;
+      this._jumpVelocity = 0;
+      this.transitionTo(PlayerStates.LAND, { force: true });
+    }
   }
 
   _updateDodge(dt) {
@@ -583,6 +630,7 @@ export class PlayerState {
     this._stateDuration = 0;
     this._dodgeIFrameTimer = 0;
     this._jumpLift = 0;
+    this._jumpVelocity = 0;
     this._knockback.x = 0;
     this._knockback.y = 0;
     this._animationRevision += 1;
@@ -621,9 +669,15 @@ export class PlayerState {
       this.mesh.scale.set(scale, scale, 1);
       this._setVisualColor(this.hunterConfig.auraColor);
     } else if (this.state === PlayerStates.JUMP) {
-      this.mesh.position.y += this._jumpLift;
-      this.mesh.scale.set(0.96, 1.04, 1);
+      this.mesh.scale.set(1.04, 0.94, 1);
       this._setVisualColor(0x9fe8ff);
+    } else if (this.state === PlayerStates.JUMP_RISE || this.state === PlayerStates.JUMP_FALL) {
+      this.mesh.position.y += this._jumpLift;
+      this.mesh.scale.set(this.state === PlayerStates.JUMP_RISE ? 0.96 : 1.02, this.state === PlayerStates.JUMP_RISE ? 1.04 : 0.98, 1);
+      this._setVisualColor(0x9fe8ff);
+    } else if (this.state === PlayerStates.LAND) {
+      this.mesh.scale.set(1.08, 0.92, 1);
+      this._setVisualColor(0xb4f2ff);
     } else if (this.state === PlayerStates.DODGE) {
       this.mesh.rotation.z = this._dodgeDirection.x * -0.25;
       this.mesh.scale.set(1.15, 0.85, 1);

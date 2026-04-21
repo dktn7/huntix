@@ -5,7 +5,10 @@ const STATE_MAP = {
   [PlayerStates.MOVE]: { name: 'run', loop: true },
   [PlayerStates.ATTACK_LIGHT]: { name: 'attack_light_1', loop: false },
   [PlayerStates.ATTACK_HEAVY]: { name: 'attack_heavy', loop: false },
-  [PlayerStates.JUMP]: { name: 'jump', loop: false },
+  [PlayerStates.JUMP]: { names: ['jump'], loop: false },
+  [PlayerStates.JUMP_RISE]: { names: ['jump_rise', 'jump'], loop: false },
+  [PlayerStates.JUMP_FALL]: { names: ['jump_fall', 'jump'], loop: false },
+  [PlayerStates.LAND]: { names: ['land', 'jump'], loop: false },
   [PlayerStates.DODGE]: { name: 'dodge', loop: false },
   [PlayerStates.SPELL_MINOR]: { name: 'spell_minor', loop: false },
   [PlayerStates.SPELL_ADVANCED]: { name: 'spell_advanced', loop: false },
@@ -35,9 +38,10 @@ export class AnimationController {
     if (!this.animator) return;
 
     const mapped = this._mapState();
+    const animationName = this._resolveAnimationName(mapped);
     const key = this.playerState.animationKey || this.playerState.state;
     if (this._lastKey !== key) {
-      this.animator.play(mapped.name, mapped.loop);
+      this.animator.play(animationName, mapped.loop);
       this._lastKey = key;
     }
 
@@ -49,5 +53,12 @@ export class AnimationController {
       return { name: `attack_light_${this.playerState.lightComboStep}`, loop: false };
     }
     return STATE_MAP[this.playerState.state] || STATE_MAP[PlayerStates.IDLE];
+  }
+
+  _resolveAnimationName(mapped) {
+    if (mapped.name) return mapped.name;
+    const candidates = mapped.names || ['idle'];
+    if (typeof this.animator.hasState !== 'function') return candidates[0];
+    return candidates.find(name => this.animator.hasState(name)) || candidates[candidates.length - 1];
   }
 }

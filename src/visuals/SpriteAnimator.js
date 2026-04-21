@@ -83,6 +83,11 @@ export class SpriteAnimator {
     return this.currentState === state;
   }
 
+  /** Returns true when the atlas contains at least one frame for the named state. */
+  hasState(state) {
+    return this._collectFramesForState(state).length > 0;
+  }
+
   _collectFramesForState(state) {
     const matches = [];
     for (const key of Object.keys(this.frames)) {

@@ -146,7 +146,7 @@ export class CompanionAIController {
   }
 
   _shouldEvade(player, target, distance, brain) {
-    if (player.state === PlayerStates.DODGE || player.state === PlayerStates.JUMP) return false;
+    if (player.state === PlayerStates.DODGE || player.isAirborne?.()) return false;
     if (target.isTelegraphing && distance < 3.2) {
       return brain.dodgeTimer <= 0 || brain.jumpTimer <= 0;
     }

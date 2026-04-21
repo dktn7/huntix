@@ -210,10 +210,11 @@ export class InputManager {
       if (ax[0] > DEADZONE) input.pressed.add(Actions.MOVE_RIGHT);
       if (ax[1] < -DEADZONE) input.pressed.add(Actions.MOVE_UP);
       if (ax[1] > DEADZONE) input.pressed.add(Actions.MOVE_DOWN);
-      if (b[0]?.pressed) input.pressed.add(Actions.INTERACT);
+      if (b[0]?.pressed) input.pressed.add(Actions.JUMP);
       if (b[1]?.pressed) input.pressed.add(Actions.DODGE);
       if (b[2]?.pressed) input.pressed.add(Actions.LIGHT);
       if (b[3]?.pressed) input.pressed.add(Actions.HEAVY);
+      if (b[4]?.pressed) input.pressed.add(Actions.INTERACT);
       if (b[5]?.pressed) input.pressed.add(Actions.SPECIAL);
       if (b[9]?.pressed) input.pressed.add(Actions.PAUSE);
     }
