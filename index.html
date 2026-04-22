@@ -465,6 +465,41 @@
       font-weight: 900;
       text-transform: uppercase;
     }
+
+    /* ------------------------------------------------------------------ */
+    /* Dual exit portal labels — shown after zone clear                    */
+    /* ------------------------------------------------------------------ */
+    .portal-label {
+      padding: 6px 20px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 3px;
+      white-space: nowrap;
+      animation: portalLabelIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    /* HQ portal — green glow */
+    .portal-label--hq {
+      border-color: rgba(0, 230, 118, 0.45);
+      text-shadow: 0 0 10px #00e676, 0 1px 0 #000;
+      box-shadow: 0 0 12px rgba(0, 230, 118, 0.18);
+    }
+    /* Next-zone portal — purple/zone glow */
+    .portal-label--next {
+      border-color: rgba(180, 120, 255, 0.45);
+      text-shadow: 0 0 10px #b47fff, 0 1px 0 #000;
+      box-shadow: 0 0 12px rgba(180, 120, 255, 0.18);
+    }
+    @keyframes portalLabelIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+
     @media (max-width: 800px) {
       .player-hud {
         width: 144px;
@@ -492,8 +527,10 @@
       .shop-card,
       .hunter-card,
       .zone-title,
-      .boss-hud {
+      .boss-hud,
+      .portal-label {
         transition: none;
+        animation: none;
       }
     }
   </style>
