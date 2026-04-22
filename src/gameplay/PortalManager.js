@@ -26,6 +26,7 @@ export class PortalManager {
     this._card = ensureOverlayElement('portal-card', 'portal-card', overlay);
     this._results = ensureOverlayElement('results-card', 'results-card', overlay);
     this._portalHoldTimer = 0;
+    this._dualLabels = null;
   }
 
   async playTransition(type = 'enter', durationMs = DEFAULT_FADE_IN_MS) {
@@ -84,6 +85,57 @@ export class PortalManager {
 
   clearZoneCard() {
     this._card.classList.remove('visible');
+  }
+
+  /**
+   * Show two floating labels above the exit portals after a zone is cleared.
+   * hubLabel   — text for the HQ (green) portal
+   * nextLabel  — text for the next-zone portal, or null if last zone
+   */
+  showDualPortalLabels({ hubLabel = '← Return to HQ', nextLabel = null } = {}) {
+    this.hideDualPortalLabels();
+
+    const wrap = document.createElement('div');
+    wrap.id = 'dual-portal-labels';
+    wrap.style.cssText = [
+      'position:fixed',
+      'bottom:32%',
+      'left:0',
+      'right:0',
+      'display:flex',
+      'justify-content:center',
+      `gap:${nextLabel ? '160px' : '0'}`,
+      'pointer-events:none',
+      'z-index:50',
+      'font-family:inherit',
+    ].join(';');
+
+    // HQ label (green)
+    const hubTag = document.createElement('div');
+    hubTag.className = 'portal-label portal-label--hq';
+    hubTag.textContent = hubLabel;
+    wrap.appendChild(hubTag);
+
+    // Next zone label (zone colour via CSS var set inline)
+    if (nextLabel) {
+      const nextTag = document.createElement('div');
+      nextTag.className = 'portal-label portal-label--next';
+      nextTag.textContent = nextLabel;
+      wrap.appendChild(nextTag);
+    }
+
+    document.body.appendChild(wrap);
+    this._dualLabels = wrap;
+  }
+
+  hideDualPortalLabels() {
+    if (this._dualLabels) {
+      this._dualLabels.remove();
+      this._dualLabels = null;
+    }
+    // Belt-and-braces: remove by id in case reference was lost
+    const el = document.getElementById('dual-portal-labels');
+    if (el) el.remove();
   }
 
   _fadeTo(opacity, durationMs) {
