@@ -1,11 +1,25 @@
 #!/usr/bin/env node
 /**
- * Huntix Sprite Pipeline — Green Screen Keyer + TexturePacker Automation
+ * Huntix Sprite Pipeline — Green Screen Keyer + Grid Splitter + TexturePacker Automation
  *
- * Usage:
+ * NORMAL MODE:
  *   node process_sprites.js
+ *   Processes all hunters in flow_output/ — keys green screen, saves frames.
  *
- * SIMPLE MODE (recommended):
+ * GRID SPLIT MODE:
+ *   node process_sprites.js --split <hunter> <state> <image> <cols> <rows>
+ *
+ *   Examples:
+ *     node process_sprites.js --split dabik jump sheet.png 6 2
+ *     node process_sprites.js --split vesol run vesol_run.jpg 6 2
+ *     node process_sprites.js --split benzu dodge benzu_dodge.png 4 3
+ *
+ *   - Splits the image into cols×rows frames
+ *   - Keys the green screen on each frame
+ *   - Saves frames to flow_output/{hunter}/{state}/frame_0001.webp etc.
+ *   - Ready to process with normal mode immediately after
+ *
+ * SIMPLE MODE (recommended for normal mode):
  *   Dump all Flow outputs for a hunter into one flat folder.
  *   The script reads the state name from the filename automatically.
  *
@@ -49,6 +63,7 @@ const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol'];
 const STATES = [
   'idle',
   'run',
+  'jump',
   'attack_light',
   'attack_heavy',
   'dodge',
@@ -151,6 +166,98 @@ async function keyGreenScreen(inputPath, outputPath) {
     .toFile(outputPath);
 }
 
+async function keyGreenScreenFromBuffer(buf, width, height, channels, outputPath) {
+  const out = Buffer.from(buf);
+  for (let i = 0; i < out.length; i += channels) {
+    const r = out[i];
+    const g = out[i + 1];
+    const b = out[i + 2];
+    const gap = g - 200;
+    if (g > 200 && r < THRESHOLD + gap && b < THRESHOLD + gap) {
+      out[i + 3] = 0;
+    }
+  }
+  await sharp(out, { raw: { width, height, channels } })
+    .webp({ lossless: true })
+    .toFile(outputPath);
+}
+
+// ─── GRID SPLITTER ───────────────────────────────────────────────────────────
+
+async function splitGrid(hunter, state, imagePath, cols, rows) {
+  console.log('\n╔══════════════════════════════════════════════╗');
+  console.log('║   HUNTIX SPRITE PIPELINE — GRID SPLITTER     ║');
+  console.log('╚══════════════════════════════════════════════╝\n');
+
+  const resolvedImage = path.resolve(imagePath);
+
+  if (!fs.existsSync(resolvedImage)) {
+    console.error(`✗ Image not found: ${resolvedImage}`);
+    process.exit(1);
+  }
+
+  if (!HUNTERS.includes(hunter)) {
+    console.error(`✗ Unknown hunter '${hunter}'. Valid: ${HUNTERS.join(', ')}`);
+    process.exit(1);
+  }
+
+  if (!STATES.includes(state)) {
+    console.error(`✗ Unknown state '${state}'. Valid: ${STATES.join(', ')}`);
+    process.exit(1);
+  }
+
+  const totalFrames = cols * rows;
+  console.log(`  Hunter  : ${hunter}`);
+  console.log(`  State   : ${state}`);
+  console.log(`  Image   : ${resolvedImage}`);
+  console.log(`  Grid    : ${cols} cols × ${rows} rows = ${totalFrames} frames`);
+
+  const outputDir = path.join(INPUT_ROOT, hunter, state);
+  ensureDir(outputDir);
+  console.log(`  Output  : ${outputDir}\n`);
+
+  const { data, info } = await sharp(resolvedImage)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const { width, height, channels } = info;
+  const frameW = Math.floor(width / cols);
+  const frameH = Math.floor(height / rows);
+
+  console.log(`  Sheet size : ${width}×${height}px`);
+  console.log(`  Frame size : ${frameW}×${frameH}px\n`);
+
+  let count = 0;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const frameIndex = row * cols + col + 1;
+      const frameNum = String(frameIndex).padStart(4, '0');
+      const outputPath = path.join(outputDir, `frame_${frameNum}.webp`);
+
+      // Extract frame pixels from the raw buffer
+      const frameBuf = Buffer.alloc(frameW * frameH * channels);
+      for (let y = 0; y < frameH; y++) {
+        const srcY = row * frameH + y;
+        for (let x = 0; x < frameW; x++) {
+          const srcX = col * frameW + x;
+          const srcOffset = (srcY * width + srcX) * channels;
+          const dstOffset = (y * frameW + x) * channels;
+          data.copy(frameBuf, dstOffset, srcOffset, srcOffset + channels);
+        }
+      }
+
+      await keyGreenScreenFromBuffer(frameBuf, frameW, frameH, channels, outputPath);
+      console.log(`  ✓ Frame ${frameNum} (row ${row + 1}, col ${col + 1}) → ${path.basename(outputPath)}`);
+      count++;
+    }
+  }
+
+  console.log(`\n  ✓ ${count} frames saved to flow_output/${hunter}/${state}/`);
+  console.log(`\n  Next step — run normal mode to process into assets/:`);
+  console.log(`    node process_sprites.js\n`);
+}
+
 // ─── PROCESSING ───────────────────────────────────────────────────────────────
 
 function ensureDir(dirPath) {
@@ -245,6 +352,31 @@ function packAtlas(hunter) {
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
 async function main() {
+  const args = process.argv.slice(2);
+
+  // GRID SPLIT MODE: node process_sprites.js --split <hunter> <state> <image> <cols> <rows>
+  if (args[0] === '--split') {
+    const [, hunter, state, imagePath, colsStr, rowsStr] = args;
+
+    if (!hunter || !state || !imagePath || !colsStr || !rowsStr) {
+      console.error('Usage: node process_sprites.js --split <hunter> <state> <image> <cols> <rows>');
+      console.error('Example: node process_sprites.js --split dabik jump sheet.png 6 2');
+      process.exit(1);
+    }
+
+    const cols = parseInt(colsStr, 10);
+    const rows = parseInt(rowsStr, 10);
+
+    if (isNaN(cols) || isNaN(rows) || cols < 1 || rows < 1) {
+      console.error(`✗ cols and rows must be positive integers. Got: cols=${colsStr} rows=${rowsStr}`);
+      process.exit(1);
+    }
+
+    await splitGrid(hunter, state, imagePath, cols, rows);
+    return;
+  }
+
+  // NORMAL MODE
   console.log('\n╔══════════════════════════════════════════════╗');
   console.log('║   HUNTIX SPRITE PIPELINE                     ║');
   console.log('║   Green Screen Keyer + TexturePacker          ║');
@@ -256,6 +388,9 @@ async function main() {
   console.log('');
   console.log('  Files sorted by state name in filename.');
   console.log('  e.g. dabik_idle_001.png  run_02.jpg  attack_light.png');
+  console.log('');
+  console.log('  TIP: Got a grid sheet? Split it first:');
+  console.log('  node process_sprites.js --split dabik jump sheet.png 6 2');
 
   if (!fs.existsSync(INPUT_ROOT)) {
     console.error(`\n✗ Input folder '${INPUT_ROOT}' not found.`);
