@@ -70,7 +70,24 @@ export class PortalManager {
     }, durationMs);
   }
 
-  showResultsOverlay({ title = 'Zone Clear', essence = 0, xp = 0, kills = 0, note = '' } = {}) {
+  /**
+   * Show the zone-clear results overlay.
+   * @param {object} opts
+   * @param {string}  opts.title
+   * @param {number}  opts.essence
+   * @param {number}  opts.xp
+   * @param {number}  opts.kills
+   * @param {string}  [opts.note]
+   * @param {string}  [opts.bgImage]  — optional per-zone background image path
+   */
+  showResultsOverlay({ title = 'Zone Clear', essence = 0, xp = 0, kills = 0, note = '', bgImage = null } = {}) {
+    if (bgImage) {
+      this._results.style.backgroundImage = `url('${bgImage}')`;
+      this._results.style.backgroundSize = 'cover';
+      this._results.style.backgroundPosition = 'center';
+    } else {
+      this._results.style.backgroundImage = '';
+    }
     this._results.innerHTML = `${title}<span class="small">Essence +${essence} | XP +${xp} | Kills ${kills}${note ? ` | ${note}` : ''}</span>`;
     this._results.classList.add('visible');
     clearTimeout(this._resultsTimer);
