@@ -362,14 +362,10 @@ try {
   });
 
   await hold(page, 'Space', 60);
-  await page.waitForFunction(() => ['JUMP', 'JUMP_RISE', 'JUMP_FALL'].includes(window.__TEST__.state().players[0].state));
+  await page.waitForFunction(() => window.__TEST__.state().players[0].state === 'JUMP');
   await hold(page, 'KeyJ', 60);
   state = await page.evaluate(() => window.__TEST__.state());
-  assert(
-    state.players[0].airborne && ['JUMP', 'JUMP_RISE', 'JUMP_FALL'].includes(state.players[0].state),
-    'Jump did not keep P1 airborne and locked out of attacks',
-    state.players[0]
-  );
+  assert(state.players[0].airborne && state.players[0].state === 'JUMP', 'Jump did not keep P1 airborne and locked out of attacks', state.players[0]);
   await page.waitForFunction(() => ['IDLE', 'MOVE'].includes(window.__TEST__.state().players[0].state), null, { timeout: 1500 });
 
   const jumpHazardCheck = await page.evaluate(async () => {
