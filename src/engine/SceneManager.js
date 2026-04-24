@@ -410,10 +410,6 @@ export class SceneManager {
   // Exit portal — spawned after a zone boss is cleared
   // ---------------------------------------------------------------------------
 
-  /**
-   * Tick called every zone frame. Spins shaders and checks whether a player
-   * walked into either portal.
-   */
   _tickExitPortals(dt) {
     if (this._exitPortalHubGroup) {
       const g = this._exitPortalHubGroup;
@@ -441,14 +437,9 @@ export class SceneManager {
     }
   }
 
-  /**
-   * Build a complete portal group: torus ring + swirl rift fill + floor glow.
-   * Returns { group, ring, rift, glow } for per-frame animation access.
-   */
   _buildExitPortalGroup(x, colour) {
     const group = new THREE.Group();
 
-    // Outer torus ring
     const ring = new THREE.Mesh(
       new THREE.TorusGeometry(0.85, 0.13, 8, 28),
       new THREE.MeshBasicMaterial({
@@ -460,12 +451,10 @@ export class SceneManager {
     );
     group.add(ring);
 
-    // Inner swirling rift fill
     const { mesh: riftMesh, material: riftMat } = createPortalRift(colour);
     riftMesh.position.z = 0.01;
     group.add(riftMesh);
 
-    // Floor glow pool
     const { mesh: glowMesh, material: glowMat } = createPortalFloorGlow(colour);
     glowMesh.position.set(0, -0.9, -0.15);
     group.add(glowMesh);
@@ -477,29 +466,21 @@ export class SceneManager {
     return { group, ring, rift: riftMesh, glow: glowMesh };
   }
 
-  /**
-   * Called after ZONE_CLEAR_RETURN_DELAY_MS. Spawns both physical portals and
-   * shows the floating labels. On the final zone only the HQ portal spawns.
-   */
   _openExitPortalChoice(clearedZoneId) {
-    // Clean up any leftover portals from a previous zone
     this._destroyExitPortals();
 
-    const nextZoneId   = this.zoneManager.getNextZoneId(clearedZoneId); // null = last zone
+    const nextZoneId   = this.zoneManager.getNextZoneId(clearedZoneId);
     this._exitPortalOpen      = true;
     this._exitPortalNextZone  = nextZoneId;
     this._lastClearedZoneId   = clearedZoneId;
 
-    // HQ portal — always green
     this._exitPortalHubGroup = this._buildExitPortalGroup(EXIT_PORTAL_HQ_X, HQ_PORTAL_COLOUR);
 
-    // Next-zone portal — zone's own palette colour, only when a next zone exists
     if (nextZoneId) {
       const nextColour = ZONE_CONFIGS[nextZoneId]?.portalColor ?? 0x7b3fff;
       this._exitPortalNextGroup = this._buildExitPortalGroup(EXIT_PORTAL_NEXT_X, nextColour);
     }
 
-    // Floating UI labels
     const nextConfig = nextZoneId ? this.zoneManager.getZoneConfig(nextZoneId) : null;
     this.portalManager.showDualPortalLabels({
       hubLabel:  nextZoneId ? '← Return to HQ' : '← HQ  ·  Run Complete',
@@ -507,10 +488,6 @@ export class SceneManager {
     });
   }
 
-  /**
-   * Execute the player's portal choice and clean everything up.
-   * @param {'hub'|'continue'} choice
-   */
   _resolveExitPortal(choice) {
     this._exitPortalOpen = false;
     this._destroyExitPortals();
@@ -523,7 +500,6 @@ export class SceneManager {
     }
   }
 
-  /** Remove all exit portal Three.js objects from the scene. */
   _destroyExitPortals() {
     for (const group of this._exitPortalMeshes) {
       this.scene.remove(group);
@@ -592,12 +568,16 @@ export class SceneManager {
     RunState.onZoneComplete(zoneId);
     this.hud.clearBossBar();
 
-    // Show results card
+    // Resolve the per-zone clear background image
+    const clearBg = this.zoneManager.getZoneClearBg(zoneId);
+
+    // Show results card with zone-specific background
     this.portalManager.showResultsOverlay({
       title:   `${zoneId.replace('-', ' ').toUpperCase()} CLEAR`,
       essence: rewards.essence,
       xp:      rewards.xp,
       kills:   boss ? 1 : 0,
+      bgImage: clearBg,
     });
 
     if (RunState.runComplete) {
@@ -611,6 +591,7 @@ export class SceneManager {
         xp:      rewards.xp,
         kills:   boss ? 1 : 0,
         note:    'Run complete - Press Interact to return to HQ',
+        bgImage: clearBg,
       });
       this.portalManager.showNameCard('Gate Closed', 'Interact: Return to HQ  |  Esc: Quit to Title', 4200);
       this._zoneReturnPending = false;
@@ -789,7 +770,6 @@ export class SceneManager {
     const halfH = nextHeight / 2;
     const halfW = halfH * aspect;
 
-    // Smooth follow on X, gentle on Y
     const arenaMinX = -18, arenaMaxX = 18;
     const clampedX = Math.max(arenaMinX + halfW, Math.min(arenaMaxX - halfW, focusX));
     this.camera.position.x += (clampedX - this.camera.position.x) * 0.08;
