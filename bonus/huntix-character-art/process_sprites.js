@@ -14,10 +14,17 @@
  *     node process_sprites.js --split vesol run vesol_run.jpg 6 2
  *     node process_sprites.js --split benzu dodge benzu_dodge.png 4 3
  *
- *   - Splits the image into cols×rows frames
- *   - Keys the green screen on each frame
- *   - Saves frames to flow_output/{hunter}/{state}/frame_0001.webp etc.
- *   - Ready to process with normal mode immediately after
+ * AUTO-DETECT MODE (no need to count frames manually):
+ *   node process_sprites.js --autodetect <hunter> <state> <image>
+ *
+ *   Examples:
+ *     node process_sprites.js --autodetect dabik idle dabik_idle.png
+ *     node process_sprites.js --autodetect vesol run vesol_run.jpg
+ *
+ *   The script analyses the image for uniform separator lines (solid colour rows/columns)
+ *   to detect the grid automatically, then splits just like --split mode.
+ *   Works with green screen, white, black, or any uniform background colour.
+ *   Prints detected grid so you can verify before frames are saved.
  *
  * SIMPLE MODE (recommended for normal mode):
  *   Dump all Flow outputs for a hunter into one flat folder.
@@ -180,6 +187,147 @@ async function keyGreenScreenFromBuffer(buf, width, height, channels, outputPath
   await sharp(out, { raw: { width, height, channels } })
     .webp({ lossless: true })
     .toFile(outputPath);
+}
+
+// ─── AUTO-DETECT GRID ────────────────────────────────────────────────────────
+
+/**
+ * Detects the grid layout of a sprite sheet by scanning for uniform separator
+ * lines — rows or columns where every pixel is within SEPARATOR_VARIANCE of
+ * the dominant edge colour (background).
+ *
+ * Strategy:
+ *  1. Sample the four corners to determine the background colour.
+ *  2. Scan every row: if ALL pixels in that row are "background-like", mark it
+ *     as a separator row.
+ *  3. Collapse runs of consecutive separator rows into single dividers.
+ *  4. Count dividers → rows = dividers + 1.
+ *  5. Repeat for columns.
+ *  6. Fall back to common aspect-ratio heuristics if no separators found.
+ */
+async function autoDetectGrid(imagePath) {
+  const { data, info } = await sharp(imagePath)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const { width, height, channels } = info;
+
+  // How much each channel can deviate from the bg colour and still be "bg"
+  const SEPARATOR_VARIANCE = 30;
+
+  // Sample corners to get background colour (average of 4 corners, 3×3 area each)
+  function cornerAvg(cx, cy) {
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let dy = 0; dy < 3; dy++) {
+      for (let dx = 0; dx < 3; dx++) {
+        const px = cx + dx, py = cy + dy;
+        if (px >= width || py >= height) continue;
+        const i = (py * width + px) * channels;
+        r += data[i]; g += data[i + 1]; b += data[i + 2]; n++;
+      }
+    }
+    return { r: r / n, g: g / n, b: b / n };
+  }
+
+  const corners = [
+    cornerAvg(0, 0),
+    cornerAvg(width - 3, 0),
+    cornerAvg(0, height - 3),
+    cornerAvg(width - 3, height - 3),
+  ];
+  const bg = {
+    r: corners.reduce((s, c) => s + c.r, 0) / 4,
+    g: corners.reduce((s, c) => s + c.g, 0) / 4,
+    b: corners.reduce((s, c) => s + c.b, 0) / 4,
+  };
+
+  function isBgPixel(i) {
+    return (
+      Math.abs(data[i]     - bg.r) <= SEPARATOR_VARIANCE &&
+      Math.abs(data[i + 1] - bg.g) <= SEPARATOR_VARIANCE &&
+      Math.abs(data[i + 2] - bg.b) <= SEPARATOR_VARIANCE
+    );
+  }
+
+  // Scan rows
+  const separatorRows = [];
+  for (let y = 0; y < height; y++) {
+    let allBg = true;
+    for (let x = 0; x < width; x++) {
+      if (!isBgPixel((y * width + x) * channels)) { allBg = false; break; }
+    }
+    if (allBg) separatorRows.push(y);
+  }
+
+  // Scan columns
+  const separatorCols = [];
+  for (let x = 0; x < width; x++) {
+    let allBg = true;
+    for (let y = 0; y < height; y++) {
+      if (!isBgPixel((y * width + x) * channels)) { allBg = false; break; }
+    }
+    if (allBg) separatorCols.push(x);
+  }
+
+  // Collapse consecutive separator lines into single dividers
+  function collapseDividers(lines, max) {
+    if (lines.length === 0) return 0;
+    // Filter out edge lines (first/last few pixels)
+    const inner = lines.filter(l => l > 2 && l < max - 3);
+    if (inner.length === 0) return 0;
+    let dividers = 1;
+    for (let i = 1; i < inner.length; i++) {
+      if (inner[i] - inner[i - 1] > 1) dividers++;
+    }
+    return dividers;
+  }
+
+  const rowDividers = collapseDividers(separatorRows, height);
+  const colDividers = collapseDividers(separatorCols, width);
+
+  let rows = rowDividers + 1;
+  let cols = colDividers + 1;
+
+  // Sanity check: frames must be reasonable (not 1x1 or weirdly huge grids)
+  // Fall back to aspect-ratio heuristics if detection looks wrong
+  const frameW = Math.floor(width / cols);
+  const frameH = Math.floor(height / rows);
+  const aspectOk = frameW >= 32 && frameH >= 32 && cols <= 16 && rows <= 16;
+
+  if (!aspectOk || (cols === 1 && rows === 1)) {
+    // Heuristic fallback: try common sprite sheet sizes based on aspect ratio
+    const ratio = width / height;
+    console.log(`  ⚠ Separator detection found ${cols}×${rows} — doesn't look right.`);
+    console.log(`  → Falling back to aspect-ratio heuristic (sheet is ${width}×${height}px, ratio ${ratio.toFixed(2)})`);
+
+    // Try to find cols/rows where frames are square-ish
+    const candidates = [];
+    for (let c = 1; c <= 16; c++) {
+      for (let r = 1; r <= 16; r++) {
+        const fw = width / c;
+        const fh = height / r;
+        const frameRatio = fw / fh;
+        if (fw >= 32 && fh >= 32 && frameRatio > 0.4 && frameRatio < 2.5) {
+          candidates.push({ c, r, fw, fh, score: Math.abs(1 - frameRatio) });
+        }
+      }
+    }
+    candidates.sort((a, b) => a.score - b.score);
+
+    if (candidates.length > 0) {
+      cols = candidates[0].c;
+      rows = candidates[0].r;
+      console.log(`  → Best guess: ${cols} cols × ${rows} rows (frame size ${Math.floor(width/cols)}×${Math.floor(height/rows)}px)`);
+      console.log(`  → If this looks wrong, use --split mode and specify manually.`);
+    } else {
+      console.error(`  ✗ Could not auto-detect grid. Use --split mode:`);
+      console.error(`    node process_sprites.js --split <hunter> <state> <image> <cols> <rows>`);
+      process.exit(1);
+    }
+  }
+
+  return { cols, rows, bg: `rgb(${Math.round(bg.r)},${Math.round(bg.g)},${Math.round(bg.b)})` };
 }
 
 // ─── GRID SPLITTER ───────────────────────────────────────────────────────────
@@ -376,6 +524,39 @@ async function main() {
     return;
   }
 
+  // AUTO-DETECT MODE: node process_sprites.js --autodetect <hunter> <state> <image>
+  if (args[0] === '--autodetect') {
+    const [, hunter, state, imagePath] = args;
+
+    if (!hunter || !state || !imagePath) {
+      console.error('Usage: node process_sprites.js --autodetect <hunter> <state> <image>');
+      console.error('Example: node process_sprites.js --autodetect dabik idle dabik_idle.png');
+      process.exit(1);
+    }
+
+    const resolvedImage = path.resolve(imagePath);
+    if (!fs.existsSync(resolvedImage)) {
+      console.error(`✗ Image not found: ${resolvedImage}`);
+      process.exit(1);
+    }
+
+    console.log('\n╔══════════════════════════════════════════════╗');
+    console.log('║   HUNTIX SPRITE PIPELINE — AUTO-DETECT       ║');
+    console.log('╚══════════════════════════════════════════════╝\n');
+    console.log(`  Analysing : ${resolvedImage}`);
+
+    const { cols, rows, bg } = await autoDetectGrid(resolvedImage);
+    const { width, height } = await sharp(resolvedImage).metadata();
+
+    console.log(`  Background : ${bg}`);
+    console.log(`  Detected   : ${cols} cols × ${rows} rows = ${cols * rows} frames`);
+    console.log(`  Frame size : ${Math.floor(width / cols)}×${Math.floor(height / rows)}px\n`);
+    console.log(`  Proceeding with split...\n`);
+
+    await splitGrid(hunter, state, imagePath, cols, rows);
+    return;
+  }
+
   // NORMAL MODE
   console.log('\n╔══════════════════════════════════════════════╗');
   console.log('║   HUNTIX SPRITE PIPELINE                     ║');
@@ -389,7 +570,9 @@ async function main() {
   console.log('  Files sorted by state name in filename.');
   console.log('  e.g. dabik_idle_001.png  run_02.jpg  attack_light.png');
   console.log('');
-  console.log('  TIP: Got a grid sheet? Split it first:');
+  console.log('  TIP: Got a grid sheet? Auto-detect the grid:');
+  console.log('  node process_sprites.js --autodetect dabik idle sheet.png');
+  console.log('  Or specify manually:');
   console.log('  node process_sprites.js --split dabik jump sheet.png 6 2');
 
   if (!fs.existsSync(INPUT_ROOT)) {
