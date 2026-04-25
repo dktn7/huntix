@@ -1,10 +1,11 @@
 import { Actions } from '../engine/InputManager.js';
 
 export class TitleScreen {
-  constructor(overlay, onPlay, onCoop) {
+  constructor(overlay, onPlay, onCoop, onSettings) {
     this.overlay = overlay;
     this.onPlay = onPlay;
     this.onCoop = onCoop;
+    this.onSettings = onSettings;
     this.container = null;
     this.selectedIndex = 0;
     this.menuItems = [
@@ -44,12 +45,19 @@ export class TitleScreen {
         .ts-bg-far {
           position: absolute;
           inset: 0;
+          background: url('./assets/ui/title-bg.jpeg') center/cover no-repeat;
+          pointer-events: none;
+        }
+        .ts-bg-overlay {
+          position: absolute;
+          inset: 0;
           background:
             radial-gradient(ellipse 80% 60% at 50% 110%, #1a0530 0%, transparent 70%),
             radial-gradient(ellipse 60% 40% at 20% 80%,  #0d1a3a 0%, transparent 60%),
             radial-gradient(ellipse 60% 40% at 80% 80%,  #1a0a0a 0%, transparent 60%),
             linear-gradient(180deg, #06050d 0%, #0c0618 40%, #14061a 100%);
           pointer-events: none;
+          opacity: 0.65;
         }
         .ts-bg-gate {
           position: absolute;
@@ -313,6 +321,7 @@ export class TitleScreen {
       </style>
 
       <div class="ts-bg-far"></div>
+      <div class="ts-bg-overlay"></div>
       <div class="ts-bg-gate"></div>
       <div class="ts-rift"></div>
       <div class="ts-floor-glow"></div>
@@ -320,7 +329,7 @@ export class TitleScreen {
       <div class="ts-logo-wrap">
         <img
           class="ts-logo"
-          src="./assets/huntix-logo-hd.png"
+          src="./assets/ui/Huntrix-logo-hd-2.jpeg"
           alt="HUNTIX"
           width="520"
           height="auto"
@@ -466,5 +475,6 @@ export class TitleScreen {
     const action = this.menuItems[this.selectedIndex].action;
     if (action === 'play')  this.onPlay();
     if (action === 'coop')  this.onCoop();
+    if (action === 'settings') this.onSettings?.();
   }
 }

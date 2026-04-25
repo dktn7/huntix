@@ -166,6 +166,58 @@ export class HUD {
     this._waveTicks = WAVE_FLASH_TICKS;
   }
 
+  /** Flashes the level-up image. */
+  showLevelUpFlash() {
+    const el = document.createElement('div');
+    el.className = 'level-up-flash-overlay';
+    el.style.cssText = `
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 200;
+    `;
+    el.innerHTML = `<img src="./assets/ui/level-up.jpeg" style="max-width:80%; max-height:80%; object-fit:contain; animation: popIn 500ms cubic-bezier(0.17, 0.89, 0.32, 1.27) both;">`;
+    this.overlay.appendChild(el);
+    setTimeout(() => {
+      el.style.transition = 'opacity 400ms ease';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 400);
+    }, 800);
+  }
+
+  /** Shows the settings overlay. */
+  showSettings(onClose) {
+    const el = document.createElement('div');
+    el.className = 'settings-overlay';
+    el.style.cssText = `
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('./assets/ui/bg-settings.jpeg') center/cover no-repeat;
+      z-index: 300;
+      pointer-events: auto;
+    `;
+    el.innerHTML = `
+      <div style="background: rgba(0,0,0,0.7); padding: 40px; border-radius: 12px; border: 1px solid #fff; color: #fff; text-align: center;">
+        <h2 style="font-family: 'Rajdhani', sans-serif; letter-spacing: 0.2em;">SETTINGS</h2>
+        <div style="margin: 20px 0;">
+          <p>Settings coming soon...</p>
+        </div>
+        <button class="settings-close" style="padding: 10px 20px; cursor: pointer; background: #fff; color: #000; border: none; font-weight: bold;">CLOSE</button>
+      </div>
+    `;
+    this.overlay.appendChild(el);
+    el.querySelector('.settings-close').onclick = () => {
+      el.remove();
+      onClose?.();
+    };
+  }
+
   /** Shows the zone title flash for the current zone entry. */
   showZoneTitle(zoneLabel, zoneNumber = 0) {
     const prefix = zoneNumber > 0 ? `ZONE ${zoneNumber} - ` : '';
@@ -589,6 +641,7 @@ export class HUD {
 
     const panel = document.createElement('div');
     panel.className = 'modal-panel character-panel';
+    panel.style.background = "url('./assets/ui/characters/select-bg.jpeg') center/cover no-repeat";
     this._characterOverlay.appendChild(panel);
 
     const title = document.createElement('div');
@@ -607,6 +660,11 @@ export class HUD {
       el.dataset.index = String(i);
       el.classList.toggle('selected', i === this._characterSelected);
       
+      const portrait = document.createElement('img');
+      portrait.src = `./assets/ui/characters/portrait-${hunterId}.jpeg`;
+      portrait.style.cssText = 'width: 100%; height: auto; display: block; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2);';
+      el.appendChild(portrait);
+
       const hotkey = document.createElement('div');
       hotkey.className = 'card-hotkey';
       hotkey.textContent = String(i + 1);

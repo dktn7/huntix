@@ -77,7 +77,8 @@ export class SceneManager {
 
     this.titleScreen = new TitleScreen(overlay,
       () => this.transitionToHunterSelect(false),
-      () => this.transitionToHunterSelect(true)
+      () => this.transitionToHunterSelect(true),
+      () => this.hud.showSettings()
     );
     this.hunterSelectScreen = new HunterSelectScreen(overlay,
       (configs) => this.startRun(configs),
@@ -956,6 +957,7 @@ export class SceneManager {
   _handleLevelupQueued(entry) {
     const runPlayer = RunState.players[entry.playerIndex];
     if (runPlayer?.isAI) { this._resolveAICardChoices(); return; }
+    this.hud.showLevelUpFlash();
     if (!this.hud.isCardOpen()) this._openNextCardScreen();
   }
 

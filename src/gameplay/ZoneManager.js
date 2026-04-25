@@ -11,7 +11,7 @@ export const ZONE_CONFIGS = {
     id: 'city-breach',
     number: 1,
     label: 'City Breach',
-    clearBg: './assets/backgrounds/clear-city.jpg',
+    clearBg: './assets/backgrounds/clear-city.jpeg',
     portalColor: CITY_BREACH.gateFire,
     portalX: -6.8,
     waves: [
@@ -73,7 +73,7 @@ export const ZONE_CONFIGS = {
     id: 'ruin-den',
     number: 2,
     label: 'Ruin Den',
-    clearBg: './assets/backgrounds/clear-ruin.jpg',
+    clearBg: './assets/backgrounds/clear-ruin.jpeg',
     portalColor: RUIN_DEN.fissure,
     portalX: -2.2,
     waves: [
@@ -135,7 +135,7 @@ export const ZONE_CONFIGS = {
     id: 'shadow-core',
     number: 3,
     label: 'Shadow Core',
-    clearBg: './assets/backgrounds/clear-void.jpg',
+    clearBg: './assets/backgrounds/clear-void.jpeg',
     portalColor: SHADOW_CORE.violet,
     portalX: 2.4,
     waves: [
@@ -171,7 +171,7 @@ export const ZONE_CONFIGS = {
     id: 'thunder-spire',
     number: 4,
     label: 'Thunder Spire',
-    clearBg: './assets/backgrounds/clear-spire.jpg',
+    clearBg: './assets/backgrounds/clear-spire.jpeg',
     portalColor: THUNDER_SPIRE.lightning,
     portalX: 6.8,
     waves: [
@@ -250,7 +250,7 @@ export class ZoneManager {
    */
   getZoneClearBg(zoneId) {
     const config = this.getZoneConfig(zoneId);
-    return config?.clearBg || './assets/backgrounds/clear-default.jpg';
+    return config?.clearBg || './assets/backgrounds/clear-default.jpeg';
   }
 
   showZone(zoneId) {

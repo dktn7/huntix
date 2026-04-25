@@ -42,6 +42,28 @@ export class EndScreen {
           font-family: 'Inter', sans-serif;
         }
         #end-screen.visible { opacity: 1; }
+        #end-screen.mission-failed {
+          background: url('./assets/ui/bg-game-over.jpeg') center/cover no-repeat;
+        }
+        .mission-failed-overlay, .zone-clear-overlay {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          z-index: 130;
+        }
+        .mission-failed-overlay img, .zone-clear-overlay img {
+          max-width: 80%;
+          max-height: 80%;
+          object-fit: contain;
+          animation: popIn 500ms cubic-bezier(0.17, 0.89, 0.32, 1.27) both;
+        }
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.5); }
+          to { opacity: 1; transform: scale(1); }
+        }
         .end-panel {
           width: min(580px, 92vw);
           background: rgba(10, 11, 18, 0.95);
@@ -110,6 +132,24 @@ export class EndScreen {
 
     this._renderSummary();
     this._renderSelection();
+
+    if (this._summary.runWiped) {
+      this.container.classList.add('mission-failed');
+      const overlay = document.createElement('div');
+      overlay.className = 'mission-failed-overlay';
+      overlay.innerHTML = `<img src="./assets/ui/ui-mission-failed.jpeg">`;
+      this.container.appendChild(overlay);
+    } else {
+      const overlay = document.createElement('div');
+      overlay.className = 'zone-clear-overlay';
+      overlay.innerHTML = `<img src="./assets/ui/ui-zone-clear.jpeg">`;
+      this.container.appendChild(overlay);
+      setTimeout(() => {
+        overlay.style.transition = 'opacity 500ms ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 500);
+      }, 2000);
+    }
   }
 
   hide() {

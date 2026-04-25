@@ -39,6 +39,24 @@ export class BossScreen {
           font-family: 'Inter', sans-serif;
         }
         #boss-screen.visible { opacity: 1; }
+        .boss-incoming-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 57;
+        }
+        .boss-incoming-overlay img {
+          max-width: 85%;
+          max-height: 85%;
+          object-fit: contain;
+          animation: bossPopIn 600ms cubic-bezier(0.17, 0.89, 0.32, 1.27) both;
+        }
+        @keyframes bossPopIn {
+          from { opacity: 0; transform: scale(0.4); }
+          to { opacity: 1; transform: scale(1); }
+        }
         .boss-panel {
           position: absolute;
           top: 18px;
@@ -59,6 +77,9 @@ export class BossScreen {
           text-transform: uppercase;
         }
       </style>
+      <div class="boss-incoming-overlay">
+        <img src="./assets/ui/ui-boss-incoming.jpeg" alt="BOSS INCOMING">
+      </div>
       <div class="boss-panel">
         <div class="boss-name" data-role="name">Boss</div>
         <div data-role="hp">HP 0 / 0</div>
