@@ -1,6 +1,6 @@
 # HUNTIX Hunter Character Document
 
-*Last updated April 14, 2026*
+*Last updated April 25, 2026*
 
 ## Overview
 
@@ -59,6 +59,9 @@ Don't fight the enemy. End the encounter. Every move Dabik makes has a purpose. 
 | Advanced | Shadow Clone | 40 mana | Decoy taunts enemies for 3 seconds |
 | Ultimate | Monarch's Domain | Full Surge | All enemies frozen 4 sec, Dabik enters invisible rapid-strike mode |
 
+### Weapon Swap
+No physical weapon change. Twin daggers remain in hand. A deep purple aura pulse radiates from both blades, confirming the slot switch. 4 frames, instant.
+
 ### Upgrade Paths
 - **Power** — bleed stacks deal more damage, combos extend by 2 hits
 - **Mobility** — Shadow Step cooldown halved, blink range doubled
@@ -116,6 +119,9 @@ Take the hit. Then take everything else. Benzu's approach is pure attrition. He 
 | Minor | Shield Bash | 20 mana | Short range stun, interrupts enemy attacks |
 | Advanced | Seismic Slam | 50 mana | Leaps and slams, shockwave knocks back all nearby |
 | Ultimate | Titan's Wrath | Full Surge | Full screen ground shatter, all enemies stunned 5 sec, Benzu takes zero damage during |
+
+### Weapon Swap
+No physical weapon change. Stone-forged gauntlets remain on hands. A deep red-gold fracture pulse flares across both knuckles, confirming the slot switch. 4 frames, instant.
 
 ### Upgrade Paths
 - **Survival** — health pool increases, mana regen from hits doubles
@@ -177,6 +183,9 @@ Control the distance. Control the fight. Sereisa treats every combat zone like a
 | Advanced | Chain Shock | 45 mana | Lightning chains between up to 4 enemies, all slowed |
 | Ultimate | Storm Surge | Full Surge | Untouchable for 6 sec, every dash deals damage, speed doubles |
 
+### Weapon Swap
+No physical weapon change. Lightning rapier remains in hand. An intense yellow-white electric pulse crackles along the full length of the blade, confirming the slot switch. 4 frames, instant.
+
 ### Upgrade Paths
 - **Mobility** — dash cooldown reduced, chain shock gains one extra target
 - **Power** — slow duration increases, shocked enemies take bonus damage from all hunters
@@ -236,6 +245,9 @@ Precision over power. Though precision at sufficient scale becomes power. Vesol 
 | Minor | Flame Bolt | 12 mana | Fast projectile, applies burn damage over 3 seconds |
 | Advanced | Flame Wall | 45 mana | Wall of fire that damages and burns enemies passing through |
 | Ultimate | Inferno | Full Surge | Entire arena fills with fire for 6 sec, all enemies burn, Vesol immune to her own flames |
+
+### Weapon Swap
+No physical weapon change. Gate crystal focus remains at wrist. The aura shifts from deep blue to crimson (or crimson to blue), confirming the slot switch. 4 frames, instant.
 
 ### Upgrade Paths
 - **Power** — burn damage doubles, flame wall lasts longer
