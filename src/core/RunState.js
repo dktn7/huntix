@@ -6,6 +6,7 @@ import {
   getShopItemById,
   shouldQueueCardLevel,
 } from '../gameplay/ProgressionData.js';
+import { HUB_ZONE_ID, ZONE_ORDER } from '../gameplay/ZoneManager.js';
 
 const HUNTER_BASE_STATS = {
   dabik: {
@@ -45,13 +46,10 @@ const HUNTER_BASE_STATS = {
 const ZONE_CLEAR_HP_RESTORE = 30;
 const WIPE_ESSENCE_KEEP_RATE = 0.5;
 
-const VALID_ZONES = {
-  hub: true,
-  'city-breach': true,
-  'ruin-den': true,
-  'shadow-core': true,
-  'thunder-spire': true,
-};
+// Valid zones are the hub (neutral zone) + all combat zones in ZONE_ORDER.
+const VALID_ZONES = Object.fromEntries(
+  [HUB_ZONE_ID, ...ZONE_ORDER].map(id => [id, true])
+);
 
 const _listeners = {};
 
@@ -185,8 +183,8 @@ export const RunState = {
   runId: null,
   runTimer: 0,
   zonesCleared: 0,
-  currentZone: 'hub',
-  currentZoneLabel: 'Hub',
+  currentZone: HUB_ZONE_ID,
+  currentZoneLabel: 'Hunter HQ',
   currentZoneNumber: 0,
   isCoOp: false,
   runComplete: false,
@@ -209,8 +207,8 @@ export const RunState = {
     this.runId = Date.now().toString();
     this.runTimer = 0;
     this.zonesCleared = 0;
-    this.currentZone = 'hub';
-    this.currentZoneLabel = 'Hub';
+    this.currentZone = HUB_ZONE_ID;
+    this.currentZoneLabel = 'Hunter HQ';
     this.currentZoneNumber = 0;
     this.isCoOp = playerConfigs.filter(p => !p.isAI).length > 1;
     this.runComplete = false;
@@ -326,7 +324,7 @@ export const RunState = {
     this.runId = Date.now().toString();
     this.runTimer = 0;
     this.zonesCleared = 0;
-    this.currentZone = 'hub';
+    this.currentZone = HUB_ZONE_ID;
     this.isCoOp = configs.filter(p => !p.isAI).length > 1;
     this.runComplete = false;
     this.runWiped = false;
@@ -353,15 +351,15 @@ export const RunState = {
       player.shopBuysThisVisit = 0;
       player.secondWindReady = !!player.modifiers?.secondWind;
     }
-    this.currentZone = 'hub';
-    this.currentZoneLabel = 'Hub';
+    this.currentZone = HUB_ZONE_ID;
+    this.currentZoneLabel = 'Hunter HQ';
     this.currentZoneNumber = 0;
     this.activeBossId = null;
     this.activeBossName = null;
     this.activeBossHp = 0;
     this.activeBossHpMax = 0;
     this.activeBossPhase = 0;
-    if (this.zonesCleared === 4) this.runComplete = true;
+    if (this.zonesCleared === ZONE_ORDER.length) this.runComplete = true;
     this.emit('zoneComplete', { zoneId, zonesCleared: this.zonesCleared });
   },
 
@@ -370,7 +368,7 @@ export const RunState = {
 
     this.currentZone = zoneId;
     this.currentZoneLabel = zoneId;
-    this.currentZoneNumber = ['city-breach', 'ruin-den', 'shadow-core', 'thunder-spire'].indexOf(zoneId) + 1;
+    this.currentZoneNumber = ZONE_ORDER.indexOf(zoneId) + 1;
     this.activeBossId = null;
     this.activeBossName = null;
     this.activeBossHp = 0;
