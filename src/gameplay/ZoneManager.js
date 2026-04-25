@@ -4,9 +4,30 @@ import { ShadowCoreArena } from '../visuals/ShadowCoreArena.js';
 import { ThunderSpireArena } from '../visuals/ThunderSpireArena.js';
 import { CITY_BREACH, RUIN_DEN, SHADOW_CORE, THUNDER_SPIRE } from '../visuals/Palettes.js';
 
+// Ordered list of combat zones — hub is intentionally excluded (it is a
+// neutral zone that sits outside the linear progression sequence).
 export const ZONE_ORDER = ['city-breach', 'ruin-den', 'shadow-core', 'thunder-spire'];
 
+export const HUB_ZONE_ID = 'hub';
+
 export const ZONE_CONFIGS = {
+  // ---------------------------------------------------------------------------
+  // Hub — neutral safe zone, no waves, no boss
+  // ---------------------------------------------------------------------------
+  'hub': {
+    id: 'hub',
+    number: 0,
+    label: 'Hunter HQ',
+    // Hub uses its own 3D backdrop managed by SceneManager._setupHubBackdrop /
+    // _setupHubPortals, so no arena class or clearBg is needed here.
+    waves: [],
+    boss: null,
+    neutral: true,
+  },
+
+  // ---------------------------------------------------------------------------
+  // Combat zones (in ZONE_ORDER sequence)
+  // ---------------------------------------------------------------------------
   'city-breach': {
     id: 'city-breach',
     number: 1,
@@ -229,6 +250,11 @@ export class ZoneManager {
     return ZONE_CONFIGS[zoneId] || null;
   }
 
+  /** Returns true if zoneId is the neutral hub zone. */
+  isHubZone(zoneId) {
+    return zoneId === HUB_ZONE_ID;
+  }
+
   getZoneByIndex(index) {
     return ZONE_ORDER[index] || null;
   }
@@ -263,7 +289,7 @@ export class ZoneManager {
   }
 
   showHub() {
-    this.activeZoneId = null;
+    this.activeZoneId = HUB_ZONE_ID;
     for (const key of ZONE_ORDER) {
       const arena = this._arenaMap[key];
       if (arena) arena.visible = false;
@@ -271,13 +297,13 @@ export class ZoneManager {
   }
 
   getActiveArena() {
-    if (!this.activeZoneId) return null;
+    if (!this.activeZoneId || this.activeZoneId === HUB_ZONE_ID) return null;
     return this._arenaMap[this.activeZoneId] || null;
   }
 
   getCurrentZoneLabel() {
     const config = this.getZoneConfig(this.activeZoneId);
-    return config?.label || 'Hub';
+    return config?.label || 'Hunter HQ';
   }
 
   getPortalLayout() {
