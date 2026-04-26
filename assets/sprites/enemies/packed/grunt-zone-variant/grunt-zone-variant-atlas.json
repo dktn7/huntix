@@ -4,16 +4,16 @@
       "frame": {
         "x": 3,
         "y": 3,
-        "w": 192,
-        "h": 189
+        "w": 183,
+        "h": 192
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 3,
-        "w": 192,
-        "h": 189
+        "x": 4,
+        "y": 0,
+        "w": 183,
+        "h": 192
       },
       "sourceSize": {
         "w": 192,
@@ -26,17 +26,41 @@
     },
     "hurt_1.png": {
       "frame": {
-        "x": 201,
-        "y": 3,
-        "w": 187,
+        "x": 3,
+        "y": 201,
+        "w": 182,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 3,
+        "x": 5,
         "y": 0,
-        "w": 187,
+        "w": 182,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "hurt_0.png": {
+      "frame": {
+        "x": 3,
+        "y": 399,
+        "w": 175,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 8,
+        "y": 0,
+        "w": 175,
         "h": 192
       },
       "sourceSize": {
@@ -50,41 +74,17 @@
     },
     "dead_0.png": {
       "frame": {
-        "x": 399,
-        "y": 3,
-        "w": 159,
+        "x": 3,
+        "y": 597,
+        "w": 145,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 16,
+        "x": 23,
         "y": 0,
-        "w": 159,
-        "h": 192
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "idle_3.png": {
-      "frame": {
-        "x": 597,
-        "y": 3,
-        "w": 147,
-        "h": 192
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 22,
-        "y": 0,
-        "w": 147,
+        "w": 145,
         "h": 192
       },
       "sourceSize": {
@@ -98,65 +98,17 @@
     },
     "attack_1.png": {
       "frame": {
-        "x": 795,
-        "y": 3,
-        "w": 120,
+        "x": 3,
+        "y": 795,
+        "w": 124,
         "h": 192
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 36,
-        "y": 0,
-        "w": 120,
-        "h": 192
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "dead_2.png": {
-      "frame": {
-        "x": 993,
-        "y": 3,
-        "w": 192,
-        "h": 119
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 73,
-        "w": 192,
-        "h": 119
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "attack_0.png": {
-      "frame": {
-        "x": 1191,
-        "y": 3,
-        "w": 117,
-        "h": 192
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 37,
+        "x": 34,
         "y": 0,
-        "w": 117,
+        "w": 124,
         "h": 192
       },
       "sourceSize": {
@@ -170,17 +122,17 @@
     },
     "attack_2.png": {
       "frame": {
-        "x": 1389,
-        "y": 3,
-        "w": 117,
+        "x": 3,
+        "y": 993,
+        "w": 119,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 37,
+        "x": 36,
         "y": 0,
-        "w": 117,
+        "w": 119,
         "h": 192
       },
       "sourceSize": {
@@ -192,19 +144,43 @@
         "y": 0.5
       }
     },
-    "walk_0.png": {
+    "dead_2.png": {
       "frame": {
-        "x": 1587,
-        "y": 3,
-        "w": 110,
-        "h": 192
+        "x": 3,
+        "y": 1191,
+        "w": 192,
+        "h": 116
       },
       "rotated": true,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 41,
+        "x": 0,
+        "y": 76,
+        "w": 192,
+        "h": 116
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "attack_0.png": {
+      "frame": {
+        "x": 3,
+        "y": 1389,
+        "w": 113,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 39,
         "y": 0,
-        "w": 110,
+        "w": 113,
         "h": 192
       },
       "sourceSize": {
@@ -218,17 +194,41 @@
     },
     "walk_3.png": {
       "frame": {
-        "x": 1785,
-        "y": 3,
-        "w": 107,
+        "x": 3,
+        "y": 1587,
+        "w": 98,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 42,
+        "x": 47,
         "y": 0,
-        "w": 107,
+        "w": 98,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "telegraph_1.png": {
+      "frame": {
+        "x": 3,
+        "y": 1785,
+        "w": 93,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 49,
+        "y": 0,
+        "w": 93,
         "h": 192
       },
       "sourceSize": {
@@ -242,12 +242,12 @@
     },
     "idle_0.png": {
       "frame": {
-        "x": 1983,
-        "y": 3,
+        "x": 3,
+        "y": 1983,
         "w": 33,
         "h": 190
       },
-      "rotated": false,
+      "rotated": true,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 79,
@@ -266,12 +266,84 @@
     },
     "idle_1.png": {
       "frame": {
-        "x": 1785,
-        "y": 116,
+        "x": 102,
+        "y": 1785,
         "w": 90,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 51,
+        "y": 0,
+        "w": 90,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "recover_1.png": {
+      "frame": {
+        "x": 198,
+        "y": 1785,
+        "w": 90,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 51,
+        "y": 0,
+        "w": 90,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "telegraph_0.png": {
+      "frame": {
+        "x": 107,
+        "y": 1587,
+        "w": 90,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 51,
+        "y": 0,
+        "w": 90,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "telegraph_3.png": {
+      "frame": {
+        "x": 203,
+        "y": 1587,
+        "w": 90,
+        "h": 192
+      },
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 51,
@@ -290,12 +362,12 @@
     },
     "idle_2.png": {
       "frame": {
-        "x": 1587,
-        "y": 119,
+        "x": 122,
+        "y": 1389,
         "w": 89,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 51,
@@ -312,14 +384,14 @@
         "y": 0.5
       }
     },
-    "telegraph_1.png": {
+    "recover_2.png": {
       "frame": {
-        "x": 1785,
-        "y": 212,
+        "x": 217,
+        "y": 1389,
         "w": 89,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 51,
@@ -336,140 +408,20 @@
         "y": 0.5
       }
     },
-    "telegraph_2.png": {
+    "idle_3.png": {
       "frame": {
-        "x": 1191,
-        "y": 126,
-        "w": 88,
+        "x": 312,
+        "y": 1389,
+        "w": 19,
         "h": 192
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 52,
+        "x": 86,
         "y": 0,
-        "w": 88,
+        "w": 19,
         "h": 192
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "telegraph_0.png": {
-      "frame": {
-        "x": 993,
-        "y": 128,
-        "w": 77,
-        "h": 192
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 57,
-        "y": 0,
-        "w": 77,
-        "h": 192
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "telegraph_3.png": {
-      "frame": {
-        "x": 795,
-        "y": 129,
-        "w": 83,
-        "h": 190
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 52,
-        "y": 0,
-        "w": 83,
-        "h": 190
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "hurt_0.png": {
-      "frame": {
-        "x": 597,
-        "y": 156,
-        "w": 173,
-        "h": 186
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 9,
-        "y": 0,
-        "w": 173,
-        "h": 186
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "walk_1.png": {
-      "frame": {
-        "x": 399,
-        "y": 168,
-        "w": 106,
-        "h": 173
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 43,
-        "y": 0,
-        "w": 106,
-        "h": 173
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "walk_2.png": {
-      "frame": {
-        "x": 201,
-        "y": 196,
-        "w": 109,
-        "h": 169
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 41,
-        "y": 0,
-        "w": 109,
-        "h": 169
       },
       "sourceSize": {
         "w": 192,
@@ -482,8 +434,8 @@
     },
     "recover_0.png": {
       "frame": {
-        "x": 1983,
-        "y": 3,
+        "x": 125,
+        "y": 1191,
         "w": 33,
         "h": 190
       },
@@ -504,44 +456,20 @@
         "y": 0.5
       }
     },
-    "recover_1.png": {
+    "telegraph_2.png": {
       "frame": {
-        "x": 1785,
-        "y": 116,
-        "w": 90,
-        "h": 192
+        "x": 164,
+        "y": 1191,
+        "w": 91,
+        "h": 188
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 51,
+        "x": 50,
         "y": 0,
-        "w": 90,
-        "h": 192
-      },
-      "sourceSize": {
-        "w": 192,
-        "h": 192
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "recover_2.png": {
-      "frame": {
-        "x": 1587,
-        "y": 119,
-        "w": 89,
-        "h": 192
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 51,
-        "y": 0,
-        "w": 89,
-        "h": 192
+        "w": 91,
+        "h": 188
       },
       "sourceSize": {
         "w": 192,
@@ -554,18 +482,90 @@
     },
     "recover_3.png": {
       "frame": {
-        "x": 597,
-        "y": 3,
-        "w": 147,
-        "h": 192
+        "x": 3,
+        "y": 2022,
+        "w": 11,
+        "h": 114
       },
       "rotated": true,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 22,
         "y": 0,
-        "w": 147,
+        "w": 11,
+        "h": 114
+      },
+      "sourceSize": {
+        "w": 192,
         "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_0.png": {
+      "frame": {
+        "x": 128,
+        "y": 993,
+        "w": 97,
+        "h": 179
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 47,
+        "y": 0,
+        "w": 97,
+        "h": 179
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_2.png": {
+      "frame": {
+        "x": 133,
+        "y": 795,
+        "w": 99,
+        "h": 175
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 46,
+        "y": 0,
+        "w": 99,
+        "h": 175
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 192
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_1.png": {
+      "frame": {
+        "x": 154,
+        "y": 597,
+        "w": 96,
+        "h": 175
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 48,
+        "y": 0,
+        "w": 96,
+        "h": 175
       },
       "sourceSize": {
         "w": 192,
@@ -583,8 +583,8 @@
     "image": "grunt-zone-variant-atlas.png",
     "format": "RGBA8888",
     "size": {
-      "w": 2019,
-      "h": 332
+      "w": 334,
+      "h": 2036
     },
     "scale": 1
   }
