@@ -1,0 +1,340 @@
+{
+  "jobs": [
+    {
+      "job": "grunt:idle",
+      "output_path": "assets/sprites/enemies/grunt/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. subtle chest breathing, no foot movement\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:walk",
+      "output_path": "assets/sprites/enemies/grunt/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 4 frames. heavy plodding stride, body bobs, arms swing low\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:telegraph",
+      "output_path": "assets/sprites/enemies/grunt/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. arm pulls back wide, orange glow builds on fist, body coils\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:attack",
+      "output_path": "assets/sprites/enemies/grunt/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. explosive horizontal swipe, arm at full arc, orange glow at peak\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:recover",
+      "output_path": "assets/sprites/enemies/grunt/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. arm retracts, weight returns to centre, back to combat idle\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:hurt",
+      "output_path": "assets/sprites/enemies/grunt/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. sharp body recoil backward, head snaps back\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt:dead",
+      "output_path": "assets/sprites/enemies/grunt/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Grunt (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. staggers, collapses, cracked gate energy fades out\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Use base palette only: grey/brown, cracked gate energy skin.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:idle",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. subtle chest breathing, no foot movement\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:walk",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 4 frames. heavy plodding stride, body bobs, arms swing low\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:telegraph",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. arm pulls back wide, orange glow builds on fist, body coils\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:attack",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. explosive horizontal swipe, arm at full arc, orange glow at peak\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:recover",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. arm retracts, weight returns to centre, back to combat idle\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:hurt",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. sharp body recoil backward, head snaps back\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "grunt-zone-variant:dead",
+      "output_path": "assets/sprites/enemies/grunt-zone-variant/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Grunt (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. staggers, collapses, cracked gate energy fades out\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: grey/brown, cracked gate energy skin.\nVariant rule: Zone variant palette only: red-tinged rust and bruised darker tones; gate energy cracks more aggressive.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:idle",
+      "output_path": "assets/sprites/enemies/ranged/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. subtle breathing, crystal glow pulses very slightly\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:walk",
+      "output_path": "assets/sprites/enemies/ranged/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 6 frames. light cautious stride, body upright, crystal steady, nimble quality\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:strafe",
+      "output_path": "assets/sprites/enemies/ranged/strafe-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: strafe with exactly 6 frames. lateral shuffle, body faces forward, crystal arm raised and aimed\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:retreat",
+      "output_path": "assets/sprites/enemies/ranged/retreat-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: retreat with exactly 6 frames. urgent backward shuffle, crystal arm stays raised and aimed throughout\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:telegraph",
+      "output_path": "assets/sprites/enemies/ranged/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. crystal charges from dim to full glow, body locks on target\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:attack",
+      "output_path": "assets/sprites/enemies/ranged/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. arm thrusts forward, crystal flares at maximum, bolt fires, crystal dims\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:recover",
+      "output_path": "assets/sprites/enemies/ranged/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. arm retracts, crystal recharges from dark back to idle pulse\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:hurt",
+      "output_path": "assets/sprites/enemies/ranged/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. sharp flinch backward, crystal flickers dark then returns faintly\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged:dead",
+      "output_path": "assets/sprites/enemies/ranged/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Ranged Unit (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. staggers, crystal extinguishes, body folds and collapses\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Use base palette only: dark body with white-blue crystal glow.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:idle",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. subtle breathing, crystal glow pulses very slightly\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:walk",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 6 frames. light cautious stride, body upright, crystal steady, nimble quality\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:strafe",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/strafe-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: strafe with exactly 6 frames. lateral shuffle, body faces forward, crystal arm raised and aimed\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:retreat",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/retreat-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 6,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: retreat with exactly 6 frames. urgent backward shuffle, crystal arm stays raised and aimed throughout\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:telegraph",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. crystal charges from dim to full glow, body locks on target\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:attack",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. arm thrusts forward, crystal flares at maximum, bolt fires, crystal dims\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:recover",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. arm retracts, crystal recharges from dark back to idle pulse\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:hurt",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. sharp flinch backward, crystal flickers dark then returns faintly\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "ranged-zone-variant:dead",
+      "output_path": "assets/sprites/enemies/ranged-zone-variant/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Ranged Unit (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. staggers, crystal extinguishes, body folds and collapses\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark body, white-blue crystal glow focal point.\nVariant rule: Zone variant palette only: crystal glow must be deep purple; body materials unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:idle",
+      "output_path": "assets/sprites/enemies/bruiser/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. very slow heavy breathing, massive chest expands, feet planted\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:walk",
+      "output_path": "assets/sprites/enemies/bruiser/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 4 frames. slow thunderous stride, body weight shifts dramatically side to side\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:telegraph",
+      "output_path": "assets/sprites/enemies/bruiser/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. arms raise slowly overhead, deep red aura builds to maximum\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:attack",
+      "output_path": "assets/sprites/enemies/bruiser/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. both fists slam downward, deep red aura peaks on impact\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:recover",
+      "output_path": "assets/sprites/enemies/bruiser/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. hunched post-slam, slowly straightens, vulnerable window\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:shove",
+      "output_path": "assets/sprites/enemies/bruiser/shove-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: shove with exactly 3 frames. both arms thrust forward wide, yellow outline flash on hands at extension\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:hurt",
+      "output_path": "assets/sprites/enemies/bruiser/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. massive body barely moves, slight shoulder recoil, ore plating crack flash\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser:dead",
+      "output_path": "assets/sprites/enemies/bruiser/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (base variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. ore plating cracks glow then go dark, body tips slow and heavy, crashes\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Use base palette only: dark stone and metal ore plating.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:idle",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/idle-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: idle with exactly 4 frames. very slow heavy breathing, massive chest expands, feet planted\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:walk",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/walk-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: walk with exactly 4 frames. slow thunderous stride, body weight shifts dramatically side to side\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:telegraph",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/telegraph-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: telegraph with exactly 4 frames. arms raise slowly overhead, deep red aura builds to maximum\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:attack",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/attack-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: attack with exactly 3 frames. both fists slam downward, deep red aura peaks on impact\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:recover",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/recover-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 4,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: recover with exactly 4 frames. hunched post-slam, slowly straightens, vulnerable window\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:shove",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/shove-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: shove with exactly 3 frames. both arms thrust forward wide, yellow outline flash on hands at extension\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:hurt",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/hurt-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 2,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: hurt with exactly 2 frames. massive body barely moves, slight shoulder recoil, ore plating crack flash\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    },
+    {
+      "job": "bruiser-zone-variant:dead",
+      "output_path": "assets/sprites/enemies/bruiser-zone-variant/dead-strip.png",
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "frames": 3,
+      "prompt": "Create a sprite strip for Bruiser (zone variant).\nUse the provided reference image to preserve silhouette and proportions.\nAnimation: dead with exactly 3 frames. ore plating cracks glow then go dark, body tips slow and heavy, crashes\nLayout: one single row, frames left-to-right, equal frame spacing, no extra panels.\nArt direction: 2.5D fixed brawler angle, Dead Cells art feel, wide readable shapes, committed poses, heavy silhouette payoff, low-poly game-ready shapes, clean readable silhouettes, polished dark fantasy materials, no text, no UI, no motion blur, equal frame spacing, single row strip left to right, solid green background #00FF00.\nBase palette: dark stone and metal ore plating, 2x player height.\nVariant rule: Zone variant palette only: void-touched ore / blackened stone tones; structure unchanged.\nHard constraints: no text, no UI, no motion blur, no camera tilt.\nBackground: flat solid #00FF00 only (no gradients, no shadows on background, no texture, no spill).\nDo not copy any hunter outfit, color scheme, or character-specific details.\nOutput: one strip image only."
+    }
+  ]
+}

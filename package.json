@@ -1,0 +1,15 @@
+{
+  "name": "huntix",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Huntix pipeline tooling scripts",
+  "scripts": {
+    "sprites:enemies:generate": "python scripts/generate-all-enemies.py",
+    "sprites:enemies:process": "node scripts/process-enemies.js",
+    "sprites:enemies:audit": "node scripts/audit-enemies.js"
+  },
+  "dependencies": {
+    "free-tex-packer-core": "^0.3.5",
+    "sharp": "^0.32.6"
+  }
+}

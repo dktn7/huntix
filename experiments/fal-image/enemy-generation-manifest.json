@@ -1,0 +1,391 @@
+{
+  "generated_at": "2026-04-26T13:54:48.046734+00:00",
+  "mode": "manual",
+  "job_count": 48,
+  "jobs": [
+    {
+      "job": "grunt:idle",
+      "folder": "grunt",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/idle-strip.png"
+    },
+    {
+      "job": "grunt:walk",
+      "folder": "grunt",
+      "state": "walk",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/walk-strip.png"
+    },
+    {
+      "job": "grunt:telegraph",
+      "folder": "grunt",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/telegraph-strip.png"
+    },
+    {
+      "job": "grunt:attack",
+      "folder": "grunt",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/attack-strip.png"
+    },
+    {
+      "job": "grunt:recover",
+      "folder": "grunt",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/recover-strip.png"
+    },
+    {
+      "job": "grunt:hurt",
+      "folder": "grunt",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/hurt-strip.png"
+    },
+    {
+      "job": "grunt:dead",
+      "folder": "grunt",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/grunt/grunt-sheet-1_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt/dead-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:idle",
+      "folder": "grunt-zone-variant",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/idle-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:walk",
+      "folder": "grunt-zone-variant",
+      "state": "walk",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/walk-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:telegraph",
+      "folder": "grunt-zone-variant",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/telegraph-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:attack",
+      "folder": "grunt-zone-variant",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/attack-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:recover",
+      "folder": "grunt-zone-variant",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/recover-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:hurt",
+      "folder": "grunt-zone-variant",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/hurt-strip.png"
+    },
+    {
+      "job": "grunt-zone-variant:dead",
+      "folder": "grunt-zone-variant",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/grunt-zone-variant/grunt-sheet_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/grunt-zone-variant/dead-strip.png"
+    },
+    {
+      "job": "ranged:idle",
+      "folder": "ranged",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/idle-strip.png"
+    },
+    {
+      "job": "ranged:walk",
+      "folder": "ranged",
+      "state": "walk",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/walk-strip.png"
+    },
+    {
+      "job": "ranged:strafe",
+      "folder": "ranged",
+      "state": "strafe",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/strafe-strip.png"
+    },
+    {
+      "job": "ranged:retreat",
+      "folder": "ranged",
+      "state": "retreat",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/retreat-strip.png"
+    },
+    {
+      "job": "ranged:telegraph",
+      "folder": "ranged",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/telegraph-strip.png"
+    },
+    {
+      "job": "ranged:attack",
+      "folder": "ranged",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/attack-strip.png"
+    },
+    {
+      "job": "ranged:recover",
+      "folder": "ranged",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/recover-strip.png"
+    },
+    {
+      "job": "ranged:hurt",
+      "folder": "ranged",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/hurt-strip.png"
+    },
+    {
+      "job": "ranged:dead",
+      "folder": "ranged",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/ranged/mixboard-image_(32).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged/dead-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:idle",
+      "folder": "ranged-zone-variant",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/idle-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:walk",
+      "folder": "ranged-zone-variant",
+      "state": "walk",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/walk-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:strafe",
+      "folder": "ranged-zone-variant",
+      "state": "strafe",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/strafe-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:retreat",
+      "folder": "ranged-zone-variant",
+      "state": "retreat",
+      "frames": 6,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/retreat-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:telegraph",
+      "folder": "ranged-zone-variant",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/telegraph-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:attack",
+      "folder": "ranged-zone-variant",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/attack-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:recover",
+      "folder": "ranged-zone-variant",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/recover-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:hurt",
+      "folder": "ranged-zone-variant",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/hurt-strip.png"
+    },
+    {
+      "job": "ranged-zone-variant:dead",
+      "folder": "ranged-zone-variant",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/ranged-zone-variant/mixboard-image_(31).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/ranged-zone-variant/dead-strip.png"
+    },
+    {
+      "job": "bruiser:idle",
+      "folder": "bruiser",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/idle-strip.png"
+    },
+    {
+      "job": "bruiser:walk",
+      "folder": "bruiser",
+      "state": "walk",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/walk-strip.png"
+    },
+    {
+      "job": "bruiser:telegraph",
+      "folder": "bruiser",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/telegraph-strip.png"
+    },
+    {
+      "job": "bruiser:attack",
+      "folder": "bruiser",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/attack-strip.png"
+    },
+    {
+      "job": "bruiser:recover",
+      "folder": "bruiser",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/recover-strip.png"
+    },
+    {
+      "job": "bruiser:shove",
+      "folder": "bruiser",
+      "state": "shove",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/shove-strip.png"
+    },
+    {
+      "job": "bruiser:hurt",
+      "folder": "bruiser",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/hurt-strip.png"
+    },
+    {
+      "job": "bruiser:dead",
+      "folder": "bruiser",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser/mixboard-image_(33).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser/dead-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:idle",
+      "folder": "bruiser-zone-variant",
+      "state": "idle",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/idle-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:walk",
+      "folder": "bruiser-zone-variant",
+      "state": "walk",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/walk-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:telegraph",
+      "folder": "bruiser-zone-variant",
+      "state": "telegraph",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/telegraph-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:attack",
+      "folder": "bruiser-zone-variant",
+      "state": "attack",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/attack-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:recover",
+      "folder": "bruiser-zone-variant",
+      "state": "recover",
+      "frames": 4,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/recover-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:shove",
+      "folder": "bruiser-zone-variant",
+      "state": "shove",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/shove-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:hurt",
+      "folder": "bruiser-zone-variant",
+      "state": "hurt",
+      "frames": 2,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/hurt-strip.png"
+    },
+    {
+      "job": "bruiser-zone-variant:dead",
+      "folder": "bruiser-zone-variant",
+      "state": "dead",
+      "frames": 3,
+      "reference_image": "assets/sprites/enemies/bruiser-zone-variant/mixboard-image_(34).png_202604251729.jpeg",
+      "strip_path": "assets/sprites/enemies/bruiser-zone-variant/dead-strip.png"
+    }
+  ]
+}

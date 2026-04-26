@@ -1,0 +1,12 @@
+Drop generated strips in this folder with these exact names:
+- attack-strip.png
+- dead-strip.png
+- hurt-strip.png
+- idle-strip.png
+- recover-strip.png
+- retreat-strip.png
+- strafe-strip.png
+- telegraph-strip.png
+- walk-strip.png
+
+Format: single-row strips, equal frame spacing, #00FF00 background.
