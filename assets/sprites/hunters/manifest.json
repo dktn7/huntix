@@ -1,8 +1,50 @@
 {
   "atlases": {
-    "dabik": false,
-    "benzu": false,
-    "sereisa": false,
-    "vesol": false
+    "dabik": true,
+    "benzu": true,
+    "sereisa": true,
+    "vesol": true
+  },
+  "audits": {
+    "dabik": {
+      "path": "dabik-atlas-audit.json",
+      "missingStates": 0,
+      "countMismatches": 0,
+      "regenStates": 0,
+      "sizeViolations": 0,
+      "sourceToAtlasMismatch": 0,
+      "matteArtifactRatio": 0.064,
+      "sizeDriftPx": 0
+    },
+    "benzu": {
+      "path": "benzu-atlas-audit.json",
+      "missingStates": 0,
+      "countMismatches": 0,
+      "regenStates": 0,
+      "sizeViolations": 0,
+      "sourceToAtlasMismatch": 0,
+      "matteArtifactRatio": 0.158,
+      "sizeDriftPx": 0
+    },
+    "sereisa": {
+      "path": "sereisa-atlas-audit.json",
+      "missingStates": 0,
+      "countMismatches": 0,
+      "regenStates": 0,
+      "sizeViolations": 0,
+      "sourceToAtlasMismatch": 0,
+      "matteArtifactRatio": 0.468,
+      "sizeDriftPx": 24
+    },
+    "vesol": {
+      "path": "vesol-atlas-audit.json",
+      "missingStates": 0,
+      "countMismatches": 0,
+      "regenStates": 0,
+      "sizeViolations": 0,
+      "sourceToAtlasMismatch": 0,
+      "matteArtifactRatio": 0.174,
+      "sizeDriftPx": 0
+    }
   }
 }

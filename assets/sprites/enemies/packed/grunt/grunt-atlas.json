@@ -1,0 +1,399 @@
+{
+  "frames": {
+    "walk_3.png": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 344,
+        "h": 768
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 344,
+        "h": 768
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "idle_2.png": {
+      "frame": {
+        "x": 3,
+        "y": 777,
+        "w": 344,
+        "h": 742
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 9,
+        "w": 344,
+        "h": 742
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "attack_2.png": {
+      "frame": {
+        "x": 3,
+        "y": 1525,
+        "w": 458,
+        "h": 737
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 31,
+        "w": 458,
+        "h": 737
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "idle_1.png": {
+      "frame": {
+        "x": 353,
+        "y": 3,
+        "w": 344,
+        "h": 736
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 26,
+        "w": 344,
+        "h": 736
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "hurt_0.png": {
+      "frame": {
+        "x": 353,
+        "y": 745,
+        "w": 642,
+        "h": 729
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 30,
+        "y": 39,
+        "w": 642,
+        "h": 729
+      },
+      "sourceSize": {
+        "w": 688,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "attack_0.png": {
+      "frame": {
+        "x": 703,
+        "y": 3,
+        "w": 458,
+        "h": 728
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 40,
+        "w": 458,
+        "h": 728
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "attack_1.png": {
+      "frame": {
+        "x": 3,
+        "y": 2268,
+        "w": 458,
+        "h": 727
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 41,
+        "w": 458,
+        "h": 727
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "hurt_1.png": {
+      "frame": {
+        "x": 3,
+        "y": 3001,
+        "w": 684,
+        "h": 723
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 45,
+        "w": 684,
+        "h": 723
+      },
+      "sourceSize": {
+        "w": 688,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_1.png": {
+      "frame": {
+        "x": 3,
+        "y": 3730,
+        "w": 344,
+        "h": 691
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 77,
+        "w": 344,
+        "h": 691
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_2.png": {
+      "frame": {
+        "x": 700,
+        "y": 3001,
+        "w": 344,
+        "h": 669
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 99,
+        "w": 344,
+        "h": 669
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "walk_0.png": {
+      "frame": {
+        "x": 700,
+        "y": 3676,
+        "w": 344,
+        "h": 646
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 122,
+        "w": 344,
+        "h": 646
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "idle_0.png": {
+      "frame": {
+        "x": 1050,
+        "y": 4026,
+        "w": 50,
+        "h": 288
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 294,
+        "y": 273,
+        "w": 50,
+        "h": 288
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "dead_0.png": {
+      "frame": {
+        "x": 467,
+        "y": 1480,
+        "w": 442,
+        "h": 588
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 16,
+        "y": 78,
+        "w": 442,
+        "h": 588
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "dead_1.png": {
+      "frame": {
+        "x": 467,
+        "y": 2074,
+        "w": 458,
+        "h": 481
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 198,
+        "w": 458,
+        "h": 481
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "idle_3.png": {
+      "frame": {
+        "x": 467,
+        "y": 2561,
+        "w": 344,
+        "h": 450
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 318,
+        "w": 344,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 344,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "dead_2.png": {
+      "frame": {
+        "x": 923,
+        "y": 2561,
+        "w": 458,
+        "h": 341
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 427,
+        "w": 458,
+        "h": 341
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://github.com/odrick/free-tex-packer-core",
+    "version": "0.3.5",
+    "image": "grunt-atlas.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1384,
+      "h": 4079
+    },
+    "scale": 1
+  }
+}
