@@ -142,49 +142,44 @@ export class TitleScreen {
         .ts-logo-wrap {
           position: relative;
           z-index: 2;
-          margin-bottom: 0.4rem;
+          margin-bottom: -4rem; /* Pull content up */
+          margin-top: -15vh;
           animation: logoReveal 1.2s cubic-bezier(0.16,1,0.3,1) both;
           animation-delay: 300ms;
         }
         @keyframes logoReveal {
-          from { opacity: 0; transform: translateY(-18px) scale(0.94); filter: blur(6px); }
+          from { opacity: 0; transform: translateY(-30px) scale(0.94); filter: blur(6px); }
           to   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0);   }
         }
         .ts-logo {
-          width: clamp(240px, 36vw, 520px);
+          width: clamp(280px, 40vw, 600px);
           height: auto;
           display: block;
-          filter:
-            drop-shadow(0 0 20px rgba(170,80,255,0.7))
-            drop-shadow(0 0 50px rgba(100,30,180,0.5));
-          animation: logoPulse 5s ease-in-out infinite;
-          animation-delay: 1.5s;
-        }
-        @keyframes logoPulse {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(170,80,255,0.7)) drop-shadow(0 0 50px rgba(100,30,180,0.5)); }
-          50%       { filter: drop-shadow(0 0 30px rgba(200,120,255,0.9)) drop-shadow(0 0 70px rgba(140,50,220,0.7)); }
+          filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
         }
 
         /* ── Lore tagline ── */
         .ts-lore {
           position: relative;
-          z-index: 2;
-          font-size: clamp(0.6rem, 1.1vw, 0.78rem);
+          z-index: 3; /* Ensure it is above the logo */
+          font-size: clamp(0.7rem, 1.2vw, 0.9rem);
           font-weight: 700;
           letter-spacing: 0.45em;
           text-transform: uppercase;
-          color: rgba(180,140,255,0.65);
-          margin-bottom: 0.3rem;
+          color: #fff;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+          margin-bottom: 0.5rem;
           animation: fadeSlideUp 1s ease both;
           animation-delay: 800ms;
         }
         .ts-subtitle {
           position: relative;
-          z-index: 2;
-          font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+          z-index: 3; /* Ensure it is above the logo */
+          font-size: clamp(0.6rem, 1vw, 0.8rem);
           font-style: italic;
-          letter-spacing: 0.2em;
-          color: rgba(130,100,180,0.5);
+          letter-spacing: 0.25em;
+          color: #d1c1ff;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.8);
           margin-bottom: 3.2rem;
           animation: fadeSlideUp 1s ease both;
           animation-delay: 1s;
@@ -234,78 +229,19 @@ export class TitleScreen {
           transform: translateX(0);
         }
 
-        /* ── Hunter silhouettes ── */
-        .ts-hunters {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 32%;
-          display: flex;
-          justify-content: space-around;
-          align-items: flex-end;
-          padding: 0 8%;
-          pointer-events: none;
-          z-index: 1;
-        }
-        .ts-hunter {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          animation: hunterFloat 5s ease-in-out infinite;
-        }
-        .ts-hunter:nth-child(1) { animation-delay: 0s; }
-        .ts-hunter:nth-child(2) { animation-delay: 1.3s; }
-        .ts-hunter:nth-child(3) { animation-delay: 2.6s; }
-        .ts-hunter:nth-child(4) { animation-delay: 3.9s; }
-        @keyframes hunterFloat {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(-7px); }
-        }
-        .ts-hunter-body {
-          width: clamp(36px, 5vw, 64px);
-          height: clamp(72px, 10vw, 128px);
-          background: #06050d;
-          clip-path: polygon(30% 0%, 70% 0%, 90% 15%, 100% 40%, 85% 100%, 15% 100%, 0% 40%, 10% 15%);
-          position: relative;
-        }
-        .ts-hunter-aura {
-          position: absolute;
-          bottom: -6px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 200%;
-          height: 40px;
-          border-radius: 50%;
-          filter: blur(8px);
-          opacity: 0.6;
-          animation: auraFlicker 2s ease-in-out infinite;
-        }
-        @keyframes auraFlicker {
-          0%, 100% { opacity: 0.45; transform: translateX(-50%) scaleX(1);   }
-          50%       { opacity: 0.75; transform: translateX(-50%) scaleX(1.15); }
-        }
-        .ts-hunter-name {
-          margin-top: 8px;
-          font-size: clamp(0.5rem, 0.8vw, 0.65rem);
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          opacity: 0.4;
-          color: #fff;
-        }
-
-        /* ── Version / jam badge ── */
+        /* ── Version badge ── */
         .ts-badge {
           position: absolute;
-          bottom: 14px;
-          right: 18px;
+          top: 14px;
+          left: 18px;
           font-size: 0.6rem;
           letter-spacing: 0.15em;
           color: rgba(150,120,200,0.35);
           z-index: 3;
           text-transform: uppercase;
         }
+
+        /* ── Controls hint ── */
         .ts-controls-hint {
           position: absolute;
           bottom: 14px;
@@ -326,10 +262,12 @@ export class TitleScreen {
       <div class="ts-rift"></div>
       <div class="ts-floor-glow"></div>
 
+      <div class="ts-badge">Huntix v0.1</div>
+
       <div class="ts-logo-wrap">
         <img
           class="ts-logo"
-          src="./assets/ui/Huntrix-logo-hd-2.jpeg"
+          src="./assets/ui/Futuristic_HUNTIX_logo_202604251049-removebg-preview.png"
           alt="HUNTIX"
           width="520"
           height="auto"
@@ -356,30 +294,6 @@ export class TitleScreen {
         `).join('')}
       </nav>
 
-      <div class="ts-hunters" aria-hidden="true">
-        <div class="ts-hunter">
-          <div class="ts-hunter-body"></div>
-          <div class="ts-hunter-aura" style="background:#7722cc"></div>
-          <span class="ts-hunter-name">Dabik</span>
-        </div>
-        <div class="ts-hunter">
-          <div class="ts-hunter-body"></div>
-          <div class="ts-hunter-aura" style="background:#cc5500"></div>
-          <span class="ts-hunter-name">Benzu</span>
-        </div>
-        <div class="ts-hunter">
-          <div class="ts-hunter-body"></div>
-          <div class="ts-hunter-aura" style="background:#ccaa00"></div>
-          <span class="ts-hunter-name">Sereisa</span>
-        </div>
-        <div class="ts-hunter">
-          <div class="ts-hunter-body"></div>
-          <div class="ts-hunter-aura" style="background:#1166cc"></div>
-          <span class="ts-hunter-name">Vesol</span>
-        </div>
-      </div>
-
-      <div class="ts-badge">Vibe Jam 2026 &nbsp;&#x2014;&nbsp; v0.1</div>
       <div class="ts-controls-hint">↑↓ Navigate &nbsp;&nbsp; Enter / Z &nbsp; Confirm</div>
     `;
 

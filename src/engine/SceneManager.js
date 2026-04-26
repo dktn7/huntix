@@ -21,6 +21,7 @@ import { ZONE_CONFIGS } from '../gameplay/ZoneManager.js';
 
 import { TitleScreen } from '../screens/TitleScreen.js';
 import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
+import { PauseMenu } from '../gameplay/PauseMenu.js';
 
 const SceneModes = {
   TITLE_SCREEN: 'TITLE_SCREEN',
@@ -85,6 +86,8 @@ export class SceneManager {
       () => this.transitionToTitle()
     );
 
+    this.pauseMenu = new PauseMenu(overlay);
+
     this.hunters = new HunterController(this.scene, RunState.players);
     this.player = this.hunters.primaryPlayer;
     this.resources = this.player?.resources || { health: 0, maxHealth: 0, mana: 0, maxMana: 0, surge: 0, maxSurge: 0, stamina: 0, maxStamina: 0 };
@@ -109,8 +112,30 @@ export class SceneManager {
     this.titleScreen.show();
   }
 
+  pause() {
+    this._isPaused = true;
+    this.pauseMenu.show();
+  }
+
+  resume() {
+    this._isPaused = false;
+    this.pauseMenu.hide();
+  }
+
   update(dt, input) {
     input.poll();
+
+    if (input.justPressed(Actions.PAUSE)) {
+      if (this._isPaused) {
+        this.resume();
+      } else {
+        this.pause();
+      }
+    }
+
+    if (this._isPaused) {
+      return;
+    }
 
     if (input.anyJustPressed() && !this.audio._initialized) {
       this.audio.init();
