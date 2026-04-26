@@ -1,1438 +1,1519 @@
 {
-  "generated_at": "2026-04-26T13:54:02.488Z",
-  "pass": false,
+  "generated_at": "2026-04-26T15:00:33.011Z",
+  "pass": true,
   "folder_count": 6,
   "folders": [
     {
       "folder": "grunt",
-      "pass": false,
+      "pass": true,
       "expected_frame_total": 24,
       "strip_checks": [
         {
           "state": "idle",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/grunt/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "walk",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/grunt/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "telegraph",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/grunt/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "attack",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/grunt/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "recover",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/grunt/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "hurt",
           "frames_expected": 2,
           "strip_path": "assets/sprites/enemies/grunt/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "dead",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/grunt/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         }
       ],
       "processed_checks": [
         {
           "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        }
-      ],
-      "atlas": {
-        "json_exists": true,
-        "webp_exists": true,
-        "atlas_frame_count": 16,
-        "missing_in_atlas": [
-          "telegraph_0.png",
-          "telegraph_1.png",
-          "telegraph_2.png",
-          "telegraph_3.png",
-          "recover_0.png",
-          "recover_1.png",
-          "recover_2.png",
-          "recover_3.png"
-        ],
-        "extra_in_atlas": []
-      }
-    },
-    {
-      "folder": "grunt-zone-variant",
-      "pass": false,
-      "expected_frame_total": 24,
-      "strip_checks": [
-        {
-          "state": "idle",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "walk",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "telegraph",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "attack",
-          "frames_expected": 3,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "recover",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "hurt",
-          "frames_expected": 2,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "dead",
-          "frames_expected": 3,
-          "strip_path": "assets/sprites/enemies/grunt-zone-variant/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        }
-      ],
-      "processed_checks": [
-        {
-          "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        }
-      ],
-      "atlas": {
-        "json_exists": true,
-        "webp_exists": true,
-        "atlas_frame_count": 16,
-        "missing_in_atlas": [
-          "telegraph_0.png",
-          "telegraph_1.png",
-          "telegraph_2.png",
-          "telegraph_3.png",
-          "recover_0.png",
-          "recover_1.png",
-          "recover_2.png",
-          "recover_3.png"
-        ],
-        "extra_in_atlas": []
-      }
-    },
-    {
-      "folder": "ranged",
-      "pass": false,
-      "expected_frame_total": 38,
-      "strip_checks": [
-        {
-          "state": "idle",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/ranged/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "walk",
-          "frames_expected": 6,
-          "strip_path": "assets/sprites/enemies/ranged/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "strafe",
-          "frames_expected": 6,
-          "strip_path": "assets/sprites/enemies/ranged/strafe-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "retreat",
-          "frames_expected": 6,
-          "strip_path": "assets/sprites/enemies/ranged/retreat-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "telegraph",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/ranged/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "attack",
-          "frames_expected": 3,
-          "strip_path": "assets/sprites/enemies/ranged/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "recover",
-          "frames_expected": 4,
-          "strip_path": "assets/sprites/enemies/ranged/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "hurt",
-          "frames_expected": 2,
-          "strip_path": "assets/sprites/enemies/ranged/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        },
-        {
-          "state": "dead",
-          "frames_expected": 3,
-          "strip_path": "assets/sprites/enemies/ranged/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
-        }
-      ],
-      "processed_checks": [
-        {
-          "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_4.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "walk_5.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_4.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "strafe_5.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_4.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "retreat_5.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
-        },
-        {
-          "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         }
       ],
       "atlas": {
         "json_exists": true,
         "webp_exists": true,
         "atlas_frame_count": 24,
-        "missing_in_atlas": [
-          "idle_0.png",
-          "idle_1.png",
-          "idle_2.png",
-          "idle_3.png",
-          "strafe_0.png",
-          "strafe_1.png",
-          "strafe_2.png",
-          "strafe_3.png",
-          "strafe_4.png",
-          "strafe_5.png",
-          "telegraph_0.png",
-          "telegraph_1.png",
-          "telegraph_2.png",
-          "telegraph_3.png"
-        ],
+        "missing_in_atlas": [],
+        "extra_in_atlas": []
+      }
+    },
+    {
+      "folder": "grunt-zone-variant",
+      "pass": true,
+      "expected_frame_total": 24,
+      "strip_checks": [
+        {
+          "state": "idle",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/idle-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "walk",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/walk-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "telegraph",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/telegraph-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "attack",
+          "frames_expected": 3,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/attack-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "recover",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/recover-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "hurt",
+          "frames_expected": 2,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/hurt-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "dead",
+          "frames_expected": 3,
+          "strip_path": "assets/sprites/enemies/grunt-zone-variant/dead-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        }
+      ],
+      "processed_checks": [
+        {
+          "frame": "idle_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "hurt_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "hurt_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        }
+      ],
+      "atlas": {
+        "json_exists": true,
+        "webp_exists": true,
+        "atlas_frame_count": 24,
+        "missing_in_atlas": [],
+        "extra_in_atlas": []
+      }
+    },
+    {
+      "folder": "ranged",
+      "pass": true,
+      "expected_frame_total": 38,
+      "strip_checks": [
+        {
+          "state": "idle",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/ranged/idle-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "walk",
+          "frames_expected": 6,
+          "strip_path": "assets/sprites/enemies/ranged/walk-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "strafe",
+          "frames_expected": 6,
+          "strip_path": "assets/sprites/enemies/ranged/strafe-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "retreat",
+          "frames_expected": 6,
+          "strip_path": "assets/sprites/enemies/ranged/retreat-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "telegraph",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/ranged/telegraph-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "attack",
+          "frames_expected": 3,
+          "strip_path": "assets/sprites/enemies/ranged/attack-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "recover",
+          "frames_expected": 4,
+          "strip_path": "assets/sprites/enemies/ranged/recover-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "hurt",
+          "frames_expected": 2,
+          "strip_path": "assets/sprites/enemies/ranged/hurt-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
+        },
+        {
+          "state": "dead",
+          "frames_expected": 3,
+          "strip_path": "assets/sprites/enemies/ranged/dead-strip.png",
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
+        }
+      ],
+      "processed_checks": [
+        {
+          "frame": "idle_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "idle_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_4.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "walk_5.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_4.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "strafe_5.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_4.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "retreat_5.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "telegraph_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "attack_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "recover_3.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "hurt_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "hurt_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_0.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_1.png",
+          "exists": true,
+          "alpha_non_empty": true
+        },
+        {
+          "frame": "dead_2.png",
+          "exists": true,
+          "alpha_non_empty": true
+        }
+      ],
+      "atlas": {
+        "json_exists": true,
+        "webp_exists": true,
+        "atlas_frame_count": 38,
+        "missing_in_atlas": [],
         "extra_in_atlas": []
       }
     },
     {
       "folder": "ranged-zone-variant",
-      "pass": false,
+      "pass": true,
       "expected_frame_total": 38,
       "strip_checks": [
         {
           "state": "idle",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "walk",
           "frames_expected": 6,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "strafe",
           "frames_expected": 6,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/strafe-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "retreat",
           "frames_expected": 6,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/retreat-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "telegraph",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "attack",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "recover",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "hurt",
           "frames_expected": 2,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "dead",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/ranged-zone-variant/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         }
       ],
       "processed_checks": [
         {
           "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_4.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_5.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_4.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "strafe_5.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_4.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "retreat_5.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         }
       ],
       "atlas": {
-        "json_exists": false,
-        "webp_exists": false,
-        "atlas_frame_count": 0,
+        "json_exists": true,
+        "webp_exists": true,
+        "atlas_frame_count": 38,
         "missing_in_atlas": [],
         "extra_in_atlas": []
       }
     },
     {
       "folder": "bruiser",
-      "pass": false,
+      "pass": true,
       "expected_frame_total": 27,
       "strip_checks": [
         {
           "state": "idle",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "walk",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "telegraph",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "attack",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "recover",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "shove",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser/shove-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "hurt",
           "frames_expected": 2,
           "strip_path": "assets/sprites/enemies/bruiser/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "dead",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         }
       ],
       "processed_checks": [
         {
           "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         }
       ],
       "atlas": {
         "json_exists": true,
         "webp_exists": true,
-        "atlas_frame_count": 13,
-        "missing_in_atlas": [
-          "telegraph_0.png",
-          "telegraph_1.png",
-          "telegraph_2.png",
-          "telegraph_3.png",
-          "recover_0.png",
-          "recover_1.png",
-          "recover_2.png",
-          "recover_3.png",
-          "shove_0.png",
-          "shove_1.png",
-          "shove_2.png",
-          "dead_0.png",
-          "dead_1.png",
-          "dead_2.png"
-        ],
+        "atlas_frame_count": 27,
+        "missing_in_atlas": [],
         "extra_in_atlas": []
       }
     },
     {
       "folder": "bruiser-zone-variant",
-      "pass": false,
+      "pass": true,
       "expected_frame_total": 27,
       "strip_checks": [
         {
           "state": "idle",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/idle-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "walk",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/walk-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "telegraph",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/telegraph-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "attack",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/attack-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "recover",
           "frames_expected": 4,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/recover-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "shove",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/shove-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "hurt",
           "frames_expected": 2,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/hurt-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "equal_spacing": true
         },
         {
           "state": "dead",
           "frames_expected": 3,
           "strip_path": "assets/sprites/enemies/bruiser-zone-variant/dead-strip.png",
-          "strip_exists": false,
-          "dimensions": null,
-          "equal_spacing": false
+          "strip_exists": true,
+          "dimensions": {
+            "width": 1374,
+            "height": 768
+          },
+          "equal_spacing": true
         }
       ],
       "processed_checks": [
         {
           "frame": "idle_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "idle_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "walk_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "telegraph_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "attack_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "recover_3.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "shove_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "hurt_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_0.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_1.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         },
         {
           "frame": "dead_2.png",
-          "exists": false,
-          "alpha_non_empty": false
+          "exists": true,
+          "alpha_non_empty": true
         }
       ],
       "atlas": {
         "json_exists": true,
         "webp_exists": true,
-        "atlas_frame_count": 13,
-        "missing_in_atlas": [
-          "telegraph_0.png",
-          "telegraph_1.png",
-          "telegraph_2.png",
-          "telegraph_3.png",
-          "recover_0.png",
-          "recover_1.png",
-          "recover_2.png",
-          "recover_3.png",
-          "shove_0.png",
-          "shove_1.png",
-          "shove_2.png",
-          "dead_0.png",
-          "dead_1.png",
-          "dead_2.png"
-        ],
+        "atlas_frame_count": 27,
+        "missing_in_atlas": [],
         "extra_in_atlas": []
       }
     }
