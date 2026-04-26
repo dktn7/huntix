@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { ySortHunterMesh } from '../visuals/HunterMeshes.js';
 import { clampBottomToVisibleArena } from './ArenaBounds.js';
+import { RunState } from '../core/RunState.js';
 
 const TICK = 1 / 60;
 const PLAYER_WIDTH = 0.8;
@@ -263,6 +264,7 @@ export class PlayerState {
     }
 
     if (state === PlayerStates.DEAD) {
+      if (this.runPlayer) RunState.recordDeath(this.playerIndex);
       this._dodgeIFrameTimer = 0;
       this._jumpLift = 0;
       this._jumpVelocity = 0;

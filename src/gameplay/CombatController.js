@@ -640,6 +640,7 @@ export class CombatController {
       const next = (this._reviveProgress.get(key) || 0) + dt;
       if (next >= REVIVE_SECONDS && downed.revive(0.3)) {
         activeReviver.resources.gainSurge(10);
+        RunState.recordRevive(activeReviver.playerIndex);
         this._reviveProgress.delete(key);
         this.hitEvents.push({
           type: 'revive',

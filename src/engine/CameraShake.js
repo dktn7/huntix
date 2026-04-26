@@ -1,3 +1,5 @@
+import { GameSettings } from '../ui/GameSettings.js';
+
 export class CameraShake {
   /** Creates a fixed-timestep camera shake controller. */
   constructor(camera) {
@@ -7,6 +9,11 @@ export class CameraShake {
     this._timer = 0;
     this._duration = 0;
     this._intensity = 0;
+    this._multiplier = 1;
+
+    this._unsubscribe = GameSettings.subscribe((settings) => {
+      this._multiplier = settings.display.reduceScreenShake ? 0.3 : 1;
+    });
   }
 
   /** Adds shake intensity for a short hit-confirm nudge. */
@@ -26,7 +33,7 @@ export class CameraShake {
 
     this._timer = Math.max(0, this._timer - dt);
     const falloff = this._duration > 0 ? this._timer / this._duration : 0;
-    const shake = this._intensity * falloff * 0.08;
+    const shake = this._intensity * falloff * 0.08 * this._multiplier;
     const phase = this._timer * 180;
 
     this.camera.position.x = this._baseX + Math.sin(phase) * shake;

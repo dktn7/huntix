@@ -9,7 +9,7 @@ const canvas = document.getElementById('game-canvas');
 const renderer = new Renderer(canvas);
 const input = new InputManager();
 
-let scene = new SceneManager(renderer);
+let scene = new SceneManager(renderer, input);
 const loop = new GameLoop();
 const TEST_HUNTER_ROSTER = ['dabik', 'benzu', 'sereisa', 'vesol'];
 
@@ -60,7 +60,14 @@ function activateOneForAll() {
 
 loop.start((dt) => {
   scene.update(dt, input);
-  if (!RunState.runComplete && !RunState.runWiped && RunState.players.length > 0) RunState.tick(dt);
+  if (
+    !RunState.runComplete
+    && !RunState.runWiped
+    && RunState.players.length > 0
+    && !scene.isRunTimerPaused()
+  ) {
+    RunState.tick(dt);
+  }
   renderer.render(scene.getScene(), scene.getCamera());
 
   const panel = document.getElementById('debug-panel');
@@ -84,7 +91,7 @@ loop.start((dt) => {
   }
 });
 
-window.__huntix = { renderer, input, scene, loop };
+window.__huntix = { renderer, input, scene, loop, audio: scene.audio };
 
 window.__TEST__ = {
   get ready() {
@@ -94,6 +101,7 @@ window.__TEST__ = {
     return {
       mode: scene.mode,
       run: {
+        runTimer: RunState.runTimer,
         isCoOp: RunState.isCoOp,
         zonesCleared: RunState.zonesCleared,
         currentZone: RunState.currentZone,
@@ -171,6 +179,7 @@ window.__TEST__ = {
         phase: enemy.phase || null,
       })),
       debug: scene.getDebugInfo(),
+      pause: scene.getPauseState(),
       route: scene.spawner.getRouteState?.() || null,
       hud: scene.hud.getState(),
       shop: scene.shop.getState(),
@@ -272,6 +281,14 @@ window.__TEST__ = {
     closeShop() {
       scene.shop.close();
       return scene.shop.getState();
+    },
+    openPause(mode = null) {
+      scene.pause(mode);
+      return scene.getPauseState();
+    },
+    closePause() {
+      scene.resume();
+      return scene.getPauseState();
     },
     purchaseShopItem(index = null) {
       const result = scene.shop.purchaseSelected(index ?? scene.shop.selectedIndex);

@@ -22,6 +22,7 @@ import { ZONE_CONFIGS } from '../gameplay/ZoneManager.js';
 import { TitleScreen } from '../screens/TitleScreen.js';
 import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
 import { PauseMenu } from '../gameplay/PauseMenu.js';
+import { SettingsPanel } from '../ui/SettingsPanel.js';
 
 const SceneModes = {
   TITLE_SCREEN: 'TITLE_SCREEN',
@@ -47,10 +48,12 @@ const EXIT_PORTAL_RADIUS = 1.0;
 const HQ_PORTAL_COLOUR = 0x00e676;
 
 export class SceneManager {
-  constructor(renderer) {
+  constructor(renderer, inputManager = null) {
     this.scene = new THREE.Scene();
     this.camera = renderer.createCamera();
+    this.inputManager = inputManager;
     this.mode = SceneModes.TITLE_SCREEN;
+    this._pauseMode = 'none';
     this.debugEnabled = false;
     this._zoneReturnPending = false;
     this._wipePending = false;
@@ -76,17 +79,26 @@ export class SceneManager {
     this._setupHubBackdrop();
     this._setupHubPortals();
 
+    this.settingsPanel = new SettingsPanel(overlay, this.inputManager, this.audio);
+
     this.titleScreen = new TitleScreen(overlay,
       () => this.transitionToHunterSelect(false),
       () => this.transitionToHunterSelect(true),
-      () => this.hud.showSettings()
+      () => this.openSettingsPanel('full')
     );
     this.hunterSelectScreen = new HunterSelectScreen(overlay,
       (configs) => this.startRun(configs),
       () => this.transitionToTitle()
     );
 
-    this.pauseMenu = new PauseMenu(overlay);
+    this.pauseMenu = new PauseMenu(overlay, {
+      settingsPanel: this.settingsPanel,
+      onResume: () => this.resume(),
+      onAbandonRun: () => this.abandonRunToHub(),
+      onQuitToTitle: () => this.quitToTitleFromPause(),
+      getRunStats: () => this._buildPauseStats(),
+      getControls: () => this.inputManager?.getBindings?.() || { rows: [] },
+    });
 
     this.hunters = new HunterController(this.scene, RunState.players);
     this.player = this.hunters.primaryPlayer;
@@ -109,32 +121,50 @@ export class SceneManager {
     this._playerAuras = [];
     this._hitFlares = new HitFlarePool(this.scene);
 
+    // Ensure everything is hidden initially
+    this._setHubVisible(false);
+    this.hunters.setVisible(false);
+    
     this.titleScreen.show();
   }
 
-  pause() {
-    this._isPaused = true;
-    this.pauseMenu.show();
+  pause(mode = null) {
+    const nextMode = mode || this._resolvePauseMode();
+    if (!nextMode || nextMode === 'none') return;
+    this._setPauseMode(nextMode);
   }
 
   resume() {
-    this._isPaused = false;
-    this.pauseMenu.hide();
+    this._setPauseMode('none');
+  }
+
+  getPauseState() {
+    return {
+      open: this._pauseMode !== 'none',
+      mode: this._pauseMode,
+      context: this.pauseMenu?.getContext?.() || 'zone',
+    };
+  }
+
+  isRunTimerPaused() {
+    return this._pauseMode === 'full';
   }
 
   update(dt, input) {
     input.poll();
 
-    if (input.justPressed(Actions.PAUSE)) {
-      if (this._isPaused) {
-        this.resume();
-      } else {
-        this.pause();
-      }
+    const previousPauseMode = this._pauseMode;
+    if (this._pauseMode !== 'none') {
+      this.pauseMenu.update(input);
     }
 
-    if (this._isPaused) {
-      return;
+    if (
+      input.justPressed(Actions.PAUSE)
+      && this._pauseMode === 'none'
+      && previousPauseMode === 'none'
+      && this._canOpenPause()
+    ) {
+      this.pause();
     }
 
     if (input.anyJustPressed() && !this.audio._initialized) {
@@ -148,20 +178,37 @@ export class SceneManager {
       this.debugHitboxes.setEnabled(this.debugEnabled);
     }
 
+    if (
+      this.settingsPanel.isOpen()
+      && this._pauseMode === 'none'
+      && (input.justPressed(Actions.PAUSE) || input.justPressedKey('Escape'))
+    ) {
+      this.settingsPanel.requestBack();
+    }
+
+    if (this._pauseMode === 'full') {
+      this.hud.update(this.camera);
+      return;
+    }
+
     if (this.mode === SceneModes.TITLE_SCREEN) {
-      const prevIndex = this.titleScreen.selectedIndex;
-      this.titleScreen.update(input);
-      if (this.titleScreen.selectedIndex !== prevIndex) {
-        this.audio.playSFX('ui-navigate');
+      if (!this.settingsPanel.isOpen()) {
+        const prevIndex = this.titleScreen.selectedIndex;
+        this.titleScreen.update(input);
+        if (this.titleScreen.selectedIndex !== prevIndex) {
+          this.audio.playSFX('ui-navigate');
+        }
       }
       return;
     }
 
     if (this.mode === SceneModes.HUNTER_SELECT) {
-      const prevCursor = this.hunterSelectScreen.cursorIndex;
-      this.hunterSelectScreen.update(input);
-      if (this.hunterSelectScreen.cursorIndex !== prevCursor) {
-        this.audio.playSFX('hunter-hover');
+      if (!this.settingsPanel.isOpen()) {
+        const prevCursor = this.hunterSelectScreen.cursorIndex;
+        this.hunterSelectScreen.update(input);
+        if (this.hunterSelectScreen.cursorIndex !== prevCursor) {
+          this.audio.playSFX('hunter-hover');
+        }
       }
       return;
     }
@@ -212,6 +259,9 @@ export class SceneManager {
   }
 
   transitionToTitle() {
+    this._setPauseMode('none');
+    this.settingsPanel.close({ skipCallback: true });
+    this.pauseMenu.close();
     this.portalManager.hideResultsOverlay();
     this.portalManager.clearZoneCard();
     this.audio.playSFX('ui-back');
@@ -221,6 +271,9 @@ export class SceneManager {
   }
 
   transitionToHunterSelect(isCoop) {
+    this._setPauseMode('none');
+    this.settingsPanel.close({ skipCallback: true });
+    this.pauseMenu.close();
     this.audio.playSFX('ui-confirm');
     this.titleScreen.hide();
     this.mode = SceneModes.HUNTER_SELECT;
@@ -228,13 +281,163 @@ export class SceneManager {
     this.hunterSelectScreen.show();
   }
 
+  openSettingsPanel(mode = 'full') {
+    this.settingsPanel.open({ mode: mode === 'minimal' ? 'minimal' : 'full' });
+  }
+
+  quitToTitleFromPause() {
+    this.transitionToTitle();
+  }
+
+  abandonRunToHub() {
+    if (!RunState.players.length) return;
+
+    const zeroCarry = new Array(RunState.players.length).fill(0);
+    RunState.resetAfterWipe(zeroCarry);
+    this.hunters.syncAllFromRunState(RunState.players);
+    this.hunters.applyRunStateModifiers(RunState.players);
+    this.player = this.hunters.primaryPlayer;
+    this.resources = this.player?.resources || this.resources;
+    this.spawner.setPlayerCount(this.hunters.activeHumanPlayerCount);
+    this._switchToHub();
+    this.hud.hideOnboarding();
+    this._setPauseMode('none');
+  }
+
+  _setPauseMode(mode) {
+    const nextMode = mode === 'full' || mode === 'minimal' ? mode : 'none';
+    this._pauseMode = nextMode;
+
+    if (nextMode === 'none') {
+      this.pauseMenu.close();
+      this.settingsPanel.close({ skipCallback: true });
+      return;
+    }
+
+    const zoneId = this.mode === SceneModes.ZONE
+      ? (this._activeZoneId || RunState.currentZone || 'city-breach')
+      : 'hub';
+    const zoneAccent = ZONE_CONFIGS[zoneId]?.portalColor ?? null;
+
+    this.pauseMenu.open({
+      mode: nextMode,
+      context: this.mode === SceneModes.HUB ? 'hub' : 'zone',
+      zoneId,
+      accentColor: zoneAccent,
+    });
+  }
+
+  _canOpenPause() {
+    if (this.mode === SceneModes.TITLE_SCREEN || this.mode === SceneModes.HUNTER_SELECT) return false;
+    if (this.mode === SceneModes.END_SCREEN) return false;
+    if (this.hud.isOnboardingOpen() || this.hud.isCardOpen()) return false;
+    return this.mode === SceneModes.HUB || this.mode === SceneModes.ZONE;
+  }
+
+  _resolvePauseMode() {
+    if (!this._canOpenPause()) return 'none';
+    if (this.mode === SceneModes.HUB) return 'full';
+    if (this.mode !== SceneModes.ZONE) return 'full';
+    if (!RunState.isCoOp) return 'full';
+    return this._isZoneInActiveCombat() ? 'minimal' : 'full';
+  }
+
+  _isZoneInActiveCombat() {
+    if (this.mode !== SceneModes.ZONE) return false;
+    const route = this.spawner.getRouteState?.() || {};
+    const activeEnemies = this.spawner.getActiveEnemies().some((enemy) => !enemy.isDead?.());
+    const inBossState = route.zoneState === 'boss' || route.zoneState === 'miniboss';
+    const betweenWaveGateOpen = !!route.gateOpen;
+    if (betweenWaveGateOpen) return false;
+    if (inBossState) return true;
+    if (activeEnemies) return true;
+    return route.zoneState === 'waves';
+  }
+
+  _buildPauseStats() {
+    const players = RunState.players || [];
+    const route = this.spawner.getRouteState?.() || null;
+    const zoneLabel = RunState.currentZoneLabel || (this.mode === SceneModes.HUB ? 'Hunter HQ' : 'Unknown Zone');
+    const zoneNumber = RunState.currentZoneNumber || 0;
+    const wave = this.mode === SceneModes.ZONE
+      ? Math.max(1, (route?.waveIndex ?? -1) + 1)
+      : '-';
+
+    const totals = players.reduce((acc, player) => {
+      const stats = player?.stats || {};
+      acc.essenceCollected += stats.essenceCollected || 0;
+      acc.essenceHeld += player?.essence || 0;
+      acc.highestCombo = Math.max(acc.highestCombo, stats.highestCombo || 0);
+      acc.enemiesKilled += stats.kills || 0;
+      acc.damageDealt += stats.damageDealt || 0;
+      acc.damageTaken += stats.damageTaken || 0;
+      acc.deaths += stats.deaths || 0;
+      acc.downs += stats.timesDown || 0;
+      acc.revives += stats.revives || 0;
+      return acc;
+    }, {
+      essenceCollected: 0,
+      essenceHeld: 0,
+      highestCombo: 0,
+      enemiesKilled: 0,
+      damageDealt: 0,
+      damageTaken: 0,
+      deaths: 0,
+      downs: 0,
+      revives: 0,
+    });
+
+    return {
+      zoneLabel,
+      zoneNumber,
+      wave,
+      essenceCollected: totals.essenceCollected,
+      essenceHeld: totals.essenceHeld,
+      highestCombo: totals.highestCombo,
+      enemiesKilled: totals.enemiesKilled,
+      damageDealt: totals.damageDealt,
+      damageTaken: totals.damageTaken,
+      deaths: totals.deaths,
+      downs: totals.downs,
+      revives: totals.revives,
+      timeElapsed: RunState.runTimer || 0,
+      players: players.map((player) => {
+        return {
+          playerIndex: player.playerIndex,
+          hunterId: player.hunterId,
+          hunterLabel: this._formatHunterLabel(player.hunterId),
+          essenceHeld: player.essence || 0,
+          highestCombo: player.stats?.highestCombo || 0,
+          downs: player.stats?.timesDown || 0,
+          revives: player.stats?.revives || 0,
+          deaths: player.stats?.deaths || 0,
+        };
+      }),
+    };
+  }
+
+  _formatHunterLabel(hunterId = '') {
+    const id = String(hunterId || '').toLowerCase();
+    if (!id) return 'Unknown';
+    return id.charAt(0).toUpperCase() + id.slice(1);
+  }
+
   startRun(playerConfigs) {
+    this._setPauseMode('none');
+    this.settingsPanel.close({ skipCallback: true });
     this.audio.playSFX('hunter-confirm');
     this.hunterSelectScreen.hide();
     RunState.init(playerConfigs);
 
+    while (this.hunters.players.length < RunState.players.length) {
+      const nextRunPlayer = RunState.players[this.hunters.players.length];
+      if (!nextRunPlayer) break;
+      this._handlePlayerJoined({ player: nextRunPlayer });
+    }
+
     this.hunters.syncAllFromRunState(RunState.players);
-    this.player = this.hunters.primaryPlayer;
+    this.player = this.hunters.primaryPlayer || this.hunters.players[0] || null;
+    if (!this.player) return;
     this.resources = this.player.resources;
     this.spawner.setPlayerCount(this.hunters.activeHumanPlayerCount);
 
@@ -262,6 +465,7 @@ export class SceneManager {
       stamina: this.resources.stamina,
       maxStamina: this.resources.maxStamina,
       enemies: this.spawner.getActiveEnemies().length,
+      pauseMode: this._pauseMode,
       combo: this.combat.comboCount,
       comboByPlayer: this.combat.getComboCounts(),
       hitstop: this.combat.hitstopRemaining,
@@ -543,6 +747,7 @@ export class SceneManager {
     const config = this.zoneManager.getZoneConfig(zoneId);
     if (!config) return;
 
+    this._setPauseMode('none');
     this.shop.close();
     this.hud.hideCardScreen();
     this._activeZoneId = zoneId;
@@ -653,6 +858,7 @@ export class SceneManager {
   }
 
   _switchToHub() {
+    this._setPauseMode('none');
     this.mode = SceneModes.HUB;
     this._activeZoneId = null;
     this.zoneManager.showHub();

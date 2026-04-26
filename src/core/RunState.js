@@ -123,6 +123,9 @@ function createPlayer(config, playerIndex) {
       spellsCast: 0,
       highestCombo: 0,
       timesDown: 0,
+      revives: 0,
+      deaths: 0,
+      essenceCollected: 0,
     },
     isDown: false,
     downTimer: 0,
@@ -252,6 +255,7 @@ export const RunState = {
     const mult = amount > 0 ? player.modifiers?.essenceGainMult || 1 : 1;
     const delta = amount > 0 ? Math.round(amount * mult) : amount;
     player.essence = Math.max(0, player.essence + delta);
+    if (delta > 0) player.stats.essenceCollected += delta;
     this.emit('essenceChanged', { playerIndex, essence: player.essence });
   },
 
@@ -288,6 +292,16 @@ export const RunState = {
   recordCombo(playerIndex, comboCount) {
     const player = getPlayer(playerIndex);
     player.stats.highestCombo = Math.max(player.stats.highestCombo, comboCount);
+  },
+
+  recordRevive(playerIndex) {
+    const player = getPlayer(playerIndex);
+    player.stats.revives += 1;
+  },
+
+  recordDeath(playerIndex) {
+    const player = getPlayer(playerIndex);
+    player.stats.deaths += 1;
   },
 
   grantKillRewards(playerIndex, reward = {}, attackType = 'light', comboCount = 0) {

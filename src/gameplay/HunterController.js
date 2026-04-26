@@ -141,7 +141,7 @@ export class HunterController {
     this.companionAI = new CompanionAIController();
     this._preparedInputs = [];
 
-    const activeRunPlayers = runPlayers.length ? runPlayers : DEFAULT_PLAYERS;
+    const activeRunPlayers = runPlayers || [];
     for (let i = 0; i < Math.min(4, activeRunPlayers.length); i += 1) {
       this._addPlayer(activeRunPlayers[i], i);
     }

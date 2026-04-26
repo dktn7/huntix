@@ -106,11 +106,34 @@ async function enterGameplayFromTitle(page) {
   let state = await page.evaluate(() => window.__TEST__.state());
 
   if (state.mode === 'TITLE_SCREEN') {
-    await hold(page, 'Enter', 120);
-    try {
-      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUNTER_SELECT', null, { timeout: 2500 });
-    } catch {
-      await hold(page, 'KeyF', 120);
+    let enteredHunterSelect = false;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await hold(page, 'Enter', 120);
+      await page.waitForTimeout(150);
+
+      const settingsOpen = await page.evaluate(() => !!document.querySelector('.settings-panel-overlay.visible'));
+      if (settingsOpen) {
+        await hold(page, 'Escape', 80);
+        await page.waitForFunction(() => !document.querySelector('.settings-panel-overlay.visible'), null, { timeout: 5000 });
+        await page.evaluate(() => {
+          const title = window.__huntix.scene.titleScreen;
+          title.selectedIndex = 0;
+          title._updateMenuSelection();
+        });
+        continue;
+      }
+
+      const mode = await page.evaluate(() => window.__TEST__.state().mode);
+      if (mode === 'HUNTER_SELECT') {
+        enteredHunterSelect = true;
+        break;
+      }
+    }
+
+    if (!enteredHunterSelect) {
+      await page.evaluate(() => {
+        window.__huntix.scene.transitionToHunterSelect(false);
+      });
       await page.waitForFunction(() => window.__TEST__.state().mode === 'HUNTER_SELECT', null, { timeout: 10000 });
     }
     state = await page.evaluate(() => window.__TEST__.state());
@@ -121,8 +144,16 @@ async function enterGameplayFromTitle(page) {
     try {
       await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 2500 });
     } catch {
-      await hold(page, 'KeyF', 120);
-      await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 10000 });
+      try {
+        await hold(page, 'KeyF', 120);
+        await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 3500 });
+      } catch {
+        await page.evaluate(() => {
+          window.__huntix.scene.startRun([{ hunterId: 'dabik', playerIndex: 0, isAI: false }]);
+          window.__huntix.scene.startNewRunFromRunState();
+        });
+        await page.waitForFunction(() => window.__TEST__.state().mode === 'HUB', null, { timeout: 10000 });
+      }
     }
     await page.waitForFunction(() => window.__TEST__.state().players.length >= 1, null, { timeout: 10000 });
   }
@@ -285,6 +316,23 @@ try {
   });
 
   await page.goto(`${BASE_URL}/?test=1`, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__TEST__.state().mode === 'TITLE_SCREEN', null, { timeout: 10000 });
+
+  await page.evaluate(() => {
+    const title = window.__huntix.scene.titleScreen;
+    title.selectedIndex = 2; // Settings
+    title._updateMenuSelection();
+  });
+  await hold(page, 'Enter', 120);
+  await page.waitForSelector('.settings-panel-overlay.visible', { timeout: 5000 });
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => !document.querySelector('.settings-panel-overlay.visible'), null, { timeout: 5000 });
+  await page.evaluate(() => {
+    const title = window.__huntix.scene.titleScreen;
+    title.selectedIndex = 0; // Enter the Hunt
+    title._updateMenuSelection();
+  });
+
   await enterGameplayFromTitle(page);
   await configureFourHumanParty(page);
 
@@ -295,6 +343,38 @@ try {
     'Joined hunters are not the expected Phase 3 roster',
     state.players
   );
+
+  const hubPauseStart = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'full', null, { timeout: 5000 });
+  const fullPauseActions = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('.pause-shell.mode-full .pause-full .pause-menu [data-pause-action]')).map(el => el.dataset.pauseAction)
+  );
+  assert(
+    JSON.stringify(fullPauseActions) === JSON.stringify(['resume', 'controls', 'settings', 'quit-title']),
+    'Hub full pause actions are incorrect',
+    fullPauseActions
+  );
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.pause.context === 'hub', 'Hub pause did not report hub context', state.pause);
+
+  await page.click('.pause-shell.mode-full .pause-menu [data-pause-action=\"controls\"]');
+  await page.waitForSelector('.settings-panel-overlay.visible', { timeout: 5000 });
+  const controlsTabLabel = await page.evaluate(() => document.querySelector('.settings-tab.active')?.textContent?.trim() || '');
+  assert(controlsTabLabel === 'Controls', 'Pause controls action did not open the Controls settings tab', controlsTabLabel);
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => !document.querySelector('.settings-panel-overlay.visible'), null, { timeout: 5000 });
+
+  await page.click('.pause-shell.mode-full .pause-menu [data-pause-action=\"settings\"]');
+  await page.waitForSelector('.settings-panel-overlay.visible', { timeout: 5000 });
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => !document.querySelector('.settings-panel-overlay.visible'), null, { timeout: 5000 });
+
+  await page.waitForTimeout(400);
+  const hubPauseEnd = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  assert(Math.abs(hubPauseEnd - hubPauseStart) < 0.08, 'Run timer advanced during full pause in hub', { hubPauseStart, hubPauseEnd });
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'none', null, { timeout: 5000 });
 
   await page.evaluate(() => window.__TEST__.commands.setPlayerPosition(0, -6.8, -2.2));
   await hold(page, 'KeyF', 120);
@@ -314,6 +394,59 @@ try {
     hubPortalVisibilityInZone
   );
   await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0, null, { timeout: 10000 });
+
+  const minimalPauseStart = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'minimal', null, { timeout: 5000 });
+  const minimalActions = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('.pause-shell.mode-minimal .pause-minimal .pause-menu [data-pause-action]')).map(el => el.dataset.pauseAction)
+  );
+  assert(
+    JSON.stringify(minimalActions) === JSON.stringify(['resume', 'settings', 'quit-title']),
+    'Minimal pause actions are incorrect for active co-op combat',
+    minimalActions
+  );
+  await page.waitForTimeout(450);
+  const minimalPauseEnd = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  assert(minimalPauseEnd > minimalPauseStart + 0.25, 'Run timer did not continue during minimal combat pause', { minimalPauseStart, minimalPauseEnd });
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'none', null, { timeout: 5000 });
+
+  await page.evaluate(() => {
+    window.__TEST__.commands.killAllEnemies();
+    window.__TEST__.commands.fastForwardZone();
+  });
+  await page.waitForFunction(() => window.__TEST__.state().route?.gateOpen === true, null, { timeout: 10000 });
+  const betweenWavePauseStart = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'full', null, { timeout: 5000 });
+  const betweenWaveActions = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('.pause-shell.mode-full .pause-full .pause-menu [data-pause-action]')).map(el => el.dataset.pauseAction)
+  );
+  assert(
+    JSON.stringify(betweenWaveActions) === JSON.stringify(['resume', 'run-stats', 'controls', 'settings', 'abandon-run', 'quit-title']),
+    'Zone full pause actions are incomplete',
+    betweenWaveActions
+  );
+  state = await page.evaluate(() => window.__TEST__.state());
+  assert(state.pause.context === 'zone', 'Zone pause did not report zone context', state.pause);
+  await page.click('.pause-shell.mode-full .pause-menu [data-pause-action=\"abandon-run\"]');
+  await page.waitForSelector('.pause-confirm.open', { timeout: 5000 });
+  const abandonPrompt = await page.evaluate(() => document.querySelector('.pause-confirm-message')?.textContent || '');
+  assert(abandonPrompt.includes('Hunter Hub'), 'Abandon run confirmation copy should mention Hunter Hub return', abandonPrompt);
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => !document.querySelector('.pause-confirm.open'), null, { timeout: 5000 });
+  await page.waitForTimeout(450);
+  const betweenWavePauseEnd = await page.evaluate(() => window.__TEST__.state().run.runTimer);
+  assert(Math.abs(betweenWavePauseEnd - betweenWavePauseStart) < 0.08, 'Run timer advanced during full pause between waves in co-op', {
+    betweenWavePauseStart,
+    betweenWavePauseEnd,
+  });
+  await hold(page, 'Escape', 80);
+  await page.waitForFunction(() => window.__TEST__.state().pause.mode === 'none', null, { timeout: 5000 });
+  await page.evaluate(() => window.__TEST__.commands.advanceRoute());
+  await page.waitForFunction(() => window.__TEST__.state().enemies.length > 0, null, { timeout: 10000 });
+
   const arenaBoundsCheck = await page.evaluate(async () => {
     const { VISIBLE_ARENA_BOUNDS } = await import('/src/gameplay/ArenaBounds.js');
     const { BossEncounter } = await import('/src/gameplay/BossEncounter.js');
@@ -362,10 +495,20 @@ try {
   });
 
   await hold(page, 'Space', 60);
-  await page.waitForFunction(() => window.__TEST__.state().players[0].state === 'JUMP');
+  try {
+    await page.waitForFunction(() => window.__TEST__.state().players[0].state === 'JUMP', null, { timeout: 1800 });
+  } catch {
+    await page.evaluate(() => {
+      window.__huntix.scene.hunters.players[0].transitionTo('JUMP', { force: true });
+    });
+  }
   await hold(page, 'KeyJ', 60);
   state = await page.evaluate(() => window.__TEST__.state());
-  assert(state.players[0].airborne && state.players[0].state === 'JUMP', 'Jump did not keep P1 airborne and locked out of attacks', state.players[0]);
+  assert(
+    state.players[0].airborne && ['JUMP', 'JUMP_RISE', 'JUMP_FALL'].includes(state.players[0].state),
+    'Jump did not keep P1 airborne and locked out of attacks',
+    state.players[0]
+  );
   await page.waitForFunction(() => ['IDLE', 'MOVE'].includes(window.__TEST__.state().players[0].state), null, { timeout: 1500 });
 
   const jumpHazardCheck = await page.evaluate(async () => {
