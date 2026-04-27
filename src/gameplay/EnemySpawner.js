@@ -10,6 +10,7 @@ import {
   findFrameKeyForStates,
   loadAtlasFromCandidates,
 } from '../visuals/SpriteAtlasUtils.js';
+import { SpriteAnimator } from '../visuals/SpriteAnimator.js';
 
 const MAX_ENEMIES = 20;
 const ENEMY_CAPACITY = 20;
@@ -59,6 +60,22 @@ const ENEMY_ATLAS_BY_TYPE = {
   [EnemyTypes.RANGED]: 'ranged',
   [EnemyTypes.BRUISER]: 'bruiser',
   [EnemyTypes.FIRE_BRUISER]: 'bruiser-zone-variant',
+};
+
+// Map EnemyAI state strings to SpriteAnimator state names
+const ENEMY_STATE_TO_ANIM = {
+  IDLE: 'idle',
+  WAIT: 'idle',
+  AGGRO: 'walk',
+  WALK: 'walk',
+  TELEGRAPH: 'telegraph',
+  ATTACK: 'attack',
+  RECOVER: 'recover',
+  HURT: 'hurt',
+  DEAD: 'dead',
+  SHOVE: 'shove',
+  STRAFE: 'strafe',
+  RETREAT: 'retreat',
 };
 
 const ENEMY_BILLBOARD_TILT_X = -ORTHO_CAMERA_TILT_X;
@@ -112,6 +129,9 @@ export class EnemySpawner {
     this._color = new THREE.Color();
 
     this._enemyMeshes = new Map();
+    // Animators keyed by enemy type, populated after atlas loads
+    this._enemyAnimators = new Map();
+
     for (const type of ENEMY_VISUAL_ORDER) {
       const mesh = this._createEnemyMesh(type);
       this._enemyMeshes.set(type, mesh);
@@ -213,6 +233,7 @@ export class EnemySpawner {
     this._updateProjectiles(dt, players);
     this.clearDead();
     this._updateWaveFlow(dt, players);
+    this._updateAnimators(dt);
     this._syncInstances();
     this._syncProjectiles();
     return this.consumeEvents();
@@ -607,6 +628,19 @@ export class EnemySpawner {
     }
   }
 
+  /** Advance all sprite animators and drive state from the dominant enemy type per mesh. */
+  _updateAnimators(dt) {
+    for (const [type, animator] of this._enemyAnimators) {
+      // Find the most representative living enemy of this type to drive the animation state
+      const dominant = this._enemies.find(e => this._meshTypeFor(e.type) === type && !e.isDead?.());
+      if (dominant) {
+        const animState = ENEMY_STATE_TO_ANIM[dominant.state] || 'idle';
+        animator.play(animState);
+      }
+      animator.update(dt);
+    }
+  }
+
   _syncInstances() {
     for (const mesh of this._enemyMeshes.values()) {
       mesh.count = 0;
@@ -720,17 +754,16 @@ export class EnemySpawner {
     const atlas = await loadAtlasFromCandidates(this._buildEnemyAtlasCandidates(atlasId));
     if (!atlas) return;
 
-    const frameKey = findFrameKeyForStates(atlas.atlasData, ['idle', 'walk', 'run', 'attack']);
-    if (!frameKey) return;
-
-    if (!applyAtlasFrame(atlas.texture, atlas.atlasData, frameKey)) return;
-
     const mesh = this._enemyMeshes.get(type);
     if (!mesh?.material) return;
 
     mesh.material.map = atlas.texture;
     mesh.material.color.setHex(0xffffff);
     mesh.material.needsUpdate = true;
+
+    // Create animator — it will immediately snap to idle frame 0
+    const animator = new SpriteAnimator(mesh.material, atlas.atlasData);
+    this._enemyAnimators.set(type, animator);
   }
 
   _buildEnemyAtlasCandidates(atlasId) {

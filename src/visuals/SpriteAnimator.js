@@ -3,11 +3,19 @@ const DEFAULT_FPS = 8;
 const FPS_OVERRIDES = {
   idle: 6,
   run: 10,
+  walk: 8,
+  telegraph: 10,
+  attack: 12,
+  recover: 8,
+  hurt: 18,
+  dead: 6,
+  shove: 12,
+  strafe: 8,
+  retreat: 8,
   attack_light_1: 14,
   attack_light_2: 14,
   attack_light_3: 14,
   attack_heavy: 10,
-  hurt: 18,
   dodge: 14,
   spell_ultimate: 8,
 };
@@ -50,10 +58,10 @@ export class SpriteAnimator {
 
   /** Starts playing a named animation state. */
   play(state, loop = true, onComplete = null) {
-    // Map generic 'move' to 'run' if 'move' state is missing
+    // Map generic 'move' to 'walk'/'run' if 'move' state is missing
     let targetState = state;
     if (state === 'move' && !this.hasState('move')) {
-      targetState = 'run';
+      targetState = this.hasState('walk') ? 'walk' : 'run';
     }
 
     if (this.requestedState === targetState && this.loop === loop) return;
@@ -130,12 +138,26 @@ export class SpriteAnimator {
     const normalizedKey = this._normalizeFrameKey(frameKey);
     const normalizedState = String(state || '').toLowerCase();
     if (!normalizedState) return null;
-    const pattern = new RegExp(`(?:^|_)${escapeRegExp(normalizedState)}_(\\d+)$`);
-    const match = normalizedKey.match(pattern);
-    if (!match) return null;
 
-    const index = Number.parseInt(match[1], 10);
-    return Number.isFinite(index) ? index : null;
+    // Pattern 1: state_N  (e.g. idle_0, walk_3)
+    const pattern1 = new RegExp(`(?:^|_)${escapeRegExp(normalizedState)}_(\\d+)$`);
+    const m1 = normalizedKey.match(pattern1);
+    if (m1) {
+      const index = Number.parseInt(m1[1], 10);
+      return Number.isFinite(index) ? index : null;
+    }
+
+    // Pattern 2: state_state-N  (e.g. idle_idle-2, attack_attack-1)
+    // Also matches plain state_state (treated as frame 0)
+    const pattern2 = new RegExp(`(?:^|_)${escapeRegExp(normalizedState)}_${escapeRegExp(normalizedState)}(?:-(\\d+))?$`);
+    const m2 = normalizedKey.match(pattern2);
+    if (m2) {
+      // No suffix number means first frame (index 0); suffix -2 means index 1, etc.
+      const raw = m2[1] !== undefined ? Number.parseInt(m2[1], 10) : 1;
+      return Number.isFinite(raw) ? raw - 1 : 0;
+    }
+
+    return null;
   }
 
   _normalizeFrameKey(frameKey) {
@@ -153,12 +175,12 @@ export class SpriteAnimator {
 
     // Three.js UV origin is bottom-left, but TexturePacker atlas origin is top-left.
     // Without Y inversion the sprite appears upside-down.
-    // Correct Y offset: flip so row 0 (top of atlas) maps to top of sprite.
     const u = frame.x / this.W;
     const v = 1 - (frame.y / this.H) - (frame.h / this.H);
 
     this.material.map.offset.set(u, v);
     this.material.map.repeat.set(frame.w / this.W, frame.h / this.H);
+    this.material.map.needsUpdate = false; // offset/repeat update is enough
   }
 }
 
