@@ -1,5 +1,6 @@
 import { Actions } from '../engine/InputManager.js';
 import { RunState } from '../core/RunState.js';
+import { ShopScreen } from './ShopScreen.js';
 
 export class HubScreen {
   constructor(overlay, onEnterZone, onBack) {
@@ -10,6 +11,7 @@ export class HubScreen {
     this._active = false;
     this._ctx = null;
     this._selection = 0;
+    this.shopScreen = new ShopScreen(overlay);
   }
 
   bindContext(sceneManager) {
@@ -88,7 +90,8 @@ export class HubScreen {
         <div class="hub-summary" data-role="summary"></div>
         <div class="hub-actions">
           <button class="hub-action selected" data-index="0" type="button">Enter Portal</button>
-          <button class="hub-action" data-index="1" type="button">Return to Title</button>
+          <button class="hub-action" data-index="1" type="button">Visit Shop</button>
+          <button class="hub-action" data-index="2" type="button">Return to Title</button>
         </div>
         <div class="hub-help">F/J/Enter: confirm | W/S or arrows: select | Esc: pause | Shop: interact near Quartermaster</div>
       </div>
@@ -129,7 +132,7 @@ export class HubScreen {
     this._ctx._updateHub(dt, input, { allowPortalEnter: false });
     this._renderSummary();
 
-    if (this._ctx.shop?.isOpen?.()) return;
+    if (this.shopScreen?.isOpen?.()) return;
 
     const portalInteractor = this._ctx._getPortalInteractor?.(input) || null;
     if (portalInteractor) {
@@ -141,11 +144,11 @@ export class HubScreen {
     }
 
     if (input.justPressed(Actions.MOVE_UP)) {
-      this._selection = (this._selection - 1 + 2) % 2;
+      this._selection = (this._selection - 1 + 3) % 3;
       this._renderSelection();
     }
     if (input.justPressed(Actions.MOVE_DOWN)) {
-      this._selection = (this._selection + 1) % 2;
+      this._selection = (this._selection + 1) % 3;
       this._renderSelection();
     }
 
@@ -188,6 +191,10 @@ export class HubScreen {
   _confirm() {
     if (this._selection === 0) {
       this.onEnterZone?.();
+      return;
+    }
+    if (this._selection === 1) {
+      this.shopScreen.show(0, Math.max(1, (RunState.zonesCleared || 0) + 1));
       return;
     }
     this.onBack?.();

@@ -717,7 +717,8 @@ export class SceneManager {
         opacity: 0.45,
       });
       const portal = new THREE.Mesh(portalGeo, portalMat);
-      portal.position.set(entry.x, -2.2, 0.3);
+      portal.position.set(entry.x, -2.18, 0.3);
+      portal.renderOrder = 20;
       this.scene.add(portal);
 
       const pedestalMat = new THREE.MeshLambertMaterial({ color: 0x29364f });
@@ -907,7 +908,11 @@ export class SceneManager {
     glowMesh.position.set(0, -0.9, -0.15);
     group.add(glowMesh);
 
-    group.position.set(x, -2.2, 0.3);
+    group.position.set(x, -2.18, 0.3);
+    group.renderOrder = 20;
+    group.traverse((child) => {
+      if (child.isMesh) child.renderOrder = 20;
+    });
     this.scene.add(group);
     this._exitPortalMeshes.push(group);
 

@@ -29,6 +29,23 @@ export class SpriteAnimator {
     this.onComplete = null;
     this.frameList = [];
     this.fps = DEFAULT_FPS;
+
+    // Snap to frame 0 of the idle state (or first available state) immediately so
+    // the full atlas sheet is never rendered before the game loop calls update(dt).
+    const idleFrames = this._collectFramesForState('idle');
+    if (idleFrames.length) {
+      this.currentState = 'idle';
+      this.requestedState = 'idle';
+      this.frameList = idleFrames;
+      this.fps = FPS_OVERRIDES.idle || DEFAULT_FPS;
+      this._applyFrame();
+    } else {
+      const firstKey = Object.keys(this.frames)[0];
+      if (firstKey) {
+        this.frameList = [firstKey];
+        this._applyFrame();
+      }
+    }
   }
 
   /** Starts playing a named animation state. */

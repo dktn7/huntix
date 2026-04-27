@@ -70,7 +70,9 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   group.userData.spriteMesh = sprite;
   group.userData.bodyMesh = sprite;
   group.userData.shadowMesh = shadow;
-  group.userData.animator = new SpriteAnimator(material, normalizedAtlas);
+  const animator = new SpriteAnimator(material, normalizedAtlas);
+  animator.update(0); // stamp frame 0 UV immediately so the full atlas is never shown
+  group.userData.animator = animator;
   return group;
 }
 

@@ -50,9 +50,9 @@ export function createRoomShellMeshes(profile = {}) {
   const laneColor = profile.laneColor ?? 0x3a4b6e;
 
   const meshes = [];
-  const addMesh = (mesh) => {
+  const addMesh = (mesh, renderOrder = -5) => {
     mesh.userData.roomShell = true;
-    mesh.renderOrder = -10;
+    mesh.renderOrder = renderOrder;
     meshes.push(mesh);
     return mesh;
   };
@@ -61,25 +61,25 @@ export function createRoomShellMeshes(profile = {}) {
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth, innerHeight, floorThickness),
     new THREE.MeshBasicMaterial({ color: floorColor })
-  )).position.set(centerX, centerY, floorZ);
+  ), -10).position.set(centerX, centerY, floorZ);
 
   // Lane marker
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth * 0.82, laneWidth, 0.06),
     new THREE.MeshBasicMaterial({ color: laneColor })
-  )).position.set(centerX, laneY, floorZ + 0.14);
+  ), -10).position.set(centerX, laneY, floorZ + 0.14);
 
   // Back wall
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth + wallThickness * 2, wallThickness, wallDepth),
     new THREE.MeshBasicMaterial({ color: wallColor })
-  )).position.set(centerX, backWallY, backWallZ);
+  ), -5).position.set(centerX, backWallY, backWallZ);
 
   // Front wall
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth + wallThickness * 2, wallThickness, wallDepth),
     new THREE.MeshBasicMaterial({ color: frontWallColor })
-  )).position.set(centerX, frontWallY, frontWallZ);
+  ), -5).position.set(centerX, frontWallY, frontWallZ);
 
   // Side walls
   const leftWallX = bounds.minX - wallThickness * 0.62;
@@ -87,18 +87,18 @@ export function createRoomShellMeshes(profile = {}) {
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(wallThickness, innerHeight + wallThickness * 2, sideWallDepth),
     new THREE.MeshBasicMaterial({ color: wallColor })
-  )).position.set(leftWallX, centerY, sideWallZ);
+  ), -5).position.set(leftWallX, centerY, sideWallZ);
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(wallThickness, innerHeight + wallThickness * 2, sideWallDepth),
     new THREE.MeshBasicMaterial({ color: wallColor })
-  )).position.set(rightWallX, centerY, sideWallZ);
+  ), -5).position.set(rightWallX, centerY, sideWallZ);
 
   // Cylinder pillars (replaces box corners for smarter, more detailed geometry)
   const pillarGeo = new THREE.CylinderGeometry(0.28, 0.28, wallDepth * 1.05, 8);
   const pillarMat = new THREE.MeshBasicMaterial({ color: pillarColor });
   for (const x of [leftWallX, rightWallX]) {
     for (const y of [frontWallY, backWallY]) {
-      addMesh(new THREE.Mesh(pillarGeo, pillarMat.clone())).position.set(x, y, backWallZ - 0.08);
+      addMesh(new THREE.Mesh(pillarGeo, pillarMat.clone()), -5).position.set(x, y, backWallZ - 0.08);
     }
   }
 
@@ -107,19 +107,19 @@ export function createRoomShellMeshes(profile = {}) {
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth * 0.95, 0.12, 0.05),
     trimMat.clone()
-  )).position.set(centerX, backWallY - 0.28, floorZ + 0.18);
+  ), -5).position.set(centerX, backWallY - 0.28, floorZ + 0.18);
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth * 0.95, 0.12, 0.05),
     trimMat.clone()
-  )).position.set(centerX, frontWallY + 0.28, floorZ + 0.18);
+  ), -5).position.set(centerX, frontWallY + 0.28, floorZ + 0.18);
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(0.12, innerHeight * 0.9, 0.05),
     trimMat.clone()
-  )).position.set(leftWallX + 0.26, centerY, floorZ + 0.18);
+  ), -5).position.set(leftWallX + 0.26, centerY, floorZ + 0.18);
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(0.12, innerHeight * 0.9, 0.05),
     trimMat.clone()
-  )).position.set(rightWallX - 0.26, centerY, floorZ + 0.18);
+  ), -5).position.set(rightWallX - 0.26, centerY, floorZ + 0.18);
 
   // Parallax background layer (deep)
   addMesh(new THREE.Mesh(
@@ -131,7 +131,7 @@ export function createRoomShellMeshes(profile = {}) {
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
-  )).position.set(centerX, backWallY + 0.24, backWallZ - 0.56);
+  ), -5).position.set(centerX, backWallY + 0.24, backWallZ - 0.56);
 
   // Foreground layer
   addMesh(new THREE.Mesh(
@@ -142,7 +142,7 @@ export function createRoomShellMeshes(profile = {}) {
       opacity: 0.2,
       depthWrite: false,
     })
-  )).position.set(centerX, frontWallY - 0.1, frontWallZ + 0.3);
+  ), -1).position.set(centerX, frontWallY - 0.1, frontWallZ + 0.3);
 
   return meshes;
 }
@@ -322,6 +322,7 @@ export class Base3DArena {
       })
     );
     deepBg.position.set(centerX, centerY, -8.0);
+    deepBg.renderOrder = -10;
     deepBg.userData.parallaxLayer = 'deep';
     this.add(deepBg);
 
@@ -336,6 +337,7 @@ export class Base3DArena {
       })
     );
     farBg.position.set(centerX, centerY, -6.0);
+    farBg.renderOrder = -10;
     farBg.userData.parallaxLayer = 'far';
     this.add(farBg);
 
@@ -350,6 +352,7 @@ export class Base3DArena {
       })
     );
     midBg.position.set(centerX, centerY, -4.0);
+    midBg.renderOrder = -8;
     midBg.userData.parallaxLayer = 'mid';
     this.add(midBg);
 
@@ -364,6 +367,7 @@ export class Base3DArena {
       })
     );
     nearBg.position.set(centerX, centerY, -2.0);
+    nearBg.renderOrder = -5;
     nearBg.userData.parallaxLayer = 'near';
     this.add(nearBg);
   }
@@ -455,6 +459,7 @@ export class Base3DArena {
       new THREE.MeshBasicMaterial({ color })
     );
     mesh.position.set(0, y, z);
+    mesh.renderOrder = -10;
     return this.add(mesh);
   }
 
@@ -464,6 +469,7 @@ export class Base3DArena {
       new THREE.MeshBasicMaterial({ color })
     );
     mesh.position.set(0, y, z);
+    mesh.renderOrder = -5;
     return this.add(mesh);
   }
 
