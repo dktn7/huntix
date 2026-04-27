@@ -1,0 +1,39 @@
+{
+  "frames": {
+    "idle_00.png": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 140,
+        "h": 247
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 90,
+        "y": 48,
+        "w": 140,
+        "h": 247
+      },
+      "sourceSize": {
+        "w": 320,
+        "h": 320
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://github.com/odrick/free-tex-packer-core",
+    "version": "0.3.5",
+    "image": "kibad-atlas.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 146,
+      "h": 253
+    },
+    "scale": 1
+  }
+}

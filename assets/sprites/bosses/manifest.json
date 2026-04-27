@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-04-26T20:46:39.999Z",
+  "atlases": {
+    "vrael": true,
+    "zarth": true,
+    "thyxis": true,
+    "kibad": true
+  },
+  "details": {
+    "vrael": {
+      "frame_count": 60,
+      "states": {
+        "idle": 6,
+        "walk": 12,
+        "attack": 15,
+        "hurt": 5,
+        "dead": 22
+      },
+      "placeholder": false,
+      "atlas_json": true,
+      "atlas_webp": true
+    },
+    "zarth": {
+      "frame_count": 20,
+      "states": {
+        "idle": 4,
+        "walk": 5,
+        "attack": 4,
+        "hurt": 5,
+        "dead": 2
+      },
+      "placeholder": false,
+      "atlas_json": true,
+      "atlas_webp": true
+    },
+    "thyxis": {
+      "frame_count": 55,
+      "states": {
+        "idle": 8,
+        "walk": 11,
+        "run": 9,
+        "telegraph": 7,
+        "attack": 15,
+        "hurt": 2,
+        "dead": 2,
+        "phase3": 1
+      },
+      "placeholder": false,
+      "atlas_json": true,
+      "atlas_webp": true
+    },
+    "kibad": {
+      "frame_count": 1,
+      "states": {
+        "idle": 1
+      },
+      "placeholder": true,
+      "atlas_json": true,
+      "atlas_webp": true
+    }
+  }
+}
