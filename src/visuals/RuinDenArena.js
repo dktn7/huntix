@@ -9,6 +9,8 @@ export class RuinDenArena extends Base3DArena {
   }
 
   build() {
+    this.setZoneColors({ deep: 0x080604, far: 0x110d0a, mid: 0x1a1410, near: 0x1e1612 });
+
     this.addRoomShell(this.zoneConfig.roomProfile || {
       bounds: { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 },
       floorColor: RUIN_DEN.floor,
@@ -119,6 +121,83 @@ export class RuinDenArena extends Base3DArena {
     });
 
     this._queueWorldKit();
+
+    // --- Procedural prop backups (always render regardless of GLB availability) ---
+
+    // 4 broken cylinder columns
+    const columnMat = new THREE.MeshBasicMaterial({ color: 0x4b4036 });
+    for (const cx of [-7.5, -3.5, 3.5, 7.5]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.44, 3.8, 8), columnMat.clone());
+      col.position.set(cx, 1.0, -2.1);
+      col.castShadow = false;
+      col.receiveShadow = false;
+      this.add(col);
+    }
+
+    // Rubble / stone chunk piles scattered at floor level
+    const rubbleMat = new THREE.MeshBasicMaterial({ color: 0x3c3028 });
+    const rubbleSpots = [
+      { x: -6.8, y: -3.75, rz: 0.2 },
+      { x: -2.2, y: -3.85, rz: -0.15 },
+      { x: 2.8, y: -3.78, rz: 0.12 },
+      { x: 6.6, y: -3.82, rz: -0.18 },
+    ];
+    for (const pos of rubbleSpots) {
+      const chunk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.7, 0.9), rubbleMat.clone());
+      chunk.position.set(pos.x, pos.y, -0.9);
+      chunk.rotation.z = pos.rz;
+      chunk.castShadow = false;
+      chunk.receiveShadow = false;
+      this.add(chunk);
+    }
+
+    // Torch glow discs (AdditiveBlending) — behind torch GLBs
+    const torchGlowMat = new THREE.MeshBasicMaterial({
+      color: 0xf4a832,
+      transparent: true,
+      opacity: 0.25,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    for (const tx of [-3.8, 3.8]) {
+      const glow = new THREE.Mesh(new THREE.CircleGeometry(0.55, 12), torchGlowMat.clone());
+      glow.position.set(tx, -0.9, -1.1);
+      glow.castShadow = false;
+      glow.receiveShadow = false;
+      this.add(glow);
+      this._animatedMaterials.push({ material: glow.material, pulse: 5.8, minOpacity: 0.1, maxOpacity: 0.42, phase: tx * 0.3 });
+    }
+
+    // Large cracked arch lintel across top of arena
+    const lintMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(5.5, 0.55, 0.6),
+      new THREE.MeshBasicMaterial({ color: 0x4b4036 })
+    );
+    lintMesh.position.set(0, 3.0, -2.2);
+    lintMesh.castShadow = false;
+    lintMesh.receiveShadow = false;
+    this.add(lintMesh);
+
+    // Fissure glow streaks on back wall
+    const fissureStreakMat = new THREE.MeshBasicMaterial({
+      color: RUIN_DEN.fissure,
+      transparent: true,
+      opacity: 0.28,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const streakAngles = [0.32, -0.28, 0.18, -0.42, 0.25];
+    for (let i = 0; i < streakAngles.length; i += 1) {
+      const streak = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 0.06), fissureStreakMat.clone());
+      streak.position.set(-6.0 + i * 3.0, 0.5 + (i % 2) * 0.4, -2.4);
+      streak.rotation.z = streakAngles[i];
+      streak.castShadow = false;
+      streak.receiveShadow = false;
+      this.add(streak);
+      this._animatedMaterials.push({ material: streak.material, pulse: 4.2, minOpacity: 0.12, maxOpacity: 0.38, phase: i * 0.6 });
+    }
+
+    this.addParallaxLayers();
 
     return this.group;
   }
