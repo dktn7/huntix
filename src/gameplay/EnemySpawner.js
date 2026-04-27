@@ -41,10 +41,10 @@ const ENEMY_VISUAL_ORDER = [
 ];
 
 const ENEMY_VISUAL_COLORS = {
-  [EnemyTypes.GRUNT]: 0x6d6d6d,
-  [EnemyTypes.RANGED]: 0x3f8cff,
-  [EnemyTypes.BRUISER]: 0x4a4a52,
-  [EnemyTypes.FIRE_BRUISER]: 0xff6a00,
+  [EnemyTypes.GRUNT]: 0xff2200,
+  [EnemyTypes.RANGED]: 0xff8800,
+  [EnemyTypes.BRUISER]: 0xff2200,
+  [EnemyTypes.FIRE_BRUISER]: 0xff8800,
 };
 
 const ZONE_ENEMY_TINT = {
@@ -684,6 +684,7 @@ export class EnemySpawner {
 
     const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    mesh.renderOrder = 50;
     mesh.count = 0;
     return mesh;
   }
