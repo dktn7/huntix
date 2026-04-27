@@ -25,11 +25,11 @@ test-results/
 *.zip
 
 # 3D models — serve from CDN or static host, not git
-assets/models/
-*.glb
-*.gltf
-*.fbx
-*.obj
+#ssets/models/
+#.glb
+#.gltf
+#.fbx
+#.obj
 
 # Audio — serve from CDN or static host, not git
 assets/audio/
