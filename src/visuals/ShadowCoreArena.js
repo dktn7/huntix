@@ -9,6 +9,8 @@ export class ShadowCoreArena extends Base3DArena {
   }
 
   build() {
+    this.setZoneColors({ deep: 0x010103, far: 0x040210, mid: 0x09071a, near: 0x110e24 });
+
     this.addRoomShell(this.zoneConfig.roomProfile || {
       bounds: { minX: -8.25, maxX: 8.25, minY: -4.2, maxY: 3.2 },
       floorColor: SHADOW_CORE.floor,
@@ -114,6 +116,51 @@ export class ShadowCoreArena extends Base3DArena {
     });
 
     this._queueWorldKit();
+
+    // --- Procedural prop backups (always render regardless of GLB availability) ---
+
+    // 5 downward hanging crystal spires across the top
+    const spireMat = new THREE.MeshBasicMaterial({ color: 0x4d2d7a });
+    const spireXPositions = [-6, -3, 0, 3, 6];
+    for (const spireX of spireXPositions) {
+      const spire = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.8, 5), spireMat.clone());
+      spire.rotation.x = Math.PI;
+      spire.position.set(spireX, 3.5, -2.5);
+      spire.castShadow = false;
+      spire.receiveShadow = false;
+      this.add(spire);
+    }
+
+    // Glowing void cracks in floor
+    const voidCrackMat = new THREE.MeshBasicMaterial({
+      color: SHADOW_CORE.bloom,
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const crackOffsets = [0, 1.2, -1.2, 2.4, -2.4];
+    for (let i = 0; i < crackOffsets.length; i += 1) {
+      const crack = new THREE.Mesh(new THREE.PlaneGeometry(6, 0.1), voidCrackMat.clone());
+      crack.position.set(crackOffsets[i], -3.6, -0.9);
+      crack.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.06;
+      crack.castShadow = false;
+      crack.receiveShadow = false;
+      this.add(crack);
+      this._animatedMaterials.push({ material: crack.material, pulse: 3.8, minOpacity: 0.08, maxOpacity: 0.3, phase: i * 0.7 });
+    }
+
+    // Crystal cluster floor accents (upright cones)
+    const clusterMat = new THREE.MeshBasicMaterial({ color: 0x7c58c8 });
+    for (const clusterX of [-7.2, -4.5, 4.5, 7.2]) {
+      const cluster = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.7, 5), clusterMat.clone());
+      cluster.position.set(clusterX, -3.8, -0.95);
+      cluster.castShadow = false;
+      cluster.receiveShadow = false;
+      this.add(cluster);
+    }
+
+    this.addParallaxLayers();
 
     return this.group;
   }

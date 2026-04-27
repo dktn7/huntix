@@ -21,7 +21,7 @@
       --hud-border: rgba(255, 255, 255, 0.16);
       --hud-text: #ffffff;
       --hud-muted: rgba(255, 255, 255, 0.68);
-      --modal-bg: rgba(3, 6, 12, 0.82);
+      --modal-bg: rgba(3, 6, 12, 0.96);
       --p1-colour: #4488ff;
       --p2-colour: #ffdd44;
       --p3-colour: #44cc66;
@@ -46,13 +46,17 @@
     #game-canvas {
       display: block;
       image-rendering: pixelated;
+      /* Ensure canvas never bleeds outside its box */
+      max-width: 100vw;
+      max-height: 100vh;
     }
+    /* FIX: overlay always has opaque black base so 3D canvas never shows through */
     #ui-overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       pointer-events: none;
       z-index: 10;
+      /* No background here — body background:#000 is the opaque fallback */
     }
     #debug-panel {
       position: fixed;
@@ -87,6 +91,8 @@
       color: #fff;
       opacity: 0;
       text-shadow: 0 0 14px #48f7ff, 0 3px 0 #000;
+      /* FIX: prevent flash element from blocking clicks when invisible */
+      pointer-events: none;
     }
     .combo-counter.visible { opacity: 1; color: var(--combo-text); }
     .combo-counter.mid { color: var(--combo-mid); }
@@ -103,6 +109,7 @@
       color: #fff;
       text-shadow: 0 0 18px rgba(255, 255, 255, 0.6), 0 0 8px rgba(72, 247, 255, 0.4);
       opacity: 0;
+      pointer-events: none;
       transition: opacity 200ms ease, transform 200ms ease;
     }
     .boss-hud {
@@ -112,10 +119,16 @@
       width: min(360px, 34vw);
       font-family: 'Courier New', Courier, monospace;
       color: #fff;
+      /* FIX: use opacity/visibility instead of display toggle to avoid repaint flash */
       opacity: 0;
-      transition: opacity 180ms ease;
+      visibility: hidden;
+      transition: opacity 180ms ease, visibility 0s linear 180ms;
     }
-    .boss-hud.visible { opacity: 1; }
+    .boss-hud.visible {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 180ms ease, visibility 0s linear 0s;
+    }
     .boss-name {
       font-size: 13px;
       font-weight: 800;
@@ -157,6 +170,7 @@
       opacity: 0;
       text-shadow: 0 2px 0 #000;
       will-change: top, opacity;
+      pointer-events: none;
     }
     .damage-number.heavy,
     .damage-number.status {
@@ -202,10 +216,16 @@
       background: var(--hud-bg);
       border: 1px solid var(--hud-border);
       font-family: 'Courier New', Courier, monospace;
+      /* FIX: use opacity+visibility instead of display toggle */
       opacity: 0;
-      transition: opacity 200ms ease;
+      visibility: hidden;
+      transition: opacity 200ms ease, visibility 0s linear 200ms;
     }
-    .player-hud.visible { opacity: 1; }
+    .player-hud.visible {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 200ms ease, visibility 0s linear 0s;
+    }
     .player-hud.downed {
       opacity: 0.45;
       border-color: var(--hp-fill);
@@ -330,20 +350,31 @@
       color: var(--surge-fill);
     }
     .weapon-divider { color: var(--hud-muted); }
+    /* FIX: phase-modal uses opacity+visibility so GPU composites it — no layout flash */
     .phase-modal {
       position: fixed;
       inset: 0;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       padding: 32px;
-      background: rgba(0, 0, 0, 0.42);
+      /* Opaque dark scrim — was 0.42 (semi-transparent, bled through) */
+      background: rgba(0, 0, 0, 0.88);
       z-index: 20;
       pointer-events: none;
+      /* Hidden state: invisible but layout stays intact */
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 140ms ease, visibility 0s linear 140ms;
+      will-change: opacity;
+      isolation: isolate;
+      contain: layout style paint;
     }
     .phase-modal.visible {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
       pointer-events: auto;
+      transition: opacity 140ms ease, visibility 0s linear 0s;
     }
     .card-hotkey {
       position: absolute;
@@ -363,10 +394,12 @@
       width: min(920px, 92vw);
       padding: 24px;
       color: var(--hud-text);
+      /* FIX: was rgba(3,6,12,0.82) — 18% transparent causing bleed; now 0.97 */
       background: var(--modal-bg);
       border: 1px solid var(--hud-border);
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
       font-family: system-ui, sans-serif;
+      will-change: opacity;
     }
     .modal-title {
       font-family: 'Courier New', Courier, monospace;
@@ -499,6 +532,10 @@
     @keyframes portalLabelIn {
       from { opacity: 0; transform: translateY(10px) scale(0.96); }
       to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+    @keyframes popIn {
+      from { transform: scale(0.6) rotate(-2deg); opacity: 0; }
+      to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
     }
 
     @media (max-width: 800px) {

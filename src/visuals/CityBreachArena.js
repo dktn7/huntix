@@ -9,6 +9,8 @@ export class CityBreachArena extends Base3DArena {
   }
 
   build() {
+    this.setZoneColors({ deep: 0x050509, far: 0x0d0a14, mid: 0x111018, near: 0x1a0f0a });
+
     this.addRoomShell(this.zoneConfig.roomProfile || {
       bounds: { minX: -8.25, maxX: 8.25, minY: -4.25, maxY: 3.25 },
       floorColor: CITY_BREACH.charcoal,
@@ -104,6 +106,67 @@ export class CityBreachArena extends Base3DArena {
     });
 
     this._queueWorldKit();
+
+    // --- Procedural prop backups (always render regardless of GLB availability) ---
+
+    // 3 tall building silhouettes
+    const buildingMat = new THREE.MeshBasicMaterial({ color: 0x2a2a36 });
+    for (const buildingX of [-6, 0, 6]) {
+      const building = new THREE.Mesh(new THREE.BoxGeometry(1.4, 5.5, 0.5), buildingMat.clone());
+      building.position.set(buildingX, 2.5, -2.8);
+      building.castShadow = false;
+      building.receiveShadow = false;
+      this.add(building);
+    }
+
+    // Rubble piles at arena corners
+    const rubbleMat = new THREE.MeshBasicMaterial({ color: 0x383838 });
+    const rubbleCorners = [
+      { x: -7.5, y: -3.8, rz: 0.18 },
+      { x: 7.5, y: -3.8, rz: -0.18 },
+      { x: -7.5, y: 2.7, rz: -0.12 },
+      { x: 7.5, y: 2.7, rz: 0.12 },
+    ];
+    for (const pos of rubbleCorners) {
+      const rubble = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 0.8), rubbleMat.clone());
+      rubble.position.set(pos.x, pos.y, -1.0);
+      rubble.rotation.z = pos.rz;
+      rubble.castShadow = false;
+      rubble.receiveShadow = false;
+      this.add(rubble);
+    }
+
+    // Pulsing neon billboard (AdditiveBlending)
+    const billboardMat = new THREE.MeshBasicMaterial({
+      color: CITY_BREACH.neonMagenta,
+      transparent: true,
+      opacity: 0.12,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const billboard = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 1.2), billboardMat);
+    billboard.position.set(7.0, 2.2, -2.2);
+    billboard.castShadow = false;
+    billboard.receiveShadow = false;
+    this.add(billboard);
+    this._animatedMaterials.push({ material: billboardMat, pulse: 5.5, minOpacity: 0.06, maxOpacity: 0.22, phase: 0.5 });
+
+    // Orange fire glow disc at reactor position
+    const fireGlowMat = new THREE.MeshBasicMaterial({
+      color: CITY_BREACH.gateFire,
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const fireGlow = new THREE.Mesh(new THREE.CircleGeometry(0.9, 16), fireGlowMat);
+    fireGlow.position.set(7.2, -2.2, -0.8);
+    fireGlow.castShadow = false;
+    fireGlow.receiveShadow = false;
+    this.add(fireGlow);
+    this._animatedMaterials.push({ material: fireGlowMat, pulse: 4.5, minOpacity: 0.12, maxOpacity: 0.32, phase: 0.1 });
+
+    this.addParallaxLayers();
 
     return this.group;
   }
