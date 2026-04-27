@@ -31,10 +31,12 @@ export class GameLoop {
     let dt = (now - this._last) / 1000;
     this._last = now;
 
-    // FPS rolling average (last 30 frames)
-    this._fpsSamples.push(1 / dt);
-    if (this._fpsSamples.length > 30) this._fpsSamples.shift();
-    this.fps = this._fpsSamples.reduce((a, b) => a + b, 0) / this._fpsSamples.length;
+    // FIX: guard against dt=0 on the very first frame (division by zero → Infinity fps)
+    if (dt > 0) {
+      this._fpsSamples.push(1 / dt);
+      if (this._fpsSamples.length > 30) this._fpsSamples.shift();
+      this.fps = this._fpsSamples.reduce((a, b) => a + b, 0) / this._fpsSamples.length;
+    }
 
     dt = Math.min(dt, MAX_DT);
     this._accum += dt;
