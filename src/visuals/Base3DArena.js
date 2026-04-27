@@ -93,7 +93,7 @@ export function createRoomShellMeshes(profile = {}) {
     new THREE.MeshBasicMaterial({ color: wallColor })
   ), -5).position.set(rightWallX, centerY, sideWallZ);
 
-  // Cylinder pillars (replaces box corners for smarter, more detailed geometry)
+  // Cylinder pillars
   const pillarGeo = new THREE.CylinderGeometry(0.28, 0.28, wallDepth * 1.05, 8);
   const pillarMat = new THREE.MeshBasicMaterial({ color: pillarColor });
   for (const x of [leftWallX, rightWallX]) {
@@ -102,7 +102,7 @@ export function createRoomShellMeshes(profile = {}) {
     }
   }
 
-  // Trim (unlit)
+  // Trim
   const trimMat = new THREE.MeshBasicMaterial({ color: trimColor });
   addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth * 0.95, 0.12, 0.05),
@@ -147,10 +147,6 @@ export function createRoomShellMeshes(profile = {}) {
   return meshes;
 }
 
-/**
- * Shared logic for zone world building and lightweight environmental hazards.
- * Implements 2D-in-3D aesthetic: 3D world geometry with 2D sprite characters.
- */
 export class Base3DArena {
   static modelCache = new Map();
 
@@ -165,13 +161,31 @@ export class Base3DArena {
     this._animatedMaterials = [];
     this._zoneColors = null;
     this._time = 0;
+    this._zoneState = 'waves';
     this._pendingLoads = [];
     this.bounds = options.bounds || { minX: -8.3, maxX: 8.3, minY: -4.2, maxY: 3.3 };
 
     this.scene.add(this.group);
   }
 
-  /** Store zone-specific background gradient colors used by addParallaxLayers(). */
+  /** Call this when the zone transitions to boss phase so hazards become visible. */
+  setZoneState(state) {
+    this._zoneState = state;
+    this._syncHazardVisibility();
+  }
+
+  _syncHazardVisibility() {
+    for (const hazard of this.hazards) {
+      let visible = false;
+      if (hazard.activeWhen === 'always') visible = true;
+      else if (hazard.activeWhen === 'boss') visible = this._zoneState === 'boss';
+      else if (hazard.activeWhen === 'waves') visible = this._zoneState === 'waves';
+      hazard.mesh.visible = visible;
+      // Also pause/resume animation to avoid opacity bleed when hidden
+      hazard._animEntry.paused = !visible;
+    }
+  }
+
   setZoneColors(colors = {}) {
     this._zoneColors = { ...colors };
     return this;
@@ -186,11 +200,7 @@ export class Base3DArena {
     this.addParallaxLayers();
     this.addForegroundProps();
 
-    // Smart prop positioning relative to arena center and bounds
-    // Platform positioned at arena center, slightly behind players
     this.addProp('platform', { x: centerX, y: centerY - 1.0, z: -0.5, color: 0x4a5a7a, width: 4.0, height: 0.3, depth: 1.5 });
-
-    // Background crates at arena edges for atmosphere
     this.addProp('crate', { x: minX + 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a });
     this.addProp('crate', { x: maxX - 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a });
 
@@ -245,16 +255,10 @@ export class Base3DArena {
 
   _applyModelOptions(model, options = {}) {
     const {
-      x = 0,
-      y = 0,
-      z = 0,
-      sx = 1,
-      sy = 1,
-      sz = 1,
+      x = 0, y = 0, z = 0,
+      sx = 1, sy = 1, sz = 1,
       scale = null,
-      rx = 0,
-      ry = 0,
-      rz = 0,
+      rx = 0, ry = 0, rz = 0,
       renderOrder = null,
       tint = null,
       emissive = null,
@@ -298,11 +302,6 @@ export class Base3DArena {
     });
   }
 
-  /**
-   * Add parallax background layers at varying Z depths for 2.5D depth illusion.
-   * Layers are positioned relative to arena bounds for smart placement.
-   * Creates a sense of depth as the camera moves (orthographic camera friendly).
-   */
   addParallaxLayers() {
     const { minX, maxX, minY, maxY } = this.bounds;
     const width = maxX - minX;
@@ -311,60 +310,36 @@ export class Base3DArena {
     const centerY = (minY + maxY) / 2;
     const zc = this._zoneColors || {};
 
-    // Deep background layer (far Z) - darkest
     const deepBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.4, height * 1.4),
-      new THREE.MeshBasicMaterial({
-        color: zc.deep ?? 0x080c18,
-        transparent: true,
-        opacity: 0.9,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: zc.deep ?? 0x080c18, transparent: true, opacity: 0.9, depthWrite: false })
     );
     deepBg.position.set(centerX, centerY, -8.0);
     deepBg.renderOrder = -10;
     deepBg.userData.parallaxLayer = 'deep';
     this.add(deepBg);
 
-    // Far background layer with subtle color
     const farBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.25, height * 1.25),
-      new THREE.MeshBasicMaterial({
-        color: zc.far ?? 0x0d1225,
-        transparent: true,
-        opacity: 0.7,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: zc.far ?? 0x0d1225, transparent: true, opacity: 0.7, depthWrite: false })
     );
     farBg.position.set(centerX, centerY, -6.0);
     farBg.renderOrder = -10;
     farBg.userData.parallaxLayer = 'far';
     this.add(farBg);
 
-    // Mid background layer
     const midBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.1, height * 1.1),
-      new THREE.MeshBasicMaterial({
-        color: zc.mid ?? 0x151b2e,
-        transparent: true,
-        opacity: 0.5,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: zc.mid ?? 0x151b2e, transparent: true, opacity: 0.5, depthWrite: false })
     );
     midBg.position.set(centerX, centerY, -4.0);
     midBg.renderOrder = -8;
     midBg.userData.parallaxLayer = 'mid';
     this.add(midBg);
 
-    // Near background layer (closest to play field)
     const nearBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.05, height * 1.05),
-      new THREE.MeshBasicMaterial({
-        color: zc.near ?? 0x1a2238,
-        transparent: true,
-        opacity: 0.3,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: zc.near ?? 0x1a2238, transparent: true, opacity: 0.3, depthWrite: false })
     );
     nearBg.position.set(centerX, centerY, -2.0);
     nearBg.renderOrder = -5;
@@ -372,45 +347,27 @@ export class Base3DArena {
     this.add(nearBg);
   }
 
-  /**
-   * Add foreground props that create depth by occluding players.
-   * These are positioned at Z > player Z to appear in front of sprites.
-   * Pillars are positioned at arena sides with Y centered vertically.
-   */
   addForegroundProps() {
     const { minX, maxX, minY, maxY } = this.bounds;
     const centerY = (minY + maxY) / 2;
     const arenaHeight = maxY - minY;
 
-    // Left foreground pillar (occludes left side) - vertical cylinder centered in Y
     const leftPillar = new THREE.Mesh(
       new THREE.CylinderGeometry(0.4, 0.4, arenaHeight * 1.5, 8),
-      new THREE.MeshBasicMaterial({
-        color: 0x0a0e1a,
-        transparent: true,
-        opacity: 0.6,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: 0x0a0e1a, transparent: true, opacity: 0.6, depthWrite: false })
     );
     leftPillar.position.set(minX - 1.5, centerY, 2.0);
     leftPillar.userData.foregroundProp = true;
     this.add(leftPillar);
 
-    // Right foreground pillar
     const rightPillar = new THREE.Mesh(
       new THREE.CylinderGeometry(0.4, 0.4, arenaHeight * 1.5, 8),
-      new THREE.MeshBasicMaterial({
-        color: 0x0a0e1a,
-        transparent: true,
-        opacity: 0.6,
-        depthWrite: false,
-      })
+      new THREE.MeshBasicMaterial({ color: 0x0a0e1a, transparent: true, opacity: 0.6, depthWrite: false })
     );
     rightPillar.position.set(maxX + 1.5, centerY, 2.0);
     rightPillar.userData.foregroundProp = true;
     this.add(rightPillar);
 
-    // Add foreground crates at smart positions (bottom corners, in front of players)
     const cratePositions = [
       { x: minX + 1.0, y: minY + 0.5, z: 1.5 },
       { x: maxX - 1.0, y: minY + 0.5, z: 1.5 },
@@ -420,11 +377,6 @@ export class Base3DArena {
     }
   }
 
-  /**
-   * Add a 3D prop (crate, platform, etc.) positioned relative to arena bounds.
-   * @param {string} type - Prop type: 'crate', 'platform', 'pillar'
-   * @param {Object} options - Position, size, color options
-   */
   addProp(type, options = {}) {
     const { minX, maxX, minY, maxY } = this.bounds;
     const defaults = {
@@ -474,87 +426,43 @@ export class Base3DArena {
   }
 
   addHazardRect({
-    id,
-    x,
-    y,
-    width,
-    height,
-    color = 0xff5533,
-    damage = 8,
-    tick = 0.45,
-    activeWhen = 'always',
-    pulse = 7.5,
-    minOpacity = 0.22,
-    maxOpacity = 0.48,
+    id, x, y, width, height,
+    color = 0xff5533, damage = 8, tick = 0.45,
+    activeWhen = 'always', pulse = 7.5,
+    minOpacity = 0.22, maxOpacity = 0.48,
   }) {
     const mat = new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity: minOpacity,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
+      color, transparent: true, opacity: minOpacity,
+      blending: THREE.AdditiveBlending, depthWrite: false,
     });
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(width, height),
-      mat
-    );
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), mat);
     mesh.position.set(x, y, -0.12);
+    // Hide immediately if not always-active
+    mesh.visible = activeWhen === 'always';
     this.add(mesh);
-    this._animatedMaterials.push({ material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.37 + y * 0.11 });
-
-    this.hazards.push({
-      id,
-      shape: 'rect',
-      x,
-      y,
-      width,
-      height,
-      damage,
-      tick,
-      activeWhen,
-      mesh,
-    });
+    const animEntry = { material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.37 + y * 0.11, paused: activeWhen !== 'always' };
+    this._animatedMaterials.push(animEntry);
+    this.hazards.push({ id, shape: 'rect', x, y, width, height, damage, tick, activeWhen, mesh, _animEntry: animEntry });
   }
 
   addHazardCircle({
-    id,
-    x,
-    y,
-    radius,
-    color = 0x7f4dff,
-    damage = 8,
-    tick = 0.45,
-    activeWhen = 'always',
-    pulse = 8.5,
-    minOpacity = 0.2,
-    maxOpacity = 0.45,
+    id, x, y, radius,
+    color = 0x7f4dff, damage = 8, tick = 0.45,
+    activeWhen = 'always', pulse = 8.5,
+    minOpacity = 0.2, maxOpacity = 0.45,
   }) {
     const mat = new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity: minOpacity,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
+      color, transparent: true, opacity: minOpacity,
+      blending: THREE.AdditiveBlending, depthWrite: false,
     });
-    const mesh = new THREE.Mesh(
-      new THREE.CircleGeometry(radius, 24),
-      mat
-    );
+    const mesh = new THREE.Mesh(new THREE.CircleGeometry(radius, 24), mat);
     mesh.position.set(x, y, -0.12);
+    // Hide immediately if not always-active
+    mesh.visible = activeWhen === 'always';
     this.add(mesh);
-    this._animatedMaterials.push({ material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.23 - y * 0.13 });
-
-    this.hazards.push({
-      id,
-      shape: 'circle',
-      x,
-      y,
-      radius,
-      damage,
-      tick,
-      activeWhen,
-      mesh,
-    });
+    const animEntry = { material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.23 - y * 0.13, paused: activeWhen !== 'always' };
+    this._animatedMaterials.push(animEntry);
+    this.hazards.push({ id, shape: 'circle', x, y, radius, damage, tick, activeWhen, mesh, _animEntry: animEntry });
   }
 
   getActiveHazards(routeState = null) {
@@ -571,6 +479,7 @@ export class Base3DArena {
   update(dt) {
     this._time += dt;
     for (const entry of this._animatedMaterials) {
+      if (entry.paused) continue;
       const wave = (Math.sin((this._time + entry.phase) * entry.pulse) + 1) * 0.5;
       entry.material.opacity = entry.minOpacity + wave * (entry.maxOpacity - entry.minOpacity);
     }
@@ -582,7 +491,7 @@ export class Base3DArena {
       if (child.isMesh) {
         child.geometry?.dispose?.();
         if (Array.isArray(child.material)) {
-          child.material.forEach(material => material?.dispose?.());
+          child.material.forEach(m => m?.dispose?.());
         } else {
           child.material?.dispose?.();
         }
