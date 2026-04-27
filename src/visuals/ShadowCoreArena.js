@@ -122,10 +122,10 @@ export class ShadowCoreArena extends Base3DArena {
     // 5 downward hanging crystal spires across the top
     const spireMat = new THREE.MeshBasicMaterial({ color: 0x4d2d7a });
     const spireXPositions = [-6, -3, 0, 3, 6];
-    for (const sx of spireXPositions) {
+    for (const spireX of spireXPositions) {
       const spire = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.8, 5), spireMat.clone());
       spire.rotation.x = Math.PI;
-      spire.position.set(sx, 3.5, -2.5);
+      spire.position.set(spireX, 3.5, -2.5);
       spire.castShadow = false;
       spire.receiveShadow = false;
       this.add(spire);
@@ -152,9 +152,9 @@ export class ShadowCoreArena extends Base3DArena {
 
     // Crystal cluster floor accents (upright cones)
     const clusterMat = new THREE.MeshBasicMaterial({ color: 0x7c58c8 });
-    for (const cx of [-7.2, -4.5, 4.5, 7.2]) {
+    for (const clusterX of [-7.2, -4.5, 4.5, 7.2]) {
       const cluster = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.7, 5), clusterMat.clone());
-      cluster.position.set(cx, -3.8, -0.95);
+      cluster.position.set(clusterX, -3.8, -0.95);
       cluster.castShadow = false;
       cluster.receiveShadow = false;
       this.add(cluster);

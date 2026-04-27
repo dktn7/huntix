@@ -126,9 +126,9 @@ export class RuinDenArena extends Base3DArena {
 
     // 4 broken cylinder columns
     const columnMat = new THREE.MeshBasicMaterial({ color: 0x4b4036 });
-    for (const cx of [-7.5, -3.5, 3.5, 7.5]) {
+    for (const columnX of [-7.5, -3.5, 3.5, 7.5]) {
       const col = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.44, 3.8, 8), columnMat.clone());
-      col.position.set(cx, 1.0, -2.1);
+      col.position.set(columnX, 1.0, -2.1);
       col.castShadow = false;
       col.receiveShadow = false;
       this.add(col);
@@ -159,13 +159,13 @@ export class RuinDenArena extends Base3DArena {
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    for (const tx of [-3.8, 3.8]) {
+    for (const torchX of [-3.8, 3.8]) {
       const glow = new THREE.Mesh(new THREE.CircleGeometry(0.55, 12), torchGlowMat.clone());
-      glow.position.set(tx, -0.9, -1.1);
+      glow.position.set(torchX, -0.9, -1.1);
       glow.castShadow = false;
       glow.receiveShadow = false;
       this.add(glow);
-      this._animatedMaterials.push({ material: glow.material, pulse: 5.8, minOpacity: 0.1, maxOpacity: 0.42, phase: tx * 0.3 });
+      this._animatedMaterials.push({ material: glow.material, pulse: 5.8, minOpacity: 0.1, maxOpacity: 0.42, phase: torchX * 0.3 });
     }
 
     // Large cracked arch lintel across top of arena

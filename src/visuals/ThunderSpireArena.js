@@ -127,9 +127,9 @@ export class ThunderSpireArena extends Base3DArena {
     // 5 vertical conductor rods
     const rodMat = new THREE.MeshBasicMaterial({ color: 0x8899bb });
     const rodXPositions = [-7, -3.5, 0, 3.5, 7];
-    for (const rx of rodXPositions) {
+    for (const rodX of rodXPositions) {
       const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 5.5, 8), rodMat.clone());
-      rod.position.set(rx, 1.5, -1.8);
+      rod.position.set(rodX, 1.5, -1.8);
       rod.castShadow = false;
       rod.receiveShadow = false;
       this.add(rod);

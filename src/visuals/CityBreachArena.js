@@ -111,9 +111,9 @@ export class CityBreachArena extends Base3DArena {
 
     // 3 tall building silhouettes
     const buildingMat = new THREE.MeshBasicMaterial({ color: 0x2a2a36 });
-    for (const bx of [-6, 0, 6]) {
+    for (const buildingX of [-6, 0, 6]) {
       const building = new THREE.Mesh(new THREE.BoxGeometry(1.4, 5.5, 0.5), buildingMat.clone());
-      building.position.set(bx, 2.5, -2.8);
+      building.position.set(buildingX, 2.5, -2.8);
       building.castShadow = false;
       building.receiveShadow = false;
       this.add(building);
