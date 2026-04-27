@@ -9,6 +9,8 @@ export class ThunderSpireArena extends Base3DArena {
   }
 
   build() {
+    this.setZoneColors({ deep: 0x050812, far: 0x0a1022, mid: 0x0f1830, near: 0x121e38 });
+
     this.addRoomShell(this.zoneConfig.roomProfile || {
       bounds: { minX: -8.2, maxX: 8.2, minY: -4.15, maxY: 3.2 },
       floorColor: THUNDER_SPIRE.floor,
@@ -119,6 +121,86 @@ export class ThunderSpireArena extends Base3DArena {
     });
 
     this._queueWorldKit();
+
+    // --- Procedural prop backups (always render regardless of GLB availability) ---
+
+    // 5 vertical conductor rods
+    const rodMat = new THREE.MeshBasicMaterial({ color: 0x8899bb });
+    const rodXPositions = [-7, -3.5, 0, 3.5, 7];
+    for (const rodX of rodXPositions) {
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 5.5, 8), rodMat.clone());
+      rod.position.set(rodX, 1.5, -1.8);
+      rod.castShadow = false;
+      rod.receiveShadow = false;
+      this.add(rod);
+    }
+
+    // Lightning arc horizontal planes connecting rod pairs
+    const arcBackupMat = new THREE.MeshBasicMaterial({
+      color: THUNDER_SPIRE.lightning,
+      transparent: true,
+      opacity: 0.18,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const arcPairs = [
+      { x: -5.25, y: 1.5 },
+      { x: -1.75, y: 1.5 },
+      { x: 1.75, y: 1.5 },
+      { x: 5.25, y: 1.5 },
+    ];
+    for (let i = 0; i < arcPairs.length; i += 1) {
+      const arc = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 0.06), arcBackupMat.clone());
+      arc.position.set(arcPairs[i].x, arcPairs[i].y, -1.8);
+      arc.castShadow = false;
+      arc.receiveShadow = false;
+      this.add(arc);
+      this._animatedMaterials.push({ material: arc.material, pulse: 12.0, minOpacity: 0.06, maxOpacity: 0.3, phase: i * 0.4 });
+    }
+
+    // Industrial grate platform
+    const grateMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(4.5, 0.22, 1.0),
+      new THREE.MeshBasicMaterial({ color: 0x2a3040 })
+    );
+    grateMesh.position.set(-3.5, -1.8, -1.0);
+    grateMesh.castShadow = false;
+    grateMesh.receiveShadow = false;
+    this.add(grateMesh);
+
+    // Storm ring on boss side
+    const stormRingMat = new THREE.MeshBasicMaterial({
+      color: THUNDER_SPIRE.flash,
+      transparent: true,
+      opacity: 0.22,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const stormRing = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 24), stormRingMat);
+    stormRing.position.set(7.2, -2.1, -0.4);
+    stormRing.castShadow = false;
+    stormRing.receiveShadow = false;
+    this.add(stormRing);
+    this._animatedMaterials.push({ material: stormRingMat, pulse: 6.5, minOpacity: 0.1, maxOpacity: 0.36, phase: 1.2 });
+
+    // Conduit tubes (horizontal, connecting wall to conductor rods)
+    const conduitMat = new THREE.MeshBasicMaterial({ color: 0x3d5080 });
+    const conduitPositions = [
+      { x: -7.0, y: 0.4 },
+      { x: 0.0, y: 0.4 },
+      { x: 7.0, y: 0.4 },
+    ];
+    for (const pos of conduitPositions) {
+      const conduit = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 3.5, 8), conduitMat.clone());
+      conduit.rotation.z = Math.PI / 2;
+      conduit.position.set(pos.x, pos.y, -1.8);
+      conduit.castShadow = false;
+      conduit.receiveShadow = false;
+      this.add(conduit);
+    }
+
+    this.addParallaxLayers();
 
     return this.group;
   }

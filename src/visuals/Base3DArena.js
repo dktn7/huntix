@@ -52,6 +52,7 @@ export function createRoomShellMeshes(profile = {}) {
   const meshes = [];
   const addMesh = (mesh) => {
     mesh.userData.roomShell = true;
+    mesh.renderOrder = -10;
     meshes.push(mesh);
     return mesh;
   };
@@ -162,11 +163,18 @@ export class Base3DArena {
     this.group.visible = false;
     this.hazards = [];
     this._animatedMaterials = [];
+    this._zoneColors = null;
     this._time = 0;
     this._pendingLoads = [];
     this.bounds = options.bounds || { minX: -8.3, maxX: 8.3, minY: -4.2, maxY: 3.3 };
 
     this.scene.add(this.group);
+  }
+
+  /** Store zone-specific background gradient colors used by addParallaxLayers(). */
+  setZoneColors(colors = {}) {
+    this._zoneColors = { ...colors };
+    return this;
   }
 
   build() {
@@ -216,6 +224,16 @@ export class Base3DArena {
       .then((model) => {
         if (!model) return null;
         this._applyModelOptions(model, options);
+        if (path.includes('portal.glb')) {
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.renderOrder = 20;
+              const mats = Array.isArray(child.material) ? child.material : [child.material];
+              for (const mat of mats) { if (mat) mat.depthWrite = false; }
+            }
+          });
+          model.position.y += 0.02;
+        }
         this.add(model);
         return model;
       })
@@ -291,12 +309,13 @@ export class Base3DArena {
     const height = maxY - minY;
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
+    const zc = this._zoneColors || {};
 
     // Deep background layer (far Z) - darkest
     const deepBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.4, height * 1.4),
       new THREE.MeshBasicMaterial({
-        color: 0x080c18,
+        color: zc.deep ?? 0x080c18,
         transparent: true,
         opacity: 0.9,
         depthWrite: false,
@@ -310,7 +329,7 @@ export class Base3DArena {
     const farBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.25, height * 1.25),
       new THREE.MeshBasicMaterial({
-        color: 0x0d1225,
+        color: zc.far ?? 0x0d1225,
         transparent: true,
         opacity: 0.7,
         depthWrite: false,
@@ -324,7 +343,7 @@ export class Base3DArena {
     const midBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.1, height * 1.1),
       new THREE.MeshBasicMaterial({
-        color: 0x151b2e,
+        color: zc.mid ?? 0x151b2e,
         transparent: true,
         opacity: 0.5,
         depthWrite: false,
@@ -338,7 +357,7 @@ export class Base3DArena {
     const nearBg = new THREE.Mesh(
       new THREE.PlaneGeometry(width * 1.05, height * 1.05),
       new THREE.MeshBasicMaterial({
-        color: 0x1a2238,
+        color: zc.near ?? 0x1a2238,
         transparent: true,
         opacity: 0.3,
         depthWrite: false,
