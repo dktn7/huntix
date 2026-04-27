@@ -301,6 +301,13 @@ export class HunterController {
     }
   }
 
+  /** Applies camera tilt compensation to all hunter billboard bodies. */
+  setBillboardTiltX(tiltX) {
+    for (const player of this.players) {
+      player.setBillboardTiltX?.(tiltX);
+    }
+  }
+
   /** Returns the primary player used by legacy single-player systems. */
   get primaryPlayer() {
     return this.players[0] || null;

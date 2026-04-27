@@ -4,7 +4,10 @@ import { CITY_BREACH } from './Palettes.js';
 
 export class CityBreachArena extends Base3DArena {
   constructor(scene, zoneConfig = null) {
-    super(scene, { colormapTexture: './assets/textures/props/city-breach/colormap.png' });
+    super(scene, {
+      colormapTexture: './assets/textures/props/city-breach/colormap.png',
+      zoneConfig: zoneConfig || {},
+    });
     this.zoneConfig = zoneConfig || {};
   }
 

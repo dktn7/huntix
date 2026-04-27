@@ -3,6 +3,7 @@ import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { ySortHunterMesh } from '../visuals/HunterMeshes.js';
 import { clampBottomToVisibleArena } from './ArenaBounds.js';
 import { RunState } from '../core/RunState.js';
+import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 
 const TICK = 1 / 60;
 const PLAYER_WIDTH = 0.8;
@@ -129,8 +130,10 @@ export class PlayerState {
     this.mesh = options.mesh || this._createFallbackMesh();
     this._visualBody = this.mesh.userData?.bodyMesh || this.mesh;
     this._baseMaterial = this._visualBody.material || null;
+    this._billboardTiltX = -ORTHO_CAMERA_TILT_X;
     this.mesh.position.set(this.position.x, this.position.y, 0);
     if (!this.mesh.parent) this.scene.add(this.mesh);
+    this.setBillboardTiltX(ORTHO_CAMERA_TILT_X);
   }
 
   /** Advances movement, state timers, resources, and placeholder animation. */
@@ -540,8 +543,23 @@ export class PlayerState {
     this.mesh = nextMesh;
     this._visualBody = this.mesh.userData?.bodyMesh || this.mesh;
     this._baseMaterial = this._visualBody.material || null;
+    this.setBillboardTiltX(-this._billboardTiltX);
     this._syncMesh();
     return true;
+  }
+
+  /** Keeps the billboard body counter-rotated against the camera tilt. */
+  setBillboardTiltX(tiltX) {
+    this._billboardTiltX = -tiltX;
+    if (this._visualBody?.rotation) this._visualBody.rotation.x = this._billboardTiltX;
+    const spriteMesh = this.mesh?.userData?.spriteMesh;
+    if (spriteMesh?.rotation) spriteMesh.rotation.x = this._billboardTiltX;
+    const parts = this.mesh?.userData?.billboardParts;
+    if (Array.isArray(parts)) {
+      for (const part of parts) {
+        if (part?.rotation) part.rotation.x = this._billboardTiltX;
+      }
+    }
   }
 
   /** Nudges the player body during collision resolution without applying damage. */
@@ -649,6 +667,7 @@ export class PlayerState {
     this.mesh.scale.set(1, 1, 1);
     this.mesh.rotation.z = 0;
     if (this._visualBody) this._visualBody.scale.x = this.facing;
+    if (this._visualBody?.rotation) this._visualBody.rotation.x = this._billboardTiltX;
     this._setVisualColor(this.hunterConfig.auraColor);
 
     if (this.state === PlayerStates.IDLE) {

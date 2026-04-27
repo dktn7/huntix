@@ -4,7 +4,10 @@ import { THUNDER_SPIRE } from './Palettes.js';
 
 export class ThunderSpireArena extends Base3DArena {
   constructor(scene, zoneConfig = null) {
-    super(scene, { colormapTexture: './assets/textures/props/thunder-spire/colormap.png' });
+    super(scene, {
+      colormapTexture: './assets/textures/props/thunder-spire/colormap.png',
+      zoneConfig: zoneConfig || {},
+    });
     this.zoneConfig = zoneConfig || {};
   }
 

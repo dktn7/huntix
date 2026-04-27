@@ -78,8 +78,6 @@ const ENEMY_STATE_TO_ANIM = {
   RETREAT: 'retreat',
 };
 
-const ENEMY_BILLBOARD_TILT_X = -ORTHO_CAMERA_TILT_X;
-
 function cloneComposition(base = {}, extraGrunts = 0) {
   return {
     grunts: (base.grunts || 0) + extraGrunts,
@@ -131,6 +129,7 @@ export class EnemySpawner {
     this._enemyMeshes = new Map();
     // Animators keyed by enemy type, populated after atlas loads
     this._enemyAnimators = new Map();
+    this._billboardTiltX = -ORTHO_CAMERA_TILT_X;
 
     for (const type of ENEMY_VISUAL_ORDER) {
       const mesh = this._createEnemyMesh(type);
@@ -335,6 +334,17 @@ export class EnemySpawner {
     if (this._bossEncounter?.syncVisuals) this._bossEncounter.syncVisuals();
   }
 
+  /** Applies camera tilt compensation to enemy and boss billboard sprites. */
+  setBillboardTiltX(tiltX) {
+    this._billboardTiltX = -tiltX;
+    for (const mesh of this._enemyMeshes.values()) {
+      mesh.rotation.x = this._billboardTiltX;
+    }
+    if (this._bossEncounter?.setBillboardTiltX) {
+      this._bossEncounter.setBillboardTiltX(tiltX);
+    }
+  }
+
   /** Returns and clears queued spawner events. */
   consumeEvents() {
     const events = this._events.slice();
@@ -488,6 +498,7 @@ export class EnemySpawner {
       kind,
       zoneId: this._zoneConfig?.id || config.zoneId || kind,
     }, this.playerCount);
+    encounter.setBillboardTiltX?.(-this._billboardTiltX);
     this._bossEncounter = encounter;
     this._events.push({
       type: 'bossStart',
@@ -706,7 +717,6 @@ export class EnemySpawner {
   _createEnemyMesh(type) {
     const geometry = new THREE.PlaneGeometry(0.8, 1.1);
     geometry.translate(0, 0.55, 0);
-    geometry.rotateX(ENEMY_BILLBOARD_TILT_X);
 
     const material = new THREE.MeshBasicMaterial({
       color: ENEMY_VISUAL_COLORS[type] || 0xffffff,
@@ -717,6 +727,7 @@ export class EnemySpawner {
     });
 
     const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
+    mesh.rotation.x = this._billboardTiltX;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.renderOrder = 50;
     mesh.count = 0;

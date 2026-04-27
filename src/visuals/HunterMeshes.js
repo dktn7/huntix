@@ -3,7 +3,7 @@ import { SpriteAnimator } from './SpriteAnimator.js';
 import { HUNTERS } from './Palettes.js';
 import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 
-const SPRITE_HEIGHT = 1.5;
+const SPRITE_HEIGHT = 1.1;
 const HUNTER_SPRITES_DIR = 'assets/sprites/hunters';
 const SHARED_SPRITES_DIR = 'assets/sprites';
 const textureLoader = new THREE.TextureLoader();
@@ -67,6 +67,7 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   group.add(shadow);
 
   group.userData.hunterId = hunterId;
+  group.userData.billboardParts = [sprite];
   group.userData.spriteMesh = sprite;
   group.userData.bodyMesh = sprite;
   group.userData.shadowMesh = shadow;
@@ -112,6 +113,7 @@ export function createFallbackHunterMesh(hunterId = 'dabik') {
   group.add(shadow);
 
   group.userData.spriteMesh = body;
+  group.userData.billboardParts = [body, accent];
   group.userData.bodyMesh = body;
   group.userData.shadowMesh = shadow;
   group.userData.animator = null;

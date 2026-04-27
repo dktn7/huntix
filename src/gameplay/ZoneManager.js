@@ -14,6 +14,42 @@ const CITY_PLAY_BOUNDS = { minX: -8.25, maxX: 8.25, minY: -4.25, maxY: 3.25 };
 const RUIN_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 };
 const SHADOW_PLAY_BOUNDS = { minX: -8.25, maxX: 8.25, minY: -4.2, maxY: 3.2 };
 const THUNDER_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.15, maxY: 3.2 };
+const DEFAULT_TILT_DEG = 11;
+const DEG_TO_RAD = Math.PI / 180;
+
+const SHARED_PARALLAX_LAYERS = [
+  { id: 'background', z: -20, speed: 0.05, opacity: 0.9 },
+  { id: 'midground', z: -8, speed: 0.30, opacity: 0.72 },
+  { id: 'foreground', z: -1, speed: 0.80, opacity: 0.46 },
+];
+
+function createParallaxProfile(texture, palette = {}) {
+  return {
+    layers: SHARED_PARALLAX_LAYERS.map((layer) => {
+      const tint = palette[layer.id] ?? 0xffffff;
+      return {
+        ...layer,
+        texture,
+        tint,
+      };
+    }),
+  };
+}
+
+function createCameraProfile(tiltDeg = DEFAULT_TILT_DEG) {
+  return {
+    tiltX: tiltDeg * DEG_TO_RAD,
+  };
+}
+
+function createVisualScaleProfile(multiplier = 1.08, structure = 1.26, props = 1.12) {
+  return {
+    worldModelScale: multiplier,
+    structureScale: structure,
+    propScale: props,
+    spriteVisualHeight: 1.1,
+  };
+}
 
 export const ZONE_CONFIGS = {
   // ---------------------------------------------------------------------------
@@ -28,6 +64,13 @@ export const ZONE_CONFIGS = {
     waves: [],
     boss: null,
     neutral: true,
+    cameraProfile: createCameraProfile(11.8),
+    parallaxProfile: createParallaxProfile('./assets/textures/props/hub/colormap.png', {
+      background: 0x4f6da9,
+      midground: 0x3a537e,
+      foreground: 0x1a253b,
+    }),
+    visualScaleProfile: createVisualScaleProfile(1.09, 1.24, 1.1),
     playBounds: HUB_PLAY_BOUNDS,
     blockers: [
       { x: -7.2, y: -1.45, width: 2.5, height: 1.1 },
@@ -59,6 +102,13 @@ export const ZONE_CONFIGS = {
     portalColor: CITY_BREACH.gateFire,
     portalX: 4.8,
     enemyTint: 0xffefe1,
+    cameraProfile: createCameraProfile(),
+    parallaxProfile: createParallaxProfile('./assets/textures/props/city-breach/colormap.png', {
+      background: 0x050509,
+      midground: 0x28190f,
+      foreground: 0x3b2212,
+    }),
+    visualScaleProfile: createVisualScaleProfile(1.08, 1.28, 1.12),
     playBounds: CITY_PLAY_BOUNDS,
     blockers: [
       { x: -6.95, y: -1.15, width: 1.65, height: 2.1 },
@@ -139,6 +189,13 @@ export const ZONE_CONFIGS = {
     portalColor: RUIN_DEN.fissure,
     portalX: 6.0,
     enemyTint: 0xf4e8d6,
+    cameraProfile: createCameraProfile(),
+    parallaxProfile: createParallaxProfile('./assets/textures/props/ruin-den/colormap.png', {
+      background: 0x080604,
+      midground: 0x2d1f17,
+      foreground: 0x3e2a1d,
+    }),
+    visualScaleProfile: createVisualScaleProfile(1.1, 1.3, 1.14),
     playBounds: RUIN_PLAY_BOUNDS,
     blockers: [
       { x: -6.8, y: 0.45, width: 1.15, height: 2.7 },
@@ -219,6 +276,13 @@ export const ZONE_CONFIGS = {
     portalColor: SHADOW_CORE.violet,
     portalX: 7.2,
     enemyTint: 0xe9deff,
+    cameraProfile: createCameraProfile(),
+    parallaxProfile: createParallaxProfile('./assets/textures/props/shadow-core/colormap.png', {
+      background: 0x010103,
+      midground: 0x170f2e,
+      foreground: 0x241845,
+    }),
+    visualScaleProfile: createVisualScaleProfile(1.09, 1.32, 1.12),
     playBounds: SHADOW_PLAY_BOUNDS,
     blockers: [
       { x: 6.75, y: 0.0, width: 2.1, height: 1.7 },
@@ -273,6 +337,13 @@ export const ZONE_CONFIGS = {
     portalColor: THUNDER_SPIRE.lightning,
     portalX: 8.4,
     enemyTint: 0xe3f6ff,
+    cameraProfile: createCameraProfile(),
+    parallaxProfile: createParallaxProfile('./assets/textures/props/thunder-spire/colormap.png', {
+      background: 0x050812,
+      midground: 0x1a2a4a,
+      foreground: 0x2a3d63,
+    }),
+    visualScaleProfile: createVisualScaleProfile(1.08, 1.27, 1.13),
     playBounds: THUNDER_PLAY_BOUNDS,
     blockers: [
       { x: -6.75, y: -2.75, width: 1.85, height: 1.0 },
@@ -347,6 +418,14 @@ export class ZoneManager {
     return ZONE_CONFIGS[zoneId] || null;
   }
 
+  getCameraProfile(zoneId) {
+    return this.getZoneConfig(zoneId)?.cameraProfile || createCameraProfile();
+  }
+
+  getParallaxProfile(zoneId) {
+    return this.getZoneConfig(zoneId)?.parallaxProfile || { layers: [] };
+  }
+
   /** Returns true if zoneId is the neutral hub zone. */
   isHubZone(zoneId) {
     return zoneId === HUB_ZONE_ID;
@@ -405,6 +484,12 @@ export class ZoneManager {
   getActiveArena() {
     if (!this.activeZoneId || this.activeZoneId === HUB_ZONE_ID) return null;
     return this._arenaMap[this.activeZoneId] || null;
+  }
+
+  getParallaxDebugInfo() {
+    const arena = this.getActiveArena();
+    if (!arena || typeof arena.getParallaxDebugInfo !== 'function') return [];
+    return arena.getParallaxDebugInfo();
   }
 
   getActiveHazards(routeState = null) {

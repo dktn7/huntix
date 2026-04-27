@@ -11,7 +11,7 @@ Complete technical reference for every layer of the project. Read before writing
 | Layer | Choice | Reason |
 |---|---|---|
 | Renderer | Three.js r169 | 2.5D orthographic, sprite-in-3D-world, CDN — no build step |
-| Camera | OrthographicCamera | Fixed, 2.5D readability, no rotation needed |
+| Camera | OrthographicCamera | Fixed oblique 2.5D readability, no perspective |
 | Module system | ES Modules (`type="module"`) | Native browser, no bundler |
 | Bundler | None | Instant load, jam rules, no npm |
 | Package manager | None | CDN importmap only |
@@ -41,7 +41,6 @@ Complete technical reference for every layer of the project. Read before writing
 - `three/addons/controls/OrbitControls.js` — debug only, never shipped
 
 **Addons NOT used:**
-- `GLTFLoader` — no 3D models in this project
 - `AnimationMixer` — animation is frame-based sprite stepping, not GLTF clips
 
 ---
@@ -62,16 +61,16 @@ const cam = new THREE.OrthographicCamera(
   0.1,                // near
   1000                // far
 );
-// Camera sits at Z=100 looking straight down -Z axis
+// Camera sits at Z=100 with fixed oblique tilt
 cam.position.set(0, 0, 100);
 cam.lookAt(0, 0, 0);
 ```
 
 - Fixed orthographic — never switch to perspective
 - `ORTHO_HEIGHT = 10` world units; `ORTHO_WIDTH ≈ 17.78` (16:9 ratio)
-- Camera position is `(0, 0, 100)` — looking at origin, never moved
+- Camera position is `(0, 0, 100)` — orthographic follow still applies in scene manager
 - Zoom for co-op: lerp `ORTHO_HEIGHT` multiplier when players spread (Phase 3)
-- Do not rotate camera
+- Keep fixed oblique tilt in the 10–12° band
 
 ---
 
@@ -215,6 +214,6 @@ See [AUDIO.md](./AUDIO.md) for full SFX and music list.
 - Do not commit large binaries to repo root — use `assets/`
 - Do not upgrade Three.js mid-jam
 - Do not remove the Vibe Jam widget
-- **Do not load GLTF or GLB files** — there are no 3D character models
+- **Do not load GLTF/GLB for characters/enemies/bosses** — GLTF is world geometry only
 - **Do not use `THREE.AnimationMixer`** — animation is frame-based sprite stepping
 - **Do not create `assets/models/`** — sprites live in `assets/sprites/`

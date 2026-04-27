@@ -4,7 +4,10 @@ import { SHADOW_CORE } from './Palettes.js';
 
 export class ShadowCoreArena extends Base3DArena {
   constructor(scene, zoneConfig = null) {
-    super(scene, { colormapTexture: './assets/textures/props/shadow-core/colormap.png' });
+    super(scene, {
+      colormapTexture: './assets/textures/props/shadow-core/colormap.png',
+      zoneConfig: zoneConfig || {},
+    });
     this.zoneConfig = zoneConfig || {};
   }
 

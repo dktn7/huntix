@@ -38,7 +38,7 @@ Characters and enemies are **never 3D meshes**. There are no GLTF models for cha
 
 ## Billboard Rule
 
-Every character and enemy sprite must always face the camera. Since the camera is fixed orthographic looking straight down the -Z axis, sprites are created as `PlaneGeometry` in the XY plane and never rotated. They automatically face the camera — no billboard shader or `lookAt` call needed.
+Every character and enemy sprite must always face the camera. The camera is fixed orthographic with a small oblique tilt (10–12°), so billboard meshes use `PlaneGeometry` in XY plus a counter-tilt on the sprite body (`sprite.rotation.x = -cameraTiltX`) to remain camera-facing. No `lookAt` billboard shader is needed.
 
 ```js
 // Correct — sprite lives in XY plane, faces the fixed -Z camera automatically
@@ -203,12 +203,14 @@ shadow.position.set(x, floorY + 0.01, z + 0.001);
 Each zone has 2–3 background layers at different Z depths to create the 2.5D depth illusion.
 
 ```js
-// Layer Z positions — behind the play field (Z=0 is play field)
-const BG_FAR_Z   = -5;   // distant background (buildings, skyline)
-const BG_MID_Z   = -2;   // mid layer (rubble, environmental detail)
-const BG_NEAR_Z  =  0;   // play field floor
-// Characters render at Z derived from worldY (Y-sort)
-// Foreground props: positive Z (in front of characters)
+// Layer Z positions and camera-follow speeds
+const BG_Z   = -20; // background
+const MID_Z  =  -8; // midground
+const FG_Z   =  -1; // foreground
+
+const BG_SPEED  = 0.05;
+const MID_SPEED = 0.30;
+const FG_SPEED  = 0.80;
 ```
 
 ---
@@ -244,6 +246,7 @@ scene.add(gruntPool);
 
 ```
 VISUAL-DESIGN.md      — art direction, colour system, Mixboard prompts
+ART-DIRECTION-OBLIQUE.md — oblique camera + scale guidance for sprites/world
      ↓
 VISUAL-REFERENCE.md   — design lock (read before asset generation)
      ↓

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-27T19:47:32.464Z",
+  "generated_at": "2026-04-27T23:39:30.171Z",
   "atlases": {
     "vrael": true,
     "zarth": true,
@@ -34,7 +34,7 @@
       "atlas_webp": true
     },
     "thyxis": {
-      "frame_count": 55,
+      "frame_count": 54,
       "states": {
         "idle": 8,
         "walk": 11,
@@ -42,8 +42,7 @@
         "telegraph": 7,
         "attack": 15,
         "hurt": 2,
-        "dead": 2,
-        "phase3": 1
+        "dead": 2
       },
       "placeholder": false,
       "atlas_json": true,

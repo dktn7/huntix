@@ -4,7 +4,10 @@ import { RUIN_DEN } from './Palettes.js';
 
 export class RuinDenArena extends Base3DArena {
   constructor(scene, zoneConfig = null) {
-    super(scene, { colormapTexture: './assets/textures/props/ruin-den/colormap.png' });
+    super(scene, {
+      colormapTexture: './assets/textures/props/ruin-den/colormap.png',
+      zoneConfig: zoneConfig || {},
+    });
     this.zoneConfig = zoneConfig || {};
   }
 

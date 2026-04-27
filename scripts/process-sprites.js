@@ -5,9 +5,11 @@ const { spawnSync } = require('child_process');
 const sharp = require('sharp');
 const { packAsync } = require('free-tex-packer-core');
 
+const { ANIMATION_CONFIG } = require('../src/gameplay/AnimationDefinitions.js');
+
 const FLOW_OUTPUT = path.join('assets', 'flow-output');
 const SPRITES_DIR = path.join('assets', 'sprites', 'hunters');
-const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol'];
+const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol', 'kibad'];
 
 const PACKER_MODE = String(process.env.SPRITE_PACKER || 'free').toLowerCase();
 const STRICT_CONTRACT = String(process.env.STRICT_SPRITE_CONTRACT || '1') !== '0';

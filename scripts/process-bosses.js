@@ -52,7 +52,13 @@ const BOSS_CONFIGS = [
   {
     id: 'kibad',
     targetSize: { width: 320, height: 320 },
-    sources: [],
+    sources: [
+      { state: 'idle', kind: 'sequence', dir: 'kibad/idle' },
+      { state: 'walk', kind: 'sequence', dir: 'kibad/walk' },
+      { state: 'attack', kind: 'sequence', dir: 'kibad/attack' },
+      { state: 'hurt', kind: 'sequence', dir: 'kibad/hurt' },
+      { state: 'dead', kind: 'sequence', dir: 'kibad/dead' },
+    ],
     placeholderColor: '#f6f6ff',
   },
 ];

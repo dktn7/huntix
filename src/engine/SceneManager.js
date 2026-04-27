@@ -1,7 +1,13 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RunState } from '../core/RunState.js';
-import { ORTHO_HEIGHT, ORTHO_WIDTH } from './Renderer.js';
+import {
+  DEFAULT_ORTHO_CAMERA_TILT_X,
+  ORTHO_HEIGHT,
+  ORTHO_WIDTH,
+  getCameraTiltX,
+  setCameraTiltX,
+} from './Renderer.js';
 import { Actions } from './InputManager.js';
 import { CameraShake } from './CameraShake.js';
 import { HunterController } from '../gameplay/HunterController.js';
@@ -42,6 +48,7 @@ const SHOP_ANCHOR_Y = -1.95;
 const SHOP_INTERACT_RADIUS = 1.45;
 const HUB_PORTAL_INTERACT_RADIUS = 1.35;
 const HAZARD_DEFAULT_KNOCKBACK = { x: 0, y: 0.12 };
+const CAMERA_TILT_LERP = 0.12;
 
 // Positions of the two exit portals (world X)
 const EXIT_PORTAL_HQ_X   = 5.95;
@@ -77,6 +84,11 @@ export class SceneManager {
     this._zoneHazardTime = 0;
     this._zoneHazardTickAt = new Map();
     this._lastHubHintAt = 0;
+    this._cameraTiltX = getCameraTiltX(this.camera);
+    this._cameraTiltTargetX = this._cameraTiltX;
+    this._hubParallaxLayers = [];
+    this._hubParallaxTextureCache = new Map();
+    this._hubParallaxLoader = new THREE.TextureLoader();
     this._hubLoader = new GLTFLoader();
     this._hubLoader.manager.setURLModifier((url) =>
       resolveModelColormapUrl(url, './assets/textures/props/hub/colormap.png')
@@ -133,6 +145,8 @@ export class SceneManager {
     RunState.on('levelupQueued', this._handleLevelupQueuedBound);
     this._playerAuras = [];
     this._hitFlares = new HitFlarePool(this.scene);
+    this.hunters.setBillboardTiltX?.(this._cameraTiltX);
+    this.spawner.setBillboardTiltX?.(this._cameraTiltX);
 
     // Ensure everything is hidden initially
     this._setHubVisible(false);
@@ -488,6 +502,9 @@ export class SceneManager {
       bossHp: RunState.activeBossHp,
       bossHpMax: RunState.activeBossHpMax,
       bossPhase: RunState.activeBossPhase,
+      cameraTiltX: this._cameraTiltX,
+      cameraTiltTargetX: this._cameraTiltTargetX,
+      parallax: this._collectParallaxDebug(),
     };
   }
 
@@ -516,12 +533,6 @@ export class SceneManager {
 
     const add = (mesh) => {
       mesh.userData.hubPrimitive = true;
-      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      for (const mat of mats) {
-        if (!mat || mat.isMeshBasicMaterial) continue;
-        mat.transparent = true;
-        mat.opacity = Math.min(mat.opacity ?? 1, 0.86);
-      }
       this.scene.add(mesh);
       this._hubBackdrop.push(mesh);
       return mesh;
@@ -539,6 +550,7 @@ export class SceneManager {
       fgLayerColor: 0x111a2a,
       laneY: -2.2,
     };
+    this._setupHubParallaxLayers(add, hubProfile.bounds);
     const shellMeshes = createRoomShellMeshes(hubProfile);
     for (const mesh of shellMeshes) add(mesh);
 
@@ -632,6 +644,66 @@ export class SceneManager {
     makeHomeSpot(-1.9, -0.75, 0xe74c3c, false);
 
     this._queueHubWorldKit();
+  }
+
+  _setupHubParallaxLayers(add, bounds) {
+    this._hubParallaxLayers.length = 0;
+    const profile = ZONE_CONFIGS.hub?.parallaxProfile;
+    if (!profile?.layers?.length) return;
+
+    const centerX = (bounds.minX + bounds.maxX) * 0.5;
+    const centerY = (bounds.minY + bounds.maxY) * 0.5;
+    const width = (bounds.maxX - bounds.minX) * 1.45;
+    const height = (bounds.maxY - bounds.minY) * 1.45;
+
+    for (const layer of profile.layers) {
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(width, height),
+        new THREE.MeshBasicMaterial({
+          color: layer.tint ?? 0xffffff,
+          transparent: true,
+          opacity: layer.opacity ?? 0.7,
+          depthWrite: false,
+        })
+      );
+      mesh.position.set(centerX, centerY, layer.z ?? -8);
+      mesh.renderOrder = mesh.position.z <= -8 ? -10 : mesh.position.z <= -2 ? -8 : -5;
+      add(mesh);
+      this._hubParallaxLayers.push({
+        id: layer.id || 'layer',
+        mesh,
+        speed: Number.isFinite(layer.speed) ? layer.speed : 0,
+        baseX: centerX,
+      });
+      if (layer.texture) this._loadHubParallaxTexture(layer.texture, mesh.material);
+    }
+  }
+
+  _loadHubParallaxTexture(path, material) {
+    if (!path || !material) return;
+    if (!this._hubParallaxTextureCache.has(path)) {
+      const pending = new Promise((resolve, reject) => {
+        this._hubParallaxLoader.load(path, resolve, undefined, reject);
+      }).then((texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        return texture;
+      });
+      this._hubParallaxTextureCache.set(path, pending);
+    }
+
+    this._hubParallaxTextureCache.get(path)
+      .then((texture) => {
+        material.map = texture.clone();
+        material.map.needsUpdate = true;
+        material.color.setHex(0xffffff);
+        material.needsUpdate = true;
+      })
+      .catch(() => {
+        // Keep tint fallback if loading fails.
+      });
   }
 
   _queueHubWorldKit() {
@@ -754,6 +826,8 @@ export class SceneManager {
       if (result?.ok && result.action === 'purchase') {
         this.hunters.applyRunStateModifiers(RunState.players);
       }
+      this._updateCameraTilt(dt);
+      this._updateHubParallax(this._getPlayerFocusX());
       this.hud.update(this.camera);
       return;
     }
@@ -766,6 +840,8 @@ export class SceneManager {
     this.camera.position.y += (-1.9 - this.camera.position.y) * 0.09;
 
     this.hunters.update(dt, input);
+    this._updateCameraTilt(dt);
+    this._updateHubParallax(this._getPlayerFocusX());
     this.sparks.update(dt);
     this.cameraShake.update(dt);
     this._animateHubPortals(dt);
@@ -809,6 +885,7 @@ export class SceneManager {
       this.hud.update(this.camera);
       this._syncPlayerAuras(dt);
       this._updateDebugHitboxes();
+      this._updateCameraTilt(dt);
       // Still animate exit portals during hitstop
       if (this._exitPortalOpen) this._tickExitPortals(dt);
       return;
@@ -845,6 +922,7 @@ export class SceneManager {
     this.zoneManager.update(scaledDt, this._getPlayerFocusX(), currentRouteState);
     this._applyZoneHazards(scaledDt, currentRouteState);
     this._updateSharedCamera();
+    this._updateCameraTilt(scaledDt);
     this._checkForWipe();
     this.hud.setPlayerCombos(this.combat.getComboCounts());
     this.hud.update(this.camera);
@@ -1297,6 +1375,45 @@ export class SceneManager {
     return players.reduce((sum, p) => sum + p.position.x, 0) / players.length;
   }
 
+  _resolveCameraTiltTarget() {
+    const zoneId = this.mode === SceneModes.ZONE
+      ? (this._activeZoneId || RunState.currentZone || 'city-breach')
+      : 'hub';
+    const profile = this.zoneManager.getCameraProfile?.(zoneId);
+    if (Number.isFinite(profile?.tiltX)) return profile.tiltX;
+    return DEFAULT_ORTHO_CAMERA_TILT_X;
+  }
+
+  _updateCameraTilt(dt) {
+    this._cameraTiltTargetX = this._resolveCameraTiltTarget();
+    this._cameraTiltX += (this._cameraTiltTargetX - this._cameraTiltX) * CAMERA_TILT_LERP;
+    setCameraTiltX(this.camera, this._cameraTiltX);
+    this.hunters.setBillboardTiltX?.(this._cameraTiltX);
+    this.spawner.setBillboardTiltX?.(this._cameraTiltX);
+  }
+
+  _updateHubParallax(focusX) {
+    for (const layer of this._hubParallaxLayers) {
+      const offsetX = focusX * layer.speed;
+      layer.mesh.position.x = layer.baseX + offsetX;
+      if (layer.mesh.material?.map) {
+        layer.mesh.material.map.offset.x = -offsetX * 0.01;
+      }
+    }
+  }
+
+  _collectParallaxDebug() {
+    if (this.mode === SceneModes.HUB) {
+      return this._hubParallaxLayers.map((layer) => ({
+        id: layer.id,
+        speed: layer.speed,
+        x: layer.mesh.position.x,
+        baseX: layer.baseX,
+      }));
+    }
+    return this.zoneManager.getParallaxDebugInfo?.() || [];
+  }
+
   _resetCameraFrustum() {
     const halfHeight = ORTHO_HEIGHT / 2;
     const halfWidth  = ORTHO_WIDTH  / 2;
@@ -1305,6 +1422,7 @@ export class SceneManager {
     this.camera.left   = -halfWidth;
     this.camera.right  =  halfWidth;
     this.camera.position.set(0, 0, 100);
+    setCameraTiltX(this.camera, this._cameraTiltX);
     this.camera.updateProjectionMatrix();
   }
 
@@ -1504,6 +1622,7 @@ export class SceneManager {
   _handlePlayerJoined({ player }) {
     const entry = this.hunters.addRunPlayer(player);
     if (!entry) return;
+    entry.player.setBillboardTiltX?.(this._cameraTiltX);
     this._playerAuras.push(this._createAuraForEntry(entry));
     this.spawner.setPlayerCount(this.hunters.activeHumanPlayerCount);
     if (this.mode === SceneModes.HUB) {

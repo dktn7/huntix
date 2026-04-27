@@ -98,6 +98,7 @@ export class BossEncounter {
     this._lastAnimationKey = '';
     this._baseColor = new THREE.Color(config.color || 0xc0392b);
     this._tintColor = new THREE.Color();
+    this._billboardTiltX = -ORTHO_CAMERA_TILT_X;
 
     const width = config.width || 3.0;
     const height = config.height || 3.2;
@@ -112,7 +113,7 @@ export class BossEncounter {
       depthWrite: false,
     });
     this.mesh = new THREE.Mesh(geo, mat);
-    this.mesh.rotation.x = -ORTHO_CAMERA_TILT_X;
+    this.mesh.rotation.x = this._billboardTiltX;
     this.mesh.position.set(this.position.x, this.position.y, 0.3);
     scene.add(this.mesh);
     this._shadow = new THREE.Mesh(
@@ -129,6 +130,12 @@ export class BossEncounter {
 
     this._stateTimer = this._nextIdleDelay();
     this._loadBossAtlas();
+  }
+
+  /** Keeps the boss sprite billboard counter-rotated against camera tilt. */
+  setBillboardTiltX(tiltX) {
+    this._billboardTiltX = -tiltX;
+    if (this.mesh?.rotation) this.mesh.rotation.x = this._billboardTiltX;
   }
 
   setPlayerCount(playerCount) {

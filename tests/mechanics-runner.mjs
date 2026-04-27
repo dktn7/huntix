@@ -99,6 +99,43 @@ async function resolvePendingCards(page) {
   }
 }
 
+function mapParallax(layers = []) {
+  const map = {};
+  for (const layer of layers) {
+    if (!layer?.id) continue;
+    map[layer.id] = layer;
+  }
+  return map;
+}
+
+async function assertTiltAndParallax(page, label) {
+  const initial = await page.evaluate(() => window.__TEST__.state().debug);
+  assert(
+    initial.cameraTiltX >= 0.174 && initial.cameraTiltX <= 0.209,
+    `${label}: camera tilt is outside the 10-12 degree oblique range`,
+    { label, cameraTiltX: initial.cameraTiltX, cameraTiltTargetX: initial.cameraTiltTargetX }
+  );
+
+  const before = initial.parallax || [];
+  await page.evaluate(() => window.__TEST__.commands.setPlayerPosition(0, -6.4, -2.2));
+  await page.waitForTimeout(220);
+  await page.evaluate(() => window.__TEST__.commands.setPlayerPosition(0, 6.4, -2.2));
+  await page.waitForTimeout(420);
+  const after = await page.evaluate(() => window.__TEST__.state().debug.parallax || []);
+
+  const beforeMap = mapParallax(before);
+  const afterMap = mapParallax(after);
+  const backgroundDelta = Math.abs((afterMap.background?.x || 0) - (beforeMap.background?.x || 0));
+  const midgroundDelta = Math.abs((afterMap.midground?.x || 0) - (beforeMap.midground?.x || 0));
+  const foregroundDelta = Math.abs((afterMap.foreground?.x || 0) - (beforeMap.foreground?.x || 0));
+
+  assert(
+    foregroundDelta > midgroundDelta && midgroundDelta > backgroundDelta,
+    `${label}: parallax layer speeds are not ordered foreground > midground > background`,
+    { label, before, after, backgroundDelta, midgroundDelta, foregroundDelta }
+  );
+}
+
 async function enterGameplayFromTitle(page) {
   await page.waitForFunction(() => !!window.__TEST__, null, { timeout: 10000 });
   await page.waitForTimeout(250);
@@ -337,6 +374,7 @@ try {
   await configureFourHumanParty(page);
 
   let state = await page.evaluate(() => window.__TEST__.state());
+  await assertTiltAndParallax(page, 'hub');
   assert(state.run.isCoOp, 'RunState did not enter co-op after joining slots', state.run);
   assert(
     JSON.stringify(state.players.map(player => player.hunterId)) === JSON.stringify(['dabik', 'benzu', 'sereisa', 'vesol']),
@@ -380,6 +418,7 @@ try {
   await hold(page, 'KeyF', 120);
   await page.waitForFunction(() => window.__TEST__.state().run.currentZone === 'city-breach');
   state = await page.evaluate(() => window.__TEST__.state());
+  await assertTiltAndParallax(page, 'city-breach');
   assert(state.run.currentZone === 'city-breach', 'P1 interact did not open the nearest unlocked portal', state.run);
   const hubPortalVisibilityInZone = await page.evaluate(() =>
     window.__huntix.scene._hubPortals.map(portal => ({
