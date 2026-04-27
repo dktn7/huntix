@@ -1,9 +1,47 @@
-const CHARS = ['hunter', 'dabik', 'benzu', 'sereisa', 'vesol'];
+const ENTITY_IDS = [
+  'hunter',
+  'dabik',
+  'benzu',
+  'sereisa',
+  'vesol',
+  'grunt',
+  'ranged',
+  'bruiser',
+  'fire-bruiser',
+  'vrael',
+  'zarth',
+  'kibad',
+  'thyxis',
+  'stampede',
+  'tomb-crawler'
+];
 const DIRECTIONS = ['left', 'right', 'front', 'back'];
-const STATES = ['idle', 'run', 'attacklight', 'attackheavy', 'dodge', 'spellminor', 'spelladvanced', 'hurt', 'dead', 'ultimate'];
+const STATES = [
+  'idle',
+  'run',
+  'walk',
+  'telegraph',
+  'attack',
+  'recover',
+  'hurt',
+  'dead',
+  'strafe',
+  'retreat',
+  'shove',
+  'attacklight',
+  'attackheavy',
+  'dodge',
+  'spellminor',
+  'spelladvanced',
+  'ultimate',
+  'phase2',
+  'phase3'
+];
 const EXPORT_SIZES = {
   full: null,
   game: [128, 192],
+  enemy: [192, 192],
+  boss: [320, 320],
   ui: [64, 96]
 };
 
@@ -132,7 +170,7 @@ function addFiles(fileList) {
   files.forEach(file => {
     const lower = file.name.toLowerCase();
     const mode = /(sheet|direction|4-panel|4panel|strip)/.test(lower) ? 'sheet' : state.defaultMode;
-    const character = CHARS.find(name => name !== 'hunter' && lower.includes(name)) || 'hunter';
+    const character = ENTITY_IDS.find(name => name !== 'hunter' && lower.includes(name)) || 'hunter';
     state.files.push({
       id: crypto.randomUUID(),
       file,
@@ -230,9 +268,9 @@ function renderQueue() {
 
       <div class="queue-fields">
         <label class="field small-field">
-          <span>Character</span>
+          <span>Entity</span>
           <select data-character>
-            ${CHARS.map(name => `<option value="${name}" ${file.character === name ? 'selected' : ''}>${name}</option>`).join('')}
+            ${ENTITY_IDS.map(name => `<option value="${name}" ${file.character === name ? 'selected' : ''}>${name}</option>`).join('')}
           </select>
         </label>
 

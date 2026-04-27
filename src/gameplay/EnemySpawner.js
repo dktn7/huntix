@@ -4,6 +4,11 @@ import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { BossEncounter } from './BossEncounter.js';
 import { ZONE_CONFIGS } from './ZoneManager.js';
 import { pointInsideVisibleArena } from './ArenaBounds.js';
+import {
+  applyAtlasFrame,
+  findFrameKeyForStates,
+  loadAtlasFromCandidates,
+} from '../visuals/SpriteAtlasUtils.js';
 
 const MAX_ENEMIES = 20;
 const ENEMY_CAPACITY = 20;
@@ -25,6 +30,27 @@ const ATTACK_TOKENS_BY_PLAYER_COUNT = {
   2: 3,
   3: 4,
   4: 5,
+};
+
+const ENEMY_VISUAL_ORDER = [
+  EnemyTypes.GRUNT,
+  EnemyTypes.RANGED,
+  EnemyTypes.BRUISER,
+  EnemyTypes.FIRE_BRUISER,
+];
+
+const ENEMY_VISUAL_COLORS = {
+  [EnemyTypes.GRUNT]: 0x6d6d6d,
+  [EnemyTypes.RANGED]: 0x3f8cff,
+  [EnemyTypes.BRUISER]: 0x4a4a52,
+  [EnemyTypes.FIRE_BRUISER]: 0xff6a00,
+};
+
+const ENEMY_ATLAS_BY_TYPE = {
+  [EnemyTypes.GRUNT]: 'grunt',
+  [EnemyTypes.RANGED]: 'ranged',
+  [EnemyTypes.BRUISER]: 'bruiser',
+  [EnemyTypes.FIRE_BRUISER]: 'bruiser-zone-variant',
 };
 
 function cloneComposition(base = {}, extraGrunts = 0) {
@@ -76,12 +102,13 @@ export class EnemySpawner {
     this._scale = new THREE.Vector3();
     this._color = new THREE.Color();
 
-    const geo = new THREE.BoxGeometry(0.8, 1.1, 0.35);
-    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    this._enemyMesh = new THREE.InstancedMesh(geo, mat, ENEMY_CAPACITY);
-    this._enemyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    this._enemyMesh.count = 0;
-    scene.add(this._enemyMesh);
+    this._enemyMeshes = new Map();
+    for (const type of ENEMY_VISUAL_ORDER) {
+      const mesh = this._createEnemyMesh(type);
+      this._enemyMeshes.set(type, mesh);
+      scene.add(mesh);
+    }
+    this._loadEnemyAtlases();
 
     this._statusLights = [];
     for (let i = 0; i < ENEMY_CAPACITY; i += 1) {
@@ -589,25 +616,44 @@ export class EnemySpawner {
   }
 
   _syncInstances() {
-    this._enemyMesh.count = Math.min(this._enemies.length, ENEMY_CAPACITY);
-
-    for (let i = 0; i < ENEMY_CAPACITY; i += 1) {
-      const enemy = this._enemies[i];
-      if (!enemy || i >= this._enemyMesh.count) {
-        this._statusLights[i].visible = false;
-        continue;
-      }
-
-      this._writeScaleFor(enemy);
-      this._position.set(enemy.position.x, enemy.position.y, -enemy.position.y * 0.01);
-      this._matrix.compose(this._position, this._quaternion, this._scale);
-      this._enemyMesh.setMatrixAt(i, this._matrix);
-      this._enemyMesh.setColorAt(i, this._color.setHex(this._colorFor(enemy)));
-      this._syncStatusLight(i, enemy);
+    for (const mesh of this._enemyMeshes.values()) {
+      mesh.count = 0;
     }
 
-    this._enemyMesh.instanceMatrix.needsUpdate = true;
-    if (this._enemyMesh.instanceColor) this._enemyMesh.instanceColor.needsUpdate = true;
+    let lightIndex = 0;
+    const visibleCount = Math.min(this._enemies.length, ENEMY_CAPACITY);
+
+    for (let i = 0; i < visibleCount; i += 1) {
+      const enemy = this._enemies[i];
+      if (!enemy) continue;
+
+      const meshType = this._meshTypeFor(enemy.type);
+      const mesh = this._enemyMeshes.get(meshType);
+      if (!mesh) continue;
+      if (mesh.count >= ENEMY_CAPACITY) continue;
+
+      this._writeScaleFor(enemy);
+      this._scale.x *= enemy.facing >= 0 ? 1 : -1;
+      this._position.set(enemy.position.x, enemy.position.y, -enemy.position.y * 0.01);
+      this._matrix.compose(this._position, this._quaternion, this._scale);
+      mesh.setMatrixAt(mesh.count, this._matrix);
+      mesh.setColorAt(mesh.count, this._color.setHex(this._colorFor(enemy)));
+      mesh.count += 1;
+
+      if (lightIndex < ENEMY_CAPACITY) {
+        this._syncStatusLight(lightIndex, enemy);
+        lightIndex += 1;
+      }
+    }
+
+    for (let i = lightIndex; i < ENEMY_CAPACITY; i += 1) {
+      this._statusLights[i].visible = false;
+    }
+
+    for (const mesh of this._enemyMeshes.values()) {
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    }
   }
 
   _syncProjectiles() {
@@ -621,6 +667,69 @@ export class EnemySpawner {
       mesh.visible = true;
       mesh.position.set(projectile.x, projectile.y, -projectile.y * 0.01 + 0.25);
     }
+  }
+
+  _createEnemyMesh(type) {
+    const geometry = new THREE.PlaneGeometry(0.8, 1.1);
+    geometry.translate(0, 0.55, 0);
+
+    const material = new THREE.MeshBasicMaterial({
+      color: ENEMY_VISUAL_COLORS[type] || 0xffffff,
+      transparent: true,
+      alphaTest: 0.1,
+      side: THREE.FrontSide,
+      depthWrite: false,
+    });
+
+    const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    mesh.count = 0;
+    return mesh;
+  }
+
+  _meshTypeFor(type) {
+    return this._enemyMeshes.has(type) ? type : EnemyTypes.GRUNT;
+  }
+
+  _loadEnemyAtlases() {
+    for (const type of ENEMY_VISUAL_ORDER) {
+      this._loadEnemyAtlasForType(type);
+    }
+  }
+
+  async _loadEnemyAtlasForType(type) {
+    const atlasId = ENEMY_ATLAS_BY_TYPE[type];
+    if (!atlasId) return;
+
+    const atlas = await loadAtlasFromCandidates(this._buildEnemyAtlasCandidates(atlasId));
+    if (!atlas) return;
+
+    const frameKey = findFrameKeyForStates(atlas.atlasData, ['idle', 'walk', 'run', 'attack']);
+    if (!frameKey) return;
+
+    if (!applyAtlasFrame(atlas.texture, atlas.atlasData, frameKey)) return;
+
+    const mesh = this._enemyMeshes.get(type);
+    if (!mesh?.material) return;
+
+    mesh.material.map = atlas.texture;
+    mesh.material.color.setHex(0xffffff);
+    mesh.material.needsUpdate = true;
+  }
+
+  _buildEnemyAtlasCandidates(atlasId) {
+    return {
+      jsonCandidates: [
+        `assets/sprites/enemies/packed/${atlasId}/${atlasId}-atlas.json`,
+        `assets/sprites/enemies/${atlasId}-atlas.json`,
+      ],
+      textureCandidates: [
+        `assets/sprites/enemies/packed/${atlasId}/${atlasId}-atlas.webp`,
+        `assets/sprites/enemies/packed/${atlasId}/${atlasId}-atlas.png`,
+        `assets/sprites/enemies/${atlasId}-atlas.webp`,
+        `assets/sprites/enemies/${atlasId}-atlas.png`,
+      ],
+    };
   }
 
   _writeScaleFor(enemy) {
@@ -638,6 +747,15 @@ export class EnemySpawner {
   }
 
   _colorFor(enemy) {
+    const meshType = this._meshTypeFor(enemy.type);
+    const hasSpriteMap = !!this._enemyMeshes.get(meshType)?.material?.map;
+    if (hasSpriteMap) {
+      if (enemy.state === 'DEAD') return 0x777777;
+      if (enemy.state === 'HURT') return 0xffb4b4;
+      if (enemy.isTelegraphing) return 0xffd6d6;
+      return 0xffffff;
+    }
+
     if (enemy.state === 'DEAD') return 0x222222;
     if (enemy.state === 'HURT') return 0xff5555;
     if (enemy.isTelegraphing) return 0xff3333;

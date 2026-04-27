@@ -1,6 +1,12 @@
 import * as THREE from 'three';
 import { Hitbox, HitboxOwners, HitboxShapes } from './Hitbox.js';
 import { clamp, clampCenterToVisibleArena, centerMaxX, centerMinX } from './ArenaBounds.js';
+import { SpriteAnimator } from '../visuals/SpriteAnimator.js';
+import {
+  applyAtlasFrame,
+  findFrameKeyForStates,
+  loadAtlasFromCandidates,
+} from '../visuals/SpriteAtlasUtils.js';
 
 const BOSS_HP_MULTIPLIERS = {
   1: 1,
@@ -87,6 +93,10 @@ export class BossEncounter {
     this._phaseAnnounced = 1;
     this._bossDefeatedEmitted = false;
     this._scriptedMoments = new Set();
+    this._animator = null;
+    this._lastAnimationKey = '';
+    this._baseColor = new THREE.Color(config.color || 0xc0392b);
+    this._tintColor = new THREE.Color();
 
     const width = config.width || 3.0;
     const height = config.height || 3.2;
@@ -105,6 +115,7 @@ export class BossEncounter {
     scene.add(this.mesh);
 
     this._stateTimer = this._nextIdleDelay();
+    this._loadBossAtlas();
   }
 
   setPlayerCount(playerCount) {
@@ -120,6 +131,7 @@ export class BossEncounter {
 
     if (this._freezeTimer > 0) {
       this._freezeTimer = Math.max(0, this._freezeTimer - dt);
+      this._updateSpriteAnimation(dt);
       this._syncMesh();
       return this.consumeEvents();
     }
@@ -139,6 +151,7 @@ export class BossEncounter {
         this._events.push({ type: 'bossDefeated', boss: this, zoneId: this.zoneId, kind: this.kind });
         this._events.push({ type: 'kill', enemy: this, x: this.position.x, y: this.position.y, boss: true });
       }
+      this._updateSpriteAnimation(dt);
       this._syncMesh();
       return this.consumeEvents();
     }
@@ -184,6 +197,7 @@ export class BossEncounter {
       }
     }
 
+    this._updateSpriteAnimation(dt);
     this._syncMesh();
     return this.consumeEvents();
   }
@@ -738,18 +752,27 @@ export class BossEncounter {
     this.mesh.position.set(this.position.x, this.position.y, -this.position.y * 0.01 + 0.3);
     const phaseScale = this.phase === 1 ? 1 : this.phase === 2 ? 1.08 : 1.16;
     const flash = this._phaseFlash > 0 ? 1.08 : 1;
+    const facing = this.facing >= 0 ? 1 : -1;
+    const deadScale = this.hp <= 0 ? Math.max(0.12, this._removeTimer / 0.7) : 1;
     this.mesh.scale.set(
-      phaseScale * flash * (this._baseScale.x / Math.max(1, this._baseScale.x)),
-      phaseScale * flash * (this._baseScale.y / Math.max(1, this._baseScale.y)),
+      phaseScale * flash * facing,
+      phaseScale * flash * deadScale,
       1
     );
-    if (this.mesh.material?.color) {
-      const base = new THREE.Color(this.config.color || 0xc0392b);
-      if (this.phase === 2) base.lerp(new THREE.Color(0xffffff), 0.12);
-      if (this.phase >= 3) base.lerp(new THREE.Color(0xffffff), 0.24);
-      this.mesh.material.color.copy(base);
-      this.mesh.material.opacity = this._phaseFlash > 0 ? 1 : 0.96;
+
+    if (!this.mesh.material?.color) return;
+
+    if (this.mesh.material.map) {
+      this.mesh.material.color.setHex(0xffffff);
+      this.mesh.material.opacity = this._phaseFlash > 0 ? 1 : 0.98;
+      return;
     }
+
+    this._tintColor.copy(this._baseColor);
+    if (this.phase === 2) this._tintColor.lerp(WHITE_COLOR, 0.12);
+    if (this.phase >= 3) this._tintColor.lerp(WHITE_COLOR, 0.24);
+    this.mesh.material.color.copy(this._tintColor);
+    this.mesh.material.opacity = this._phaseFlash > 0 ? 1 : 0.96;
   }
 
   syncVisuals() {
@@ -759,4 +782,67 @@ export class BossEncounter {
   _clampToArena() {
     clampCenterToVisibleArena(this.position, this._baseScale.x, this._baseScale.y);
   }
+
+  async _loadBossAtlas() {
+    const atlas = await loadAtlasFromCandidates(this._buildBossAtlasCandidates());
+    if (!atlas || !this.mesh?.material) return;
+
+    const frameKey = findFrameKeyForStates(atlas.atlasData, ['idle', 'walk', 'run', 'telegraph', 'attack']);
+    if (!frameKey) return;
+
+    if (!applyAtlasFrame(atlas.texture, atlas.atlasData, frameKey)) return;
+
+    this.mesh.material.map = atlas.texture;
+    this.mesh.material.color.setHex(0xffffff);
+    this.mesh.material.needsUpdate = true;
+    this._animator = new SpriteAnimator(this.mesh.material, atlas.atlasData);
+    if (this._animator.hasState('idle')) this._animator.play('idle', true);
+  }
+
+  _buildBossAtlasCandidates() {
+    const id = String(this.id || this.config?.id || this.name || 'boss').toLowerCase();
+    return {
+      jsonCandidates: [
+        `assets/sprites/bosses/${id}-atlas.json`,
+        `assets/sprites/bosses/packed/${id}/${id}-atlas.json`,
+      ],
+      textureCandidates: [
+        `assets/sprites/bosses/${id}-atlas.webp`,
+        `assets/sprites/bosses/${id}-atlas.png`,
+        `assets/sprites/bosses/packed/${id}/${id}-atlas.webp`,
+        `assets/sprites/bosses/packed/${id}/${id}-atlas.png`,
+      ],
+    };
+  }
+
+  _updateSpriteAnimation(dt) {
+    if (!this._animator) return;
+
+    const { candidates, loop } = this._resolveAnimationCandidates();
+    const resolved = candidates.find((name) => this._animator.hasState(name)) || 'idle';
+    const key = `${resolved}:${loop}`;
+    if (key !== this._lastAnimationKey) {
+      this._animator.play(resolved, loop);
+      this._lastAnimationKey = key;
+    }
+    this._animator.update(dt);
+  }
+
+  _resolveAnimationCandidates() {
+    if (this.hp <= 0 || this.state === 'DEAD') {
+      return { candidates: ['dead', 'hurt', 'idle'], loop: false };
+    }
+
+    if (this.state === 'TELEGRAPH') {
+      return { candidates: ['telegraph', 'charge_windup', 'attack', 'run'], loop: false };
+    }
+
+    if (this.state === 'RECOVER') {
+      return { candidates: ['recover', 'walk', 'run', 'idle'], loop: true };
+    }
+
+    return { candidates: ['idle', 'walk', 'run'], loop: true };
+  }
 }
+
+const WHITE_COLOR = new THREE.Color(0xffffff);

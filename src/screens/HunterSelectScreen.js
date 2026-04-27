@@ -29,7 +29,7 @@ const HUNTER_META = {
     stats: { hp: 160, mana: 70, speed: 4, damage: 10, defense: 9 },
     spells: [
       { name: 'Shield Bash', desc: 'Short range stun, interrupts attacks.' },
-      { name: 'Seismic Slam', desc: 'Leaps and slams, shockwave knocks back nearby.' },
+      { name: 'Seismic Slam', desc: 'Leaps and slams, stunning all nearby.' },
       { name: 'Titan\'s Wrath', desc: 'Ground shatter; Benzu takes zero damage.' }
     ],
     posX: '38.5%'
@@ -101,8 +101,6 @@ export class HunterSelectScreen {
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          /* Optimization: Hardware acceleration */
-          transform: translateZ(0);
         }
 
         .bg-layer {
@@ -134,11 +132,10 @@ export class HunterSelectScreen {
           flex-direction: column;
           align-items: center;
           pointer-events: auto;
-          /* Optimization: Limit transitions */
-          transition: transform 0.2s ease;
+          transition: all 0.3s ease;
         }
 
-        .name-tag {
+        .name-label {
           position: absolute;
           bottom: 12%;
           font-size: 3.5rem;
@@ -146,22 +143,20 @@ export class HunterSelectScreen {
           text-transform: uppercase;
           letter-spacing: 0.3em;
           color: white;
-          /* Optimization: Simpler text shadows */
-          text-shadow: 0 4px 10px rgba(0,0,0,1);
+          text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1);
           opacity: 0.5;
+          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
           pointer-events: none;
-          /* Optimization: will-change */
-          will-change: transform, opacity;
-          transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease, color 0.4s ease;
         }
 
-        .pillar-zone.active .name-tag {
+        .pillar-zone.active .name-label {
           opacity: 1;
           color: var(--aura);
-          transform: translateY(-15px) scale(1.05);
-          text-shadow: 0 0 30px var(--aura);
+          transform: translateY(-15px) scale(1.1);
+          text-shadow: 0 0 40px var(--aura), 0 0 60px var(--aura), 0 0 10px rgba(0,0,0,1);
         }
 
+        /* ── Return to Title: Matching Title Screen Style ── */
         .btn-return-title {
           position: absolute;
           top: 40px;
@@ -169,49 +164,51 @@ export class HunterSelectScreen {
           display: flex;
           align-items: center;
           gap: 0.55rem;
-          font-size: 0.9rem;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 1.1rem;
           font-weight: 700;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: rgba(160,130,200,0.7);
+          color: rgba(160,130,200,0.6);
           cursor: pointer;
-          transition: color 150ms ease;
+          transition: all 150ms ease;
           user-select: none;
           z-index: 100;
           pointer-events: auto;
           background: none;
           border: none;
-          font-family: 'Courier New', Courier, monospace;
+          padding: 6px 20px;
         }
         .btn-return-title:hover {
           color: #e8d8ff;
-          text-shadow: 0 0 10px rgba(180,100,255,0.8);
+          text-shadow: 0 0 10px rgba(180,100,255,0.8), 0 0 24px rgba(120,50,200,0.5);
         }
-        .btn-return-title .chevron {
+        .btn-return-title::before {
+          content: '◀';
           font-size: 0.7em;
-          transform: rotate(180deg);
+          margin-right: 8px;
         }
 
+        /* ── Consistency: Match Title Screen Controls Hint ── */
         .hints-footer-container {
           position: absolute;
           bottom: 20px;
           left: 50%;
           transform: translateX(-50%);
           z-index: 50;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
         }
         .hints-box {
-          background: rgba(4, 2, 12, 0.85); /* Slightly more opaque, remove blur */
+          background: rgba(4, 2, 12, 0.7);
+          backdrop-filter: blur(10px);
           padding: 8px 30px;
           border-radius: 4px;
           border: 1px solid rgba(160,130,200,0.2);
         }
         .hints-text {
-          font-family: 'Courier New', Courier, monospace;
-          font-size: 0.7rem;
-          letter-spacing: 0.2em;
+          font-family: 'Rajdhani', sans-serif;
+          font-weight: 600;
+          font-size: 0.8rem;
+          letter-spacing: 0.15em;
           color: rgba(160,130,200,0.6);
           text-transform: uppercase;
           white-space: nowrap;
@@ -222,8 +219,8 @@ export class HunterSelectScreen {
         .modal-overlay {
           position: fixed;
           inset: 0;
-          /* Optimization: Remove backdrop-filter blur, use solid high-opacity color */
-          background: rgba(3, 2, 8, 0.97);
+          background: rgba(4, 2, 12, 0.9);
+          backdrop-filter: blur(15px);
           z-index: 10000;
           display: none;
           align-items: center;
@@ -239,13 +236,12 @@ export class HunterSelectScreen {
           background: #050508;
           border: 1px solid var(--aura);
           display: flex;
-          box-shadow: 0 0 80px var(--aura-half);
-          animation: cardSlideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+          box-shadow: 0 0 150px var(--aura-half);
+          animation: cardSlideIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
           overflow: hidden;
-          will-change: transform;
         }
         @keyframes cardSlideIn {
-          from { opacity: 0; transform: translateY(30px); }
+          from { opacity: 0; transform: translateY(50px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
@@ -274,11 +270,10 @@ export class HunterSelectScreen {
 
         .m-header { margin-bottom: 10px; }
         .m-name { font-size: 4.8rem; color: var(--aura); text-transform: uppercase; font-weight: 900; line-height: 0.8; margin-bottom: 5px; }
-        .m-sub { font-size: 1.1rem; color: #666; letter-spacing: 0.5em; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
+        .m-sub { font-size: 1.1rem; color: #666; letter-spacing: 0.4em; text-transform: uppercase; }
 
         .m-bio { font-size: 1.05rem; font-style: italic; color: #ccc; line-height: 1.6; margin-bottom: 20px; border-left: 5px solid var(--aura); padding-left: 25px; }
 
-        /* Visual Stat Bars */
         .m-stats-visual { 
           display: grid; 
           grid-template-columns: repeat(2, 1fr); 
@@ -286,10 +281,10 @@ export class HunterSelectScreen {
           margin-bottom: 25px;
         }
         .stat-row { display: flex; align-items: center; gap: 15px; }
-        .stat-label { width: 60px; font-size: 0.75rem; color: #777; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Courier New', Courier, monospace; }
+        .stat-label { width: 60px; font-size: 0.75rem; color: #777; text-transform: uppercase; letter-spacing: 0.1em; }
         .stat-bar-container { flex: 1; height: 6px; background: rgba(255,255,255,0.05); position: relative; border-radius: 3px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; background: var(--aura); border-radius: 3px; }
-        .stat-val-text { width: 35px; font-size: 0.9rem; font-weight: 800; color: #fff; text-align: right; font-family: 'Courier New', Courier, monospace; }
+        .stat-bar-fill { height: 100%; background: var(--aura); border-radius: 3px; box-shadow: 0 0 15px var(--aura); }
+        .stat-val-text { width: 35px; font-size: 0.9rem; font-weight: 800; color: #fff; text-align: right; }
 
         .m-skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .m-skill-card { background: rgba(255,255,255,0.03); padding: 18px; border: 1px solid rgba(160,130,200,0.1); transition: border-color 0.2s; }
@@ -301,21 +296,22 @@ export class HunterSelectScreen {
         .btn-modal { 
           flex: 1;
           padding: 18px 0; 
-          font-family: 'Courier New', Courier, monospace; 
+          font-family: 'Rajdhani', sans-serif; 
           font-weight: 900; 
           text-transform: uppercase; 
-          letter-spacing: 0.25em; 
+          letter-spacing: 0.2em; 
           cursor: pointer; 
           border: 1px solid rgba(160,130,200,0.3); 
           background: rgba(0,0,0,0.4); 
           color: rgba(160,130,200,0.7); 
-          transition: all 0.15s ease; 
+          transition: all 0.2s; 
           text-align: center;
           font-size: 0.95rem;
         }
         .btn-modal.primary { 
           color: #e8d8ff;
           border-color: var(--aura); 
+          box-shadow: 0 0 20px var(--aura-half); 
         }
         .btn-modal:hover { 
           background: #e8d8ff; 
@@ -324,7 +320,7 @@ export class HunterSelectScreen {
           transform: translateY(-2px); 
         }
 
-        .modal-close-btn { position: absolute; top: 20px; right: 20px; font-size: 3.5rem; cursor: pointer; color: #333; transition: color 0.2s; z-index: 11000; line-height: 1; }
+        .modal-close-btn { position: absolute; top: 20px; right: 20px; font-size: 3.5rem; cursor: pointer; color: #333; transition: 0.3s; z-index: 11000; line-height: 1; }
         .modal-close-btn:hover { color: white; }
       </style>
 
@@ -332,17 +328,14 @@ export class HunterSelectScreen {
         <img src="./assets/ui/Characterselect-ezgif.com-video-to-gif-converter.gif" alt="Selection Background">
       </div>
 
-      <button class="btn-return-title" id="btn-return">
-        <span class="chevron" aria-hidden="true">&#x276F;</span>
-        Return to Title
-      </button>
+      <button class="btn-return-title" id="btn-return">Return to Title</button>
       
       <div class="interaction-overlay">
         ${HUNTER_ORDER.map((id, index) => `
           <div class="pillar-zone ${index === this.cursorIndex ? 'active' : ''}" 
                data-index="${index}" 
                style="left: ${HUNTER_META[id].posX}; transform: translateX(-50%); --aura: ${HUNTER_META[id].aura}; --aura-half: ${HUNTER_META[id].aura}44">
-            <div class="name-tag">${HUNTER_CONFIGS[id].label}</div>
+            <div class="name-label">${HUNTER_CONFIGS[id].label}</div>
           </div>
         `).join('')}
       </div>
@@ -373,9 +366,7 @@ export class HunterSelectScreen {
     this.container.querySelectorAll('.pillar-zone').forEach(zone => {
       zone.onmouseenter = () => {
         if (this.expandedIndex !== -1) return;
-        const index = parseInt(zone.dataset.index);
-        if (this.cursorIndex === index) return;
-        this.cursorIndex = index;
+        this.cursorIndex = parseInt(zone.dataset.index);
         this._updatePillars();
       };
       zone.onclick = (e) => {
@@ -389,10 +380,9 @@ export class HunterSelectScreen {
   }
 
   _updatePillars() {
-    const zones = this.container.querySelectorAll('.pillar-zone');
-    for (let i = 0; i < zones.length; i++) {
-        zones[i].classList.toggle('active', i === this.cursorIndex);
-    }
+    this.container.querySelectorAll('.pillar-zone').forEach((z, i) => {
+      z.classList.toggle('active', i === this.cursorIndex);
+    });
   }
 
   _renderStatRow(label, value, max) {
@@ -438,7 +428,7 @@ export class HunterSelectScreen {
           ${this._renderStatRow('Defense', meta.stats.defense, STAT_MAX.defense)}
         </div>
 
-        <div style="font-size:0.75rem; color:var(--aura); text-transform:uppercase; letter-spacing:0.3em; margin-bottom:10px; opacity:0.8; font-weight:900; font-family: 'Courier New', Courier, monospace;">Spell Masteries</div>
+        <div style="font-size:0.75rem; color:var(--aura); text-transform:uppercase; letter-spacing:0.3em; margin-bottom:10px; opacity:0.8; font-weight:900;">Spell Masteries</div>
         <div class="m-skills">
           ${meta.spells.map(s => `
             <div class="m-skill-card">
@@ -464,8 +454,7 @@ export class HunterSelectScreen {
   }
 
   _closeSheet() {
-    const modal = this.container.querySelector('#hunter-card-modal');
-    if (modal) modal.classList.remove('active');
+    this.container.querySelector('#hunter-card-modal').classList.remove('active');
     this.expandedIndex = -1;
     document.getElementById('instr-hint').innerHTML = '←→ Navigate &nbsp;&nbsp; Enter / X &nbsp; Choose &nbsp;&nbsp; Esc &nbsp; Back';
   }

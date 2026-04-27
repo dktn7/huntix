@@ -1,4 +1,4 @@
-import { createCityBreachArena } from '../visuals/CityBreachArena.js';
+import { CityBreachArena } from '../visuals/CityBreachArena.js';
 import { RuinDenArena } from '../visuals/RuinDenArena.js';
 import { ShadowCoreArena } from '../visuals/ShadowCoreArena.js';
 import { ThunderSpireArena } from '../visuals/ThunderSpireArena.js';
@@ -234,7 +234,7 @@ export class ZoneManager {
     this.scene = scene;
     this.activeZoneId = null;
     this._arenaMap = {
-      'city-breach': createCityBreachArena(),
+      'city-breach': new CityBreachArena(scene).build(),
       'ruin-den': new RuinDenArena(scene).build(),
       'shadow-core': new ShadowCoreArena(scene).build(),
       'thunder-spire': new ThunderSpireArena(scene).build(),

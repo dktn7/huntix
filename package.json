@@ -9,6 +9,7 @@
     "sprites:enemies:generate": "python scripts/generate-all-enemies.py",
     "sprites:enemies:process": "node scripts/process-enemies.js",
     "sprites:enemies:audit": "node scripts/audit-enemies.js",
+    "sprites:bosses:process": "node scripts/process-bosses.js",
     "enemies:legacy:process-v2": "node scripts/process-enemies-v2.js",
     "enemies:legacy:local-gen": "node scripts/local-enemy-gen.js",
     "enemies:legacy:test-gen": "node scripts/test-enemy-gen.js",
