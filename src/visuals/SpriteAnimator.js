@@ -151,7 +151,13 @@ export class SpriteAnimator {
     const frame = this.frames[key]?.frame;
     if (!frame) return;
 
-    this.material.map.offset.set(frame.x / this.W, frame.y / this.H);
+    // Three.js UV origin is bottom-left, but TexturePacker atlas origin is top-left.
+    // Without Y inversion the sprite appears upside-down.
+    // Correct Y offset: flip so row 0 (top of atlas) maps to top of sprite.
+    const u = frame.x / this.W;
+    const v = 1 - (frame.y / this.H) - (frame.h / this.H);
+
+    this.material.map.offset.set(u, v);
     this.material.map.repeat.set(frame.w / this.W, frame.h / this.H);
   }
 }
