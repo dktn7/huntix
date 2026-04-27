@@ -39,7 +39,6 @@ IDLE → PATROL → AGGRO → TELEGRAPH → ATTACK → RECOVER → STAGGER → A
 | Grunt | 400px | 80px | 600px |
 | Ranged | 500px | 300px | 700px |
 | Bruiser | 250px | 100px | 450px |
-| Mini-boss | 600px | 120px | Never |
 | Boss | Full arena | Phase-dependent | Never |
 
 All ranges are measured in world units on the X axis. Y tolerance is ±60px (lane width).

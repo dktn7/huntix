@@ -113,9 +113,10 @@ Spawn rate multiplier reduces the stagger interval (0.8s → 0.57s at 4P).
 
 ---
 
-## Miniboss Spawn
+## Boss Entry
 
-- Gate Warden always spawns from centre of arena (X: 0, Y: 0).
-- Entry animation: drops from above (Y: +400 → 0 over 0.8s).
-- All regular enemies cleared before miniboss spawns.
-- No reinforcements during miniboss fight.
+- Bosses spawn from the center of the arena unless a boss file overrides the spawn point.
+- Entry animation: drop in or step in from off-screen depending on the boss.
+- All regular enemies must be cleared before the boss gate opens.
+- Reinforcements may appear during boss phases if the boss config calls for them.
+

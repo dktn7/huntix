@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RunState } from '../core/RunState.js';
 import { ORTHO_HEIGHT, ORTHO_WIDTH } from './Renderer.js';
 import { Actions } from './InputManager.js';
@@ -13,11 +14,13 @@ import { ShopManager } from '../gameplay/ShopManager.js';
 import { CollisionResolver } from '../gameplay/CollisionResolver.js';
 import { PortalManager } from '../gameplay/PortalManager.js';
 import { ZoneManager } from '../gameplay/ZoneManager.js';
+import { getActiveArenaBounds, resetActiveArenaBounds, setActiveArenaBounds } from '../gameplay/ArenaBounds.js';
 import { createAura } from '../visuals/AuraShader.js';
 import { createPortalRift, createPortalFloorGlow } from '../visuals/PortalRiftShader.js';
 import { HitFlarePool } from '../visuals/HitFlarePool.js';
 import { AudioManager } from './AudioManager.js';
 import { ZONE_CONFIGS } from '../gameplay/ZoneManager.js';
+import { createRoomShellMeshes, resolveModelColormapUrl } from '../visuals/Base3DArena.js';
 
 import { TitleScreen } from '../screens/TitleScreen.js';
 import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
@@ -34,13 +37,15 @@ const SceneModes = {
 
 const ZONE_CLEAR_RETURN_DELAY_MS = 1800;
 const WIPE_RETURN_DELAY_MS = 800;
-const SHOP_ANCHOR_X = -4.8;
-const SHOP_ANCHOR_Y = -2.2;
-const SHOP_INTERACT_RADIUS = 1.25;
+const SHOP_ANCHOR_X = -7.2;
+const SHOP_ANCHOR_Y = -1.95;
+const SHOP_INTERACT_RADIUS = 1.45;
+const HUB_PORTAL_INTERACT_RADIUS = 1.35;
+const HAZARD_DEFAULT_KNOCKBACK = { x: 0, y: 0.12 };
 
 // Positions of the two exit portals (world X)
-const EXIT_PORTAL_HQ_X   = 10.0;
-const EXIT_PORTAL_NEXT_X = 14.5;
+const EXIT_PORTAL_HQ_X   = 5.95;
+const EXIT_PORTAL_NEXT_X = 7.85;
 // Walk-in radius to trigger a portal
 const EXIT_PORTAL_RADIUS = 1.0;
 
@@ -69,6 +74,14 @@ export class SceneManager {
     this._exitPortalHubGroup   = null;
     this._exitPortalNextGroup  = null;
     this._lastClearedZoneId    = null;
+    this._zoneHazardTime = 0;
+    this._zoneHazardTickAt = new Map();
+    this._lastHubHintAt = 0;
+    this._hubLoader = new GLTFLoader();
+    this._hubLoader.manager.setURLModifier((url) =>
+      resolveModelColormapUrl(url, './assets/textures/props/hub/colormap.png')
+    );
+    this._hubModelCache = new Map();
 
     const overlay = document.getElementById('ui-overlay');
     this.portalManager = new PortalManager(overlay);
@@ -267,6 +280,7 @@ export class SceneManager {
     this.audio.playSFX('ui-back');
     this.hunterSelectScreen.hide();
     this.mode = SceneModes.TITLE_SCREEN;
+    resetActiveArenaBounds();
     this.titleScreen.show();
   }
 
@@ -277,6 +291,7 @@ export class SceneManager {
     this.audio.playSFX('ui-confirm');
     this.titleScreen.hide();
     this.mode = SceneModes.HUNTER_SELECT;
+    resetActiveArenaBounds();
     this.hunterSelectScreen.setCoop(isCoop);
     this.hunterSelectScreen.show();
   }
@@ -346,7 +361,7 @@ export class SceneManager {
     if (this.mode !== SceneModes.ZONE) return false;
     const route = this.spawner.getRouteState?.() || {};
     const activeEnemies = this.spawner.getActiveEnemies().some((enemy) => !enemy.isDead?.());
-    const inBossState = route.zoneState === 'boss' || route.zoneState === 'miniboss';
+    const inBossState = route.zoneState === 'boss';
     const betweenWaveGateOpen = !!route.gateOpen;
     if (betweenWaveGateOpen) return false;
     if (inBossState) return true;
@@ -481,38 +496,218 @@ export class SceneManager {
   // ---------------------------------------------------------------------------
 
   _setupLighting() {
-    const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+    const ambient = new THREE.AmbientLight(0xe5ebff, 0.55);
     this.scene.add(ambient);
-    const dir = new THREE.DirectionalLight(0xffeedd, 0.6);
-    dir.position.set(-3, 5, 10);
-    this.scene.add(dir);
+    const hemi = new THREE.HemisphereLight(0x8fb8ff, 0x1a1b28, 0.42);
+    this.scene.add(hemi);
+
+    const key = new THREE.DirectionalLight(0xffefdb, 0.95);
+    key.position.set(-5, 6, 9);
+    this.scene.add(key);
+
+    const rim = new THREE.DirectionalLight(0x7bbcff, 0.55);
+    rim.position.set(6, -2.5, 6);
+    this.scene.add(rim);
   }
 
   _setupHubBackdrop() {
     this._hubBackdrop = [];
+    this._hubHomeSpots = [];
 
-    const groundGeo = new THREE.PlaneGeometry(ORTHO_WIDTH, 2);
-    const groundMat = new THREE.MeshLambertMaterial({ color: 0x1a1a2e });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.position.set(0, -3, 0);
-    this.scene.add(ground);
-    this._hubBackdrop.push(ground);
-
-    const bgColors = [0x16213e, 0x0f3460, 0x16213e];
-    bgColors.forEach((color, i) => {
-      const geo = new THREE.BoxGeometry(ORTHO_WIDTH, 3, 0.1);
-      const mat = new THREE.MeshLambertMaterial({ color });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(0, 2 + i * 2, -(i + 1) * 2);
+    const add = (mesh) => {
+      mesh.userData.hubPrimitive = true;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const mat of mats) {
+        if (!mat || mat.isMeshBasicMaterial) continue;
+        mat.transparent = true;
+        mat.opacity = Math.min(mat.opacity ?? 1, 0.86);
+      }
       this.scene.add(mesh);
       this._hubBackdrop.push(mesh);
-    });
+      return mesh;
+    };
+
+    const hubProfile = ZONE_CONFIGS.hub?.roomProfile || {
+      bounds: { minX: -8.4, maxX: 8.4, minY: -4.25, maxY: 3.35 },
+      floorColor: 0x1b2230,
+      wallColor: 0x222f49,
+      frontWallColor: 0x1a253b,
+      trimColor: 0x5a77b7,
+      pillarColor: 0x324463,
+      laneColor: 0x2e4364,
+      bgLayerColor: 0x87a9ff,
+      fgLayerColor: 0x111a2a,
+      laneY: -2.2,
+    };
+    const shellMeshes = createRoomShellMeshes(hubProfile);
+    for (const mesh of shellMeshes) add(mesh);
+
+    const leftShopPad = new THREE.Mesh(
+      new THREE.BoxGeometry(5.4, 2.2, 0.08),
+      new THREE.MeshLambertMaterial({ color: 0x25344a })
+    );
+    leftShopPad.position.set(-7.25, -1.95, -0.35);
+    add(leftShopPad);
+
+    const shopDesk = new THREE.Mesh(
+      new THREE.BoxGeometry(2.8, 1.05, 0.72),
+      new THREE.MeshLambertMaterial({ color: 0x40526e })
+    );
+    shopDesk.position.set(-7.2, -1.08, -1.2);
+    add(shopDesk);
+
+    const shopBeacon = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.22, 0.22, 1.3, 8),
+      new THREE.MeshBasicMaterial({
+        color: 0x5edfff,
+        transparent: true,
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    shopBeacon.position.set(-7.2, -0.25, -1.05);
+    add(shopBeacon);
+
+    const briefingBoard = new THREE.Mesh(
+      new THREE.BoxGeometry(4.4, 1.8, 0.18),
+      new THREE.MeshLambertMaterial({ color: 0x314057 })
+    );
+    briefingBoard.position.set(0, -0.3, -1.12);
+    add(briefingBoard);
+
+    const briefingGlow = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.9, 1.15),
+      new THREE.MeshBasicMaterial({
+        color: 0x9fb4ff,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    briefingGlow.position.set(0, -0.3, -1.03);
+    add(briefingGlow);
+
+    const portalWall = new THREE.Mesh(
+      new THREE.BoxGeometry(5.8, 5.4, 0.6),
+      new THREE.MeshLambertMaterial({ color: 0x1f2942 })
+    );
+    portalWall.position.set(7.05, 0.2, -1.65);
+    add(portalWall);
+
+    for (let i = 0; i < 4; i += 1) {
+      const bay = new THREE.Mesh(
+        new THREE.BoxGeometry(0.9, 3.0, 0.18),
+        new THREE.MeshLambertMaterial({ color: 0x263655 })
+      );
+      bay.position.set(4.8 + i * 1.2, 0.1, -1.2);
+      add(bay);
+    }
+
+    const makeHomeSpot = (x, y, color, tall = false) => {
+      const base = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.42, 0.52, 0.12, 14),
+        new THREE.MeshLambertMaterial({ color: 0x223145 })
+      );
+      base.position.set(x, y, -0.24);
+      add(base);
+
+      const emblem = new THREE.Mesh(
+        tall ? new THREE.CylinderGeometry(0.11, 0.11, 1.0, 10) : new THREE.SphereGeometry(0.2, 12, 10),
+        new THREE.MeshBasicMaterial({
+          color,
+          transparent: true,
+          opacity: 0.75,
+          blending: THREE.AdditiveBlending,
+        })
+      );
+      emblem.position.set(x, y + (tall ? 0.62 : 0.2), -0.18);
+      add(emblem);
+      this._hubHomeSpots.push({ base, emblem });
+    };
+
+    // Dabik corner (left rear), Benzu training lane, Sereisa terminal, Vesol alchemy station.
+    makeHomeSpot(-7.95, 0.85, 0x9b59b6, true);
+    makeHomeSpot(-4.9, -0.75, 0xf39c12, true);
+    makeHomeSpot(1.9, 0.95, 0xf1c40f, false);
+    makeHomeSpot(-1.9, -0.75, 0xe74c3c, false);
+
+    this._queueHubWorldKit();
+  }
+
+  _queueHubWorldKit() {
+    const root = './assets/models/world/hub';
+
+    this._queueHubModel(`${root}/floorFull.glb`, { x: 0, y: -2.3, z: -1.05, scale: 0.74 });
+    this._queueHubModel(`${root}/wall.glb`, { x: 0, y: 1.8, z: -2.7, scale: 0.86 });
+
+    this._queueHubModel(`${root}/desk.glb`, { x: -7.2, y: -1.25, z: -1.08, scale: 0.72 });
+    this._queueHubModel(`${root}/computerScreen.glb`, { x: 1.95, y: 0.7, z: -1.02, scale: 0.72 });
+    this._queueHubModel(`${root}/table.glb`, { x: -1.9, y: -1.1, z: -1.0, scale: 0.72 });
+    this._queueHubModel(`${root}/weapon-rack.glb`, { x: -7.55, y: 0.58, z: -1.14, scale: 0.72 });
+    this._queueHubModel(`${root}/bench.glb`, { x: -4.95, y: -0.95, z: -0.98, scale: 0.74 });
+  }
+
+  _queueHubModel(path, options = {}) {
+    this._loadHubModel(path)
+      .then((source) => {
+        if (!source) return;
+        const model = source.clone(true);
+        const {
+          x = 0, y = 0, z = 0,
+          scale = 1,
+          rx = 0, ry = 0, rz = 0,
+          tint = null,
+          emissive = null,
+          emissiveIntensity = 0.35,
+          opacity = null,
+        } = options;
+        const tintColor = tint !== null ? new THREE.Color(tint) : null;
+        const emissiveColor = emissive !== null ? new THREE.Color(emissive) : null;
+        model.position.set(x, y, z);
+        model.rotation.set(rx, ry, rz);
+        model.scale.set(scale, scale, scale);
+        model.traverse((child) => {
+          if (!child.isMesh) return;
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          const nextMaterials = [];
+          for (const material of materials) {
+            if (!material) continue;
+            const working = material.clone ? material.clone() : material;
+            if (tintColor && working.color) working.color.multiply(tintColor);
+            if (emissiveColor && 'emissive' in working) {
+              working.emissive.copy(emissiveColor);
+              working.emissiveIntensity = emissiveIntensity;
+            }
+            if (typeof opacity === 'number') {
+              working.opacity = Math.max(0, Math.min(1, opacity));
+              working.transparent = working.opacity < 1;
+            }
+            nextMaterials.push(working);
+          }
+          child.material = Array.isArray(child.material) ? nextMaterials : (nextMaterials[0] || child.material);
+          child.castShadow = false;
+          child.receiveShadow = false;
+          child.frustumCulled = true;
+        });
+        this.scene.add(model);
+        this._hubBackdrop.push(model);
+      })
+      .catch(() => null);
+  }
+
+  _loadHubModel(path) {
+    if (!this._hubModelCache.has(path)) {
+      this._hubModelCache.set(path, new Promise((resolve, reject) => {
+        this._hubLoader.load(path, (gltf) => resolve(gltf.scene), null, reject);
+      }));
+    }
+    return this._hubModelCache.get(path);
   }
 
   _setupHubPortals() {
     this._hubPortals = [];
     const layout = this.zoneManager.getPortalLayout();
-    const portalGeo = new THREE.TorusGeometry(0.62, 0.09, 8, 24);
+    const portalGeo = new THREE.TorusGeometry(0.52, 0.085, 8, 24);
     const pedestalGeo = new THREE.BoxGeometry(1.2, 0.18, 0.1);
 
     for (const entry of layout) {
@@ -529,6 +724,18 @@ export class SceneManager {
       const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
       pedestal.position.set(entry.x, -2.85, 0.2);
       this.scene.add(pedestal);
+
+      this._queueHubModel('./assets/models/world/city-breach/portal.glb', {
+        x: entry.x,
+        y: -2.2,
+        z: -1.05,
+        scale: 0.52,
+        ry: Math.PI,
+        tint: entry.color,
+        emissive: entry.color,
+        emissiveIntensity: 0.55,
+        opacity: 0.95,
+      });
 
       this._hubPortals.push({ ...entry, mesh: portal, pedestal, unlocked: false });
     }
@@ -552,12 +759,16 @@ export class SceneManager {
 
     // Camera follows player across the HQ space
     const px = this.hunters.primaryPlayer?.position.x || 0;
-    this.camera.position.x += (px - this.camera.position.x) * 0.06;
+    const hubBounds = ZONE_CONFIGS.hub?.playBounds || { minX: -8.4, maxX: 8.4 };
+    const targetX = Math.max(hubBounds.minX + 0.9, Math.min(hubBounds.maxX - 0.9, px + 0.2));
+    this.camera.position.x += (targetX - this.camera.position.x) * 0.06;
+    this.camera.position.y += (-1.9 - this.camera.position.y) * 0.09;
 
     this.hunters.update(dt, input);
     this.sparks.update(dt);
     this.cameraShake.update(dt);
     this._animateHubPortals(dt);
+    this._animateHubLandmarks(dt);
     this._syncPlayerAuras(dt);
     this._syncHubPortals();
     this._updateDebugHitboxes();
@@ -571,8 +782,12 @@ export class SceneManager {
     if (!this._transitionLock) {
       const portalInteractor = this._getPortalInteractor(input);
       if (portalInteractor) {
-        const portal = this._findNearestUnlockedPortal(portalInteractor.position);
-        if (portal) this._enterZone(portal.zoneId, input);
+        const portal = this._findNearestPortal(portalInteractor.position, false);
+        if (portal?.unlocked) {
+          this._enterZone(portal.zoneId, input);
+        } else if (portal) {
+          this._showLockedPortalHint(portal);
+        }
       }
     }
   }
@@ -599,11 +814,12 @@ export class SceneManager {
     }
 
     const enemies = this.spawner.getActiveEnemies();
+    const routeState = this.spawner.getRouteState?.() || null;
     const preparedInputs = this.hunters.prepareZoneInputs(
       scaledDt,
       input,
       enemies,
-      this.spawner.getRouteState?.() || null
+      routeState
     );
     const hitEvents = this.combat.update(
       scaledDt,
@@ -624,7 +840,9 @@ export class SceneManager {
     this.sparks.update(scaledDt);
     this._hitFlares.update(scaledDt);
     this.cameraShake.update(scaledDt);
-    this.zoneManager.update(scaledDt, this._getPlayerFocusX());
+    const currentRouteState = this.spawner.getRouteState?.() || routeState;
+    this.zoneManager.update(scaledDt, this._getPlayerFocusX(), currentRouteState);
+    this._applyZoneHazards(scaledDt, currentRouteState);
     this._updateSharedCamera();
     this._checkForWipe();
     this.hud.setPlayerCombos(this.combat.getComboCounts());
@@ -757,6 +975,9 @@ export class SceneManager {
     this.mode = SceneModes.ZONE;
     this._zoneReturnPending = false;
     this._transitionLock = true;
+    this._zoneHazardTime = 0;
+    this._zoneHazardTickAt.clear();
+    setActiveArenaBounds(config.playBounds, config.blockers || []);
     if (input) this.hunters.clearInputBuffers(input);
     this.hunters.setFormation(-4, -2.2);
     this._setHubVisible(false);
@@ -870,6 +1091,10 @@ export class SceneManager {
     this.combat.breakCombo();
     this.hud.setPlayerCombos([]);
     this.shop.close();
+    this._zoneHazardTime = 0;
+    this._zoneHazardTickAt.clear();
+    const hubConfig = this.zoneManager.getZoneConfig('hub');
+    setActiveArenaBounds(hubConfig?.playBounds, hubConfig?.blockers || []);
     RunState.clearBossInfo();
     this.spawner.startZone(null);
     this._resetCameraFrustum();
@@ -925,20 +1150,43 @@ export class SceneManager {
   }
 
   _findNearestUnlockedPortal(playerPosition) {
+    return this._findNearestPortal(playerPosition, true);
+  }
+
+  _findNearestPortal(playerPosition, requireUnlocked = true) {
     if (!playerPosition) return null;
     let best = null;
     let bestDistance = Infinity;
     for (const portal of this._hubPortals) {
-      if (!portal.unlocked) continue;
+      if (requireUnlocked && !portal.unlocked) continue;
       const dx = playerPosition.x - portal.mesh.position.x;
       const dy = playerPosition.y - portal.mesh.position.y;
       const distance = Math.hypot(dx, dy);
-      if (distance <= 1.2 && distance < bestDistance) {
+      if (distance <= HUB_PORTAL_INTERACT_RADIUS && distance < bestDistance) {
         best = portal;
         bestDistance = distance;
       }
     }
     return best;
+  }
+
+  _showLockedPortalHint(portal) {
+    const now = performance.now();
+    if (now - this._lastHubHintAt < 900) return;
+    this._lastHubHintAt = now;
+
+    const requirement = this.zoneManager.getUnlockRequirement(portal.zoneId);
+    const config = this.zoneManager.getZoneConfig(portal.zoneId);
+    if (!config) return;
+    if (!requirement) {
+      this.portalManager.showNameCard(`${config.label}`, 'Portal unavailable', 1100);
+      return;
+    }
+    this.portalManager.showNameCard(
+      `${config.label} Locked`,
+      `Clear ${requirement} first`,
+      1200
+    );
   }
 
   _animateHubPortals(dt) {
@@ -948,6 +1196,22 @@ export class SceneManager {
       portal.mesh.scale.setScalar(portal.unlocked ? pulse : 0.96);
       portal.mesh.position.z    = -portal.mesh.position.y * 0.01 + 0.3;
       portal.pedestal.position.z = -portal.pedestal.position.y * 0.01;
+    }
+  }
+
+  _animateHubLandmarks(_dt) {
+    if (!this._hubHomeSpots?.length) return;
+    const t = performance.now() * 0.001;
+    for (let i = 0; i < this._hubHomeSpots.length; i += 1) {
+      const entry = this._hubHomeSpots[i];
+      if (!entry?.emblem || !entry?.base) continue;
+      const wave = 1 + Math.sin(t * 2.2 + i * 1.3) * 0.06;
+      entry.emblem.scale.setScalar(wave);
+      if (entry.emblem.material?.opacity !== undefined) {
+        entry.emblem.material.opacity = 0.54 + Math.sin(t * 3.1 + i) * 0.14;
+      }
+      entry.base.position.z = -entry.base.position.y * 0.01 - 0.25;
+      entry.emblem.position.z = -entry.emblem.position.y * 0.01 - 0.19;
     }
   }
 
@@ -990,22 +1254,30 @@ export class SceneManager {
 
     const focusX = (minX + maxX) / 2;
     const focusY = (minY + maxY) / 2;
+    const laneCenterY = -2.2;
+    const targetFocusY = laneCenterY + (focusY - laneCenterY) * 0.28;
     const aspect  = window.innerWidth / window.innerHeight;
-    const padding = 2.6;
+    const padding = 2.25;
     const targetHeight = Math.max(
       ORTHO_HEIGHT,
       (maxY - minY) + padding,
       ((maxX - minX) + padding) / aspect
     );
+    const boundedTargetHeight = Math.min(11.2, targetHeight);
     const currentHeight = this.camera.top - this.camera.bottom;
-    const nextHeight    = currentHeight + (targetHeight - currentHeight) * 0.08;
+    const nextHeight    = currentHeight + (boundedTargetHeight - currentHeight) * 0.08;
     const halfH = nextHeight / 2;
     const halfW = halfH * aspect;
 
-    const arenaMinX = -18, arenaMaxX = 18;
+    const activeBounds = getActiveArenaBounds();
+    const arenaMinX = activeBounds.minX;
+    const arenaMaxX = activeBounds.maxX;
     const clampedX = Math.max(arenaMinX + halfW, Math.min(arenaMaxX - halfW, focusX));
-    this.camera.position.x += (clampedX - this.camera.position.x) * 0.08;
-    this.camera.position.y += (focusY   - this.camera.position.y) * 0.05;
+    const camMinY = activeBounds.minY + 1.1;
+    const camMaxY = activeBounds.maxY - 1.45;
+    const clampedY = Math.max(camMinY, Math.min(camMaxY, targetFocusY));
+    this.camera.position.x += (clampedX - this.camera.position.x) * 0.085;
+    this.camera.position.y += (clampedY - this.camera.position.y) * 0.07;
 
     this.camera.top    =  halfH;
     this.camera.bottom = -halfH;
@@ -1088,7 +1360,7 @@ export class SceneManager {
       } else if (event.type === 'routeGateOpen') {
         const gateLabel = event.gateKind === 'boss' ? 'BOSS GATE OPEN' : `AREA ${event.nextArea}`;
         this.portalManager.showNameCard(gateLabel, 'Press Interact to advance', 900);
-      } else if (event.type === 'bossStart' || event.type === 'minibossStart') {
+      } else if (event.type === 'bossStart') {
         const boss = event.boss;
         if (event.zoneId) this._bossSeenZones.add(event.zoneId);
         RunState.setBossInfo({ bossId: boss.config.id || boss.name, bossName: boss.name, hp: boss.hp, hpMax: boss.hpMax, phase: boss.phase });
@@ -1103,9 +1375,6 @@ export class SceneManager {
         this.cameraShake.request(0.2);
       } else if (event.type === 'bossAttack') {
         this.hud.updateBossBar(event.boss.hp, event.boss.hpMax, event.boss.phase);
-      } else if (event.type === 'minibossDefeated') {
-        this.hud.showWaveClear();
-        this.portalManager.showResultsOverlay({ title: `${event.boss.name} Defeated`, essence: event.boss.getRewards().essence, xp: event.boss.getRewards().xp, kills: 1 });
       } else if (event.type === 'bossDefeated') {
         if (event.zoneId) this._bossSeenZones.add(event.zoneId);
         this.hud.clearBossBar();
@@ -1164,6 +1433,62 @@ export class SceneManager {
       return player;
     }
     return null;
+  }
+
+  _applyZoneHazards(dt, routeState) {
+    if (this.mode !== SceneModes.ZONE) return;
+    const hazards = this.zoneManager.getActiveHazards(routeState);
+    if (!hazards.length) return;
+
+    this._zoneHazardTime += dt;
+    for (const player of this.hunters.players) {
+      if (!player || player.state === 'DEAD' || player.state === 'DOWNED') continue;
+      const runPlayer = RunState.players[player.playerIndex];
+      if (runPlayer?.isAI) continue;
+
+      for (const hazard of hazards) {
+        if (!this._pointInsideHazard(player.position, hazard)) continue;
+
+        const key = `${player.playerIndex}:${hazard.id}`;
+        const nextTick = this._zoneHazardTickAt.get(key) || 0;
+        if (this._zoneHazardTime < nextTick) continue;
+
+        const damage = Math.max(1, Math.round(hazard.damage || 8));
+        const applied = player.takeDamage(damage, HAZARD_DEFAULT_KNOCKBACK);
+        if (!applied) continue;
+        this._zoneHazardTickAt.set(key, this._zoneHazardTime + Math.max(0.2, hazard.tick || 0.45));
+
+        this.hud.showDamageNumber(
+          player.position.x,
+          player.position.y + 0.8,
+          damage,
+          'status'
+        );
+        this.cameraShake.request(0.2);
+      }
+    }
+  }
+
+  _pointInsideHazard(position, hazard) {
+    if (!position || !hazard) return false;
+    if (hazard.shape === 'circle') {
+      const dx = position.x - hazard.x;
+      const dy = position.y - hazard.y;
+      return (dx * dx) + (dy * dy) <= (hazard.radius * hazard.radius);
+    }
+
+    if (hazard.shape === 'rect') {
+      const halfW = hazard.width * 0.5;
+      const halfH = hazard.height * 0.5;
+      return (
+        position.x >= hazard.x - halfW
+        && position.x <= hazard.x + halfW
+        && position.y >= hazard.y - halfH
+        && position.y <= hazard.y + halfH
+      );
+    }
+
+    return false;
   }
 
   _updateDebugHitboxes() {

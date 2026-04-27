@@ -19,7 +19,7 @@ Huntix uses a bitmask layer system. Each object has a `layer` (what it is) and a
 | Layer name | Bit | What it represents |
 |------------|-----|--------------------|
 | `PLAYER` | 1 | Hunter characters |
-| `ENEMY` | 2 | All enemy types, minibosses, bosses |
+| `ENEMY` | 2 | All enemy types and bosses |
 | `PLAYER_ATTACK` | 4 | Hitboxes from player attacks and spells |
 | `ENEMY_ATTACK` | 8 | Hitboxes from enemy attacks |
 | `ENVIRONMENT` | 16 | Arena walls, floor, platforms |

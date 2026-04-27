@@ -39,21 +39,6 @@ This is the single source of truth for all numeric stats. When a value appears h
 
 ---
 
-## Mini-Boss — Gate Warden
-
-| Stat | Value |
-|---|---|
-| HP | 1800 |
-| Speed | 160 |
-| Light Dmg | 35 |
-| Heavy Dmg | 80 |
-| Stagger Threshold | 8 hits |
-| XP Drop | 200 |
-| Essence Drop | 80–120 |
-| Status Immunity | Stun |
-
----
-
 ## Bosses
 
 | Boss | Zone | HP | Speed | P1 Dmg | P2 Dmg | P3 Dmg | Essence Drop | XP Drop |

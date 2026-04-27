@@ -1,6 +1,6 @@
 # HUNTIX — Enemy Design
 
-Three base enemy types plus miniboss and boss (see BOSSES.md). All enemies use a shared advanced FSM with token-based aggression control and position slot targeting.
+Three base enemy types plus boss (see BOSSES.md). All enemies use a shared advanced FSM with token-based aggression control and position slot targeting.
 
 *Last updated April 15, 2026*
 
@@ -288,47 +288,6 @@ Every enemy attack has a distinct telegraph phase. Players must be able to read 
 
 ---
 
-## Miniboss — Gate Warden
-
-**Zone:** Appears at end of City Breach and Ruin Den.
-
-| Stat | Value |
-|---|---|
-| Health | 600 (solo) / ×1.5 per additional player |
-| Move speed | 3.0 units/s |
-| Attack damage | 20–35 |
-| Stagger threshold | Heavy attack only |
-| Essence drop | 150–250 |
-| XP | 800 |
-| Token system | Exempt — attacks on own schedule |
-
-### Attacks by Phase
-
-**Phase 1 (100–50% HP)**
-
-| Attack | Telegraph | Active | Damage | Notes |
-|--------|-----------|--------|--------|---------|
-| Charge | 1.0s body lean + red glow build | Line dash across arena | 20 | Telegraphed direction is fixed — dodge perpendicular |
-| Wide Swipe | 600ms arm extends wide | 180° arc, 2.5 unit radius | 25 | Jump or back-dodge to avoid |
-
-**Phase 2 (50–0% HP)**
-
-| Attack | Change from Phase 1 |
-|--------|--------------------|
-| Charge | Adds 0.5s fake-out — pauses mid-charge, then resumes |
-| Wide Swipe | Gains shockwave: 1.5s after swipe, ground pulse in same arc, 15 damage |
-| Summon | Spawns 2 Grunts on phase transition. Once only. |
-
-**Phase Transition:**
-- Brief slow-mo (0.3s at 20% speed)
-- Aura flare — deep red
-- Health bar colour shifts from red to dark crimson
-- Screen shake 0.20 units / 350ms
-
-**Visual:** Armoured humanoid, gate energy cracking through plate. Twice player height.
-
----
-
 ## Enemy Hitstun Responses
 
 How each enemy reacts to being hit:
@@ -338,7 +297,6 @@ How each enemy reacts to being hit:
 | Grunt | HURT (167ms stagger) | HURT + 1.0 unit knockback | HURT + status | Heavy attack |
 | Ranged Unit | HURT (167ms stagger) | HURT + 1.5 unit knockback | HURT + status | Heavy attack |
 | Bruiser | No stagger (unless threshold) | HURT (threshold counts as 1) | No stagger | 3× threshold stagger = knockdown |
-| Gate Warden | No stagger | HURT (167ms) | No stagger | Not possible |
 
 > Knockdown on enemies: sent to ground for 600ms (400ms down + 200ms getup). Fully vulnerable during. No i-frames on getup for enemies (unlike hunters).
 
@@ -379,3 +337,4 @@ How each enemy reacts to being hit:
 | Status effects applied by spells | [SPELLS.md](./SPELLS.md) |
 | Wave spawning logic | src/gameplay/EnemySpawner.js |
 | Co-op HP scaling | [COOP.md](./COOP.md) |
+

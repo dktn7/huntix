@@ -313,7 +313,7 @@ Fired on enemy death.
 | Grunt | 12 sparks + dust | Grey + gate energy colour of zone |
 | Ranged Unit | 10 sparks | White-blue + crystal shard effect |
 | Bruiser | 20 dust + rock | Dark grey + deep orange |
-| Gate Warden | 30 mixed | Full burst — all element colours |
+| Bosses | 30 mixed | Full burst - boss-specific accent colors |
 
 ---
 
@@ -358,3 +358,4 @@ Fired on successful perfect dodge (see ATTACKSYSTEM.md).
 | Status effect application | [SPELLS.md](./SPELLS.md) |
 | Ultimate visual sequences | [SPELLS.md](./SPELLS.md) |
 | Performance caps enforcement | [TECHSTACK.md](./TECHSTACK.md) |
+

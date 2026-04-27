@@ -1,81 +1,161 @@
 import * as THREE from 'three';
+import { Base3DArena } from './Base3DArena.js';
 import { RUIN_DEN } from './Palettes.js';
 
-export class RuinDenArena {
-  constructor(scene) {
-    this.scene = scene;
-    this.meshes = [];
-    this.root = null;
-    this._time = 0;
+export class RuinDenArena extends Base3DArena {
+  constructor(scene, zoneConfig = null) {
+    super(scene, { colormapTexture: './assets/textures/props/ruin-den/colormap.png' });
+    this.zoneConfig = zoneConfig || {};
   }
 
   build() {
-    this.root = new THREE.Group();
+    this.addRoomShell(this.zoneConfig.roomProfile || {
+      bounds: { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 },
+      floorColor: RUIN_DEN.floor,
+      wallColor: 0x3e352e,
+      frontWallColor: 0x322b26,
+      trimColor: RUIN_DEN.fissure,
+      pillarColor: 0x53463c,
+      laneColor: 0x5f5548,
+      bgLayerColor: 0xc99873,
+      fgLayerColor: 0x1d1712,
+      laneY: -2.2,
+    });
 
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 8),
-      new THREE.MeshBasicMaterial({ color: RUIN_DEN.floor })
-    );
-    this.root.add(floor);
-    this.meshes.push(floor);
+    const fissureMaterial = new THREE.MeshBasicMaterial({
+      color: RUIN_DEN.fissure,
+      transparent: true,
+      opacity: 0.38,
+      blending: THREE.AdditiveBlending,
+    });
+    for (let i = -3; i <= 3; i += 1) {
+      const fissure = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.2), fissureMaterial);
+      fissure.position.set(i * 2.6, -2.05 + ((i + 1) % 2) * 0.18, -0.92);
+      fissure.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.2;
+      this.add(fissure);
+    }
+    this._animatedMaterials.push({
+      material: fissureMaterial,
+      pulse: 4.3,
+      minOpacity: 0.18,
+      maxOpacity: 0.42,
+      phase: 0,
+    });
 
-    const voidBack = new THREE.Mesh(
-      new THREE.PlaneGeometry(46, 10),
-      new THREE.MeshBasicMaterial({ color: RUIN_DEN.void, transparent: true, opacity: 0.96 })
-    );
-    voidBack.position.set(0, 2.7, -5);
-    this.root.add(voidBack);
-    this.meshes.push(voidBack);
+    const columnMaterial = new THREE.MeshLambertMaterial({ color: RUIN_DEN.stone });
+    for (let i = 0; i < 4; i += 1) {
+      const leftColumn = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.9, 0.8), columnMaterial);
+      leftColumn.position.set(-6.8 + i * 1.7, 0.75 - (i % 2) * 0.2, -1.5);
+      leftColumn.rotation.z = -0.08 + i * 0.03;
+      this.add(leftColumn);
 
-    const sideMat = new THREE.MeshBasicMaterial({ color: RUIN_DEN.stone });
-    const left = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 2), sideMat);
-    left.position.set(-19, 2.15, -0.3);
-    this.root.add(left);
-    this.meshes.push(left);
-
-    const right = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 2), sideMat);
-    right.position.set(19, 2.15, -0.3);
-    this.root.add(right);
-    this.meshes.push(right);
-
-    const rubbleMat = new THREE.MeshBasicMaterial({ color: RUIN_DEN.fissure });
-    for (const x of [-15, -10, -4, 2, 9, 15]) {
-      const rubble = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.35, 0.4), rubbleMat);
-      rubble.position.set(x, -1.85 + ((x + 15) % 2) * 0.15, -0.12);
-      this.root.add(rubble);
-      this.meshes.push(rubble);
+      const rightColumn = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.9, 0.8), columnMaterial);
+      rightColumn.position.set(6.8 - i * 1.7, 0.62 - ((i + 1) % 2) * 0.2, -1.5);
+      rightColumn.rotation.z = 0.08 - i * 0.03;
+      this.add(rightColumn);
     }
 
-    const archMat = new THREE.MeshBasicMaterial({ color: RUIN_DEN.dust, transparent: true, opacity: 0.7 });
-    for (const x of [-12, -2, 8]) {
-      const arch = new THREE.Mesh(new THREE.BoxGeometry(1.3, 2.8, 0.2), archMat);
-      arch.position.set(x, 0.95, -2.0);
-      this.root.add(arch);
-      this.meshes.push(arch);
-    }
+    const relicMaterial = new THREE.MeshLambertMaterial({ color: 0x6f5b4a });
+    const drill = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 0.66), relicMaterial);
+    drill.position.set(-7.6, -0.5, -1.0);
+    drill.rotation.z = 0.28;
+    this.add(drill);
 
-    this.scene.add(this.root);
-    return this.root;
+    const workLight = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.25, 0.25, 1.2, 10),
+      new THREE.MeshBasicMaterial({
+        color: 0xd7cab0,
+        transparent: true,
+        opacity: 0.78,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    workLight.position.set(7.6, 1.2, -1.2);
+    this.add(workLight);
+    this._animatedMaterials.push({
+      material: workLight.material,
+      pulse: 6.6,
+      minOpacity: 0.35,
+      maxOpacity: 0.8,
+      phase: 1.9,
+    });
+
+    this.addHazardRect({
+      id: 'ruin-crumble-top',
+      x: 0.2,
+      y: -0.95,
+      width: 6.0,
+      height: 0.92,
+      color: RUIN_DEN.fissure,
+      damage: 7,
+      tick: 0.5,
+      activeWhen: 'waves',
+      pulse: 5.1,
+    });
+    this.addHazardRect({
+      id: 'ruin-crumble-bottom',
+      x: -0.25,
+      y: -3.45,
+      width: 6.0,
+      height: 0.92,
+      color: RUIN_DEN.fissure,
+      damage: 7,
+      tick: 0.5,
+      activeWhen: 'waves',
+      pulse: 5.1,
+    });
+    this.addHazardCircle({
+      id: 'ruin-boss-ring',
+      x: 8.5,
+      y: -2.2,
+      radius: 1.9,
+      color: RUIN_DEN.fissure,
+      damage: 9,
+      tick: 0.45,
+      activeWhen: 'boss',
+      pulse: 7.1,
+      minOpacity: 0.2,
+      maxOpacity: 0.52,
+    });
+
+    this._queueWorldKit();
+
+    return this.group;
   }
 
-  update(dt, focusX = 0) {
-    if (!this.root) return;
-    this._time += dt;
-    const sway = Math.sin(this._time * 0.32) * 0.03;
-    for (let i = 3; i < this.root.children.length; i += 1) {
-      const child = this.root.children[i];
-      child.position.x = child.position.x * 0.999 + focusX * 0.001 + sway;
-    }
-  }
+  _queueWorldKit() {
+    const root = './assets/models/world/ruin-den';
+    const hubRoot = './assets/models/world/hub';
 
-  dispose() {
-    for (const mesh of this.meshes) {
-      if (mesh.geometry) mesh.geometry.dispose();
-      if (mesh.material) mesh.material.dispose();
-      this.scene.remove(mesh);
+    for (let i = -1; i <= 1; i += 1) {
+      this.queueModel(`${hubRoot}/hub-tile.glb`, {
+        x: i * 5.45,
+        y: -2.35,
+        z: -0.98,
+        scale: 0.76,
+        tint: RUIN_DEN.floor,
+      });
     }
-    if (this.root) this.scene.remove(this.root);
-    this.meshes = [];
-    this.root = null;
+    this.queueModel(`${root}/Bricks.glb`, { x: -7.1, y: -2.65, z: -0.98, scale: 0.78 });
+    this.queueModel(`${root}/Bricks.glb`, { x: -2.3, y: -2.5, z: -0.98, scale: 0.78 });
+    this.queueModel(`${root}/Bricks.glb`, { x: 2.6, y: -2.65, z: -0.98, scale: 0.78 });
+    this.queueModel(`${root}/Bricks.glb`, { x: 7.2, y: -2.5, z: -0.98, scale: 0.78 });
+
+    this.queueModel(`${root}/Column.glb`, { x: -7.95, y: 0.95, z: -2.18, scale: 0.72 });
+    this.queueModel(`${root}/Column.glb`, { x: 7.95, y: 0.95, z: -2.18, scale: 0.72 });
+    this.queueModel(`${root}/Pedestal.glb`, { x: 6.9, y: -0.55, z: -1.22, scale: 0.74 });
+    this.queueModel(`${root}/crate.glb`, { x: -7.0, y: -3.05, z: -0.86, scale: 0.68 });
+    this.queueModel(`${root}/crystal.glb`, { x: 6.95, y: -1.45, z: -0.84, scale: 0.76 });
+    this.queueModel(`${root}/Torch.glb`, { x: -3.8, y: -1.0, z: -1.18, scale: 0.74 });
+    this.queueModel(`${root}/Torch.glb`, { x: 3.8, y: -1.0, z: -1.18, scale: 0.74 });
+    this.queueModel('./assets/models/world/city-breach/portal.glb', {
+      x: 7.1,
+      y: -2.18,
+      z: -1.12,
+      scale: 0.5,
+      tint: RUIN_DEN.fissure,
+      emissive: RUIN_DEN.fissure,
+      emissiveIntensity: 0.5,
+    });
   }
 }

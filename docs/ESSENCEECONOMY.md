@@ -17,7 +17,6 @@ Essence 🟠 is the shop currency dropped by enemies. It is separate from XP. Es
 | Grunt | 5–15 | Flat random in range |
 | Ranged | 10–20 | Slightly higher — harder to reach |
 | Bruiser | 25–40 | High value, high effort |
-| Gate Warden (miniboss) | 80–120 | Guaranteed on kill |
 | VRAEL | 200–300 | Boss clear bonus |
 | ZARTH | 250–350 | Boss clear bonus |
 | KIBAD | 275–375 | Boss clear bonus |
@@ -31,12 +30,12 @@ Drops spawn as a collectible on the ground at enemy death position. Auto-collect
 
 | Zone | Enemies Cleared | Estimated Essence |
 |---|---|---|
-| City Breach (Zone 1) | 18 enemies + miniboss + VRAEL | 650–950 |
-| Ruin Den (Zone 2) | 22 enemies + miniboss + ZARTH | 800–1100 |
-| Shadow Core (Zone 3) | 25 enemies + miniboss + KIBAD | 950–1300 |
-| Thunder Spire (Zone 4) | 28 enemies + miniboss + THYXIS | 1100–1500 |
+| City Breach (Zone 1) | expanded waves + VRAEL | 650-950 |
+| Ruin Den (Zone 2) | expanded waves + ZARTH | 800-1100 |
+| Shadow Core (Zone 3) | expanded waves + KIBAD | 950-1300 |
+| Thunder Spire (Zone 4) | expanded waves + THYXIS | 1100-1500 |
 
-A full 4-zone run yields approximately **3500–4850 Essence** before spending.
+A full 4-zone run yields approximately **3500-4850 Essence** before spending. The removed gate reward is now folded into the expanded wave budget and boss clear rewards. Retune the wave tables if final playtests show the shop economy drifting too high or too low.
 
 ---
 

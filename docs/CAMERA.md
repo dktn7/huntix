@@ -135,7 +135,6 @@ function applyShake(dt) {
 | Ultimate | 0.25 | 400ms |
 | Player hit taken | 0.08 | 100ms |
 | Boss phase change | 0.30 | 500ms |
-| Miniboss phase change | 0.20 | 350–400ms |
 | Wipe | 0.35 | 600ms |
 | Stampede wall break | 0.35 | 600ms |
 | Tomb Crawler full surface | 0.25 | 500ms |
@@ -177,6 +176,5 @@ During scene transitions (fade to black), a subtle letterbox effect (top/bottom 
 |--------|-----|
 | Shake triggered by attacks | [ATTACKSYSTEM.md](./ATTACKSYSTEM.md) |
 | Shake triggered by bosses | [BOSSES.md](./BOSSES.md) |
-| Shake triggered by minibosses | [MINIBOSS.md](./MINIBOSS.md) |
 | Game loop step 11 | [GAMELOOP.md](./GAMELOOP.md) |
 | Scene transition (fade) | [SCENEMANAGER.md](./SCENEMANAGER.md) |

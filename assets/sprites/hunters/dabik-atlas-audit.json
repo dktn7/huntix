@@ -10,15 +10,18 @@
     "dabik-hurt_202604250050.jpeg",
     "dabik-idle_202604250050.jpeg",
     "dabik-jump_202604250050.jpeg",
+    "dabik-revive_202604250050.jpeg",
     "dabik-revive_202604251941.jpeg",
     "dabik-run_202604250050.jpeg",
     "dabik-spell_advanced_202604250050.jpeg",
     "dabik-spell_minor_202604250050.jpeg",
+    "dabik-ultimate_202604250050.jpeg",
     "dabik-ultimate_202604251943.jpeg",
+    "dabik-weapon-swap_202604250050.jpeg",
     "dabik-weapon-swap_202604252008.jpeg"
   ],
-  "source_file_count": 15,
-  "packed_count": 147,
+  "source_file_count": 18,
+  "packed_count": 153,
   "state_counts": {
     "idle": 6,
     "run": 12,
@@ -26,7 +29,7 @@
     "attack_heavy": 14,
     "spell_minor": 10,
     "spell_advanced": 20,
-    "ultimate": 3,
+    "ultimate": 9,
     "dodge": 10,
     "hurt": 8,
     "dead": 9,
@@ -58,13 +61,13 @@
   "count_mismatches": [],
   "states_requiring_regeneration": [],
   "source_to_atlas": {
-    "expected_count": 147,
-    "atlas_count": 147,
+    "expected_count": 153,
+    "atlas_count": 153,
     "missing_in_atlas": [],
     "extra_in_atlas": []
   },
   "anchor_drift_px": 0,
-  "bbox_drift_px": 181,
+  "bbox_drift_px": 247,
   "size_drift_px": 0,
   "matte_artifact_ratio": 0.064,
   "per_state_metrics": {
@@ -90,7 +93,7 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 64,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.025
+      "matte_artifact_ratio": 0.027
     },
     "directional_right": {
       "count": 1,
@@ -106,7 +109,7 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 0,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.001
+      "matte_artifact_ratio": 0.002
     },
     "directional_front": {
       "count": 1,
@@ -130,7 +133,7 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 21.5,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.043
+      "matte_artifact_ratio": 0.054
     },
     "downed": {
       "count": 12,
@@ -138,7 +141,7 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 171,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.01
+      "matte_artifact_ratio": 0.016
     },
     "hurt": {
       "count": 8,
@@ -168,9 +171,9 @@
       "count": 18,
       "center_drift_px": 0.5,
       "foot_drift_px": 0,
-      "bbox_drift_px": 181,
+      "bbox_drift_px": 247,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.003
+      "matte_artifact_ratio": 0.02
     },
     "run": {
       "count": 12,
@@ -186,7 +189,7 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 116,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.019
+      "matte_artifact_ratio": 0.007
     },
     "spell_minor": {
       "count": 10,
@@ -194,15 +197,15 @@
       "foot_drift_px": 0,
       "bbox_drift_px": 146,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.025
+      "matte_artifact_ratio": 0.027
     },
     "ultimate": {
-      "count": 3,
-      "center_drift_px": 0,
+      "count": 9,
+      "center_drift_px": 0.5,
       "foot_drift_px": 0,
-      "bbox_drift_px": 36,
+      "bbox_drift_px": 105,
       "size_drift_px": 0,
-      "matte_artifact_ratio": 0.002
+      "matte_artifact_ratio": 0.003
     },
     "weapon_swap": {
       "count": 1,
@@ -409,6 +412,36 @@
       ]
     },
     {
+      "source_file": "dabik-revive_202604250050.jpeg",
+      "animation": "revive",
+      "anomalies": [
+        {
+          "state": "revive",
+          "issue": "sparse_grid_holes",
+          "holes": [
+            2,
+            8
+          ],
+          "used": [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "total_cells": 18
+        }
+      ]
+    },
+    {
       "source_file": "dabik-spell_advanced_202604250050.jpeg",
       "animation": "spell_advanced",
       "anomalies": [
@@ -498,6 +531,29 @@
             26
           ],
           "total_cells": 27
+        }
+      ]
+    },
+    {
+      "source_file": "dabik-ultimate_202604250050.jpeg",
+      "animation": "ultimate",
+      "anomalies": [
+        {
+          "state": "ultimate",
+          "issue": "sparse_grid_holes",
+          "holes": [
+            5
+          ],
+          "used": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ],
+          "total_cells": 8
         }
       ]
     }
@@ -729,7 +785,17 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 1,
+      "frame_index": 2,
+      "reason": "bbox_outlier",
+      "core": {
+        "w": 275,
+        "h": 354,
+        "long": 354
+      }
+    },
+    {
+      "state": "ultimate",
+      "frame_index": 7,
       "reason": "bbox_outlier",
       "core": {
         "w": 85,
@@ -739,7 +805,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 2,
+      "frame_index": 8,
       "reason": "bbox_outlier",
       "core": {
         "w": 92,
@@ -749,7 +815,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 3,
+      "frame_index": 9,
       "reason": "bbox_outlier",
       "core": {
         "w": 108,
@@ -759,17 +825,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 4,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 126,
-        "h": 120,
-        "long": 126
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 5,
+      "frame_index": 10,
       "reason": "bbox_outlier",
       "core": {
         "w": 130,
@@ -779,7 +835,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 8,
+      "frame_index": 13,
       "reason": "bbox_outlier",
       "core": {
         "w": 114,
@@ -789,17 +845,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 9,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 92,
-        "h": 127,
-        "long": 127
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 10,
+      "frame_index": 14,
       "reason": "bbox_outlier",
       "core": {
         "w": 99,
@@ -809,7 +855,17 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 11,
+      "frame_index": 15,
+      "reason": "bbox_outlier",
+      "core": {
+        "w": 96,
+        "h": 141,
+        "long": 141
+      }
+    },
+    {
+      "state": "ultimate",
+      "frame_index": 16,
       "reason": "bbox_outlier",
       "core": {
         "w": 124,
@@ -819,7 +875,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 12,
+      "frame_index": 17,
       "reason": "bbox_outlier",
       "core": {
         "w": 115,
@@ -829,17 +885,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 13,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 121,
-        "h": 115,
-        "long": 121
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 14,
+      "frame_index": 18,
       "reason": "bbox_outlier",
       "core": {
         "w": 124,
@@ -849,7 +895,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 15,
+      "frame_index": 19,
       "reason": "bbox_outlier",
       "core": {
         "w": 123,
@@ -859,7 +905,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 16,
+      "frame_index": 20,
       "reason": "bbox_outlier",
       "core": {
         "w": 120,
@@ -869,7 +915,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 17,
+      "frame_index": 21,
       "reason": "bbox_outlier",
       "core": {
         "w": 129,
@@ -879,17 +925,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 18,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 126,
-        "h": 117,
-        "long": 126
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 19,
+      "frame_index": 22,
       "reason": "bbox_outlier",
       "core": {
         "w": 113,
@@ -899,7 +935,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 20,
+      "frame_index": 23,
       "reason": "bbox_outlier",
       "core": {
         "w": 138,
@@ -909,7 +945,17 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 21,
+      "frame_index": 24,
+      "reason": "bbox_outlier",
+      "core": {
+        "w": 130,
+        "h": 120,
+        "long": 130
+      }
+    },
+    {
+      "state": "ultimate",
+      "frame_index": 25,
       "reason": "bbox_outlier",
       "core": {
         "w": 132,
@@ -919,17 +965,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 22,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 96,
-        "h": 111,
-        "long": 111
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 23,
+      "frame_index": 26,
       "reason": "bbox_outlier",
       "core": {
         "w": 131,
@@ -939,7 +975,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 24,
+      "frame_index": 27,
       "reason": "bbox_outlier",
       "core": {
         "w": 107,
@@ -949,7 +985,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 25,
+      "frame_index": 28,
       "reason": "bbox_outlier",
       "core": {
         "w": 104,
@@ -959,7 +995,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 26,
+      "frame_index": 29,
       "reason": "bbox_outlier",
       "core": {
         "w": 117,
@@ -969,7 +1005,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 27,
+      "frame_index": 30,
       "reason": "bbox_outlier",
       "core": {
         "w": 106,
@@ -979,17 +1015,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 28,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 110,
-        "h": 134,
-        "long": 134
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 29,
+      "frame_index": 31,
       "reason": "bbox_outlier",
       "core": {
         "w": 108,
@@ -999,7 +1025,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 31,
+      "frame_index": 34,
       "reason": "bbox_outlier",
       "core": {
         "w": 108,
@@ -1009,17 +1035,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 32,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 110,
-        "h": 144,
-        "long": 144
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 33,
+      "frame_index": 35,
       "reason": "bbox_outlier",
       "core": {
         "w": 108,
@@ -1029,7 +1045,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 34,
+      "frame_index": 36,
       "reason": "bbox_outlier",
       "core": {
         "w": 113,
@@ -1039,7 +1055,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 35,
+      "frame_index": 37,
       "reason": "bbox_outlier",
       "core": {
         "w": 113,
@@ -1049,7 +1065,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 36,
+      "frame_index": 38,
       "reason": "bbox_outlier",
       "core": {
         "w": 122,
@@ -1059,17 +1075,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 37,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 125,
-        "h": 139,
-        "long": 139
-      }
-    },
-    {
-      "state": "ultimate",
-      "frame_index": 38,
+      "frame_index": 39,
       "reason": "bbox_outlier",
       "core": {
         "w": 123,
@@ -1079,7 +1085,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 39,
+      "frame_index": 40,
       "reason": "bbox_outlier",
       "core": {
         "w": 116,
@@ -1089,7 +1095,7 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 40,
+      "frame_index": 41,
       "reason": "bbox_outlier",
       "core": {
         "w": 115,
@@ -1099,22 +1105,12 @@
     },
     {
       "state": "ultimate",
-      "frame_index": 41,
-      "reason": "bbox_outlier",
-      "core": {
-        "w": 95,
-        "h": 151,
-        "long": 151
-      }
-    },
-    {
-      "state": "ultimate",
       "frame_index": 42,
       "reason": "bbox_outlier",
       "core": {
-        "w": 59,
-        "h": 141,
-        "long": 141
+        "w": 118,
+        "h": 150,
+        "long": 150
       }
     },
     {
@@ -1122,9 +1118,9 @@
       "frame_index": 43,
       "reason": "bbox_outlier",
       "core": {
-        "w": 60,
-        "h": 139,
-        "long": 139
+        "w": 59,
+        "h": 141,
+        "long": 141
       }
     },
     {
@@ -1142,7 +1138,7 @@
       "frame_index": 45,
       "reason": "bbox_outlier",
       "core": {
-        "w": 57,
+        "w": 60,
         "h": 139,
         "long": 139
       }
@@ -1152,9 +1148,9 @@
       "frame_index": 46,
       "reason": "bbox_outlier",
       "core": {
-        "w": 73,
-        "h": 138,
-        "long": 138
+        "w": 57,
+        "h": 139,
+        "long": 139
       }
     },
     {
@@ -1202,9 +1198,9 @@
       "frame_index": 1,
       "reason": "bbox_outlier",
       "core": {
-        "w": 373,
-        "h": 659,
-        "long": 659
+        "w": 316,
+        "h": 717,
+        "long": 717
       }
     },
     {
@@ -1212,9 +1208,9 @@
       "frame_index": 2,
       "reason": "bbox_outlier",
       "core": {
-        "w": 374,
-        "h": 659,
-        "long": 659
+        "w": 312,
+        "h": 717,
+        "long": 717
       }
     },
     {
@@ -1222,9 +1218,9 @@
       "frame_index": 3,
       "reason": "bbox_outlier",
       "core": {
-        "w": 227,
-        "h": 658,
-        "long": 658
+        "w": 373,
+        "h": 659,
+        "long": 659
       }
     },
     {
@@ -1232,16 +1228,6 @@
       "frame_index": 4,
       "reason": "bbox_outlier",
       "core": {
-        "w": 378,
-        "h": 657,
-        "long": 657
-      }
-    },
-    {
-      "state": "weapon_swap",
-      "frame_index": 3,
-      "reason": "bbox_outlier",
-      "core": {
         "w": 227,
         "h": 658,
         "long": 658
@@ -1249,7 +1235,7 @@
     },
     {
       "state": "weapon_swap",
-      "frame_index": 1,
+      "frame_index": 3,
       "reason": "bbox_outlier",
       "core": {
         "w": 373,
@@ -1259,12 +1245,22 @@
     },
     {
       "state": "weapon_swap",
+      "frame_index": 1,
+      "reason": "bbox_outlier",
+      "core": {
+        "w": 316,
+        "h": 717,
+        "long": 717
+      }
+    },
+    {
+      "state": "weapon_swap",
       "frame_index": 2,
       "reason": "bbox_outlier",
       "core": {
-        "w": 374,
-        "h": 659,
-        "long": 659
+        "w": 312,
+        "h": 717,
+        "long": 717
       }
     }
   ],

@@ -232,7 +232,6 @@ export function createHunterMesh(atlasTexture, atlasData) {
 | Grunt | 1.2 |
 | Ranged Unit | 1.1 |
 | Bruiser | 2.0 |
-| Gate Warden (miniboss) | 2.5 |
 | Boss | 3.0 |
 
 ---

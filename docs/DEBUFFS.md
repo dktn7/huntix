@@ -25,7 +25,7 @@ All debuffs:
 
 | Property | Value |
 |----------|-------|
-| Applied by | Grunt melee hits (Zone 2+), Gate Warden Wide Swipe |
+| Applied by | Grunt melee hits (Zone 2+) |
 | Duration | 4.0s |
 | Effect | Deals 3 damage per second (DoT). Does not interrupt actions. |
 | Total damage | 12 over full duration |
@@ -137,3 +137,4 @@ All debuffs:
 | HUD debuff icon display | [HUD.md](./HUD.md) |
 | I-frame immunity window | [ATTACKSYSTEM.md](./ATTACKSYSTEM.md) |
 | Status effects on enemies (hunter-applied) | [SPELLS.md](./SPELLS.md) |
+

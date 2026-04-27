@@ -39,7 +39,7 @@ The objective is to clear zones, defeat bosses, collect rewards, and grow strong
 1. Spawn in the hunter hub
 2. Choose a portal
 3. Fight through a short combat zone
-4. Defeat a miniboss or boss
+4. Defeat the zone boss
 5. Return to the hub
 6. Buy items or level up powers
 7. Repeat in a new zone or run again
@@ -116,8 +116,7 @@ See [ENEMIES.md](./ENEMIES.md) for full enemy specs, AI states, and wave composi
 | Grunt | Standard melee — rushes players, basic attack pattern |
 | Ranged Unit | Projectile attacker — keeps distance, fires at players |
 | Bruiser | Slow, durable — high health, high pressure, hard to stagger |
-| Mini-boss | Zone gatekeeper — stronger patterns, telegraphed attacks |
-| Boss | Zone finale — multiple phases, dramatic telegraphs |
+| Boss | Zone finale — dramatic telegraphs |
 
 ---
 
@@ -219,7 +218,7 @@ See [AUDIO.md](./AUDIO.md) for full SFX list and music direction.
 - 1–4 local players
 - Optional AI companion
 - 3 enemy types (Grunt, Ranged, Bruiser)
-- 1 miniboss (Gate Warden), 1 final boss per zone (4 total)
+- 1 final boss per zone (4 total); extra wave pressure replaces the old gate beat
 - Shop with items (see PROGRESSION.md)
 - **10-level spell-linked progression system**
 - **4 portal zones** (City Breach, Ruin Den, Shadow Core, Thunder Spire)
@@ -245,11 +244,11 @@ Built in Three.js using a 2.5D architecture. Key systems:
 - Scene setup and zone management
 - Local player handling (1–4)
 - Combat, status effects, and synergies
-- Enemy AI and boss phases (lane-based pathing)
+- Enemy AI and boss fights (lane-based pathing)
 - Mana, surge, and resource management
 - **Shop, spell unlock, and 10-level upgrade flow** (see PROGRESSION.md)
 - Portal transitions
 - Parallax background layers (3 per zone)
 - Vibe Jam widget integration
 
-See [MVP-PLAN.md](./MVP-PLAN.md) for the full 18-day phased development timeline.
+See [MVP-PLAN.md](./MVP-PLAN.md) for the 3-day finish-line plan.

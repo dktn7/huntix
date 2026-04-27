@@ -23,28 +23,28 @@
       "regenStates": 0,
       "sizeViolations": 0,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.158,
-      "sizeDriftPx": 0
+      "matteArtifactRatio": 0.159,
+      "sizeDriftPx": 3
     },
     "sereisa": {
       "path": "sereisa-atlas-audit.json",
       "missingStates": 0,
       "countMismatches": 0,
       "regenStates": 0,
-      "sizeViolations": 0,
+      "sizeViolations": 6,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.468,
-      "sizeDriftPx": 24
+      "matteArtifactRatio": 0.471,
+      "sizeDriftPx": 178
     },
     "vesol": {
       "path": "vesol-atlas-audit.json",
       "missingStates": 0,
       "countMismatches": 0,
       "regenStates": 0,
-      "sizeViolations": 0,
+      "sizeViolations": 1,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.174,
-      "sizeDriftPx": 0
+      "matteArtifactRatio": 0.175,
+      "sizeDriftPx": 267
     }
   }
 }

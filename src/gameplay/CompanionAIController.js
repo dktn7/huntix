@@ -113,7 +113,7 @@ export class CompanionAIController {
 
   _targetScore(enemy, distance, role, vulnerableAlly, flow) {
     let score = 100 - distance * 9;
-    if (enemy.kind === 'boss' || enemy.kind === 'miniboss') score += flow?.bossActive ? 55 : 30;
+    if (enemy.kind === 'boss') score += flow?.bossActive ? 55 : 30;
     if (enemy.type === 'RANGED') score += role === 'assassin' || role === 'skirmisher' ? 45 : 18;
     if (enemy.type === 'BRUISER' || enemy.type === 'FIRE_BRUISER') score += role === 'guardian' ? 40 : 8;
     if (enemy.hp <= 90) score += role === 'assassin' ? 35 : 12;

@@ -4,6 +4,7 @@ import { Hitbox, HitboxOwners } from './Hitbox.js';
 import { BossEncounter } from './BossEncounter.js';
 import { ZONE_CONFIGS } from './ZoneManager.js';
 import { pointInsideVisibleArena } from './ArenaBounds.js';
+import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 import {
   applyAtlasFrame,
   findFrameKeyForStates,
@@ -46,12 +47,21 @@ const ENEMY_VISUAL_COLORS = {
   [EnemyTypes.FIRE_BRUISER]: 0xff6a00,
 };
 
+const ZONE_ENEMY_TINT = {
+  'city-breach': 0xffefe1,
+  'ruin-den': 0xf4e8d6,
+  'shadow-core': 0xe9deff,
+  'thunder-spire': 0xe3f6ff,
+};
+
 const ENEMY_ATLAS_BY_TYPE = {
   [EnemyTypes.GRUNT]: 'grunt',
   [EnemyTypes.RANGED]: 'ranged',
   [EnemyTypes.BRUISER]: 'bruiser',
   [EnemyTypes.FIRE_BRUISER]: 'bruiser-zone-variant',
 };
+
+const ENEMY_BILLBOARD_TILT_X = -ORTHO_CAMERA_TILT_X;
 
 function cloneComposition(base = {}, extraGrunts = 0) {
   return {
@@ -63,7 +73,7 @@ function cloneComposition(base = {}, extraGrunts = 0) {
 }
 
 export class EnemySpawner {
-  /** Creates the enemy, projectile, wave, miniboss, and boss encounter manager. */
+  /** Creates the enemy, projectile, wave, and boss encounter manager. */
   constructor(scene, playerCount = 1) {
     this.scene = scene;
     this.playerCount = Math.max(1, Math.min(4, playerCount));
@@ -85,7 +95,6 @@ export class EnemySpawner {
     this._zoneState = 'idle';
     this._encounterDelay = 0;
     this._zoneClearDelay = 0;
-    this._minibossDone = false;
     this._bossEncounter = null;
     this._lastDefeatedBoss = null;
     this._bossSpawnEmitted = false;
@@ -108,6 +117,8 @@ export class EnemySpawner {
       this._enemyMeshes.set(type, mesh);
       scene.add(mesh);
     }
+    this._enemyShadowMesh = this._createEnemyShadowMesh();
+    scene.add(this._enemyShadowMesh);
     this._loadEnemyAtlases();
 
     this._statusLights = [];
@@ -140,13 +151,12 @@ export class EnemySpawner {
     this.startZone(ZONE_CONFIGS['city-breach']);
   }
 
-  /** Starts a configured zone run with waves, optional miniboss, and boss. */
+  /** Starts a configured zone run with waves and a boss. */
   startZone(zoneConfig) {
     this._zoneConfig = zoneConfig || null;
     this._zoneState = 'waves';
     this._zoneClearEmitted = false;
     this._bossSpawnEmitted = false;
-    this._minibossDone = !zoneConfig?.miniboss;
     this._areaIndex = 0;
     this._routeGateOpen = false;
     this._routeGateKind = null;
@@ -195,6 +205,7 @@ export class EnemySpawner {
       const events = this._bossEncounter.update(dt, targets);
       this._handleBossEvents(events);
       if (this._bossEncounter.canRemove()) {
+        this._bossEncounter.dispose?.();
         this._bossEncounter = null;
       }
     }
@@ -279,11 +290,7 @@ export class EnemySpawner {
     }
 
     if (gateKind === 'boss') {
-      if (!this._minibossDone && this._zoneConfig.miniboss) {
-        this._spawnBossEncounter(this._zoneConfig.miniboss, 'miniboss');
-        this._minibossDone = true;
-        this._zoneState = 'miniboss';
-      } else if (!this._bossEncounter && this._zoneConfig.boss) {
+      if (!this._bossEncounter && this._zoneConfig.boss) {
         this._spawnBossEncounter(this._zoneConfig.boss, 'boss');
         this._bossSpawnEmitted = true;
         this._zoneState = 'boss';
@@ -345,16 +352,9 @@ export class EnemySpawner {
       }
 
       if (event.type === 'bossDefeated') {
-        if (event.kind === 'miniboss') {
-          this._zoneState = 'miniboss';
-          this._openRouteGate('boss', DEFAULT_ENCOUNTER_DELAY);
-          this._lastDefeatedBoss = event.boss;
-          this._events.push({ type: 'minibossDefeated', boss: event.boss, zoneId: this._zoneConfig?.id });
-        } else {
-          this._zoneState = 'complete';
-          this._zoneClearDelay = DEFAULT_ZONE_CLEAR_DELAY;
-          this._lastDefeatedBoss = event.boss;
-        }
+        this._zoneState = 'complete';
+        this._zoneClearDelay = DEFAULT_ZONE_CLEAR_DELAY;
+        this._lastDefeatedBoss = event.boss;
         this._events.push(event);
         continue;
       }
@@ -452,13 +452,6 @@ export class EnemySpawner {
       return;
     }
 
-    if (this._zoneState === 'miniboss') {
-      if (!this._bossEncounter) {
-        this._updateRouteGate(dt);
-      }
-      return;
-    }
-
     if (this._zoneState === 'complete') {
       this._zoneClearDelay = Math.max(0, this._zoneClearDelay - dt);
       if (this._zoneClearDelay <= 0 && !this._zoneClearEmitted) {
@@ -476,11 +469,11 @@ export class EnemySpawner {
     }, this.playerCount);
     this._bossEncounter = encounter;
     this._events.push({
-      type: kind === 'miniboss' ? 'minibossStart' : 'bossStart',
+      type: 'bossStart',
       boss: encounter,
       zoneId: this._zoneConfig?.id,
     });
-    this._encounterDelay = kind === 'miniboss' ? DEFAULT_ENCOUNTER_DELAY : 0;
+    this._encounterDelay = 0;
   }
 
   _openRouteGate(kind, delay = DEFAULT_WAVE_DELAY) {
@@ -525,7 +518,6 @@ export class EnemySpawner {
     this._events.push({
       type: 'waveStart',
       wave: this._waveIndex + 1,
-      miniboss: !!wave.miniboss,
       zoneId: this._zoneConfig.id,
     });
     this._encounterDelay = DEFAULT_ENCOUNTER_DELAY;
@@ -619,6 +611,7 @@ export class EnemySpawner {
     for (const mesh of this._enemyMeshes.values()) {
       mesh.count = 0;
     }
+    this._enemyShadowMesh.count = 0;
 
     let lightIndex = 0;
     const visibleCount = Math.min(this._enemies.length, ENEMY_CAPACITY);
@@ -631,6 +624,12 @@ export class EnemySpawner {
       const mesh = this._enemyMeshes.get(meshType);
       if (!mesh) continue;
       if (mesh.count >= ENEMY_CAPACITY) continue;
+
+      this._scale.set(enemy.config.width * 1.2, Math.max(0.22, enemy.config.height * 0.24), 1);
+      this._position.set(enemy.position.x, enemy.position.y, -enemy.position.y * 0.01 - 0.03);
+      this._matrix.compose(this._position, this._quaternion, this._scale);
+      this._enemyShadowMesh.setMatrixAt(this._enemyShadowMesh.count, this._matrix);
+      this._enemyShadowMesh.count += 1;
 
       this._writeScaleFor(enemy);
       this._scale.x *= enemy.facing >= 0 ? 1 : -1;
@@ -654,6 +653,7 @@ export class EnemySpawner {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     }
+    this._enemyShadowMesh.instanceMatrix.needsUpdate = true;
   }
 
   _syncProjectiles() {
@@ -672,6 +672,7 @@ export class EnemySpawner {
   _createEnemyMesh(type) {
     const geometry = new THREE.PlaneGeometry(0.8, 1.1);
     geometry.translate(0, 0.55, 0);
+    geometry.rotateX(ENEMY_BILLBOARD_TILT_X);
 
     const material = new THREE.MeshBasicMaterial({
       color: ENEMY_VISUAL_COLORS[type] || 0xffffff,
@@ -681,6 +682,20 @@ export class EnemySpawner {
       depthWrite: false,
     });
 
+    const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    mesh.count = 0;
+    return mesh;
+  }
+
+  _createEnemyShadowMesh() {
+    const geometry = new THREE.PlaneGeometry(1.0, 0.32);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+    });
     const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.count = 0;
@@ -749,11 +764,12 @@ export class EnemySpawner {
   _colorFor(enemy) {
     const meshType = this._meshTypeFor(enemy.type);
     const hasSpriteMap = !!this._enemyMeshes.get(meshType)?.material?.map;
+    const zoneTint = this._zoneConfig?.enemyTint || ZONE_ENEMY_TINT[this._zoneConfig?.id] || 0xffffff;
     if (hasSpriteMap) {
       if (enemy.state === 'DEAD') return 0x777777;
       if (enemy.state === 'HURT') return 0xffb4b4;
       if (enemy.isTelegraphing) return 0xffd6d6;
-      return 0xffffff;
+      return zoneTint;
     }
 
     if (enemy.state === 'DEAD') return 0x222222;
@@ -762,7 +778,25 @@ export class EnemySpawner {
     if (enemy.statusEffects?.getDisplayColor?.()) return enemy.statusEffects.getDisplayColor();
     if (enemy.state === 'WAIT') return 0x4f4a4a;
     if (enemy.state === 'AGGRO' || enemy.state === 'ATTACK') return 0x8c7a7a;
-    return enemy.config.color;
+    return this._blendColor(enemy.config.color, zoneTint, 0.38);
+  }
+
+  _blendColor(base, tint, mix = 0.5) {
+    const clamped = Math.max(0, Math.min(1, mix));
+    const inv = 1 - clamped;
+
+    const br = (base >> 16) & 0xff;
+    const bg = (base >> 8) & 0xff;
+    const bb = base & 0xff;
+
+    const tr = (tint >> 16) & 0xff;
+    const tg = (tint >> 8) & 0xff;
+    const tb = tint & 0xff;
+
+    const r = Math.round(br * inv + tr * clamped);
+    const g = Math.round(bg * inv + tg * clamped);
+    const b = Math.round(bb * inv + tb * clamped);
+    return (r << 16) | (g << 8) | b;
   }
 
   _syncStatusLight(index, enemy) {

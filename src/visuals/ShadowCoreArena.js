@@ -1,81 +1,160 @@
 import * as THREE from 'three';
+import { Base3DArena } from './Base3DArena.js';
 import { SHADOW_CORE } from './Palettes.js';
 
-export class ShadowCoreArena {
-  constructor(scene) {
-    this.scene = scene;
-    this.meshes = [];
-    this.root = null;
-    this._time = 0;
+export class ShadowCoreArena extends Base3DArena {
+  constructor(scene, zoneConfig = null) {
+    super(scene, { colormapTexture: './assets/textures/props/shadow-core/colormap.png' });
+    this.zoneConfig = zoneConfig || {};
   }
 
   build() {
-    this.root = new THREE.Group();
+    this.addRoomShell(this.zoneConfig.roomProfile || {
+      bounds: { minX: -8.25, maxX: 8.25, minY: -4.2, maxY: 3.2 },
+      floorColor: SHADOW_CORE.floor,
+      wallColor: 0x271f4a,
+      frontWallColor: 0x1e1739,
+      trimColor: SHADOW_CORE.bloom,
+      pillarColor: 0x35295e,
+      laneColor: 0x3e2f73,
+      bgLayerColor: 0xb08cff,
+      fgLayerColor: 0x150f26,
+      laneY: -2.2,
+    });
 
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 8),
-      new THREE.MeshBasicMaterial({ color: SHADOW_CORE.floor })
-    );
-    this.root.add(floor);
-    this.meshes.push(floor);
+    const crackMaterial = new THREE.MeshBasicMaterial({
+      color: SHADOW_CORE.bloom,
+      transparent: true,
+      opacity: 0.26,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    for (let i = -4; i <= 4; i += 1) {
+      const crack = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.12), crackMaterial);
+      crack.position.set(i * 2.35, -2.1 + (i % 3) * 0.12, -0.92);
+      crack.rotation.z = 0.28 * (i % 2 === 0 ? 1 : -1);
+      this.add(crack);
+    }
+    this._animatedMaterials.push({
+      material: crackMaterial,
+      pulse: 3.9,
+      minOpacity: 0.14,
+      maxOpacity: 0.34,
+      phase: -0.6,
+    });
 
-    const voidBack = new THREE.Mesh(
-      new THREE.PlaneGeometry(48, 11),
-      new THREE.MeshBasicMaterial({ color: SHADOW_CORE.void, transparent: true, opacity: 0.98 })
-    );
-    voidBack.position.set(0, 2.8, -6);
-    this.root.add(voidBack);
-    this.meshes.push(voidBack);
-
-    const bloom = new THREE.Mesh(
-      new THREE.PlaneGeometry(18, 8),
-      new THREE.MeshBasicMaterial({ color: SHADOW_CORE.bloom, transparent: true, opacity: 0.08 })
-    );
-    bloom.position.set(8, 1.1, -2.2);
-    this.root.add(bloom);
-    this.meshes.push(bloom);
-
-    const archMat = new THREE.MeshBasicMaterial({ color: SHADOW_CORE.silver, transparent: true, opacity: 0.68 });
-    for (const x of [-13, -4, 7, 15]) {
-      const arch = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.7, 0.2), archMat);
-      arch.position.set(x, 0.9, -2.0);
-      this.root.add(arch);
-      this.meshes.push(arch);
+    const shardMaterial = new THREE.MeshLambertMaterial({ color: SHADOW_CORE.violet });
+    for (let i = 0; i < 7; i += 1) {
+      const shard = new THREE.Mesh(new THREE.ConeGeometry(0.36, 1.5, 5), shardMaterial);
+      shard.position.set(-7.0 + i * 2.2, 1.9 + (i % 2) * 0.28, -2.05 - (i % 3) * 0.14);
+      shard.rotation.z = (i % 2 === 0 ? -1 : 1) * 0.26;
+      shard.rotation.x = Math.PI;
+      this.add(shard);
     }
 
-    const tendrilMat = new THREE.MeshBasicMaterial({ color: SHADOW_CORE.violet, transparent: true, opacity: 0.55 });
-    for (const x of [-16, -7, 1, 10]) {
-      const tendril = new THREE.Mesh(new THREE.BoxGeometry(0.25, 3.8, 0.12), tendrilMat);
-      tendril.position.set(x, 1.2, -1.5);
-      this.root.add(tendril);
-      this.meshes.push(tendril);
-    }
+    const altarMaterial = new THREE.MeshLambertMaterial({ color: 0x2b2450 });
+    const altar = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.1, 1.05), altarMaterial);
+    altar.position.set(6.9, 0.0, -1.36);
+    this.add(altar);
 
-    this.scene.add(this.root);
-    return this.root;
+    const halo = new THREE.Mesh(
+      new THREE.TorusGeometry(1.1, 0.1, 10, 36),
+      new THREE.MeshBasicMaterial({
+        color: SHADOW_CORE.bloom,
+        transparent: true,
+        opacity: 0.62,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    halo.position.set(6.9, 1.35, -1.18);
+    this.add(halo);
+    this._animatedMaterials.push({
+      material: halo.material,
+      pulse: 5.9,
+      minOpacity: 0.3,
+      maxOpacity: 0.68,
+      phase: 0.9,
+    });
+
+    this.addHazardCircle({
+      id: 'shadow-void-pool-top',
+      x: -2.2,
+      y: -1.05,
+      radius: 1.3,
+      color: SHADOW_CORE.violet,
+      damage: 8,
+      tick: 0.42,
+      activeWhen: 'always',
+      pulse: 6.8,
+    });
+    this.addHazardCircle({
+      id: 'shadow-void-pool-bottom',
+      x: -2.2,
+      y: -3.35,
+      radius: 1.3,
+      color: SHADOW_CORE.violet,
+      damage: 8,
+      tick: 0.42,
+      activeWhen: 'always',
+      pulse: 6.8,
+    });
+    this.addHazardRect({
+      id: 'shadow-radiant-strip',
+      x: 8.7,
+      y: -2.2,
+      width: 2.8,
+      height: 1.2,
+      color: SHADOW_CORE.bloom,
+      damage: 9,
+      tick: 0.45,
+      activeWhen: 'boss',
+      pulse: 9.2,
+      minOpacity: 0.18,
+      maxOpacity: 0.5,
+    });
+
+    this._queueWorldKit();
+
+    return this.group;
   }
 
-  update(dt, focusX = 0) {
-    if (!this.root) return;
-    this._time += dt;
-    const pulse = 0.5 + Math.sin(this._time * 0.8) * 0.5;
-    if (this.meshes[1]?.material) {
-      this.meshes[1].material.opacity = 0.95 + pulse * 0.03;
-    }
-    for (let i = 2; i < this.root.children.length; i += 1) {
-      const child = this.root.children[i];
-      child.position.x = child.position.x * 0.9995 + focusX * 0.0005;
-    }
-  }
+  _queueWorldKit() {
+    const root = './assets/models/world/shadow-core';
+    const hubRoot = './assets/models/world/hub';
 
-  dispose() {
-    for (const mesh of this.meshes) {
-      if (mesh.geometry) mesh.geometry.dispose();
-      if (mesh.material) mesh.material.dispose();
-      this.scene.remove(mesh);
+    for (let i = -1; i <= 1; i += 1) {
+      this.queueModel(`${root}/shadow-tile.glb`, {
+        x: i * 5.4,
+        y: -2.35,
+        z: -1.0,
+        scale: 0.78,
+      });
     }
-    if (this.root) this.scene.remove(this.root);
-    this.meshes = [];
-    this.root = null;
+
+    for (let i = -1; i <= 1; i += 1) {
+      this.queueModel(`${root}/downward-spire.glb`, {
+        x: i * 5.2,
+        y: 2.45 + (i % 2) * 0.24,
+        z: -2.66,
+        scale: 0.72,
+      });
+    }
+    this.queueModel(`${hubRoot}/hub-tile.glb`, { x: -7.95, y: -3.1, z: -0.96, scale: 0.56, tint: SHADOW_CORE.floor });
+    this.queueModel(`${hubRoot}/hub-tile.glb`, { x: 7.95, y: -3.1, z: -0.96, scale: 0.56, tint: SHADOW_CORE.floor });
+
+    this.queueModel(`${root}/shattered-glass.glb`, { x: -7.2, y: -1.7, z: -0.84, scale: 0.74 });
+    this.queueModel(`${root}/shattered-glass.glb`, { x: 7.2, y: -2.85, z: -0.84, scale: 0.74, rz: Math.PI * 0.14 });
+    this.queueModel(`${root}/platform-overhang.glb`, { x: 6.95, y: -0.3, z: -1.74, scale: 0.74 });
+    this.queueModel(`${root}/rocks.glb`, { x: -7.35, y: -2.4, z: -0.94, scale: 0.78 });
+    this.queueModel(`${root}/spike-block-wide.glb`, { x: 4.35, y: -3.62, z: -0.82, scale: 0.72 });
+    this.queueModel('./assets/models/world/city-breach/portal.glb', {
+      x: 7.2,
+      y: -2.1,
+      z: -1.2,
+      scale: 0.5,
+      tint: SHADOW_CORE.bloom,
+      emissive: SHADOW_CORE.bloom,
+      emissiveIntensity: 0.58,
+    });
   }
 }

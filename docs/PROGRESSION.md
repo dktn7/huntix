@@ -37,7 +37,6 @@ XP rewards **skill and aggression**, not just killing.
 | Combo ×10 bonus | +50 |
 | Dodge cancel into attack | +5 |
 | Status effect proc (per tick) | +8 |
-| Miniboss kill | 200 |
 | Boss kill | 500 |
 | Zone clear (all waves) | 150 |
 | No-damage wave clear bonus | +100 |
@@ -200,16 +199,15 @@ When the L5 card choice offers a passive, the 3 options are drawn from this pool
 
 | Source | Essence |
 |--------|---------|
-| Grunt kill | 10–20 |
-| Ranged unit kill | 15–25 |
-| Bruiser kill | 30–50 |
-| Miniboss kill | 80 |
+| Grunt kill | 10-20 |
+| Ranged unit kill | 15-25 |
+| Bruiser kill | 30-50 |
 | Boss kill | 200 |
 | Zone clear bonus | 100 |
 | No-damage wave bonus | +50 |
 
-> **Full clean run estimate:** ~20 regular enemies × 18 avg + 4 minibosses × 80 + 4 bosses × 200 + 4 zone clears × 100 ≈ **2,560 Essence total**
-> At max 2 buys per visit × 4 visits = **8 shop purchases** over a run. This keeps the shop meaningful — you can't buy everything.
+> **Full clean run estimate:** the removed gate reward is now distributed across the longer wave budget and boss clear rewards. Retune the wave tables if the economy feels too generous or too tight in playtests.
+> At max 2 buys per visit x 4 visits = **8 shop purchases** over a run. This keeps the shop meaningful - you cannot buy everything.
 
 ---
 

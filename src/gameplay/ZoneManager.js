@@ -9,6 +9,11 @@ import { CITY_BREACH, RUIN_DEN, SHADOW_CORE, THUNDER_SPIRE } from '../visuals/Pa
 export const ZONE_ORDER = ['city-breach', 'ruin-den', 'shadow-core', 'thunder-spire'];
 
 export const HUB_ZONE_ID = 'hub';
+const HUB_PLAY_BOUNDS = { minX: -8.4, maxX: 8.4, minY: -4.25, maxY: 3.35 };
+const CITY_PLAY_BOUNDS = { minX: -8.25, maxX: 8.25, minY: -4.25, maxY: 3.25 };
+const RUIN_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 };
+const SHADOW_PLAY_BOUNDS = { minX: -8.25, maxX: 8.25, minY: -4.2, maxY: 3.2 };
+const THUNDER_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.15, maxY: 3.2 };
 
 export const ZONE_CONFIGS = {
   // ---------------------------------------------------------------------------
@@ -23,6 +28,24 @@ export const ZONE_CONFIGS = {
     waves: [],
     boss: null,
     neutral: true,
+    playBounds: HUB_PLAY_BOUNDS,
+    blockers: [
+      { x: -7.2, y: -1.45, width: 2.5, height: 1.1 },
+      { x: 1.9, y: 0.65, width: 1.5, height: 1.0 },
+      { x: 6.9, y: -0.25, width: 2.8, height: 2.5 },
+    ],
+    roomProfile: {
+      bounds: HUB_PLAY_BOUNDS,
+      floorColor: 0x1b2230,
+      wallColor: 0x222f49,
+      frontWallColor: 0x1a253b,
+      trimColor: 0x5a77b7,
+      pillarColor: 0x324463,
+      laneColor: 0x2e4364,
+      bgLayerColor: 0x87a9ff,
+      fgLayerColor: 0x111a2a,
+      laneY: -2.2,
+    },
   },
 
   // ---------------------------------------------------------------------------
@@ -34,7 +57,25 @@ export const ZONE_CONFIGS = {
     label: 'City Breach',
     clearBg: './assets/backgrounds/clear-city.jpeg',
     portalColor: CITY_BREACH.gateFire,
-    portalX: -6.8,
+    portalX: 4.8,
+    enemyTint: 0xffefe1,
+    playBounds: CITY_PLAY_BOUNDS,
+    blockers: [
+      { x: -6.95, y: -1.15, width: 1.65, height: 2.1 },
+      { x: 7.0, y: -2.2, width: 1.45, height: 1.5 },
+    ],
+    roomProfile: {
+      bounds: CITY_PLAY_BOUNDS,
+      floorColor: CITY_BREACH.charcoal,
+      wallColor: 0x2f3444,
+      frontWallColor: 0x252b37,
+      trimColor: 0xe58a2d,
+      pillarColor: 0x3a3643,
+      laneColor: 0x465061,
+      bgLayerColor: 0xff8f5b,
+      fgLayerColor: 0x141923,
+      laneY: -2.2,
+    },
     waves: [
       { grunts: 4 },
       { grunts: 3, ranged: 1 },
@@ -96,7 +137,25 @@ export const ZONE_CONFIGS = {
     label: 'Ruin Den',
     clearBg: './assets/backgrounds/clear-ruin.jpeg',
     portalColor: RUIN_DEN.fissure,
-    portalX: -2.2,
+    portalX: 6.0,
+    enemyTint: 0xf4e8d6,
+    playBounds: RUIN_PLAY_BOUNDS,
+    blockers: [
+      { x: -6.8, y: 0.45, width: 1.15, height: 2.7 },
+      { x: 6.8, y: 0.45, width: 1.15, height: 2.7 },
+    ],
+    roomProfile: {
+      bounds: RUIN_PLAY_BOUNDS,
+      floorColor: RUIN_DEN.floor,
+      wallColor: 0x3e352e,
+      frontWallColor: 0x322b26,
+      trimColor: RUIN_DEN.fissure,
+      pillarColor: 0x53463c,
+      laneColor: 0x5f5548,
+      bgLayerColor: 0xc99873,
+      fgLayerColor: 0x1d1712,
+      laneY: -2.2,
+    },
     waves: [
       { grunts: 3, ranged: 2 },
       { bruisers: 2 },
@@ -158,7 +217,25 @@ export const ZONE_CONFIGS = {
     label: 'Shadow Core',
     clearBg: './assets/backgrounds/clear-void.jpeg',
     portalColor: SHADOW_CORE.violet,
-    portalX: 2.4,
+    portalX: 7.2,
+    enemyTint: 0xe9deff,
+    playBounds: SHADOW_PLAY_BOUNDS,
+    blockers: [
+      { x: 6.75, y: 0.0, width: 2.1, height: 1.7 },
+      { x: -6.9, y: -2.65, width: 1.6, height: 1.1 },
+    ],
+    roomProfile: {
+      bounds: SHADOW_PLAY_BOUNDS,
+      floorColor: SHADOW_CORE.floor,
+      wallColor: 0x271f4a,
+      frontWallColor: 0x1e1739,
+      trimColor: SHADOW_CORE.bloom,
+      pillarColor: 0x35295e,
+      laneColor: 0x3e2f73,
+      bgLayerColor: 0xb08cff,
+      fgLayerColor: 0x150f26,
+      laneY: -2.2,
+    },
     waves: [
       { grunts: 5, ranged: 1 },
       { bruisers: 2, ranged: 2 },
@@ -194,7 +271,25 @@ export const ZONE_CONFIGS = {
     label: 'Thunder Spire',
     clearBg: './assets/backgrounds/clear-spire.jpeg',
     portalColor: THUNDER_SPIRE.lightning,
-    portalX: 6.8,
+    portalX: 8.4,
+    enemyTint: 0xe3f6ff,
+    playBounds: THUNDER_PLAY_BOUNDS,
+    blockers: [
+      { x: -6.75, y: -2.75, width: 1.85, height: 1.0 },
+      { x: 7.15, y: 0.25, width: 1.45, height: 1.85 },
+    ],
+    roomProfile: {
+      bounds: THUNDER_PLAY_BOUNDS,
+      floorColor: THUNDER_SPIRE.floor,
+      wallColor: 0x2f3951,
+      frontWallColor: 0x262e42,
+      trimColor: THUNDER_SPIRE.lightning,
+      pillarColor: 0x4f5d78,
+      laneColor: 0x3e4d6b,
+      bgLayerColor: 0x89d9ff,
+      fgLayerColor: 0x121a27,
+      laneY: -2.2,
+    },
     waves: [
       { grunts: 4, ranged: 2 },
       { bruisers: 3 },
@@ -234,15 +329,17 @@ export class ZoneManager {
     this.scene = scene;
     this.activeZoneId = null;
     this._arenaMap = {
-      'city-breach': new CityBreachArena(scene).build(),
-      'ruin-den': new RuinDenArena(scene).build(),
-      'shadow-core': new ShadowCoreArena(scene).build(),
-      'thunder-spire': new ThunderSpireArena(scene).build(),
+      'city-breach': new CityBreachArena(scene, ZONE_CONFIGS['city-breach']),
+      'ruin-den': new RuinDenArena(scene, ZONE_CONFIGS['ruin-den']),
+      'shadow-core': new ShadowCoreArena(scene, ZONE_CONFIGS['shadow-core']),
+      'thunder-spire': new ThunderSpireArena(scene, ZONE_CONFIGS['thunder-spire']),
     };
 
     for (const zoneId of ZONE_ORDER) {
       const arena = this._arenaMap[zoneId];
-      if (arena) arena.visible = false;
+      if (!arena) continue;
+      arena.build();
+      arena.group.visible = false;
     }
   }
 
@@ -265,6 +362,14 @@ export class ZoneManager {
     return ZONE_ORDER[index + 1] || null;
   }
 
+  getUnlockRequirement(zoneId) {
+    const index = ZONE_ORDER.indexOf(zoneId);
+    if (index <= 0) return null;
+    const previousId = ZONE_ORDER[index - 1];
+    const previous = this.getZoneConfig(previousId);
+    return previous?.label || null;
+  }
+
   getUnlockedZoneIds(zonesCleared) {
     const count = Math.max(1, Math.min(ZONE_ORDER.length, zonesCleared + 1));
     return ZONE_ORDER.slice(0, count);
@@ -283,7 +388,8 @@ export class ZoneManager {
     this.activeZoneId = zoneId;
     for (const key of ZONE_ORDER) {
       const arena = this._arenaMap[key];
-      if (arena) arena.visible = key === zoneId;
+      if (!arena) continue;
+      arena.group.visible = key === zoneId;
     }
     return this.getZoneConfig(zoneId);
   }
@@ -292,13 +398,19 @@ export class ZoneManager {
     this.activeZoneId = HUB_ZONE_ID;
     for (const key of ZONE_ORDER) {
       const arena = this._arenaMap[key];
-      if (arena) arena.visible = false;
+      if (arena) arena.group.visible = false;
     }
   }
 
   getActiveArena() {
     if (!this.activeZoneId || this.activeZoneId === HUB_ZONE_ID) return null;
     return this._arenaMap[this.activeZoneId] || null;
+  }
+
+  getActiveHazards(routeState = null) {
+    const arena = this.getActiveArena();
+    if (!arena || typeof arena.getActiveHazards !== 'function') return [];
+    return arena.getActiveHazards(routeState);
   }
 
   getCurrentZoneLabel() {
@@ -319,10 +431,10 @@ export class ZoneManager {
     });
   }
 
-  update(dt, focusX = 0) {
+  update(dt, focusX = 0, routeState = null) {
     const arena = this.getActiveArena();
     if (!arena || typeof arena.update !== 'function') return;
-    arena.update(dt, focusX);
+    arena.update(dt, focusX, routeState);
   }
 
   dispose() {

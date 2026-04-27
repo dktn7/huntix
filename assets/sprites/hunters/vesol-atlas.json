@@ -3359,54 +3359,6 @@
         "x": 0.5,
         "y": 0.5
       }
-    },
-    "weapon_swap_03": {
-      "frame": {
-        "x": 3369,
-        "y": 1125,
-        "w": 368,
-        "h": 368
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 368,
-        "h": 368
-      },
-      "sourceSize": {
-        "w": 368,
-        "h": 368
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "weapon_swap_04": {
-      "frame": {
-        "x": 3743,
-        "y": 1125,
-        "w": 368,
-        "h": 368
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 368,
-        "h": 368
-      },
-      "sourceSize": {
-        "w": 368,
-        "h": 368
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
     }
   },
   "meta": {

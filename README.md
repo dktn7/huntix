@@ -136,15 +136,15 @@ stateDiagram-v2
     Staggered --> Recover : stagger ends
 ```
 
-### Boss Phase Flow
+### Boss Flow
 
 ```mermaid
 flowchart TD
     ENTER([Hunter enters zone]) --> WAVES[Clear enemy waves]
     WAVES --> BOSS[Boss encounter begins]
-    BOSS --> P1[Phase 1\n100–60% HP]
-    P1 -->|HP threshold hit| TRANS1[⚡ Phase transition]
-    TRANS1 --> P2[Phase 2\n60–0% HP]
+    BOSS --> P1[Stage 1\n100-60% HP]
+    P1 -->|HP threshold hit| TRANS1[Stage transition]
+    TRANS1 --> P2[Stage 2\n60-0% HP]
     P2 -->|Boss defeated| DEATH[Death sequence]
     DEATH --> VRAEL_END[VRAEL — Implosion]
     DEATH --> ZARTH_END[ZARTH — Fissures go dark]
@@ -258,8 +258,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 | Grunt | Standard melee, basic rush pattern |
 | Ranged Unit | Keeps distance, fires projectiles |
 | Bruiser | Slow, high HP, hard to stagger |
-| Mini-boss | Zone gatekeeper — stronger patterns, telegraphed |
-| Boss | Zone finale — multiple phases, dramatic telegraphs |
+| Boss | Zone finale — stronger patterns, dramatic telegraphs |
 
 **Co-op Scaling:** HP +50% per player · Max 20 enemies on screen · Enemy count scales with player count
 
@@ -297,21 +296,16 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 
 ---
 
-## 📅 Full Repo Phase Plan
+## Finish Line Plan
 
-> **Jam Deadline: 1 May 2026 @ 13:37 UTC** · Repo-wide plan mirrors `AGENTS.md`  
-> Legend: ✅ Done · 🔄 Current · 🔲 Locked
+> **Jam Deadline: 1 May 2026 @ 13:37 UTC** - Documentation mirrors `AGENTS.md`
 
-<!-- PHASE-TABLE-START -->
-| Phase | Dates | Focus | Progress | Milestone |
-|-------|-------|-------|----------|-----------|
-| ✅ **1 — Core Engine** | Apr 15–17 | Three.js 2.5D setup, player controller, fixed timestep, input | `█████ 100%` | Solo hunter moves |
-| ✅ **2 — Enemy AI & Juice** | Apr 18–20 | Enemy AI, hit detection, status effects, combos, juice | `█████ 100%` | Fight grunt waves |
-| 🔄 **3 — 4 Hunters & Co-op** | Apr 21–23 | All 4 hunters, 1–4P input, AI companions | `█░░░░ 25%` | 4P hub + combat |
-| ⬜ **4 — Zones & Bosses** | Apr 24–26 | 3 zones, portals, boss phases, Essence drops, screen transitions | `██░░░ 40%` | Full run clearable |
-| ⬜ **5 — Hub, Shop & HUD** | Apr 27–29 | Shop, weapons, levelling, HUD, combo UI | `██░░░ 40%` | Buy + upgrade loop |
-| ⬜ **6 — Polish & Deploy** | Apr 30 – May 1 | Audio, onboarding, 60fps target, deploy — SHIP by 13:37 UTC May 1 | `██░░░ 33%` | 🚢 Ship it |
-<!-- PHASE-TABLE-END -->
+- Finish enemy and boss art integration using existing assets wherever possible.
+- Treat KIBAD as the explicit exception. If his final art is not ready, keep the special-case treatment and do not block the rest of the game on it.
+- Increase wave pressure where needed so the run still feels full.
+- Polish the player-facing flow: onboarding, HUD clarity, results screens, boss readability, and audio timing.
+- Finish the deploy pass: performance caps, jam compliance, and any bug fixes that improve the shipped build.
+
 
 ---
 
@@ -337,7 +331,7 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 | File | Contents |
 |------|----------|
 | [`docs/GDD.md`](docs/GDD.md) | Master game design document |
-| [`docs/MVP-PLAN.md`](docs/MVP-PLAN.md) | 16-phase repo-wide build plan |
+| [`docs/MVP-PLAN.md`](docs/MVP-PLAN.md) | Finish-line priorities and ship checklist |
 | [`docs/TECHSTACK.md`](docs/TECHSTACK.md) | All technical decisions, CDN, conventions |
 | [`docs/STATBLOCK.md`](docs/STATBLOCK.md) | Canonical raw stats for all entities |
 
@@ -362,7 +356,6 @@ Each hunter has a **signature weapon** locked to their identity. Additional weap
 |------|----------|
 | [`docs/ENEMIES.md`](docs/ENEMIES.md) | Enemy specs, XP, essence drops, AI states |
 | [`docs/BOSSES.md`](docs/BOSSES.md) | Boss index |
-| [`docs/MINIBOSS.md`](docs/MINIBOSS.md) | Gate Warden miniboss spec |
 | [`docs/bosses/VRAEL.md`](docs/bosses/VRAEL.md) | 🔥 VRAEL — full boss lore + combat spec |
 | [`docs/bosses/ZARTH.md`](docs/bosses/ZARTH.md) | 🪨 ZARTH — full boss lore + combat spec |
 | [`docs/bosses/KIBAD.md`](docs/bosses/KIBAD.md) | 🌑 KIBAD — full boss lore + combat spec |

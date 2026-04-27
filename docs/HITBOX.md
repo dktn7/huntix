@@ -54,8 +54,6 @@ Each enemy type has its own hurtbox proportional to its model size.
 | Ranged Unit | 0.6 | 1.7 | 0.5 | Slightly taller |
 | Bruiser | 1.2 | 2.0 | 0.7 | Large — easy to hit |
 | Boss | 1.8 | 2.8 | 0.8 | Per-boss exact values in BOSSES.md |
-| Miniboss — Stampede | 2.0 | 1.6 | 1.0 | Wide and low — quadruped |
-| Miniboss — Tomb Crawler | 1.8 | 1.2 | 0.8 | Head segment only when surfaced |
 
 ---
 

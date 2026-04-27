@@ -8,6 +8,7 @@ export const GAME_HEIGHT = 720;
 // Orthographic frustum half-size (world units visible vertically)
 export const ORTHO_HEIGHT = 10;
 export const ORTHO_WIDTH  = ORTHO_HEIGHT * (GAME_WIDTH / GAME_HEIGHT);
+export const ORTHO_CAMERA_TILT_X = 0;
 
 export class Renderer {
   constructor(canvas) {
@@ -40,6 +41,7 @@ export class Renderer {
     // Camera sits in front, looking straight down -Z axis
     cam.position.set(0, 0, 100);
     cam.lookAt(0, 0, 0);
+    if (ORTHO_CAMERA_TILT_X !== 0) cam.rotateX(ORTHO_CAMERA_TILT_X);
     return cam;
   }
 

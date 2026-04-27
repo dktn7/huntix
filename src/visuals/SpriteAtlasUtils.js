@@ -80,7 +80,7 @@ export function applyAtlasFrame(texture, atlasData, frameKey) {
   const height = normalized.meta?.size?.h || 1;
   if (!frame || !width || !height) return false;
 
-  texture.offset.set(frame.x / width, 1 - (frame.y + frame.h) / height);
+  texture.offset.set(frame.x / width, frame.y / height);
   texture.repeat.set(frame.w / width, frame.h / height);
   return true;
 }

@@ -11,7 +11,7 @@ Every zone follows the same structure:
 2. **Wave 1** — introductory enemy set
 3. **Wave 2** — escalation
 4. **Wave 3** — pressure peak
-5. **Boss/Miniboss** — zone finale
+5. **Boss** - zone finale
 6. **Exit portal** — opens after boss defeated, returns to hub
 
 **Lane dimensions:**
@@ -52,7 +52,7 @@ Every zone follows the same structure:
 | Tone | Broken city — cracked asphalt, collapsed building facades, active gate energy |
 | Colours | Dark charcoal, orange fire glow, neon fragments, hazy gate light |
 | Parallax layers | Background: ruined skyline. Mid: cracked building shells. Foreground: debris piles, broken barriers |
-| Hazards | None (MVP) — fire pools added by boss in Phase 2 |
+| Hazards | None (MVP) — fire pools added by boss in Stage 2 |
 | Enemy intro | Grunts only in Wave 1 — player learns basic combat |
 | Lane width | 40 units — open, forgiving |
 | Music mood | Urban tension, rising energy, punchy drums |
@@ -118,7 +118,7 @@ Every zone follows the same structure:
 | Tone | Storm-struck tower peak — wind, lightning, gate energy at its most raw |
 | Colours | Dark navy, electric blue, white lightning, storm grey |
 | Parallax layers | Background: storm clouds and lightning flashes. Mid: crumbling tower sections. Foreground: wind-blown debris |
-| Hazards | Storm DoT zones in boss Phase 3 (floor lightning patches) |
+| Hazards | Storm DoT zones in boss Stage 3 (floor lightning patches) |
 | Enemy intro | High ranged unit density — spacing critical |
 | Lane width | 40 units |
 | Music mood | Climactic, fast electronic, intense percussion, arcane crescendo |
@@ -126,7 +126,7 @@ Every zone follows the same structure:
 **Visual notes:**
 - Lightning flash events (random ambient, every 8–15s) — quick full-scene brightness spike
 - Blue/white colour palette — clean contrast for final boss readability
-- Boss Thyxis fur crackles with active lightning — most visually complex enemy in game. Shifts from pale blue to blinding white in Phase 3.
+- Boss Thyxis fur crackles with active lightning — most visually complex enemy in game. Shifts from pale blue to blinding white in Stage 3.
 
 ---
 
@@ -156,3 +156,4 @@ Each zone has 3 depth layers rendered as flat planes at different Z positions:
 | Foreground | -1 | 0.8× camera X | Debris / tendrils / barriers |
 
 Camera tracks player group centroid. Parallax layers move at fractional rates to simulate depth.
+

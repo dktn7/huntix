@@ -12,7 +12,7 @@ The Wave Manager runs inside each zone scene. It controls:
 
 - Enemy spawn timing and positions
 - Wave completion detection
-- Transition between waves (and into miniboss / boss portal)
+- Transition between waves and into the boss portal
 - Co-op enemy count scaling
 - Zone flow from wave 1 through to boss portal unlock
 
@@ -22,30 +22,12 @@ It is a state machine that runs in the game loop's wave manager tick (GAMELOOP.m
 
 ## Wave Manager State Machine
 
-```
-IDLE
-  │ (zone entry)
-  ▼
-WAVE_INTRO          ← brief banner: "Wave 1"
-  │ (1.0s delay)
-  ▼
-WAVE_ACTIVE         ← enemies alive, spawning on schedule
-  │ (all enemies dead)
-  ▼
-WAVE_CLEAR          ← "Wave Complete" banner (1.5s)
-  │
-  ├── if waves remain → WAVE_INTRO (next wave)
-  │
-  ├── if all waves done AND miniboss zone → MINIBOSS_ENTRY
-  │     │ (miniboss defeated)
-  │     ▼
-  │   MINIBOSS_DEAD → PORTAL_UNLOCK
-  │
-  └── if all waves done AND no miniboss → PORTAL_UNLOCK
-        │
-        ▼
-      PORTAL_UNLOCK  ← boss portal activates, players return to hub
-```
+IDLE -> WAVE_INTRO -> WAVE_ACTIVE -> WAVE_CLEAR
+
+If waves remain: WAVE_CLEAR -> WAVE_INTRO
+If all waves are done: WAVE_CLEAR -> BOSS_GATE_UNLOCK
+
+BOSS_GATE_UNLOCK means the boss portal is open and players advance to the zone boss fight.
 
 ---
 
@@ -100,41 +82,39 @@ wave = {
 
 ## Zone Wave Compositions
 
-### Zone 1 — City Breach
+### Zone 1 - City Breach
 
 | Wave | Enemies | Spawn timing |
 |------|---------|-------------|
-| Wave 1 | 4× Grunt | All at 0s |
-| Wave 2 | 3× Grunt + 2× Ranged | Grunts at 0s, Ranged at 3s |
-| Wave 3 | 4× Grunt + 2× Ranged + 1× Bruiser | Grunts 0s, Ranged 2s, Bruiser 5s |
-| Miniboss | The Stampede | After Wave 3 clear |
+| Wave 1 | 4x Grunt | All at 0s |
+| Wave 2 | 3x Grunt + 1x Ranged | Grunts at 0s, Ranged at 3s |
+| Wave 3 | 2x Grunt + 1x Bruiser | Grunts 0s, Bruiser 5s |
+| Wave 4 | 2x Grunt + 2x Ranged + 1x Bruiser | Staggered over the wave |
 
-### Zone 2 — Ruin Den
-
-| Wave | Enemies | Spawn timing |
-|------|---------|-------------|
-| Wave 1 | 3× Grunt + 1× Bruiser | Grunts 0s, Bruiser 3s |
-| Wave 2 | 4× Grunt + 2× Ranged | All at 0s |
-| Wave 3 | 2× Bruiser + 3× Ranged | Bruisers 0s, Ranged 2s |
-| Miniboss | The Tomb Crawler | After Wave 3 clear |
-
-### Zone 3 — Shadow Core
+### Zone 2 - Ruin Den
 
 | Wave | Enemies | Spawn timing |
 |------|---------|-------------|
-| Wave 1 | 4× Grunt + 1× Ranged | All at 0s |
-| Wave 2 | 2× Bruiser + 2× Ranged | Bruisers 0s, Ranged 1s |
-| Wave 3 | 3× Bruiser + 3× Ranged (hard) | Staggered 0s, 2s, 4s |
+| Wave 1 | 3x Grunt + 2x Ranged | Grunts 0s, Ranged 2s |
+| Wave 2 | 2x Bruiser | All at 0s |
+| Wave 3 | 4x Grunt + 1x Bruiser + 1x Ranged | Grunts 0s, pressure unit 3s |
+| Wave 4 | 2x Grunt + 1x Ranged + 2x Bruiser | Staggered over the wave |
 
-### Zone 4 — Thunder Spire
+### Zone 3 - Shadow Core
 
 | Wave | Enemies | Spawn timing |
 |------|---------|-------------|
-| Wave 1 | 4× Grunt + 2× Ranged | All at 0s |
-| Wave 2 | 3× Bruiser + 2× Ranged | Bruisers 0s, Ranged 2s |
-| Wave 3 | 4× Bruiser + 2× Ranged (elite variants) | Staggered every 2s |
+| Wave 1 | 5x Grunt + 1x Ranged | All at 0s |
+| Wave 2 | 2x Bruiser + 2x Ranged | Bruisers 0s, Ranged 1s |
+| Wave 3 | 3x Grunt + 2x Bruiser | Staggered 0s, 2s, 4s |
 
----
+### Zone 4 - Thunder Spire
+
+| Wave | Enemies | Spawn timing |
+|------|---------|-------------|
+| Wave 1 | 4x Grunt + 2x Ranged | All at 0s |
+| Wave 2 | 3x Bruiser | All at 0s |
+| Wave 3 | 2x Bruiser + 3x Ranged + 1x Grunt | Staggered every 2s |
 
 ## Co-op Enemy Scaling
 
@@ -169,7 +149,6 @@ Shown at the start of each wave and on wave clear.
 |-------|------------|----------|
 | Wave start | "Wave [N]" | 1.0s |
 | Wave clear | "Wave Complete" | 1.5s |
-| Miniboss entry | (replaced by miniboss name card) | 2.0s |
 | Portal unlock | "Zone Clear — Return to Hub" | 2.5s |
 
 Banners are CSS overlays — not Three.js objects. They do not block gameplay (players can still move during the 1.0s wave start banner).
@@ -239,7 +218,7 @@ class WaveManager {
 | System | Doc |
 |--------|-----|
 | Enemy types and stats | [ENEMIES.md](./ENEMIES.md) |
-| Miniboss entry sequence | [MINIBOSS.md](./MINIBOSS.md) |
+| Boss entry sequence | [BOSSES.md](./BOSSES.md) |
 | Zone layouts and spawn point maps | [ZONES.md](./ZONES.md) |
 | No-damage bonus Essence value | [RUNSTATE.md](./RUNSTATE.md) |
 | Game loop step 8 | [GAMELOOP.md](./GAMELOOP.md) |

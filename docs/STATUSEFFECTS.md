@@ -17,7 +17,7 @@ Four core status effects drive Huntix's combat identity: Bleed, Burn, Slow, Stun
 | **Bleed** 🩸 | Dabik | 8/sec | 4s | 3 stacks | KIBAD |
 | **Burn** 🔥 | Vesol | 12/sec | 3s | 2 stacks | VRAEL |
 | **Slow** 🌀 | Sereisa | None | 3s | 1 stack | THYXIS |
-| **Stun** ⚡ | Benzu | None | 1.2s | 1 stack | ZARTH, Gate Warden |
+| **Stun** ? | Benzu | None | 1.2s | 1 stack | ZARTH |
 
 ---
 
@@ -60,7 +60,7 @@ Four core status effects drive Huntix's combat identity: Bleed, Burn, Slow, Stun
 - **Cooldown:** Same target cannot be stunned again for 3s after stun expires (stun immunity window)
 - **Visual:** Yellow lightning sparks circling sprite head, "ZAP" text flash
 - **Sprite flash:** Bright yellow full-sprite flash on application
-- **Boss immunity:** ZARTH, Gate Warden immune
+- **Boss immunity:** ZARTH immune
 - **Implementation:** Set `entity.state = STUNNED`, block all state transitions until timer expires
 
 ---
@@ -114,3 +114,4 @@ StatusManager.update(delta) {
 - **Vesol Minor Spell (Crystal Bolt):** 40% chance to apply Burn on hit
 - **Sereisa Storm Needle:** 30% chance to apply Slow on hit
 - **Benzu Heavy Attack:** 25% base chance to apply Stun (increases with Thunder upgrades)
+

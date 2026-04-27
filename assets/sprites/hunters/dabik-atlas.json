@@ -3504,9 +3504,153 @@
         "y": 0.5
       }
     },
-    "weapon_swap": {
+    "ultimate_04": {
       "frame": {
         "x": 2907,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "ultimate_05": {
+      "frame": {
+        "x": 3270,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "ultimate_06": {
+      "frame": {
+        "x": 3633,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "ultimate_07": {
+      "frame": {
+        "x": 3996,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "ultimate_08": {
+      "frame": {
+        "x": 4359,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "ultimate_09": {
+      "frame": {
+        "x": 4722,
+        "y": 1092,
+        "w": 357,
+        "h": 357
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 357,
+        "h": 357
+      },
+      "sourceSize": {
+        "w": 357,
+        "h": 357
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "weapon_swap": {
+      "frame": {
+        "x": 5085,
         "y": 1092,
         "w": 357,
         "h": 357

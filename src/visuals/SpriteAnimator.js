@@ -33,20 +33,29 @@ export class SpriteAnimator {
 
   /** Starts playing a named animation state. */
   play(state, loop = true, onComplete = null) {
-    if (this.requestedState === state && this.loop === loop) return;
+    // Map generic 'move' to 'run' if 'move' state is missing
+    let targetState = state;
+    if (state === 'move' && !this.hasState('move')) {
+      targetState = 'run';
+    }
 
-    this.requestedState = state;
-    this.currentState = state;
+    if (this.requestedState === targetState && this.loop === loop) return;
+
+    this.requestedState = targetState;
+    this.currentState = targetState;
     this.currentFrame = 0;
     this.elapsed = 0;
     this.loop = loop;
     this.onComplete = onComplete;
-    this.frameList = this._collectFramesForState(state);
-    if (!this.frameList.length && state !== 'idle') {
+    this.frameList = this._collectFramesForState(targetState);
+
+    // Default to idle if requested state has no frames
+    if (!this.frameList.length && targetState !== 'idle') {
       this.currentState = 'idle';
       this.frameList = this._collectFramesForState('idle');
     }
-    this.fps = FPS_OVERRIDES[state] || DEFAULT_FPS;
+
+    this.fps = FPS_OVERRIDES[this.currentState] || DEFAULT_FPS;
     this._applyFrame();
   }
 
@@ -125,7 +134,7 @@ export class SpriteAnimator {
     const frame = this.frames[key]?.frame;
     if (!frame) return;
 
-    this.material.map.offset.set(frame.x / this.W, 1 - (frame.y + frame.h) / this.H);
+    this.material.map.offset.set(frame.x / this.W, frame.y / this.H);
     this.material.map.repeat.set(frame.w / this.W, frame.h / this.H);
   }
 }

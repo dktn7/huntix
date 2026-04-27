@@ -1,6 +1,6 @@
 # Huntix Boss Design Plan
 
-Four modular bosses for Three.js MVP — shared sprite-based state machine, 2D billboard sprites in a 3D world, co-op scaling (+50% HP/player), adds in 4P, and Nioh-inspired phases with telegraphs/juice. Each fight 1.5–3min, post-zone waves.
+Four modular bosses for Three.js MVP — shared sprite-based state machine, 2D billboard sprites in a 3D world, co-op scaling (+50% HP/player), adds in 4P, and Nioh-inspired attack patterns with telegraphs/juice. Each fight 1.5-3min, post-zone waves.
 
 Each boss is designed as a **distorted reflection** of one of the four S-Rank hunters — same elemental energy, corrupted or taken to an extreme. The player is always fighting something familiar made wrong.
 
@@ -26,7 +26,7 @@ Each boss is designed as a **distorted reflection** of one of the four S-Rank hu
 **Hunter Echo:** Vesol — fire without precision. Where Vesol maps and controls every flame, Vrael is fire that never learned restraint.
 **Theme:** Aggressive charger, intro to movement/dodge
 
-| Phase | HP | Attacks | CD | Counter |
+| Stage | HP | Attacks | CD | Counter |
 |---|---|---|---|---|
 | 1 | 100–60% | Flame charge (line dash), Swipe (melee arc) | 7s, 4s | Side dodge |
 | 2 | 60–0% | Fire pools (persistent DoT) | 10s | Benzu tank / Jump over pools |
@@ -43,7 +43,7 @@ Each boss is designed as a **distorted reflection** of one of the four S-Rank hu
 **Hunter Echo:** Benzu — strength without warmth. Benzu built things, Zarth is what building becomes when it has no humanity left inside it.
 **Theme:** Spacing/timing, wall pressure
 
-| Phase | HP | Attacks | CD | Counter |
+| Stage | HP | Attacks | CD | Counter |
 |---|---|---|---|---|
 | 1 | 100–60% | Slam (AoE quake), Arm wall (trap/pushback) | 8s, 6s | Range poke |
 | 2 | 60–0% | Rubble spawn (2 grunts in 4P) | 12s | Stun breaks wall / Dabik backstab |
@@ -60,7 +60,7 @@ Each boss is designed as a **distorted reflection** of one of the four S-Rank hu
 **Hunter Echo:** Dabik — his direct celestial inversion. Same silhouette, same twin daggers, same build. Everything else is opposite.
 **Theme:** Teamwork, anti-shadow mirror of hunter
 
-| Phase | HP | Attacks | CD | Counter |
+| Stage | HP | Attacks | CD | Counter |
 |---|---|---|---|---|
 | 1 | 100–60% | Blink slash (tele behind), Dagger combo (4 hits) | 5s, 4s | Predict blink |
 | 2 | 60–0% | 2× clones (taunt/decoy), AoE spells | 10s | Surge ult sync |
@@ -78,16 +78,16 @@ Each boss is designed as a **distorted reflection** of one of the four S-Rank hu
 **Hunter Echo:** Sereisa — speed and lightning without control. Sereisa is lightning mastered by a human. Thyxis is lightning as a natural force that never learned to hold back.
 **Theme:** Full synergies, aerial climax
 
-| Phase | HP | Attacks | CD | Counter |
+| Stage | HP | Attacks | CD | Counter |
 |---|---|---|---|---|
 | 1 | 100–70% | Ground pound (shockwave), Claw combo (3 hits) | 8s, 5s | Dodge / Stun ground |
 | 2 | 70–40% | Bolt dive (homing), Chain lightning (2–4 players) | 6s, 10s | Slow / Platforms |
 | 3 | 40–0% | Storm DoT zones, Grunts (×2 in 4P) | 12s | Burn amp + Ultimates |
 
-- **Visuals:** Fox-wolf yokai, blue-white crackle fur and horns. Sereisa's aura is bright yellow-white crackling — Thyxis mirrors that palette shifted colder, blue-white becoming blinding full white in Phase 3. Fur shifts from pale blue to blinding white at full storm. Horns arc lightning between them constantly. Eyes electric white-blue, pupils slit like a wolf's. Reads like a natural god — not manufactured, not corrupted. Just something that has always existed and was never meant to be faced.
+- **Visuals:** Fox-wolf yokai, blue-white crackle fur and horns. Sereisa's aura is bright yellow-white crackling — Thyxis mirrors that palette shifted colder, blue-white becoming blinding full white in Stage 3. Fur shifts from pale blue to blinding white at full storm. Horns arc lightning between them constantly. Eyes electric white-blue, pupils slit like a wolf's. Reads like a natural god — not manufactured, not corrupted. Just something that has always existed and was never meant to be faced.
 - **Special:** Chain lightning hits multiple players in 4P — requires spacing
 - **Sprite states:** `idle`, `telegraph`, `ground_pound`, `claw_combo`, `bolt_dive`, `recover`, `hurt`, `dead` + `phase2_enter`, `phase3_enter` (one-shot transitions)
-- **Code note:** Phase 3 storm zones are persistent floor hitbox patches — `BoxGeometry` trigger volumes, not visual meshes. Render as animated sprite decals on the floor plane.
+- **Code note:** Stage 3 storm zones are persistent floor hitbox patches — `BoxGeometry` trigger volumes, not visual meshes. Render as animated sprite decals on the floor plane.
 
 ---
 
@@ -110,8 +110,6 @@ These values are locked. Source of truth: `docs/ENEMIES.md` and `docs/PROGRESSIO
 |--------|-------|
 | Boss XP | 500 |
 | Boss Essence | 200 |
-| Miniboss XP | 800 |
-| Miniboss Essence | 100 |
 
 ---
 

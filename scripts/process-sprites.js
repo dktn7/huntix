@@ -163,10 +163,7 @@ async function cleanupMattePixels(buffer) {
   const height = info.height;
   const channels = info.channels;
   const alpha = new Uint8Array(width * height);
-
-  for (let i = 0; i < width * height; i += 1) {
-    alpha[i] = data[i * channels + 3];
-  }
+  for (let i = 0; i < width * height; i += 1) alpha[i] = data[i * channels + 3];
 
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
@@ -178,24 +175,16 @@ async function cleanupMattePixels(buffer) {
       const r = data[off];
       const g = data[off + 1];
       const b = data[off + 2];
+      
+      // Heuristic: If green dominant and low saturation/dark, it's likely a halo
       const max = Math.max(r, g, b);
-      const min = Math.min(r, g, b);
-      const sat = max === 0 ? 0 : (max - min) / max;
-      const isDark = max < 32 && sat < 0.2;
-      const isGreenish = g > r * 1.08 && g > b * 1.08;
-
-      const left = x > 0 ? alpha[idx - 1] : 0;
-      const right = x < width - 1 ? alpha[idx + 1] : 0;
-      const up = y > 0 ? alpha[idx - width] : 0;
-      const down = y < height - 1 ? alpha[idx + width] : 0;
-      const isEdge = left <= ALPHA_THRESHOLD || right <= ALPHA_THRESHOLD || up <= ALPHA_THRESHOLD || down <= ALPHA_THRESHOLD;
-
-      if (isEdge && isGreenish && a < 245) {
-        data[off + 3] = Math.round(a * 0.2);
-        continue;
-      }
-      if (isEdge && isDark && a < 230) {
-        data[off + 3] = Math.round(a * 0.35);
+      const isGreenish = g > r * 1.05 && g > b * 1.05;
+      
+      if (isGreenish) {
+        // Color bleed: reduce green, boost red/blue to make it more neutral
+        data[off + 1] = Math.round(g * 0.7 + (r + b) * 0.15);
+        data[off] = Math.round(r * 1.1);
+        data[off + 2] = Math.round(b * 1.1);
       }
     }
   }

@@ -72,11 +72,11 @@ requestAnimationFrame(gameLoop)
   │     Check wave completion condition
   │     Tick spawn timers
   │     Trigger next spawn if timer elapsed
-  │     Check for miniboss / boss entry condition
+  │     Check for boss entry condition
   │     (See WAVEMANAGER.md)
   │
   ├─ 9. ANIMATION UPDATE
-  │     Advance all animation mixers by dt (Three.js AnimationMixer)
+  │     Advance sprite animation UV frames via SpriteAnimator
   │     Resolve blend transitions
   │     Apply root motion if flagged (knockback, charge movement)
   │

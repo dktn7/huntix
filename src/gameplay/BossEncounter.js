@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Hitbox, HitboxOwners, HitboxShapes } from './Hitbox.js';
 import { clamp, clampCenterToVisibleArena, centerMaxX, centerMinX } from './ArenaBounds.js';
+import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 import { SpriteAnimator } from '../visuals/SpriteAnimator.js';
 import {
   applyAtlasFrame,
@@ -111,8 +112,20 @@ export class BossEncounter {
       depthWrite: false,
     });
     this.mesh = new THREE.Mesh(geo, mat);
+    this.mesh.rotation.x = -ORTHO_CAMERA_TILT_X;
     this.mesh.position.set(this.position.x, this.position.y, 0.3);
     scene.add(this.mesh);
+    this._shadow = new THREE.Mesh(
+      new THREE.PlaneGeometry(width * 0.8, Math.max(0.32, height * 0.24)),
+      new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+      })
+    );
+    this._shadow.position.set(this.position.x, this.position.y - height * 0.42, 0.08);
+    scene.add(this._shadow);
 
     this._stateTimer = this._nextIdleDelay();
     this._loadBossAtlas();
@@ -759,6 +772,13 @@ export class BossEncounter {
       phaseScale * flash * deadScale,
       1
     );
+    if (this._shadow) {
+      this._shadow.visible = this.hp > 0 || this._removeTimer > 0;
+      const shadowY = this.position.y - this._baseScale.y * 0.42;
+      this._shadow.position.set(this.position.x, shadowY, -shadowY * 0.01 + 0.08);
+      this._shadow.scale.set(phaseScale, phaseScale * deadScale, 1);
+      this._shadow.material.opacity = this.hp <= 0 ? 0.24 : 0.38;
+    }
 
     if (!this.mesh.material?.color) return;
 
@@ -777,6 +797,15 @@ export class BossEncounter {
 
   syncVisuals() {
     this._syncMesh();
+  }
+
+  dispose() {
+    if (this.mesh?.parent) this.mesh.parent.remove(this.mesh);
+    this.mesh?.geometry?.dispose?.();
+    this.mesh?.material?.dispose?.();
+    if (this._shadow?.parent) this._shadow.parent.remove(this._shadow);
+    this._shadow?.geometry?.dispose?.();
+    this._shadow?.material?.dispose?.();
   }
 
   _clampToArena() {

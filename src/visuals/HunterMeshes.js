@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SpriteAnimator } from './SpriteAnimator.js';
 import { HUNTERS } from './Palettes.js';
+import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 
 const SPRITE_HEIGHT = 1.5;
 const HUNTER_SPRITES_DIR = 'assets/sprites/hunters';
@@ -52,12 +53,13 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   const material = new THREE.MeshBasicMaterial({
     map: atlasTexture.clone(),
     transparent: true,
-    alphaTest: 0.1,
+    alphaTest: 0.5, // Increased from 0.1 to clip edges more aggressively
     side: THREE.FrontSide,
   });
   material.map.needsUpdate = true;
 
   const sprite = new THREE.Mesh(geometry, material);
+  sprite.rotation.x = -ORTHO_CAMERA_TILT_X;
   sprite.renderOrder = 0;
   group.add(sprite);
 
@@ -83,6 +85,7 @@ export function createFallbackHunterMesh(hunterId = 'dabik') {
     new THREE.BoxGeometry(fallback.width, fallback.height, 0.1),
     new THREE.MeshBasicMaterial({ color: fallback.bodyColor })
   );
+  body.rotation.x = -ORTHO_CAMERA_TILT_X;
   body.position.y = fallback.height / 2;
   group.add(body);
 
@@ -95,6 +98,7 @@ export function createFallbackHunterMesh(hunterId = 'dabik') {
       depthWrite: false,
     })
   );
+  accent.rotation.x = -ORTHO_CAMERA_TILT_X;
   accent.position.set(0, fallback.height * 0.85, 0.06);
   group.add(accent);
 

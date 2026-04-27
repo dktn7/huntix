@@ -55,36 +55,35 @@ When two docs conflict, the lower number wins.
 
 ---
 
-## Current Phase
+## Finish Line Plan
 
-Run `node scripts/check-phase.js` to detect the current phase from actual source files. Never hardcode a phase assumption.
+Run `node scripts/check-phase.js` if you need inventory context, but the planning model is now time-based, not phase-based.
 
-**Current phase: 7 — Hunter Sprite Pipeline**
+We have 3 days left. The goal is to ship a complete, readable, stable game, not to finish the roadmap in order.
 
-| Phase | Status | Name | Goal | Key Files |
-|-------|--------|------|------|-----------|
-| 1 | ✅ Done | Core Engine | Three.js scene, camera, game loop, player controller, widget live | `GameLoop.js`, `Renderer.js`, `InputManager.js`, `PlayerState.js` |
-| 2 | ✅ Done | Combat Basics | Hit detection, status effects, HUD bars, grunt enemy FSM | `EnemyAI.js`, `EnemySpawner.js`, `Hitbox.js` |
-| 3 | ✅ Done | All 4 Hunters + Co-op | Hunter stubs, stat differences, co-op input, `AnimationController`, `SpriteAnimator`, `HunterMeshes` present as files | `HunterController.js`, `AnimationController.js`, `HunterMeshes.js`, `SpriteAnimator.js` |
-| 4 | ✅ Done | Zones + Bosses | City Breach wired, hub return, all 4 arena stubs created, `ZoneManager`, `PortalManager` | `ZoneManager.js`, `PortalManager.js`, arena stubs |
-| 5 | ✅ Done | Progression + UI | `ShopManager.js`, `HUD.js`, `ProgressionData.js`, `RunState.js` wired | `ShopManager.js`, `HUD.js`, `ProgressionData.js` |
-| 6 | ✅ Done | Screen Flow & Loop Closure | Title → Hunter Select → Hub → Portal → Zone → Boss → Victory → Hub fully wired end-to-end. Every transition in `SceneManager.js` working. No dead ends. | `SceneManager.js`, `TitleScreen`, `HunterSelectScreen`, `EndScreen` |
-| 7 | 🔄 **CURRENT** | Hunter Sprite Pipeline | Mixboard → Google Flow (Nano Banana 2) for all 4 hunters. 8 animation states each. Background removal, TexturePacker atlas, loaded into `HunterMeshes.js`. Real sprites replace placeholder boxes. | `assets/sprites/hunters/`, `HunterMeshes.js` |
-| 8 | 🔲 | Enemy & Boss Sprite Pipeline | Grunt, Ranged, Bruiser sprites. All 4 boss sprites (VRAEL, ZARTH, KIBAD, THYXIS). Particle FX atlas (spark/smoke/blood/lightning/fire/shadow/glow-ring). | `assets/sprites/enemies/`, `assets/sprites/bosses/`, `assets/sprites/particles/fx-atlas` |
-| 9 | 🔲 | Zone Background Art | Mixboard → Google Flow for 3-layer parallax backgrounds per zone. All 5 zones × 3 layers = 15 WebP files at 2048×512px. Wired into parallax renderer. | `assets/backgrounds/`, `RENDERING.md` parallax values |
-| 10 | 🔲 | Animation State Machine Live | `AnimationController.js` + `SpriteAnimator.js` fully wired. All 14 states per hunter driving from `PlayerState.js`. Real sprites replace all placeholder geometry. | `AnimationController.js`, `SpriteAnimator.js` |
-| 11 | 🔲 | Spells, Surge & Combat Depth | Minor + Advanced spells per all 4 hunters live. Surge bar fills and Ultimate fires with cinematic entry (hitstop + camera zoom). All 4 status synergy pairs trigger correctly. | `CombatController.js`, `StatusEffects.js`, `PlayerState.js` |
-| 12 | 🔲 | Zones 1–2 Full | City Breach + Ruin Den complete: enemy waves, VRAEL + ZARTH boss FSMs with 3 phases each, boss entrance cinematic, boss HP bar, essence drops. | `BossEncounter.js`, `zones/CITY-BREACH`, `zones/RUIN-DEN` |
-| 13 | 🔲 | Zones 3–4 Full | Shadow Core + Thunder Spire: KIBAD mirror-hunter mechanics, THYXIS multi-phase FSM, zone portal transitions fully polished. | `zones/SHADOW-CORE`, `zones/THUNDER-SPIRE`, `BossEncounter.js` |
-| 14 | 🔲 | Progression & Shop Live | Full 10-level XP curve active, spell unlocks at L3/L9, upgrade path lock at L7, shop 5-item/2-buy/30-essence-reroll working in-game, aura intensity scales with level. | `ShopManager.js`, `ProgressionData.js`, `AuraShader.js` |
-| 15 | 🔲 | Audio | `AudioManager.js`: hit SFX, spell SFX, dodge SFX, boss stingers, ambient zone audio, combo feedback. Web Audio API buffer pool. Master + SFX/music volume split. | `AudioManager.js`, `assets/audio/` |
-| 16 | 🔲 | Deploy & Jam Submission | 60fps performance pass (20 enemy cap, 500 particle cap, DPR clamp). Onboarding control prompt. All jam compliance checks. Single domain deploy. Submitted before May 1 @ 13:37 UTC. | `index.html`, `scripts/check-phase.js`, `CHANGELOG.md` |
+### What Matters Now
 
-**Do not build ahead of the current phase.**
+- Finish enemy and boss art integration using existing assets wherever possible.
+- Treat KIBAD as the explicit exception. If his final art is not ready, keep the special-case treatment and do not block the rest of the game on it.
+- Increase wave pressure where needed so the run still feels full.
+- Polish the player-facing flow: onboarding, HUD clarity, results screens, boss readability, and audio timing.
+- Finish the deploy pass: performance caps, jam compliance, and any bug fixes that improve the shipped build.
+
+### Shipping Priority
+
+| Priority | Focus | Done when |
+|----------|-------|-----------|
+| 1 | Enemy and boss assets | Grunts, ranged, bruisers, and bosses are using real assets in-engine; KIBAD remains the controlled exception if needed. |
+| 2 | Run completeness | All 4 zones have enough wave content and boss flow to feel like a finished run. |
+| 3 | Readability and pacing | Combat, HUD, telegraphs, and wave spacing are easy to read at full speed. |
+| 4 | Audio and UI polish | Core SFX, music transitions, onboarding, and results flow feel intentional. |
+| 5 | Performance and deploy | The game holds its frame budget, stays within the jam rules, and is ready to submit. |
+
+Do not spend time on new systems unless they directly improve the finish line.
 
 ---
 
-## Asset Workflow (Phases 7–9)
+## Asset Workflow
 
 All character, enemy, boss, and background art follows this pipeline:
 
@@ -93,6 +92,8 @@ All character, enemy, boss, and background art follows this pipeline:
 3. **Background removal** — remove.bg or Photoshop. Export PNG with alpha at correct frame size
 4. **TexturePacker** — Pack frames into atlas (MaxRects, 2048×2048, JSON Array + WebP)
 5. **Load in Three.js** — via `HunterMeshes.js` / `SpriteAnimator.js` UV stepping
+
+> Enemy art now uses existing assets wherever possible. KIBAD is the deliberate exception and may stay custom or placeholder until the final pass.
 
 > Prompts for all 4 hunters are in `docs/VISUAL-DESIGN.md` sections 15 (Mixboard) and 16 (Google Flow).
 > The section 16 heading says "Grok" — treat these as **Google Flow prompts**. Same content, different tool.
@@ -154,7 +155,6 @@ These values are locked. If any doc says otherwise, these win.
 | Reroll cost | 30 Essence | `docs/PROGRESSION.md` |
 | Boss XP | 500 | `docs/ENEMIES.md` / `docs/PROGRESSION.md` |
 | Boss Essence | 200 | `docs/ENEMIES.md` |
-| Miniboss XP | 800 | `docs/ENEMIES.md` |
 | Max enemies on screen | 20 | `docs/TECHSTACK.md` |
 | Max particles per frame | 500 | `docs/TECHSTACK.md` |
 | Arena width | 40 world units | `docs/ZONES.md` |
@@ -212,7 +212,7 @@ All docs live in `docs/`. Key files by category:
 |----------|----------|
 | **Core design** | `GDD.md`, `MVP-PLAN.md`, `TECHSTACK.md`, `STATBLOCK.md` |
 | **Hunters** | `HUNTERS.md`, `hunters/VESOL.md`, `hunters/DABIK.md`, `hunters/BENZU.md`, `hunters/SEREISA.md`, `SPELLS.md`, `UPGRADEPATH.md` |
-| **Enemies/Bosses** | `ENEMIES.md`, `BOSSES.md`, `MINIBOSS.md`, `bosses/VRAEL.md`, `bosses/ZARTH.md`, `bosses/KIBAD.md`, `bosses/THYXIS.md` |
+| **Enemies/Bosses** | `ENEMIES.md`, `BOSSES.md`, `bosses/VRAEL.md`, `bosses/ZARTH.md`, `bosses/KIBAD.md`, `bosses/THYXIS.md` |
 | **Zones** | `ZONES.md`, `SPAWNPOINTS.md`, `WAVEMANAGER.md`, `zones/CITY-BREACH.md`, `zones/RUIN-DEN.md`, `zones/SHADOW-CORE.md`, `zones/THUNDER-SPIRE.md` |
 | **Combat** | `ATTACKSYSTEM.md`, `COMBOSYSTEM.md`, `HITBOX.md`, `COLLISIONLAYERS.md`, `PROJECTILES.md`, `STATUSEFFECTS.md`, `DEBUFFS.md`, `MOVEMENT.md` |
 | **AI & Systems** | `AICONTROLLER.md`, `GAMELOOP.md`, `RUNSTATE.md`, `SCENEMANAGER.md`, `PROGRESSION.md`, `ESSENCEECONOMY.md`, `COOP.md` |
@@ -260,7 +260,7 @@ Load skills from `.agents/skills/`. Load max 2 at a time.
 | HUD, shop, combo UI | `game-hud-ui.md` |
 | Shaders, aura effects | `minimax-shader-dev.md` |
 | Three.js patterns | `threejs-builder/SKILL.md` |
-| Boss entrance, phase transition | `boss-intro.md` |
+| Boss entrance, boss state transitions | `boss-intro.md` |
 | Player death, co-op revive | `death-and-respawn.md` |
 | Debugging | `systematic-debugging.md` |
 
