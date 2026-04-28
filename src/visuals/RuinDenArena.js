@@ -13,18 +13,10 @@ export class RuinDenArena extends Base3DArena {
 
   build() {
     this.setZoneColors({ deep: 0x080604, far: 0x110d0a, mid: 0x1a1410, near: 0x1e1612 });
-
-    this.addRoomShell(this.zoneConfig.roomProfile || {
-      bounds: { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 },
-      floorColor: RUIN_DEN.floor,
-      wallColor: 0x3e352e,
-      frontWallColor: 0x322b26,
-      trimColor: RUIN_DEN.fissure,
-      pillarColor: 0x53463c,
-      laneColor: 0x5f5548,
-      bgLayerColor: 0xc99873,
-      fgLayerColor: 0x1d1712,
-      laneY: -2.2,
+    this.addParallaxLayers();
+    this.buildWorldFromSource({
+      composed: () => this._queueWorldKit(),
+      fallback: () => this.buildFallbackWorld(),
     });
 
     const fissureMaterial = new THREE.MeshBasicMaterial({
@@ -37,7 +29,7 @@ export class RuinDenArena extends Base3DArena {
       const fissure = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.2), fissureMaterial);
       fissure.position.set(i * 2.6, -2.05 + ((i + 1) % 2) * 0.18, -0.92);
       fissure.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.2;
-      this.add(fissure);
+      this.add(fissure, 'props');
     }
     this._animatedMaterials.push({
       material: fissureMaterial,
@@ -46,25 +38,6 @@ export class RuinDenArena extends Base3DArena {
       maxOpacity: 0.42,
       phase: 0,
     });
-
-    const columnMaterial = new THREE.MeshLambertMaterial({ color: RUIN_DEN.stone });
-    for (let i = 0; i < 4; i += 1) {
-      const leftColumn = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.9, 0.8), columnMaterial);
-      leftColumn.position.set(-6.8 + i * 1.7, 0.75 - (i % 2) * 0.2, -1.5);
-      leftColumn.rotation.z = -0.08 + i * 0.03;
-      this.add(leftColumn);
-
-      const rightColumn = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.9, 0.8), columnMaterial);
-      rightColumn.position.set(6.8 - i * 1.7, 0.62 - ((i + 1) % 2) * 0.2, -1.5);
-      rightColumn.rotation.z = 0.08 - i * 0.03;
-      this.add(rightColumn);
-    }
-
-    const relicMaterial = new THREE.MeshLambertMaterial({ color: 0x6f5b4a });
-    const drill = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 0.66), relicMaterial);
-    drill.position.set(-7.6, -0.5, -1.0);
-    drill.rotation.z = 0.28;
-    this.add(drill);
 
     const workLight = new THREE.Mesh(
       new THREE.CylinderGeometry(0.25, 0.25, 1.2, 10),
@@ -76,7 +49,7 @@ export class RuinDenArena extends Base3DArena {
       })
     );
     workLight.position.set(7.6, 1.2, -1.2);
-    this.add(workLight);
+    this.add(workLight, 'props');
     this._animatedMaterials.push({
       material: workLight.material,
       pulse: 6.6,
@@ -123,38 +96,6 @@ export class RuinDenArena extends Base3DArena {
       maxOpacity: 0.52,
     });
 
-    this._queueWorldKit();
-
-    // --- Procedural prop backups (always render regardless of GLB availability) ---
-
-    // 4 broken cylinder columns
-    const columnMat = new THREE.MeshBasicMaterial({ color: 0x4b4036 });
-    for (const columnX of [-7.5, -3.5, 3.5, 7.5]) {
-      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.44, 3.8, 8), columnMat.clone());
-      col.position.set(columnX, 1.0, -2.1);
-      col.castShadow = false;
-      col.receiveShadow = false;
-      this.add(col);
-    }
-
-    // Rubble / stone chunk piles scattered at floor level
-    const rubbleMat = new THREE.MeshBasicMaterial({ color: 0x3c3028 });
-    const rubbleSpots = [
-      { x: -6.8, y: -3.75, rz: 0.2 },
-      { x: -2.2, y: -3.85, rz: -0.15 },
-      { x: 2.8, y: -3.78, rz: 0.12 },
-      { x: 6.6, y: -3.82, rz: -0.18 },
-    ];
-    for (const pos of rubbleSpots) {
-      const chunk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.7, 0.9), rubbleMat.clone());
-      chunk.position.set(pos.x, pos.y, -0.9);
-      chunk.rotation.z = pos.rz;
-      chunk.castShadow = false;
-      chunk.receiveShadow = false;
-      this.add(chunk);
-    }
-
-    // Torch glow discs (AdditiveBlending) — behind torch GLBs
     const torchGlowMat = new THREE.MeshBasicMaterial({
       color: 0xf4a832,
       transparent: true,
@@ -167,21 +108,10 @@ export class RuinDenArena extends Base3DArena {
       glow.position.set(torchX, -0.9, -1.1);
       glow.castShadow = false;
       glow.receiveShadow = false;
-      this.add(glow);
+      this.add(glow, 'props');
       this._animatedMaterials.push({ material: glow.material, pulse: 5.8, minOpacity: 0.1, maxOpacity: 0.42, phase: torchX * 0.3 });
     }
 
-    // Large cracked arch lintel across top of arena
-    const lintMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(5.5, 0.55, 0.6),
-      new THREE.MeshBasicMaterial({ color: 0x4b4036 })
-    );
-    lintMesh.position.set(0, 3.0, -2.2);
-    lintMesh.castShadow = false;
-    lintMesh.receiveShadow = false;
-    this.add(lintMesh);
-
-    // Fissure glow streaks on back wall
     const fissureStreakMat = new THREE.MeshBasicMaterial({
       color: RUIN_DEN.fissure,
       transparent: true,
@@ -196,40 +126,37 @@ export class RuinDenArena extends Base3DArena {
       streak.rotation.z = streakAngles[i];
       streak.castShadow = false;
       streak.receiveShadow = false;
-      this.add(streak);
+      this.add(streak, 'props');
       this._animatedMaterials.push({ material: streak.material, pulse: 4.2, minOpacity: 0.12, maxOpacity: 0.38, phase: i * 0.6 });
     }
-
-    this.addParallaxLayers();
 
     return this.group;
   }
 
   _queueWorldKit() {
     const root = './assets/models/world/ruin-den';
-    const hubRoot = './assets/models/world/hub';
 
-    for (let i = -1; i <= 1; i += 1) {
-      this.queueModel(`${hubRoot}/hub-tile.glb`, {
-        x: i * 5.45,
-        y: -2.35,
+    for (let i = -2; i <= 2; i += 1) {
+      this.queueModel(`${root}/Floor Tile.glb`, {
+        x: i * 3.25,
+        y: -2.34,
         z: -0.98,
-        scale: 0.76,
-        tint: RUIN_DEN.floor,
+        scale: 0.7,
+        layer: 'floor',
       });
     }
-    this.queueModel(`${root}/Bricks.glb`, { x: -7.1, y: -2.65, z: -0.98, scale: 0.78 });
-    this.queueModel(`${root}/Bricks.glb`, { x: -2.3, y: -2.5, z: -0.98, scale: 0.78 });
-    this.queueModel(`${root}/Bricks.glb`, { x: 2.6, y: -2.65, z: -0.98, scale: 0.78 });
-    this.queueModel(`${root}/Bricks.glb`, { x: 7.2, y: -2.5, z: -0.98, scale: 0.78 });
+    this.queueModel(`${root}/Bricks.glb`, { x: -7.1, y: -2.65, z: -0.98, scale: 0.78, layer: 'floor' });
+    this.queueModel(`${root}/Bricks.glb`, { x: -2.3, y: -2.5, z: -0.98, scale: 0.78, layer: 'floor' });
+    this.queueModel(`${root}/Bricks.glb`, { x: 2.6, y: -2.65, z: -0.98, scale: 0.78, layer: 'floor' });
+    this.queueModel(`${root}/Bricks.glb`, { x: 7.2, y: -2.5, z: -0.98, scale: 0.78, layer: 'floor' });
 
-    this.queueModel(`${root}/Column.glb`, { x: -7.95, y: 0.95, z: -2.18, scale: 0.72 });
-    this.queueModel(`${root}/Column.glb`, { x: 7.95, y: 0.95, z: -2.18, scale: 0.72 });
-    this.queueModel(`${root}/Pedestal.glb`, { x: 6.9, y: -0.55, z: -1.22, scale: 0.74 });
-    this.queueModel(`${root}/crate.glb`, { x: -7.0, y: -3.05, z: -0.86, scale: 0.68 });
-    this.queueModel(`${root}/crystal.glb`, { x: 6.95, y: -1.45, z: -0.84, scale: 0.76 });
-    this.queueModel(`${root}/Torch.glb`, { x: -3.8, y: -1.0, z: -1.18, scale: 0.74 });
-    this.queueModel(`${root}/Torch.glb`, { x: 3.8, y: -1.0, z: -1.18, scale: 0.74 });
+    this.queueModel(`${root}/Column.glb`, { x: -7.95, y: 0.95, z: -2.18, scale: 0.72, layer: 'walls' });
+    this.queueModel(`${root}/Column.glb`, { x: 7.95, y: 0.95, z: -2.18, scale: 0.72, layer: 'walls' });
+    this.queueModel(`${root}/Pedestal.glb`, { x: 6.9, y: -0.55, z: -1.22, scale: 0.74, layer: 'props' });
+    this.queueModel(`${root}/crate.glb`, { x: -7.0, y: -3.05, z: -0.86, scale: 0.68, layer: 'props' });
+    this.queueModel(`${root}/crystal.glb`, { x: 6.95, y: -1.45, z: -0.84, scale: 0.76, layer: 'props' });
+    this.queueModel(`${root}/Torch.glb`, { x: -3.8, y: -1.0, z: -1.18, scale: 0.74, layer: 'props' });
+    this.queueModel(`${root}/Torch.glb`, { x: 3.8, y: -1.0, z: -1.18, scale: 0.74, layer: 'props' });
     this.queueModel('./assets/models/world/city-breach/portal.glb', {
       x: 7.1,
       y: -2.18,
@@ -238,6 +165,7 @@ export class RuinDenArena extends Base3DArena {
       tint: RUIN_DEN.fissure,
       emissive: RUIN_DEN.fissure,
       emissiveIntensity: 0.5,
+      layer: 'props',
     });
   }
 }

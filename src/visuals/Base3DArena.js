@@ -10,6 +10,111 @@ const MODEL_COLORMAPS = {
 };
 const PARALLAX_TEXTURE_CACHE = new Map();
 const parallaxTextureLoader = new THREE.TextureLoader();
+const SURFACE_TEXTURE_CACHE = new Map();
+const surfaceTextureLoader = new THREE.TextureLoader();
+const WORLD_LAYER_ORDER = ['floor', 'walls', 'props', 'hazards', 'fallback', 'parallax'];
+
+function isColormapTexture(path = '') {
+  const normalized = String(path || '').replace(/\\/g, '/').toLowerCase();
+  return /\/colormap\.png$/i.test(normalized);
+}
+
+export function shouldUseParallaxTexture(path = '') {
+  return !!path && !isColormapTexture(path);
+}
+
+export function getParallaxLayerMetrics(bounds, layer = {}) {
+  const arenaWidth = bounds.maxX - bounds.minX;
+  const arenaHeight = bounds.maxY - bounds.minY;
+  const centerX = (bounds.minX + bounds.maxX) * 0.5;
+  const layerId = layer.id || 'layer';
+
+  const presets = {
+    background: {
+      widthScale: 1.34,
+      heightScale: 0.58,
+      anchorY: 0.84,
+      z: -20,
+      opacity: 0.2,
+      renderOrder: -12,
+    },
+    midground: {
+      widthScale: 1.24,
+      heightScale: 0.46,
+      anchorY: 0.72,
+      z: -8.4,
+      opacity: 0.16,
+      renderOrder: -9,
+    },
+    foreground: {
+      widthScale: 1.18,
+      heightScale: 0.24,
+      anchorY: 0.12,
+      z: -0.72,
+      opacity: 0.1,
+      renderOrder: -4,
+    },
+    layer: {
+      widthScale: 1.24,
+      heightScale: 0.42,
+      anchorY: 0.72,
+      z: -8,
+      opacity: 0.14,
+      renderOrder: -8,
+    },
+  };
+
+  const preset = presets[layerId] || presets.layer;
+  const opacity = Number.isFinite(layer.opacity)
+    ? Math.min(layer.opacity, preset.opacity)
+    : preset.opacity;
+
+  return {
+    x: centerX + (layer.offsetX || 0),
+    y: bounds.minY + arenaHeight * ((layer.anchorY ?? preset.anchorY)) + (layer.offsetY || 0),
+    z: Number.isFinite(layer.z) ? layer.z : preset.z,
+    width: arenaWidth * (layer.widthScale ?? preset.widthScale),
+    height: arenaHeight * (layer.heightScale ?? preset.heightScale),
+    opacity,
+    renderOrder: Number.isFinite(layer.renderOrder) ? layer.renderOrder : preset.renderOrder,
+    baseX: centerX,
+  };
+}
+
+function queueSurfaceTexture(path, material, options = {}) {
+  if (!material || !path) return;
+  const key = String(path);
+  if (!SURFACE_TEXTURE_CACHE.has(key)) {
+    const pending = new Promise((resolve, reject) => {
+      surfaceTextureLoader.load(key, resolve, undefined, reject);
+    }).then((texture) => {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.magFilter = THREE.LinearFilter;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      return texture;
+    });
+    SURFACE_TEXTURE_CACHE.set(key, pending);
+  }
+
+  SURFACE_TEXTURE_CACHE.get(key)
+    .then((texture) => {
+      const map = texture.clone();
+      const repeatX = Number.isFinite(options.repeatX) ? Math.max(0.01, options.repeatX) : 1;
+      const repeatY = Number.isFinite(options.repeatY) ? Math.max(0.01, options.repeatY) : 1;
+      map.repeat.set(repeatX, repeatY);
+      map.rotation = Number.isFinite(options.rotation) ? options.rotation : 0;
+      map.needsUpdate = true;
+      material.map = map;
+      if (material.color) {
+        material.color.setHex(Number.isFinite(options.baseColor) ? options.baseColor : 0xffffff);
+      }
+      material.needsUpdate = true;
+    })
+    .catch(() => {
+      // Keep color-only fallback when texture load fails.
+    });
+}
 
 function darkenHex(hex, amount = 0.26) {
   const color = new THREE.Color(hex);
@@ -67,6 +172,10 @@ export function createRoomShellMeshes(profile = {}) {
   const bgLayerColor = profile.bgLayerColor ?? 0x8aa6ff;
   const fgLayerColor = profile.fgLayerColor ?? 0x0f1724;
   const laneColor = profile.laneColor ?? 0x3a4b6e;
+  const floorTexture = shouldUseParallaxTexture(profile.floorTexture) ? profile.floorTexture : null;
+  const floorTextureRepeatX = profile.floorTextureRepeatX ?? 6;
+  const floorTextureRepeatY = profile.floorTextureRepeatY ?? 3;
+  const floorTextureRotation = profile.floorTextureRotation ?? 0;
 
   const meshes = [];
   const addMesh = (mesh, renderOrder = -5) => {
@@ -77,10 +186,30 @@ export function createRoomShellMeshes(profile = {}) {
   };
 
   // Floor
-  addMesh(new THREE.Mesh(
+  const floorMesh = addMesh(new THREE.Mesh(
     new THREE.BoxGeometry(innerWidth, innerHeight, floorThickness),
     createLitMaterial(floorColor)
-  ), -10).position.set(centerX, centerY, floorZ);
+  ), -10);
+  floorMesh.position.set(centerX, centerY, floorZ);
+
+  const floorSurfaceMaterial = createLitMaterial(floorColor, {
+    transparent: true,
+    opacity: 0.98,
+    depthWrite: false,
+  });
+  const floorSurface = addMesh(new THREE.Mesh(
+    new THREE.PlaneGeometry(innerWidth * 0.99, innerHeight * 0.99),
+    floorSurfaceMaterial
+  ), -9);
+  floorSurface.position.set(centerX, centerY, floorZ + (floorThickness * 0.5) + 0.01);
+  if (floorTexture) {
+    queueSurfaceTexture(floorTexture, floorSurfaceMaterial, {
+      repeatX: floorTextureRepeatX,
+      repeatY: floorTextureRepeatY,
+      rotation: floorTextureRotation,
+      baseColor: 0xffffff,
+    });
+  }
 
   // Lane marker
   addMesh(new THREE.Mesh(
@@ -185,6 +314,7 @@ export class Base3DArena {
     this.loader.manager.setURLModifier((url) => resolveModelColormapUrl(url, this.colormapTexture));
     this.group = new THREE.Group();
     this.group.visible = false;
+    this.group.name = `${this.zoneConfig.id || 'arena'}-world-root`;
     this.hazards = [];
     this._animatedMaterials = [];
     this._zoneColors = null;
@@ -195,9 +325,25 @@ export class Base3DArena {
     this._parallaxTextureJobs = [];
     this._parallaxProfile = this.zoneConfig.parallaxProfile || { layers: [] };
     this._visualScaleProfile = this.zoneConfig.visualScaleProfile || {};
+    this._worldSource = this.zoneConfig.worldSource || {};
+    this._worldLayers = {};
+    this._fallbackBuilt = false;
+    this._authoredWorldMode = null;
+    this._authoredModelCount = 0;
     this.bounds = options.bounds || { minX: -8.3, maxX: 8.3, minY: -4.2, maxY: 3.3 };
+    this._initializeWorldLayers();
 
     this.scene.add(this.group);
+  }
+
+  _initializeWorldLayers() {
+    for (const layerName of WORLD_LAYER_ORDER) {
+      const layer = new THREE.Group();
+      layer.name = `${this.zoneConfig.id || 'arena'}-${layerName}`;
+      this._worldLayers[layerName] = layer;
+      this.group.add(layer);
+    }
+    this._worldLayers.fallback.visible = false;
   }
 
   /** Call this when the zone transitions to boss phase so hazards become visible. */
@@ -224,29 +370,25 @@ export class Base3DArena {
   }
 
   build() {
-    const { minX, maxX, minY, maxY } = this.bounds;
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    this.addRoomShell();
     this.addParallaxLayers();
-    this.addForegroundProps();
-
-    this.addProp('platform', { x: centerX, y: centerY - 1.0, z: -0.5, color: 0x4a5a7a, width: 4.0, height: 0.3, depth: 1.5 });
-    this.addProp('crate', { x: minX + 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a });
-    this.addProp('crate', { x: maxX - 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a });
-
+    this.buildWorldFromSource({
+      fallback: () => this.buildFallbackWorld(),
+    });
     return this.group;
   }
 
-  add(mesh) {
-    this.group.add(mesh);
+  getLayer(layerName = 'props') {
+    return this._worldLayers[layerName] || this._worldLayers.props;
+  }
+
+  add(mesh, layerName = 'props') {
+    this.getLayer(layerName).add(mesh);
     return mesh;
   }
 
-  addRoomShell(profile = {}) {
+  addRoomShell(profile = {}, layerName = 'fallback') {
     const meshes = createRoomShellMeshes({ ...profile, bounds: this.bounds });
-    for (const mesh of meshes) this.add(mesh);
+    for (const mesh of meshes) this.add(mesh, layerName);
     return meshes;
   }
 
@@ -276,7 +418,9 @@ export class Base3DArena {
           });
           model.position.y += 0.02;
         }
-        this.add(model);
+        const layerName = options.layer || this._resolveWorldLayer(path, options.visualRole || null);
+        this.add(model, layerName);
+        this._authoredModelCount += 1;
         return model;
       })
       .catch(() => null);
@@ -369,12 +513,71 @@ export class Base3DArena {
     return world * props;
   }
 
-  addParallaxLayers() {
+  _resolveWorldLayer(sourcePath = '', explicitRole = null) {
+    const normalized = String(sourcePath || '').replace(/\\/g, '/').toLowerCase();
+    const role = explicitRole || this._resolveVisualRole(normalized);
+    if (role === 'portal') return 'props';
+    if (/(^|\/)(floor|road|tile|grate|lane|top-large-checkerboard|floorfull|floorhalf|floorcorner|hub-tile)/.test(normalized)) {
+      return 'floor';
+    }
+    if (/(wall|window|doorway|pillar|pilar|column|paneling|building|tower|spire|stairs|structure|bridge)/.test(normalized)) {
+      return 'walls';
+    }
+    return role === 'structure' ? 'walls' : 'props';
+  }
+
+  buildWorldFromSource(builders = {}) {
+    const source = this._worldSource || {};
+    const mode = source.mode || 'composed-loose';
+
+    if (mode === 'grouped' && typeof builders.grouped === 'function') {
+      builders.grouped(source);
+      this._authoredWorldMode = 'grouped';
+      return 'grouped';
+    }
+
+    if (mode === 'composed-loose' && typeof builders.composed === 'function') {
+      builders.composed(source);
+      this._authoredWorldMode = 'composed-loose';
+      return 'composed-loose';
+    }
+
+    if (mode === 'fallback' && typeof builders.fallback === 'function') {
+      this.setFallbackActive(true);
+      builders.fallback(source);
+      this._authoredWorldMode = 'fallback';
+      return 'fallback';
+    }
+
+    if (typeof builders.fallback === 'function') {
+      this.setFallbackActive(true);
+      builders.fallback(source);
+      this._authoredWorldMode = 'fallback';
+      return 'fallback';
+    }
+
+    return null;
+  }
+
+  buildFallbackWorld() {
+    if (this._fallbackBuilt) return;
     const { minX, maxX, minY, maxY } = this.bounds;
-    const width = maxX - minX;
-    const height = maxY - minY;
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
+    this.addRoomShell(this.zoneConfig.roomProfile || {}, 'fallback');
+    this.addForegroundProps('fallback');
+    this.addProp('platform', { x: centerX, y: centerY - 1.0, z: -0.5, color: 0x4a5a7a, width: 4.0, height: 0.3, depth: 1.5 }, 'fallback');
+    this.addProp('crate', { x: minX + 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a }, 'fallback');
+    this.addProp('crate', { x: maxX - 2.0, y: maxY - 0.5, z: -1.5, color: 0x3a4a6a }, 'fallback');
+    this._fallbackBuilt = true;
+  }
+
+  setFallbackActive(active = false) {
+    this.getLayer('fallback').visible = !!active;
+    return this;
+  }
+
+  addParallaxLayers() {
     const zc = this._zoneColors || {};
     this._parallaxLayers.length = 0;
     const fallbackLayers = [
@@ -385,26 +588,29 @@ export class Base3DArena {
     const configuredLayers = this._parallaxProfile?.layers?.length ? this._parallaxProfile.layers : fallbackLayers;
 
     for (const layer of configuredLayers) {
+      const metrics = getParallaxLayerMetrics(this.bounds, layer);
       const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(width * 1.45, height * 1.45),
+        new THREE.PlaneGeometry(metrics.width, metrics.height),
         new THREE.MeshBasicMaterial({
           color: layer.tint ?? 0xffffff,
           transparent: true,
-          opacity: layer.opacity ?? 0.7,
+          opacity: metrics.opacity,
           depthWrite: false,
         })
       );
-      mesh.position.set(centerX, centerY, layer.z ?? -8);
-      mesh.renderOrder = mesh.position.z <= -8 ? -10 : mesh.position.z <= -2 ? -8 : -5;
+      mesh.position.set(metrics.x, metrics.y, metrics.z);
+      mesh.renderOrder = metrics.renderOrder;
       mesh.userData.parallaxLayer = layer.id || 'layer';
-      this.add(mesh);
+      this.add(mesh, 'parallax');
       this._parallaxLayers.push({
         id: layer.id || 'layer',
         mesh,
-        baseX: centerX,
+        baseX: metrics.baseX,
         speed: Number.isFinite(layer.speed) ? layer.speed : 0,
       });
-      if (layer.texture) this._queueParallaxTexture(layer.texture, mesh.material);
+      if (shouldUseParallaxTexture(layer.texture)) {
+        this._queueParallaxTexture(layer.texture, mesh.material);
+      }
     }
   }
 
@@ -439,7 +645,7 @@ export class Base3DArena {
     this._parallaxTextureJobs.push(job);
   }
 
-  addForegroundProps() {
+  addForegroundProps(layerName = 'fallback') {
     const { minX, maxX, minY, maxY } = this.bounds;
     const centerY = (minY + maxY) / 2;
     const arenaHeight = maxY - minY;
@@ -450,7 +656,7 @@ export class Base3DArena {
     );
     leftPillar.position.set(minX - 1.5, centerY, 2.0);
     leftPillar.userData.foregroundProp = true;
-    this.add(leftPillar);
+    this.add(leftPillar, layerName);
 
     const rightPillar = new THREE.Mesh(
       new THREE.CylinderGeometry(0.4, 0.4, arenaHeight * 1.5, 8),
@@ -458,18 +664,18 @@ export class Base3DArena {
     );
     rightPillar.position.set(maxX + 1.5, centerY, 2.0);
     rightPillar.userData.foregroundProp = true;
-    this.add(rightPillar);
+    this.add(rightPillar, layerName);
 
     const cratePositions = [
       { x: minX + 1.0, y: minY + 0.5, z: 1.5 },
       { x: maxX - 1.0, y: minY + 0.5, z: 1.5 },
     ];
     for (const pos of cratePositions) {
-      this.addProp('crate', { ...pos, color: 0x3a4a6a, width: 0.8, height: 0.8, depth: 0.8 });
+      this.addProp('crate', { ...pos, color: 0x3a4a6a, width: 0.8, height: 0.8, depth: 0.8 }, layerName);
     }
   }
 
-  addProp(type, options = {}) {
+  addProp(type, options = {}, layerName = 'props') {
     const { minX, maxX, minY, maxY } = this.bounds;
     const defaults = {
       x: (minX + maxX) / 2,
@@ -502,27 +708,27 @@ export class Base3DArena {
       edge.position.set(0, -(opts.height || 1.2) * 0.44, (opts.depth || 1.2) * 0.42);
       mesh.add(edge);
     }
-    return this.add(mesh);
+    return this.add(mesh, layerName);
   }
 
-  addFloorRect(width, height, color, y = -2.25, z = -1.18) {
+  addFloorRect(width, height, color, y = -2.25, z = -1.18, layerName = 'floor') {
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(width, height, 0.12),
       createLitMaterial(color)
     );
     mesh.position.set(0, y, z);
     mesh.renderOrder = -10;
-    return this.add(mesh);
+    return this.add(mesh, layerName);
   }
 
-  addBackWall(width, height, color, y = 1.9, z = -2.5) {
+  addBackWall(width, height, color, y = 1.9, z = -2.5, layerName = 'walls') {
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(width, height, 0.58),
       createLitMaterial(color)
     );
     mesh.position.set(0, y, z);
     mesh.renderOrder = -5;
-    return this.add(mesh);
+    return this.add(mesh, layerName);
   }
 
   addHazardRect({
@@ -539,7 +745,7 @@ export class Base3DArena {
     mesh.position.set(x, y, -0.12);
     // Hide immediately if not always-active
     mesh.visible = activeWhen === 'always';
-    this.add(mesh);
+    this.add(mesh, 'hazards');
     const animEntry = { material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.37 + y * 0.11, paused: activeWhen !== 'always' };
     this._animatedMaterials.push(animEntry);
     this.hazards.push({ id, shape: 'rect', x, y, width, height, damage, tick, activeWhen, mesh, _animEntry: animEntry });
@@ -559,7 +765,7 @@ export class Base3DArena {
     mesh.position.set(x, y, -0.12);
     // Hide immediately if not always-active
     mesh.visible = activeWhen === 'always';
-    this.add(mesh);
+    this.add(mesh, 'hazards');
     const animEntry = { material: mat, pulse, minOpacity, maxOpacity, phase: x * 0.23 - y * 0.13, paused: activeWhen !== 'always' };
     this._animatedMaterials.push(animEntry);
     this.hazards.push({ id, shape: 'circle', x, y, radius, damage, tick, activeWhen, mesh, _animEntry: animEntry });

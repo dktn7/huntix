@@ -6,6 +6,7 @@ import {
   ORTHO_HEIGHT,
   ORTHO_WIDTH,
   getCameraTiltX,
+  setCameraFocus,
   setCameraTiltX,
 } from './Renderer.js';
 import { Actions } from './InputManager.js';
@@ -26,7 +27,8 @@ import { createPortalRift, createPortalFloorGlow } from '../visuals/PortalRiftSh
 import { HitFlarePool } from '../visuals/HitFlarePool.js';
 import { AudioManager } from './AudioManager.js';
 import { ZONE_CONFIGS } from '../gameplay/ZoneManager.js';
-import { createRoomShellMeshes, resolveModelColormapUrl } from '../visuals/Base3DArena.js';
+import { HubWorld } from '../visuals/HubWorld.js';
+import { resolveModelColormapUrl } from '../visuals/Base3DArena.js';
 
 import { TitleScreen } from '../screens/TitleScreen.js';
 import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
@@ -86,9 +88,6 @@ export class SceneManager {
     this._lastHubHintAt = 0;
     this._cameraTiltX = getCameraTiltX(this.camera);
     this._cameraTiltTargetX = this._cameraTiltX;
-    this._hubParallaxLayers = [];
-    this._hubParallaxTextureCache = new Map();
-    this._hubParallaxLoader = new THREE.TextureLoader();
     this._hubLoader = new GLTFLoader();
     this._hubLoader.manager.setURLModifier((url) =>
       resolveModelColormapUrl(url, './assets/textures/props/hub/colormap.png')
@@ -230,6 +229,7 @@ export class SceneManager {
     }
 
     if (this.mode === SceneModes.HUNTER_SELECT) {
+      this._updateHubPreview(dt);
       if (!this.settingsPanel.isOpen()) {
         const prevCursor = this.hunterSelectScreen.cursorIndex;
         this.hunterSelectScreen.update(input);
@@ -295,6 +295,10 @@ export class SceneManager {
     this.hunterSelectScreen.hide();
     this.mode = SceneModes.TITLE_SCREEN;
     resetActiveArenaBounds();
+    this._activeZoneId = null;
+    this.zoneManager.showHub();
+    this._setHubVisible(false);
+    this.hunters.setVisible(false);
     this.titleScreen.show();
   }
 
@@ -305,7 +309,7 @@ export class SceneManager {
     this.audio.playSFX('ui-confirm');
     this.titleScreen.hide();
     this.mode = SceneModes.HUNTER_SELECT;
-    resetActiveArenaBounds();
+    this._activateHubPreview();
     this.hunterSelectScreen.setCoop(isCoop);
     this.hunterSelectScreen.show();
   }
@@ -528,195 +532,38 @@ export class SceneManager {
   }
 
   _setupHubBackdrop() {
-    this._hubBackdrop = [];
-    this._hubHomeSpots = [];
-
-    const add = (mesh) => {
-      mesh.userData.hubPrimitive = true;
-      this.scene.add(mesh);
-      this._hubBackdrop.push(mesh);
-      return mesh;
-    };
-
-    const hubProfile = ZONE_CONFIGS.hub?.roomProfile || {
-      bounds: { minX: -8.4, maxX: 8.4, minY: -4.25, maxY: 3.35 },
-      floorColor: 0x1b2230,
-      wallColor: 0x222f49,
-      frontWallColor: 0x1a253b,
-      trimColor: 0x5a77b7,
-      pillarColor: 0x324463,
-      laneColor: 0x2e4364,
-      bgLayerColor: 0x87a9ff,
-      fgLayerColor: 0x111a2a,
-      laneY: -2.2,
-    };
-    this._setupHubParallaxLayers(add, hubProfile.bounds);
-    const shellMeshes = createRoomShellMeshes(hubProfile);
-    for (const mesh of shellMeshes) add(mesh);
-
-    const leftShopPad = new THREE.Mesh(
-      new THREE.BoxGeometry(5.4, 2.2, 0.08),
-      new THREE.MeshLambertMaterial({ color: 0x25344a })
-    );
-    leftShopPad.position.set(-7.25, -1.95, -0.35);
-    add(leftShopPad);
-
-    const shopDesk = new THREE.Mesh(
-      new THREE.BoxGeometry(2.8, 1.05, 0.72),
-      new THREE.MeshLambertMaterial({ color: 0x40526e })
-    );
-    shopDesk.position.set(-7.2, -1.08, -1.2);
-    add(shopDesk);
-
-    const shopBeacon = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.22, 1.3, 8),
-      new THREE.MeshBasicMaterial({
-        color: 0x5edfff,
-        transparent: true,
-        opacity: 0.65,
-        blending: THREE.AdditiveBlending,
-      })
-    );
-    shopBeacon.position.set(-7.2, -0.25, -1.05);
-    add(shopBeacon);
-
-    const briefingBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(4.4, 1.8, 0.18),
-      new THREE.MeshLambertMaterial({ color: 0x314057 })
-    );
-    briefingBoard.position.set(0, -0.3, -1.12);
-    add(briefingBoard);
-
-    const briefingGlow = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.9, 1.15),
-      new THREE.MeshBasicMaterial({
-        color: 0x9fb4ff,
-        transparent: true,
-        opacity: 0.35,
-        blending: THREE.AdditiveBlending,
-      })
-    );
-    briefingGlow.position.set(0, -0.3, -1.03);
-    add(briefingGlow);
-
-    const portalWall = new THREE.Mesh(
-      new THREE.BoxGeometry(5.8, 5.4, 0.6),
-      new THREE.MeshLambertMaterial({ color: 0x1f2942 })
-    );
-    portalWall.position.set(7.05, 0.2, -1.65);
-    add(portalWall);
-
-    for (let i = 0; i < 4; i += 1) {
-      const bay = new THREE.Mesh(
-        new THREE.BoxGeometry(0.9, 3.0, 0.18),
-        new THREE.MeshLambertMaterial({ color: 0x263655 })
-      );
-      bay.position.set(4.8 + i * 1.2, 0.1, -1.2);
-      add(bay);
-    }
-
-    const makeHomeSpot = (x, y, color, tall = false) => {
-      const base = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.42, 0.52, 0.12, 14),
-        new THREE.MeshLambertMaterial({ color: 0x223145 })
-      );
-      base.position.set(x, y, -0.24);
-      add(base);
-
-      const emblem = new THREE.Mesh(
-        tall ? new THREE.CylinderGeometry(0.11, 0.11, 1.0, 10) : new THREE.SphereGeometry(0.2, 12, 10),
-        new THREE.MeshBasicMaterial({
-          color,
-          transparent: true,
-          opacity: 0.75,
-          blending: THREE.AdditiveBlending,
-        })
-      );
-      emblem.position.set(x, y + (tall ? 0.62 : 0.2), -0.18);
-      add(emblem);
-      this._hubHomeSpots.push({ base, emblem });
-    };
-
-    // Dabik corner (left rear), Benzu training lane, Sereisa terminal, Vesol alchemy station.
-    makeHomeSpot(-7.95, 0.85, 0x9b59b6, true);
-    makeHomeSpot(-4.9, -0.75, 0xf39c12, true);
-    makeHomeSpot(1.9, 0.95, 0xf1c40f, false);
-    makeHomeSpot(-1.9, -0.75, 0xe74c3c, false);
-
-    this._queueHubWorldKit();
+    this._hubWorld = new HubWorld(this.scene, ZONE_CONFIGS.hub);
+    this._hubWorldBuilt = false;
+    this._hubBackdrop = [this._hubWorld.group];
+    this._hubHomeSpots = this._hubWorld.homeSpots;
   }
 
-  _setupHubParallaxLayers(add, bounds) {
-    this._hubParallaxLayers.length = 0;
-    const profile = ZONE_CONFIGS.hub?.parallaxProfile;
-    if (!profile?.layers?.length) return;
-
-    const centerX = (bounds.minX + bounds.maxX) * 0.5;
-    const centerY = (bounds.minY + bounds.maxY) * 0.5;
-    const width = (bounds.maxX - bounds.minX) * 1.45;
-    const height = (bounds.maxY - bounds.minY) * 1.45;
-
-    for (const layer of profile.layers) {
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(width, height),
-        new THREE.MeshBasicMaterial({
-          color: layer.tint ?? 0xffffff,
-          transparent: true,
-          opacity: layer.opacity ?? 0.7,
-          depthWrite: false,
-        })
-      );
-      mesh.position.set(centerX, centerY, layer.z ?? -8);
-      mesh.renderOrder = mesh.position.z <= -8 ? -10 : mesh.position.z <= -2 ? -8 : -5;
-      add(mesh);
-      this._hubParallaxLayers.push({
-        id: layer.id || 'layer',
-        mesh,
-        speed: Number.isFinite(layer.speed) ? layer.speed : 0,
-        baseX: centerX,
-      });
-      if (layer.texture) this._loadHubParallaxTexture(layer.texture, mesh.material);
-    }
+  _ensureHubWorldBuilt() {
+    if (this._hubWorldBuilt || !this._hubWorld) return;
+    this._hubWorld.build();
+    this._hubWorldBuilt = true;
+    this._hubHomeSpots = this._hubWorld.homeSpots;
   }
 
-  _loadHubParallaxTexture(path, material) {
-    if (!path || !material) return;
-    if (!this._hubParallaxTextureCache.has(path)) {
-      const pending = new Promise((resolve, reject) => {
-        this._hubParallaxLoader.load(path, resolve, undefined, reject);
-      }).then((texture) => {
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping;
-        texture.magFilter = THREE.LinearFilter;
-        texture.minFilter = THREE.LinearMipmapLinearFilter;
-        return texture;
-      });
-      this._hubParallaxTextureCache.set(path, pending);
-    }
-
-    this._hubParallaxTextureCache.get(path)
-      .then((texture) => {
-        material.map = texture.clone();
-        material.map.needsUpdate = true;
-        material.color.setHex(0xffffff);
-        material.needsUpdate = true;
-      })
-      .catch(() => {
-        // Keep tint fallback if loading fails.
-      });
-  }
-
-  _queueHubWorldKit() {
-    const root = './assets/models/world/hub';
-
-    this._queueHubModel(`${root}/floorFull.glb`, { x: 0, y: -2.3, z: -1.05, scale: 0.74 });
-    this._queueHubModel(`${root}/wall.glb`, { x: 0, y: 1.8, z: -2.7, scale: 0.86 });
-
-    this._queueHubModel(`${root}/desk.glb`, { x: -7.2, y: -1.25, z: -1.08, scale: 0.72 });
-    this._queueHubModel(`${root}/computerScreen.glb`, { x: 1.95, y: 0.7, z: -1.02, scale: 0.72 });
-    this._queueHubModel(`${root}/table.glb`, { x: -1.9, y: -1.1, z: -1.0, scale: 0.72 });
-    this._queueHubModel(`${root}/weapon-rack.glb`, { x: -7.55, y: 0.58, z: -1.14, scale: 0.72 });
-    this._queueHubModel(`${root}/bench.glb`, { x: -4.95, y: -0.95, z: -0.98, scale: 0.74 });
+  _activateHubPreview() {
+    this._activeZoneId = null;
+    this.zoneManager.showHub();
+    this._ensureHubWorldBuilt();
+    this._setHubVisible(true);
+    this._syncHubPortals();
+    this.hunters.setVisible(false);
+    this.shop.close();
+    this.portalManager.hideResultsOverlay();
+    this.portalManager.clearZoneCard();
+    this.hud.hideOnboarding();
+    this.hud.hideCardScreen();
+    this.hud.clearBossBar();
+    const hubConfig = this.zoneManager.getZoneConfig('hub');
+    setActiveArenaBounds(hubConfig?.playBounds, hubConfig?.blockers || []);
+    RunState.clearBossInfo();
+    this.spawner.startZone(null);
+    this._resetCameraFrustum();
+    this._frameHubCamera({ snap: true, preview: true, focusX: 0 });
   }
 
   _queueHubModel(path, options = {}) {
@@ -761,6 +608,7 @@ export class SceneManager {
           child.receiveShadow = false;
           child.frustumCulled = true;
         });
+        model.visible = this.mode === SceneModes.HUB || this.mode === SceneModes.HUNTER_SELECT;
         this.scene.add(model);
         this._hubBackdrop.push(model);
       })
@@ -789,18 +637,18 @@ export class SceneManager {
         opacity: 0.45,
       });
       const portal = new THREE.Mesh(portalGeo, portalMat);
-      portal.position.set(entry.x, -2.18, 0.3);
+      portal.position.set(entry.x, entry.y, 0.3);
       portal.renderOrder = 20;
       this.scene.add(portal);
 
       const pedestalMat = new THREE.MeshLambertMaterial({ color: 0x29364f });
       const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-      pedestal.position.set(entry.x, -2.85, 0.2);
+      pedestal.position.set(entry.x, entry.y - 0.62, 0.2);
       this.scene.add(pedestal);
 
       this._queueHubModel('./assets/models/world/city-breach/portal.glb', {
         x: entry.x,
-        y: -2.2,
+        y: entry.y - 0.04,
         z: -1.05,
         scale: 0.52,
         ry: Math.PI,
@@ -827,25 +675,23 @@ export class SceneManager {
         this.hunters.applyRunStateModifiers(RunState.players);
       }
       this._updateCameraTilt(dt);
-      this._updateHubParallax(this._getPlayerFocusX());
+      this._hubWorld?.update(dt, this._getPlayerFocusX());
       this.hud.update(this.camera);
       return;
     }
 
-    // Camera follows player across the HQ space
-    const px = this.hunters.primaryPlayer?.position.x || 0;
-    const hubBounds = ZONE_CONFIGS.hub?.playBounds || { minX: -8.4, maxX: 8.4 };
-    const targetX = Math.max(hubBounds.minX + 0.9, Math.min(hubBounds.maxX - 0.9, px + 0.2));
-    this.camera.position.x += (targetX - this.camera.position.x) * 0.06;
-    this.camera.position.y += (-1.9 - this.camera.position.y) * 0.09;
+    this._frameHubCamera({
+      focusX: this.hunters.primaryPlayer?.position.x || 0,
+      snap: false,
+      preview: false,
+    });
 
     this.hunters.update(dt, input);
     this._updateCameraTilt(dt);
-    this._updateHubParallax(this._getPlayerFocusX());
+    this._hubWorld?.update(dt, this._getPlayerFocusX());
     this.sparks.update(dt);
     this.cameraShake.update(dt);
     this._animateHubPortals(dt);
-    this._animateHubLandmarks(dt);
     this._syncPlayerAuras(dt);
     this._syncHubPortals();
     this._updateDebugHitboxes();
@@ -867,6 +713,15 @@ export class SceneManager {
         }
       }
     }
+  }
+
+  _updateHubPreview(dt) {
+    this._frameHubCamera({ snap: false, preview: true, focusX: 0 });
+    this._updateCameraTilt(dt);
+    this._hubWorld?.update(dt, 0);
+    this.cameraShake.update(dt);
+    this._animateHubPortals(dt);
+    this._syncHubPortals();
   }
 
   _updateZone(dt, input) {
@@ -1063,6 +918,7 @@ export class SceneManager {
     setActiveArenaBounds(config.playBounds, config.blockers || []);
     if (input) this.hunters.clearInputBuffers(input);
     this.hunters.setFormation(-4, -2.2);
+    this.hunters.setVisible(true);
     this._setHubVisible(false);
     this.zoneManager.showZone(zoneId);
     this.spawner.startZone(config);
@@ -1166,9 +1022,11 @@ export class SceneManager {
     this.mode = SceneModes.HUB;
     this._activeZoneId = null;
     this.zoneManager.showHub();
+    this._ensureHubWorldBuilt();
     this._setHubVisible(true);
     this._syncHubPortals();
     this.hunters.setFormation(0, -2.2);
+    this.hunters.setVisible(true);
     this.hud.clearBossBar();
     this.hud.hideCardScreen();
     this.combat.breakCombo();
@@ -1181,6 +1039,11 @@ export class SceneManager {
     RunState.clearBossInfo();
     this.spawner.startZone(null);
     this._resetCameraFrustum();
+    this._frameHubCamera({
+      snap: true,
+      preview: false,
+      focusX: this.hunters.primaryPlayer?.position.x || 0,
+    });
     this._transitionLock = false;
 
     // Highlight the suggested next portal if the player just cleared a zone
@@ -1203,7 +1066,7 @@ export class SceneManager {
   }
 
   _syncHubPortals() {
-    const inHub        = this.mode === SceneModes.HUB;
+    const inHub        = this.mode === SceneModes.HUB || this.mode === SceneModes.HUNTER_SELECT;
     const unlockedZones = new Set(this.zoneManager.getUnlockedZoneIds(RunState.zonesCleared));
     for (const portal of this._hubPortals) {
       portal.unlocked            = unlockedZones.has(portal.zoneId);
@@ -1282,22 +1145,6 @@ export class SceneManager {
     }
   }
 
-  _animateHubLandmarks(_dt) {
-    if (!this._hubHomeSpots?.length) return;
-    const t = performance.now() * 0.001;
-    for (let i = 0; i < this._hubHomeSpots.length; i += 1) {
-      const entry = this._hubHomeSpots[i];
-      if (!entry?.emblem || !entry?.base) continue;
-      const wave = 1 + Math.sin(t * 2.2 + i * 1.3) * 0.06;
-      entry.emblem.scale.setScalar(wave);
-      if (entry.emblem.material?.opacity !== undefined) {
-        entry.emblem.material.opacity = 0.54 + Math.sin(t * 3.1 + i) * 0.14;
-      }
-      entry.base.position.z = -entry.base.position.y * 0.01 - 0.25;
-      entry.emblem.position.z = -entry.emblem.position.y * 0.01 - 0.19;
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // Auras
   // ---------------------------------------------------------------------------
@@ -1359,8 +1206,11 @@ export class SceneManager {
     const camMinY = activeBounds.minY + 1.1;
     const camMaxY = activeBounds.maxY - 1.45;
     const clampedY = Math.max(camMinY, Math.min(camMaxY, targetFocusY));
-    this.camera.position.x += (clampedX - this.camera.position.x) * 0.085;
-    this.camera.position.y += (clampedY - this.camera.position.y) * 0.07;
+    const currentFocusX = Number.isFinite(this.camera.userData.focusX) ? this.camera.userData.focusX : 0;
+    const currentFocusY = Number.isFinite(this.camera.userData.focusY) ? this.camera.userData.focusY : 0;
+    const nextFocusX = currentFocusX + (clampedX - currentFocusX) * 0.085;
+    const nextFocusY = currentFocusY + (clampedY - currentFocusY) * 0.07;
+    setCameraFocus(this.camera, nextFocusX, nextFocusY);
 
     this.camera.top    =  halfH;
     this.camera.bottom = -halfH;
@@ -1384,6 +1234,24 @@ export class SceneManager {
     return DEFAULT_ORTHO_CAMERA_TILT_X;
   }
 
+  _resolveCameraViewHeight() {
+    const zoneId = this.mode === SceneModes.ZONE
+      ? (this._activeZoneId || RunState.currentZone || 'city-breach')
+      : 'hub';
+    const profile = this.zoneManager.getCameraProfile?.(zoneId);
+    if (Number.isFinite(profile?.viewHeight)) return profile.viewHeight;
+    return ORTHO_HEIGHT;
+  }
+
+  _resolveCameraFocusY() {
+    const zoneId = this.mode === SceneModes.ZONE
+      ? (this._activeZoneId || RunState.currentZone || 'city-breach')
+      : 'hub';
+    const profile = this.zoneManager.getCameraProfile?.(zoneId);
+    if (Number.isFinite(profile?.focusY)) return profile.focusY;
+    return 0;
+  }
+
   _updateCameraTilt(dt) {
     this._cameraTiltTargetX = this._resolveCameraTiltTarget();
     this._cameraTiltX += (this._cameraTiltTargetX - this._cameraTiltX) * CAMERA_TILT_LERP;
@@ -1392,38 +1260,41 @@ export class SceneManager {
     this.spawner.setBillboardTiltX?.(this._cameraTiltX);
   }
 
-  _updateHubParallax(focusX) {
-    for (const layer of this._hubParallaxLayers) {
-      const offsetX = focusX * layer.speed;
-      layer.mesh.position.x = layer.baseX + offsetX;
-      if (layer.mesh.material?.map) {
-        layer.mesh.material.map.offset.x = -offsetX * 0.01;
-      }
-    }
-  }
-
   _collectParallaxDebug() {
     if (this.mode === SceneModes.HUB) {
-      return this._hubParallaxLayers.map((layer) => ({
-        id: layer.id,
-        speed: layer.speed,
-        x: layer.mesh.position.x,
-        baseX: layer.baseX,
-      }));
+      return this._hubWorld?.getParallaxDebugInfo?.() || [];
     }
     return this.zoneManager.getParallaxDebugInfo?.() || [];
   }
 
   _resetCameraFrustum() {
-    const halfHeight = ORTHO_HEIGHT / 2;
-    const halfWidth  = ORTHO_WIDTH  / 2;
+    const viewHeight = this._resolveCameraViewHeight();
+    const halfHeight = viewHeight / 2;
+    const halfWidth  = halfHeight * (window.innerWidth / window.innerHeight);
     this.camera.top    =  halfHeight;
     this.camera.bottom = -halfHeight;
     this.camera.left   = -halfWidth;
     this.camera.right  =  halfWidth;
-    this.camera.position.set(0, 0, 100);
+    setCameraFocus(this.camera, 0, this._resolveCameraFocusY());
     setCameraTiltX(this.camera, this._cameraTiltX);
     this.camera.updateProjectionMatrix();
+  }
+
+  _frameHubCamera({ focusX = 0, snap = false, preview = false } = {}) {
+    const hubBounds = ZONE_CONFIGS.hub?.playBounds || { minX: -8.4, maxX: 8.4 };
+    const halfWidth = (this.camera.right - this.camera.left) * 0.5;
+    const targetBaseX = preview ? 0 : (focusX + 0.2);
+    const minFocusX = hubBounds.minX + halfWidth;
+    const maxFocusX = hubBounds.maxX - halfWidth;
+    const clampedX = minFocusX <= maxFocusX
+      ? Math.max(minFocusX, Math.min(maxFocusX, targetBaseX))
+      : 0;
+    const targetY = this._resolveCameraFocusY();
+    const currentFocusX = Number.isFinite(this.camera.userData.focusX) ? this.camera.userData.focusX : 0;
+    const currentFocusY = Number.isFinite(this.camera.userData.focusY) ? this.camera.userData.focusY : targetY;
+    const nextFocusX = snap ? clampedX : currentFocusX + (clampedX - currentFocusX) * (preview ? 0.045 : 0.06);
+    const nextFocusY = snap ? targetY : currentFocusY + (targetY - currentFocusY) * (preview ? 0.065 : 0.09);
+    setCameraFocus(this.camera, nextFocusX, nextFocusY);
   }
 
   // ---------------------------------------------------------------------------

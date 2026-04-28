@@ -8,11 +8,24 @@ export const GAME_HEIGHT = 720;
 // Orthographic frustum half-size (world units visible vertically)
 export const ORTHO_HEIGHT = 10;
 export const ORTHO_WIDTH  = ORTHO_HEIGHT * (GAME_WIDTH / GAME_HEIGHT);
-export const DEFAULT_ORTHO_CAMERA_TILT_X = THREE.MathUtils.degToRad(11);
+export const DEFAULT_ORTHO_OBLIQUE_DEGREES = 11;
+export function obliqueDegreesToCameraTiltX(obliqueDegrees = DEFAULT_ORTHO_OBLIQUE_DEGREES) {
+  return THREE.MathUtils.degToRad(90 - obliqueDegrees);
+}
+export const DEFAULT_ORTHO_CAMERA_TILT_X = obliqueDegreesToCameraTiltX(DEFAULT_ORTHO_OBLIQUE_DEGREES);
 export const ORTHO_CAMERA_TILT_X = DEFAULT_ORTHO_CAMERA_TILT_X;
+export const ORTHO_CAMERA_DISTANCE_Z = 100;
+
+export function setCameraFocus(camera, focusX = 0, focusY = 0) {
+  const distanceZ = Math.abs(camera?.userData?.distanceZ ?? ORTHO_CAMERA_DISTANCE_Z);
+
+  camera.userData.focusX = focusX;
+  camera.userData.focusY = focusY;
+  camera.position.set(focusX, focusY, distanceZ);
+}
 
 export function setCameraTiltX(camera, tiltX = DEFAULT_ORTHO_CAMERA_TILT_X) {
-  camera.rotation.x = tiltX;
+  camera.rotation.set(tiltX, 0, 0);
   camera.userData.tiltX = tiltX;
 }
 
@@ -48,9 +61,7 @@ export class Renderer {
       0.1,                // near
       1000                // far
     );
-    // Camera sits in front, looking straight down -Z axis
-    cam.position.set(0, 0, 100);
-    cam.lookAt(0, 0, 0);
+    cam.userData.distanceZ = ORTHO_CAMERA_DISTANCE_Z;
     setCameraTiltX(cam, ORTHO_CAMERA_TILT_X);
     return cam;
   }

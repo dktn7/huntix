@@ -94,13 +94,16 @@ export class HunterSelectScreen {
         #hunter-select-root {
           position: fixed;
           inset: 0;
-          background: #000;
+          background:
+            radial-gradient(circle at 50% 72%, rgba(88, 122, 194, 0.16), transparent 28%),
+            linear-gradient(180deg, rgba(4, 6, 12, 0.08) 0%, rgba(4, 6, 12, 0.42) 58%, rgba(2, 4, 8, 0.74) 100%);
           z-index: 9999;
           color: white;
           font-family: 'Rajdhani', sans-serif;
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          backdrop-filter: blur(1.5px);
         }
 
         .bg-layer {
@@ -108,11 +111,9 @@ export class HunterSelectScreen {
           inset: 0;
           z-index: 1;
           pointer-events: none;
-        }
-        .bg-layer img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+          background:
+            linear-gradient(180deg, rgba(146, 180, 255, 0.08) 0%, transparent 34%),
+            radial-gradient(circle at 50% 74%, rgba(102, 160, 255, 0.12), transparent 22%);
         }
 
         .interaction-overlay {
@@ -324,9 +325,7 @@ export class HunterSelectScreen {
         .modal-close-btn:hover { color: white; }
       </style>
 
-      <div class="bg-layer">
-        <img src="./assets/ui/Characterselect-ezgif.com-video-to-gif-converter.gif" alt="Selection Background">
-      </div>
+      <div class="bg-layer"></div>
 
       <button class="btn-return-title" id="btn-return">Return to Title</button>
       

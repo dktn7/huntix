@@ -3,6 +3,7 @@ import { RuinDenArena } from '../visuals/RuinDenArena.js';
 import { ShadowCoreArena } from '../visuals/ShadowCoreArena.js';
 import { ThunderSpireArena } from '../visuals/ThunderSpireArena.js';
 import { CITY_BREACH, RUIN_DEN, SHADOW_CORE, THUNDER_SPIRE } from '../visuals/Palettes.js';
+import { obliqueDegreesToCameraTiltX } from '../engine/Renderer.js';
 
 // Ordered list of combat zones — hub is intentionally excluded (it is a
 // neutral zone that sits outside the linear progression sequence).
@@ -15,7 +16,6 @@ const RUIN_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.2, maxY: 3.2 };
 const SHADOW_PLAY_BOUNDS = { minX: -8.25, maxX: 8.25, minY: -4.2, maxY: 3.2 };
 const THUNDER_PLAY_BOUNDS = { minX: -8.2, maxX: 8.2, minY: -4.15, maxY: 3.2 };
 const DEFAULT_TILT_DEG = 11;
-const DEG_TO_RAD = Math.PI / 180;
 
 const SHARED_PARALLAX_LAYERS = [
   { id: 'background', z: -20, speed: 0.05, opacity: 0.9 },
@@ -36,9 +36,11 @@ function createParallaxProfile(texture, palette = {}) {
   };
 }
 
-function createCameraProfile(tiltDeg = DEFAULT_TILT_DEG) {
+function createCameraProfile(tiltDeg = DEFAULT_TILT_DEG, options = {}) {
   return {
-    tiltX: tiltDeg * DEG_TO_RAD,
+    tiltX: obliqueDegreesToCameraTiltX(tiltDeg),
+    viewHeight: Number.isFinite(options.viewHeight) ? options.viewHeight : 10,
+    focusY: Number.isFinite(options.focusY) ? options.focusY : 0,
   };
 }
 
@@ -48,6 +50,15 @@ function createVisualScaleProfile(multiplier = 1.08, structure = 1.26, props = 1
     structureScale: structure,
     propScale: props,
     spriteVisualHeight: 1.1,
+  };
+}
+
+function createWorldSource(looseAssetRoot, groupedAssets = null) {
+  return {
+    mode: groupedAssets ? 'grouped' : 'composed-loose',
+    looseAssetRoot,
+    groupedAssets,
+    debugFallback: true,
   };
 }
 
@@ -64,7 +75,11 @@ export const ZONE_CONFIGS = {
     waves: [],
     boss: null,
     neutral: true,
-    cameraProfile: createCameraProfile(11.8),
+    worldSource: createWorldSource('./assets/models/world/hub'),
+    cameraProfile: createCameraProfile(11.8, {
+      viewHeight: 11.4,
+      focusY: -0.95,
+    }),
     parallaxProfile: createParallaxProfile('./assets/textures/props/hub/colormap.png', {
       background: 0x4f6da9,
       midground: 0x3a537e,
@@ -80,6 +95,9 @@ export const ZONE_CONFIGS = {
     roomProfile: {
       bounds: HUB_PLAY_BOUNDS,
       floorColor: 0x1b2230,
+      floorTexture: './assets/textures/props/hub/colormap.png',
+      floorTextureRepeatX: 6.5,
+      floorTextureRepeatY: 3.2,
       wallColor: 0x222f49,
       frontWallColor: 0x1a253b,
       trimColor: 0x5a77b7,
@@ -100,6 +118,7 @@ export const ZONE_CONFIGS = {
     label: 'City Breach',
     clearBg: './assets/backgrounds/clear-city.jpeg',
     portalColor: CITY_BREACH.gateFire,
+    worldSource: createWorldSource('./assets/models/world/city-breach'),
     portalX: 4.8,
     enemyTint: 0xffefe1,
     cameraProfile: createCameraProfile(),
@@ -117,6 +136,9 @@ export const ZONE_CONFIGS = {
     roomProfile: {
       bounds: CITY_PLAY_BOUNDS,
       floorColor: CITY_BREACH.charcoal,
+      floorTexture: './assets/textures/props/city-breach/Road007_1K-JPG_Color.jpg',
+      floorTextureRepeatX: 6.8,
+      floorTextureRepeatY: 3.4,
       wallColor: 0x2f3444,
       frontWallColor: 0x252b37,
       trimColor: 0xe58a2d,
@@ -180,6 +202,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['BURN'],
       reward: { xp: 500, essence: 200 },
     },
+    hubPortal: { x: 7.15, y: 0.95 },
   },
   'ruin-den': {
     id: 'ruin-den',
@@ -187,6 +210,7 @@ export const ZONE_CONFIGS = {
     label: 'Ruin Den',
     clearBg: './assets/backgrounds/clear-ruin.jpeg',
     portalColor: RUIN_DEN.fissure,
+    worldSource: createWorldSource('./assets/models/world/ruin-den'),
     portalX: 6.0,
     enemyTint: 0xf4e8d6,
     cameraProfile: createCameraProfile(),
@@ -204,6 +228,9 @@ export const ZONE_CONFIGS = {
     roomProfile: {
       bounds: RUIN_PLAY_BOUNDS,
       floorColor: RUIN_DEN.floor,
+      floorTexture: './assets/textures/props/ruin-den/Rock035_1K-JPG_Color.jpg',
+      floorTextureRepeatX: 6.2,
+      floorTextureRepeatY: 3.6,
       wallColor: 0x3e352e,
       frontWallColor: 0x322b26,
       trimColor: RUIN_DEN.fissure,
@@ -267,6 +294,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['STUN'],
       reward: { xp: 500, essence: 200 },
     },
+    hubPortal: { x: 7.15, y: 0.15 },
   },
   'shadow-core': {
     id: 'shadow-core',
@@ -274,6 +302,7 @@ export const ZONE_CONFIGS = {
     label: 'Shadow Core',
     clearBg: './assets/backgrounds/clear-void.jpeg',
     portalColor: SHADOW_CORE.violet,
+    worldSource: createWorldSource('./assets/models/world/shadow-core'),
     portalX: 7.2,
     enemyTint: 0xe9deff,
     cameraProfile: createCameraProfile(),
@@ -291,6 +320,9 @@ export const ZONE_CONFIGS = {
     roomProfile: {
       bounds: SHADOW_PLAY_BOUNDS,
       floorColor: SHADOW_CORE.floor,
+      floorTexture: './assets/textures/props/shadow-core/colormap.png',
+      floorTextureRepeatX: 7.1,
+      floorTextureRepeatY: 3.5,
       wallColor: 0x271f4a,
       frontWallColor: 0x1e1739,
       trimColor: SHADOW_CORE.bloom,
@@ -328,6 +360,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['BLEED'],
       reward: { xp: 500, essence: 200 },
     },
+    hubPortal: { x: 7.15, y: -0.65 },
   },
   'thunder-spire': {
     id: 'thunder-spire',
@@ -335,6 +368,7 @@ export const ZONE_CONFIGS = {
     label: 'Thunder Spire',
     clearBg: './assets/backgrounds/clear-spire.jpeg',
     portalColor: THUNDER_SPIRE.lightning,
+    worldSource: createWorldSource('./assets/models/world/thunder-spire'),
     portalX: 8.4,
     enemyTint: 0xe3f6ff,
     cameraProfile: createCameraProfile(),
@@ -352,6 +386,9 @@ export const ZONE_CONFIGS = {
     roomProfile: {
       bounds: THUNDER_PLAY_BOUNDS,
       floorColor: THUNDER_SPIRE.floor,
+      floorTexture: './assets/textures/props/thunder-spire/MetalPlates006_1K-JPG_Color.jpg',
+      floorTextureRepeatX: 7.3,
+      floorTextureRepeatY: 3.8,
       wallColor: 0x2f3951,
       frontWallColor: 0x262e42,
       trimColor: THUNDER_SPIRE.lightning,
@@ -392,6 +429,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['SLOW'],
       reward: { xp: 500, essence: 200 },
     },
+    hubPortal: { x: 7.15, y: -1.45 },
   },
 };
 
@@ -399,19 +437,13 @@ export class ZoneManager {
   constructor(scene) {
     this.scene = scene;
     this.activeZoneId = null;
+    this._builtArenas = new Set();
     this._arenaMap = {
       'city-breach': new CityBreachArena(scene, ZONE_CONFIGS['city-breach']),
       'ruin-den': new RuinDenArena(scene, ZONE_CONFIGS['ruin-den']),
       'shadow-core': new ShadowCoreArena(scene, ZONE_CONFIGS['shadow-core']),
       'thunder-spire': new ThunderSpireArena(scene, ZONE_CONFIGS['thunder-spire']),
     };
-
-    for (const zoneId of ZONE_ORDER) {
-      const arena = this._arenaMap[zoneId];
-      if (!arena) continue;
-      arena.build();
-      arena.group.visible = false;
-    }
   }
 
   getZoneConfig(zoneId) {
@@ -465,6 +497,11 @@ export class ZoneManager {
 
   showZone(zoneId) {
     this.activeZoneId = zoneId;
+    const activeArena = this._arenaMap[zoneId];
+    if (activeArena && !this._builtArenas.has(zoneId)) {
+      activeArena.build();
+      this._builtArenas.add(zoneId);
+    }
     for (const key of ZONE_ORDER) {
       const arena = this._arenaMap[key];
       if (!arena) continue;
@@ -511,7 +548,8 @@ export class ZoneManager {
         label: config.label,
         number: config.number,
         color: config.portalColor,
-        x: config.portalX,
+        x: Number.isFinite(config.hubPortal?.x) ? config.hubPortal.x : config.portalX,
+        y: Number.isFinite(config.hubPortal?.y) ? config.hubPortal.y : -2.18,
       };
     });
   }
