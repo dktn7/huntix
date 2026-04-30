@@ -80,7 +80,11 @@ export function applyAtlasFrame(texture, atlasData, frameKey) {
   const height = normalized.meta?.size?.h || 1;
   if (!frame || !width || !height) return false;
 
-  texture.offset.set(frame.x / width, frame.y / height);
+  // TexturePacker frame coords are top-left origin; Three.js UVs are bottom-left.
+  // Invert Y to sample the intended sub-rect instead of mirrored/shifted frames.
+  const u = frame.x / width;
+  const v = 1 - ((frame.y + frame.h) / height);
+  texture.offset.set(u, v);
   texture.repeat.set(frame.w / width, frame.h / height);
   return true;
 }

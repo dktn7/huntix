@@ -1,0 +1,11 @@
+{
+  "status": "COMPLETED",
+  "request_id": "019ddac1-aa26-7d21-ac31-8582b25c481e",
+  "response_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac1-aa26-7d21-ac31-8582b25c481e",
+  "status_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac1-aa26-7d21-ac31-8582b25c481e/status",
+  "cancel_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac1-aa26-7d21-ac31-8582b25c481e/cancel",
+  "logs": [],
+  "metrics": {
+    "inference_time": 28.065485954284668
+  }
+}

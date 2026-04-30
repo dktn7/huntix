@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-04-29T22:00:56.379Z",
+  "hunterStatesSeen": [
+    "ATTACK_LIGHT",
+    "DODGE",
+    "HURT",
+    "IDLE",
+    "JUMP",
+    "JUMP_FALL",
+    "JUMP_RISE",
+    "LAND",
+    "MOVE",
+    "SPELL_MINOR",
+    "ULTIMATE"
+  ],
+  "enemyStatesSeen": [
+    "BOSS:DEAD",
+    "BOSS:IDLE",
+    "BOSS:RECOVER",
+    "BOSS:TELEGRAPH",
+    "BRUISER:AGGRO",
+    "BRUISER:DEAD",
+    "BRUISER:PATROL",
+    "GRUNT:AGGRO",
+    "GRUNT:DEAD",
+    "GRUNT:PATROL",
+    "RANGED:AGGRO",
+    "RANGED:DEAD",
+    "RANGED:PATROL",
+    "RANGED:TELEGRAPH"
+  ],
+  "bossStatesSeen": [
+    "VRAEL:DEAD",
+    "VRAEL:IDLE",
+    "VRAEL:RECOVER",
+    "VRAEL:TELEGRAPH"
+  ],
+  "bossMetaSeen": []
+}

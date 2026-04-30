@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-04-29T23:24:38.817Z",
+  "checks": [
+    {
+      "state": "ATTACK_HEAVY",
+      "pass": true
+    },
+    {
+      "state": "SPELL_ADVANCED",
+      "pass": true
+    },
+    {
+      "state": "DOWNED/DEAD_PLAYER",
+      "pass": true
+    },
+    {
+      "state": "REVIVE",
+      "pass": true
+    },
+    {
+      "state": "WEAPON_SWAP",
+      "pass": false
+    },
+    {
+      "state": "BOSS:ATTACK",
+      "pass": false
+    },
+    {
+      "state": "BOSS:HURT",
+      "pass": false
+    }
+  ],
+  "hunterStatesSeen": [
+    "ATTACK_HEAVY",
+    "ATTACK_LIGHT",
+    "DODGE",
+    "DOWNED",
+    "HURT",
+    "IDLE",
+    "JUMP_FALL",
+    "JUMP_RISE",
+    "LAND",
+    "MOVE",
+    "REVIVE",
+    "SPELL_ADVANCED",
+    "SPELL_MINOR"
+  ],
+  "enemyStatesSeen": [
+    "BOSS:IDLE",
+    "BOSS:RECOVER",
+    "BOSS:TELEGRAPH",
+    "BRUISER:AGGRO",
+    "BRUISER:DEAD",
+    "BRUISER:PATROL",
+    "GRUNT:AGGRO",
+    "GRUNT:ATTACK",
+    "GRUNT:DEAD",
+    "GRUNT:HURT",
+    "GRUNT:PATROL",
+    "GRUNT:TELEGRAPH",
+    "RANGED:DEAD",
+    "RANGED:PATROL",
+    "RANGED:TELEGRAPH"
+  ]
+}

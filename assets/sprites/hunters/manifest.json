@@ -13,8 +13,8 @@
       "regenStates": 0,
       "sizeViolations": 0,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.064,
-      "sizeDriftPx": 0
+      "matteArtifactRatio": 0,
+      "sizeDriftPx": 64.828
     },
     "benzu": {
       "path": "benzu-atlas-audit.json",
@@ -23,28 +23,28 @@
       "regenStates": 0,
       "sizeViolations": 0,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.159,
-      "sizeDriftPx": 3
+      "matteArtifactRatio": 0,
+      "sizeDriftPx": 59.044
     },
     "sereisa": {
       "path": "sereisa-atlas-audit.json",
       "missingStates": 0,
       "countMismatches": 0,
       "regenStates": 0,
-      "sizeViolations": 6,
+      "sizeViolations": 0,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.471,
-      "sizeDriftPx": 178
+      "matteArtifactRatio": 0,
+      "sizeDriftPx": 51.096
     },
     "vesol": {
       "path": "vesol-atlas-audit.json",
       "missingStates": 0,
       "countMismatches": 0,
       "regenStates": 0,
-      "sizeViolations": 1,
+      "sizeViolations": 0,
       "sourceToAtlasMismatch": 0,
-      "matteArtifactRatio": 0.175,
-      "sizeDriftPx": 267
+      "matteArtifactRatio": 0,
+      "sizeDriftPx": 73.184
     }
   }
 }

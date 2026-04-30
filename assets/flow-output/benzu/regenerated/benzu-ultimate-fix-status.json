@@ -1,0 +1,11 @@
+{
+  "status": "COMPLETED",
+  "request_id": "019dda9c-b104-7871-ba72-9c3fcd7ea0ca",
+  "response_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019dda9c-b104-7871-ba72-9c3fcd7ea0ca",
+  "status_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019dda9c-b104-7871-ba72-9c3fcd7ea0ca/status",
+  "cancel_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019dda9c-b104-7871-ba72-9c3fcd7ea0ca/cancel",
+  "logs": [],
+  "metrics": {
+    "inference_time": 28.622015953063965
+  }
+}

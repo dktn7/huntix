@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { Base3DArena } from './Base3DArena.js';
+import { Base2DArena } from './Base2DArena.js';
 import { SHADOW_CORE } from './Palettes.js';
 
-export class ShadowCoreArena extends Base3DArena {
+export class ShadowCoreArena extends Base2DArena {
   constructor(scene, zoneConfig = null) {
     super(scene, {
       colormapTexture: './assets/textures/props/shadow-core/colormap.png',
@@ -14,9 +14,16 @@ export class ShadowCoreArena extends Base3DArena {
   build() {
     this.setZoneColors({ deep: 0x010103, far: 0x040210, mid: 0x09071a, near: 0x110e24 });
     this.addParallaxLayers();
-    this.buildWorldFromSource({
-      composed: () => this._queueWorldKit(),
-      fallback: () => this.buildFallbackWorld(),
+    this.buildFlatWorld2D({
+      floorColor: 0x2a1f42,
+      laneColor: 0x5b4690,
+      backColor: 0x120a1f,
+      ridgeColor: 0x2f2058,
+      silhouetteColor: 0x0d0816,
+      laneOpacity: 0.95,
+      backOpacity: 0.76,
+      ridgeOpacity: 0.7,
+      silhouetteOpacity: 0.5,
     });
 
     const crackMaterial = new THREE.MeshBasicMaterial({
@@ -99,45 +106,4 @@ export class ShadowCoreArena extends Base3DArena {
     return this.group;
   }
 
-  _queueWorldKit() {
-    const root = './assets/models/world/shadow-core';
-
-    for (let i = -2; i <= 2; i += 1) {
-      this.queueModel(`${root}/shadow-tile.glb`, {
-        x: i * 3.15,
-        y: -2.35,
-        z: -1.0,
-        scale: 0.72,
-        layer: 'floor',
-      });
-    }
-
-    for (let i = -1; i <= 1; i += 1) {
-      this.queueModel(`${root}/downward-spire.glb`, {
-        x: i * 5.2,
-        y: 2.45 + (i % 2) * 0.24,
-        z: -2.66,
-        scale: 0.72,
-        layer: 'walls',
-      });
-    }
-    this.queueModel(`${root}/shadow-tile.glb`, { x: -7.95, y: -3.1, z: -0.96, scale: 0.56, tint: SHADOW_CORE.floor, layer: 'floor' });
-    this.queueModel(`${root}/shadow-tile.glb`, { x: 7.95, y: -3.1, z: -0.96, scale: 0.56, tint: SHADOW_CORE.floor, layer: 'floor' });
-
-    this.queueModel(`${root}/shattered-glass.glb`, { x: -7.2, y: -1.7, z: -0.84, scale: 0.74, layer: 'props' });
-    this.queueModel(`${root}/shattered-glass.glb`, { x: 7.2, y: -2.85, z: -0.84, scale: 0.74, rz: Math.PI * 0.14, layer: 'props' });
-    this.queueModel(`${root}/platform-overhang.glb`, { x: 6.95, y: -0.3, z: -1.74, scale: 0.74, layer: 'walls' });
-    this.queueModel(`${root}/rocks.glb`, { x: -7.35, y: -2.4, z: -0.94, scale: 0.78, layer: 'props' });
-    this.queueModel(`${root}/spike-block.glb`, { x: 4.35, y: -3.62, z: -0.82, scale: 0.78, layer: 'props' });
-    this.queueModel('./assets/models/world/city-breach/portal.glb', {
-      x: 7.2,
-      y: -2.1,
-      z: -1.2,
-      scale: 0.5,
-      tint: SHADOW_CORE.bloom,
-      emissive: SHADOW_CORE.bloom,
-      emissiveIntensity: 0.58,
-      layer: 'props',
-    });
-  }
 }

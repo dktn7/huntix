@@ -2,7 +2,7 @@
 
 Complete technical reference for every layer of the project. Read before writing any code.
 
-> **Rendering model:** Characters and enemies are **2D billboard sprites** in a 3D world. See `docs/RENDERING.md` for the full spec. There are no 3D character models, no GLTF files, no AnimationMixer.
+> **Rendering model:** Characters and enemies are **2D billboard sprites** in a 3D world. See `docs/RENDERING.md` for the full spec. There are no 3D character models and no `AnimationMixer`. GLTF is used for world geometry only.
 
 ---
 
@@ -111,7 +111,7 @@ huntix/
 └── .agents/              # AI coding agent context
 ```
 
-> `assets/sprites/` stores all sprite atlases. There is no `assets/models/` directory — do not create one.
+> `assets/sprites/` stores character/enemy atlases. `assets/models/world/` is valid for environment geometry only.
 
 ---
 
@@ -216,4 +216,4 @@ See [AUDIO.md](./AUDIO.md) for full SFX and music list.
 - Do not remove the Vibe Jam widget
 - **Do not load GLTF/GLB for characters/enemies/bosses** — GLTF is world geometry only
 - **Do not use `THREE.AnimationMixer`** — animation is frame-based sprite stepping
-- **Do not create `assets/models/`** — sprites live in `assets/sprites/`
+- **Do not create `assets/models/characters/`** — character rendering stays sprite-based

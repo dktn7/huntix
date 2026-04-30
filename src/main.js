@@ -73,6 +73,10 @@ loop.start((dt) => {
   const panel = document.getElementById('debug-panel');
   if (panel && document.body.classList.contains('debug')) {
     const debug = scene.getDebugInfo();
+    const scaling = debug.scaling || {};
+    const world = debug.world || {};
+    const hubWorld = world.hub || {};
+    const zoneWorld = world.zone?.active || {};
     panel.innerHTML = [
       `FPS: ${loop.fps.toFixed(0)}`,
       `dt: ${(dt * 1000).toFixed(2)}ms`,
@@ -86,6 +90,10 @@ loop.start((dt) => {
       `Combo P1: ${debug.combo}`,
       `Combo All: ${(debug.comboByPlayer || []).join(', ') || '0'}`,
       `Hitstop: ${(debug.hitstop * 1000).toFixed(0)}ms`,
+      `Scaling dmg:${(scaling.damage ?? 1).toFixed(2)} spell:${(scaling.spell ?? 1).toFixed(2)} status:${(scaling.status ?? 1).toFixed(2)} speed:${(scaling.speed ?? 1).toFixed(2)}`,
+      `Scaling cdr:${(scaling.cooldown ?? 1).toFixed(2)} surge:${(scaling.surgeGain ?? 1).toFixed(2)} essence:${(scaling.essenceGain ?? 1).toFixed(2)} ls:${((scaling.lifesteal ?? 0) * 100).toFixed(1)}% ifr:+${scaling.dodgeIFramesBonus ?? 0}`,
+      `World: hub(${hubWorld.visible ? 'on' : 'off'}) meshes=${hubWorld.meshCount || 0} parallax=${hubWorld.parallaxCount || 0}`,
+      `World Zone: ${world.activeZoneId || debug.zone} meshes=${zoneWorld.meshCount || 0} fallback=${zoneWorld.fallbackActive ? 'on' : 'off'} parallax=${zoneWorld.parallaxCount || 0}`,
       `Input P1: ${[...input.getPlayerInput(0).pressed].join(', ') || 'none'}`,
     ].join('<br>');
   }
@@ -262,6 +270,29 @@ window.__TEST__ = {
       const player = scene.hunters.players[playerIndex];
       if (!player) return false;
       return scene.combat._castUltimate(player, scene.spawner.getActiveEnemies(), scene.spawner);
+    },
+    castAdvanced(playerIndex) {
+      const player = scene.hunters.players[playerIndex];
+      if (!player) return false;
+      return scene.combat._castAdvanced(player, scene.spawner.getActiveEnemies(), scene.spawner);
+    },
+    grantSlot2Weapon(playerIndex, weaponId = 'debug-secondary') {
+      const player = scene.hunters.players[playerIndex];
+      if (!player?.runPlayer) return false;
+      player.runPlayer.slot2WeaponId = weaponId;
+      if (RunState.players[playerIndex]) {
+        RunState.players[playerIndex].slot2WeaponId = weaponId;
+      }
+      return true;
+    },
+    triggerWeaponSwap(playerIndex) {
+      const player = scene.hunters.players[playerIndex];
+      if (!player?.runPlayer?.slot2WeaponId) return false;
+      player.runPlayer.activeSlot = player.runPlayer.activeSlot === 0 ? 1 : 0;
+      if (RunState.players[playerIndex]) {
+        RunState.players[playerIndex].activeSlot = player.runPlayer.activeSlot;
+      }
+      return player.transitionTo('WEAPON_SWAP', { force: true });
     },
     grantEssence(playerIndex, amount) {
       RunState.addEssence(playerIndex, amount);

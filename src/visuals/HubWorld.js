@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { Base3DArena } from './Base3DArena.js';
+import { Base2DArena } from './Base2DArena.js';
 
-export class HubWorld extends Base3DArena {
+export class HubWorld extends Base2DArena {
   constructor(scene, zoneConfig = null) {
     super(scene, {
       colormapTexture: './assets/textures/props/hub/colormap.png',
@@ -14,18 +14,25 @@ export class HubWorld extends Base3DArena {
 
   build() {
     this.setZoneColors({
-      deep: 0x08111d,
-      far: 0x0f1a2b,
-      mid: 0x16243a,
-      near: 0x0c1422,
+      deep: 0x20385f,
+      far: 0x2b4976,
+      mid: 0x416196,
+      near: 0x5b82be,
     });
 
+    this.buildFlatWorld2D({
+      floorColor: 0x2e4468,
+      laneColor: 0x78a8ef,
+      backColor: 0x3a5f95,
+      ridgeColor: 0x6f97d4,
+      silhouetteColor: 0x1a2b44,
+      laneOpacity: 0.98,
+      backOpacity: 0.94,
+      ridgeOpacity: 0.88,
+      silhouetteOpacity: 0.5,
+    });
     this._buildArchitecturalAnchor();
     this.addParallaxLayers();
-    this.buildWorldFromSource({
-      composed: () => this._queueWorldKit(),
-      fallback: () => this._buildFallbackWorld(),
-    });
     this._addLandmarks();
 
     return this.group;
@@ -34,7 +41,7 @@ export class HubWorld extends Base3DArena {
   _buildArchitecturalAnchor() {
     const floorBase = new THREE.Mesh(
       new THREE.BoxGeometry(15.8, 7.0, 0.2),
-      new THREE.MeshLambertMaterial({ color: 0x263248 })
+      new THREE.MeshLambertMaterial({ color: 0x1f3355 })
     );
     floorBase.position.set(0, -0.55, -1.28);
     floorBase.renderOrder = -11;
@@ -43,9 +50,9 @@ export class HubWorld extends Base3DArena {
     const floorInlay = new THREE.Mesh(
       new THREE.PlaneGeometry(15.1, 6.35),
       new THREE.MeshBasicMaterial({
-        color: 0x101925,
+        color: 0x152949,
         transparent: true,
-        opacity: 0.94,
+        opacity: 0.82,
         depthWrite: false,
       })
     );
@@ -101,7 +108,7 @@ export class HubWorld extends Base3DArena {
 
     const backWall = new THREE.Mesh(
       new THREE.BoxGeometry(16.2, 1.15, 1.55),
-      new THREE.MeshLambertMaterial({ color: 0x4b586f })
+      new THREE.MeshLambertMaterial({ color: 0x365784 })
     );
     backWall.position.set(0, 2.32, -2.84);
     backWall.renderOrder = -6;
@@ -109,7 +116,7 @@ export class HubWorld extends Base3DArena {
 
     const rightPortalWall = new THREE.Mesh(
       new THREE.BoxGeometry(2.35, 5.55, 1.7),
-      new THREE.MeshLambertMaterial({ color: 0x36445d })
+      new THREE.MeshLambertMaterial({ color: 0x2a466b })
     );
     rightPortalWall.position.set(7.35, -0.35, -2.48);
     rightPortalWall.renderOrder = -5;
@@ -117,7 +124,7 @@ export class HubWorld extends Base3DArena {
 
     const quartermasterMass = new THREE.Mesh(
       new THREE.BoxGeometry(2.9, 1.15, 1.05),
-      new THREE.MeshLambertMaterial({ color: 0x2f3d56 })
+      new THREE.MeshLambertMaterial({ color: 0x294466 })
     );
     quartermasterMass.position.set(-7.0, -1.2, -1.65);
     quartermasterMass.renderOrder = -3;
@@ -125,7 +132,7 @@ export class HubWorld extends Base3DArena {
 
     const operationsTable = new THREE.Mesh(
       new THREE.BoxGeometry(2.35, 0.75, 0.72),
-      new THREE.MeshLambertMaterial({ color: 0x202b3e })
+      new THREE.MeshLambertMaterial({ color: 0x223a58 })
     );
     operationsTable.position.set(-1.85, -1.05, -1.48);
     operationsTable.renderOrder = -3;
@@ -144,42 +151,6 @@ export class HubWorld extends Base3DArena {
     monitorGlow.position.set(0, 1.92, -2.0);
     monitorGlow.renderOrder = -4;
     this.add(monitorGlow, 'walls');
-  }
-
-  _queueWorldKit() {
-    const root = this.zoneConfig?.worldSource?.looseAssetRoot || './assets/models/world/hub';
-
-    this.queueModel(`${root}/floorFull.glb`, { x: 0.0, y: -0.55, z: -1.22, scale: 0.78, layer: 'floor' });
-    this.queueModel(`${root}/floorHalf.glb`, { x: -5.25, y: -0.55, z: -1.2, scale: 0.72, layer: 'floor' });
-    this.queueModel(`${root}/floorHalf.glb`, { x: 5.25, y: -0.55, z: -1.2, scale: 0.72, ry: Math.PI, layer: 'floor' });
-
-    this.queueModel(`${root}/wall.glb`, { x: 0.0, y: 2.25, z: -3.0, scale: 0.66, layer: 'walls' });
-    this.queueModel(`${root}/wallWindow.glb`, { x: -5.2, y: 1.82, z: -2.76, scale: 0.62, layer: 'walls' });
-    this.queueModel(`${root}/wallWindowSlide.glb`, { x: -2.0, y: 1.78, z: -2.74, scale: 0.62, layer: 'walls' });
-    this.queueModel(`${root}/wallDoorwayWide.glb`, { x: 7.05, y: 1.38, z: -2.5, scale: 0.68, ry: Math.PI * 0.5, layer: 'walls' });
-    this.queueModel(`${root}/hub-pilar.glb`, { x: -7.95, y: 1.08, z: -2.5, scale: 0.62, layer: 'walls' });
-    this.queueModel(`${root}/hub-pilar.glb`, { x: 7.95, y: 1.08, z: -2.5, scale: 0.62, layer: 'walls' });
-    this.queueModel(`${root}/futuristic_pilar.glb`, { x: -0.95, y: 1.18, z: -2.42, scale: 0.56, layer: 'walls' });
-    this.queueModel(`${root}/futuristic_pilar.glb`, { x: 1.15, y: 1.18, z: -2.42, scale: 0.56, layer: 'walls' });
-    this.queueModel(`${root}/paneling.glb`, {
-      x: 0.0,
-      y: 1.82,
-      z: -2.48,
-      scale: 0.62,
-      tint: 0x9ab9ff,
-      emissive: 0x4f6de9,
-      emissiveIntensity: 0.3,
-      layer: 'walls',
-    });
-
-    this.queueModel(`${root}/desk.glb`, { x: -6.95, y: -1.1, z: -1.5, scale: 0.58, layer: 'props' });
-    this.queueModel(`${root}/bench.glb`, { x: -4.65, y: -1.02, z: -1.34, scale: 0.58, layer: 'props' });
-    this.queueModel(`${root}/table.glb`, { x: -1.65, y: -1.0, z: -1.38, scale: 0.58, layer: 'props' });
-    this.queueModel(`${root}/computerScreen.glb`, { x: 1.85, y: 0.96, z: -1.48, scale: 0.54, layer: 'props' });
-    this.queueModel(`${root}/weapon-rack.glb`, { x: -7.45, y: 0.82, z: -1.52, scale: 0.54, layer: 'props' });
-    this.queueModel(`${root}/weapon-rack.glb`, { x: 7.45, y: 0.18, z: -1.52, scale: 0.54, ry: Math.PI * 0.5, layer: 'props' });
-    this.queueModel(`${root}/sideTable.glb`, { x: -1.15, y: 0.92, z: -1.46, scale: 0.5, layer: 'props' });
-    this.queueModel(`${root}/speaker.glb`, { x: 6.85, y: 1.2, z: -1.94, scale: 0.48, layer: 'props' });
   }
 
   _addLandmarks() {
@@ -212,8 +183,8 @@ export class HubWorld extends Base3DArena {
     makeHomeSpot(-1.9, -0.75, 0xe74c3c, false);
   }
 
-  _buildFallbackWorld() {
-    this.addRoomShell(this.zoneConfig.roomProfile || {}, 'fallback');
+  buildFallbackWorld() {
+    this.setFallbackActive(false);
   }
 
   update(dt, focusX = 0, routeState = null) {

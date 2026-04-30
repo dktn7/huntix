@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-27T23:39:30.171Z",
+  "generated_at": "2026-04-29T20:10:47.888Z",
   "atlases": {
     "vrael": true,
     "zarth": true,
@@ -34,26 +34,33 @@
       "atlas_webp": true
     },
     "thyxis": {
-      "frame_count": 54,
+      "frame_count": 42,
       "states": {
         "idle": 8,
-        "walk": 11,
-        "run": 9,
-        "telegraph": 7,
-        "attack": 15,
-        "hurt": 2,
-        "dead": 2
+        "walk": 8,
+        "telegraph": 6,
+        "attack": 8,
+        "hurt": 4,
+        "dead": 8
       },
       "placeholder": false,
       "atlas_json": true,
       "atlas_webp": true
     },
     "kibad": {
-      "frame_count": 1,
+      "frame_count": 84,
       "states": {
-        "idle": 1
+        "idle": 20,
+        "telegraph": 8,
+        "blink_exit": 8,
+        "blink_enter": 8,
+        "combo": 8,
+        "clone": 8,
+        "recover": 8,
+        "hurt": 8,
+        "dead": 8
       },
-      "placeholder": true,
+      "placeholder": false,
       "atlas_json": true,
       "atlas_webp": true
     }

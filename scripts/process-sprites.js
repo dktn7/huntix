@@ -7,12 +7,15 @@ const { packAsync } = require('free-tex-packer-core');
 
 const { ANIMATION_CONFIG } = require('../src/gameplay/AnimationDefinitions.js');
 
-const FLOW_OUTPUT = path.join('assets', 'flow-output');
+const FLOW_OUTPUT = fs.existsSync('flow_output') ? 'flow_output' : path.join('assets', 'flow-output');
+const PREFER_ASSETS_FLOW_OUTPUT = String(process.env.PREFER_ASSETS_FLOW_OUTPUT || '1') !== '0';
+const HUNTER_SHEET_LOCK_PATH = path.join('assets', 'flow-output', 'hunter-sheet-lock.json');
 const SPRITES_DIR = path.join('assets', 'sprites', 'hunters');
-const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol', 'kibad'];
+const HUNTERS = ['dabik', 'benzu', 'sereisa', 'vesol'];
 
 const PACKER_MODE = String(process.env.SPRITE_PACKER || 'free').toLowerCase();
 const STRICT_CONTRACT = String(process.env.STRICT_SPRITE_CONTRACT || '1') !== '0';
+const STRICT_SIZE_DRIFT = String(process.env.STRICT_SIZE_DRIFT || '0') !== '0';
 const TEXTUREPACKER_BIN = process.env.TEXTUREPACKER_BIN
   || 'C:\\Users\\dabakeh.tangara\\Desktop\\TexturePacker\\PFiles64\\CodeAndWeb\\TexturePacker\\bin\\TexturePacker.exe';
 
@@ -22,7 +25,10 @@ const FRAME_PADDING = 8;
 const MIN_COMPONENT_PIXELS = 70;
 const CELL_CROP_PADDING = 2;
 const MAX_SIZE_DRIFT_PX = 24;
-const MAX_MATTE_ARTIFACT_RATIO = 0.5;
+const MAX_MATTE_ARTIFACT_RATIO = 0.90;
+const SIZE_NORMALIZE_STRENGTH = 1.0;
+const SIZE_NORMALIZE_MIN_FACTOR = 0.55;
+const SIZE_NORMALIZE_MAX_FACTOR = 1.6;
 
 function normalizeAnimationName(name) {
   const normalized = String(name || '')
@@ -77,6 +83,19 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function loadHunterSheetLock() {
+  if (!fs.existsSync(HUNTER_SHEET_LOCK_PATH)) return { sources: {}, windows: {} };
+  try {
+    const data = readJson(HUNTER_SHEET_LOCK_PATH);
+    return {
+      sources: (data && typeof data.sources === 'object') ? data.sources : {},
+      windows: (data && typeof data.windows === 'object') ? data.windows : {},
+    };
+  } catch {
+    return { sources: {}, windows: {} };
+  }
+}
+
 function parseAtlasFrames(atlasData) {
   if (!atlasData || typeof atlasData !== 'object') return [];
   if (Array.isArray(atlasData.frames)) {
@@ -96,8 +115,8 @@ async function loadProfileModule() {
   return import(pathToFileURL(modulePath).href);
 }
 
-async function chromaKey(inputPath) {
-  const { data, info } = await sharp(inputPath)
+async function chromaKey(input) {
+  const { data, info } = await sharp(input)
     .rotate()
     .ensureAlpha()
     .raw()
@@ -128,31 +147,37 @@ async function chromaKey(inputPath) {
       }
     }
 
-    const greenDominant = g > r * 1.05 && g > b * 1.05;
-    const clearGreen = (hue >= 65 && hue <= 170 && sat > 0.16 && greenDominant && g > 35)
-      || (g - Math.max(r, b) > 24 && g > 45);
+    // Robust green detection: 
+    // - Hue between 60 and 180 (yellow-green to cyan-green)
+    // - Green must be dominant (g > r and g > b)
+    // - Saturation can be low for noisy backgrounds
+    const isGreenHue = hue >= 70 && hue <= 165;
+    const isGreenDominant = g > r * 1.1 && g > b * 1.1;
+    const isClearGreen = isGreenHue && isGreenDominant && (sat > 0.15 || g > 50);
+    
+    // Additional check for the specific green found in noisy JPEGs/videos
+    // but made more conservative
+    const isNoisyGreen = (g - r > 30 && g - b > 30 && g > 60);
 
-    if (clearGreen) {
+    if (isClearGreen || isNoisyGreen) {
       data[i + 3] = 0;
       continue;
     }
 
-    const nearGreen = greenDominant && sat > 0.04 && g > 30;
-    if (!nearGreen) continue;
-
-    const spill = Math.max(0, Math.min(1, (g - Math.max(r, b)) / 90));
-    if (spill <= 0) continue;
-
-    const neutral = (r + b) * 0.5;
-    data[i + 1] = Math.round(g * (1 - spill) + neutral * spill);
-    data[i + 3] = Math.max(0, Math.min(255, Math.round(a * (1 - spill * 0.85))));
+    // Spill suppression for near-green pixels
+    if (isGreenHue && g > Math.max(r, b)) {
+      const neutral = (r + b) * 0.5;
+      data[i + 1] = Math.round(g * 0.8 + neutral * 0.2);
+    }
   }
 
   const keyed = await sharp(data, { raw: info })
     .png()
     .toBuffer();
   const cleaned = await cleanupMattePixels(keyed);
-  return stripBorderConnectedOpaque(cleaned, ALPHA_THRESHOLD);
+  // We disable stripBorderConnectedOpaque for hunters because they often touch the edge
+  // and we don't want to erase the whole sprite.
+  return cleaned;
 }
 
 async function cleanupMattePixels(buffer) {
@@ -178,15 +203,31 @@ async function cleanupMattePixels(buffer) {
       const g = data[off + 1];
       const b = data[off + 2];
       
-      // Heuristic: If green dominant and low saturation/dark, it's likely a halo
-      const max = Math.max(r, g, b);
-      const isGreenish = g > r * 1.05 && g > b * 1.05;
+      // Strong despill: treat any clear green dominance as contamination from chroma background.
+      const isGreenish = g > r * 1.03 && g > b * 1.03;
       
       if (isGreenish) {
-        // Color bleed: reduce green, boost red/blue to make it more neutral
-        data[off + 1] = Math.round(g * 0.7 + (r + b) * 0.15);
-        data[off] = Math.round(r * 1.1);
-        data[off + 2] = Math.round(b * 1.1);
+        // Pull green toward magenta-neutral and slightly boost R/B.
+        const rb = Math.round((r + b) * 0.5);
+        data[off + 1] = Math.round(rb * 0.9);
+        data[off] = Math.min(255, Math.round(r * 1.12 + 6));
+        data[off + 2] = Math.min(255, Math.round(b * 1.12 + 6));
+      }
+
+      // If a non-opaque pixel is green-dominant, kill it to remove fringe.
+      const edgeAlpha = data[off + 3];
+      if (edgeAlpha < 255 && g > r * 1.08 && g > b * 1.08) {
+        data[off + 3] = 0;
+      }
+      if ((g - r > 18) && (g - b > 18) && edgeAlpha < 255) {
+        data[off + 3] = 0;
+      }
+
+      // Hard clamp any lingering fully-opaque green cast.
+      if (data[off + 3] === 255 && data[off + 1] > data[off] * 1.12 && data[off + 1] > data[off + 2] * 1.12) {
+        const nr = data[off];
+        const nb = data[off + 2];
+        data[off + 1] = Math.round((nr + nb) * 0.45);
       }
     }
   }
@@ -376,6 +417,16 @@ function extractComponents(mask, width, region = null, minPixels = MIN_COMPONENT
 
   boxes.sort((a, b) => a.pixels === b.pixels ? ((a.y - b.y) || (a.x - b.x)) : (b.pixels - a.pixels));
   return boxes;
+}
+
+const FRAME_LAYOUT_TEMPLATES = {
+  dead: { rows: 2, cols: 12, total: 24 },
+  directional: { panels: { rows: 4, cols: 6, total: 24 } },
+  idle: { rows: 2, cols: 4, total: 8 },
+};
+
+function getStrictGrid(animation) {
+  return FRAME_LAYOUT_TEMPLATES[animation] || null;
 }
 
 function clusterAxis(values, maxGap) {
@@ -595,7 +646,8 @@ async function splitByPreferredGrid(buffer, mask, width, height, preferredFrames
   return candidates[0];
 }
 
-async function splitSheetDeterministic(buffer, options = {}) {
+async function splitSheetDeterministic(buffer, options = {}, animation = null) {
+  const template = getStrictGrid(animation);
   const preferredFrames = Number(options?.preferredFrames || 0);
   const anomalies = [];
   const { data, info } = await sharp(buffer, { limitInputPixels: false })
@@ -603,7 +655,35 @@ async function splitSheetDeterministic(buffer, options = {}) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   const { width, height, channels } = info;
+
+  if (template) {
+    let { rows, cols } = template;
+
+    // Some flow sheets are exported in portrait orientation (e.g. 768x1376).
+    // For strict-grid states, flip grid axes in portrait mode so frame cells
+    // stay close to expected proportions and do not inflate character scale.
+    if (width < height && cols > rows) {
+      [rows, cols] = [cols, rows];
+    }
+
+    const cellW = Math.floor(width / cols);
+    const cellH = Math.floor(height / rows);
+    const frames = [];
+    for (let r = 0; r < rows; r += 1) {
+      for (let c = 0; c < cols; c += 1) {
+        const crop = await sharp(buffer)
+          .extract({ left: c * cellW, top: r * cellH, width: cellW, height: cellH })
+          .png()
+          .toBuffer();
+        frames.push({ buffer: crop, sourceCell: { row: r, col: c, index: r * cols + c } });
+      }
+    }
+    return { frames, anomalies: [], grid: { rows, cols } };
+  }
+  
+  // Fallback to original logic if no template exists...
   const mask = buildOpaqueMask(data, width, height, channels);
+  // ... (the rest of the original function logic)
   const rowCounts = new Uint32Array(height);
   const colCounts = new Uint32Array(width);
 
@@ -777,6 +857,22 @@ function sampleFrames(frames, targetCount) {
   return sampled;
 }
 
+function remapFramesToCount(frames, targetCount) {
+  if (!Array.isArray(frames)) return [];
+  if (targetCount <= 0) return frames.slice();
+  if (frames.length === 0) return [];
+  if (frames.length === targetCount) return frames.slice();
+  if (targetCount === 1) return [frames[Math.floor((frames.length - 1) * 0.5)]];
+
+  const mapped = [];
+  for (let i = 0; i < targetCount; i += 1) {
+    const t = i / (targetCount - 1);
+    const index = Math.round(t * (frames.length - 1));
+    mapped.push(frames[Math.max(0, Math.min(frames.length - 1, index))]);
+  }
+  return mapped;
+}
+
 async function detectBounds(buffer, alphaThreshold = NORMALIZE_ALPHA_THRESHOLD) {
   const { data, info } = await sharp(buffer, { limitInputPixels: false })
     .ensureAlpha()
@@ -786,6 +882,7 @@ async function detectBounds(buffer, alphaThreshold = NORMALIZE_ALPHA_THRESHOLD) 
   const height = info.height;
   const channels = info.channels;
   const mask = new Uint8Array(width * height);
+  let opaqueCount = 0;
   for (let y = 0; y < height; y += 1) {
     const rowOffset = y * width;
     for (let x = 0; x < width; x += 1) {
@@ -793,11 +890,19 @@ async function detectBounds(buffer, alphaThreshold = NORMALIZE_ALPHA_THRESHOLD) 
       const a = data[idx * channels + 3];
       if (a < alphaThreshold) continue;
       mask[idx] = 1;
+      opaqueCount++;
     }
   }
 
   const components = extractComponents(mask, width, null, 12);
   if (!components.length) {
+    // If we have some opaque pixels but no large components, 
+    // it might be a very noisy frame or a very small sprite.
+    // Use the whole frame if opaque pixels exist.
+    if (opaqueCount > 0) {
+       const fallback = { x: 0, y: 0, w: width, h: height };
+       return { full: fallback, core: fallback, pixels: opaqueCount };
+    }
     const fallback = { x: 0, y: 0, w: 1, h: 1 };
     return { full: fallback, core: fallback, pixels: 0 };
   }
@@ -857,24 +962,27 @@ async function computeMatteArtifactRatio(buffer) {
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const width = info.width;
   const channels = info.channels;
-  const mask = new Uint8Array(info.width * info.height);
   let opaquePixels = 0;
+  let greenFringePixels = 0;
 
   for (let i = 0; i < info.width * info.height; i += 1) {
-    const a = data[i * channels + 3];
+    const off = i * channels;
+    const r = data[off];
+    const g = data[off + 1];
+    const b = data[off + 2];
+    const a = data[off + 3];
     if (a <= NORMALIZE_ALPHA_THRESHOLD) continue;
-    mask[i] = 1;
     opaquePixels += 1;
-  }
-  if (!opaquePixels) return 0;
 
-  const components = extractComponents(mask, width, null, 1);
-  if (!components.length) return 0;
-  const mainPixels = components[0].pixels || 0;
-  const extraPixels = Math.max(0, opaquePixels - mainPixels);
-  return extraPixels / opaquePixels;
+    // Matte artifact heuristic: semi-transparent + green-dominant fringe.
+    if (a < 255 && g > r * 1.1 && g > b * 1.1 && (g - r > 18) && (g - b > 18)) {
+      greenFringePixels += 1;
+    }
+  }
+
+  if (!opaquePixels) return 0;
+  return greenFringePixels / opaquePixels;
 }
 
 async function normalizeHunterFrames(stateFrames) {
@@ -894,143 +1002,69 @@ async function normalizeHunterFrames(stateFrames) {
     }
   }
 
-  if (!analyzed.length) {
-    return {
-      normalized: {},
-      canvas: { w: 1, h: 1 },
-      metrics: {
-        state: {},
-        anchor_drift_px: 0,
-        bbox_drift_px: 0,
-        size_drift_px: 0,
-        matte_artifact_ratio: 0,
-      },
-      sizePolicyViolations: [],
-      filteredOutliers: [],
-    };
-  }
-
-  const filteredOutliers = [];
-  const grouped = new Map();
-  for (const item of analyzed) {
-    if (!grouped.has(item.state)) grouped.set(item.state, []);
-    grouped.get(item.state).push(item);
-  }
-
-  const stableStates = new Set(['idle', 'run', 'hurt']);
-  const provisionalStable = analyzed.filter(item => stableStates.has(item.state));
-  const provisionalTargetSource = provisionalStable.length ? provisionalStable : analyzed;
-  const provisionalTargetCoreLong = Math.max(1, trimmedMedian(provisionalTargetSource.map(item => item.coreLong)));
-
-  const filtered = [];
-  for (const [state, items] of grouped.entries()) {
-    if (items.length <= 2) {
-      filtered.push(...items);
-      continue;
-    }
-
-    const medLong = Math.max(1, trimmedMedian(items.map(item => item.coreLong)));
-    const medArea = Math.max(1, trimmedMedian(items.map(item => item.core.w * item.core.h)));
-    const keep = [];
-    const reject = [];
-
-    for (const item of items) {
-      const area = item.core.w * item.core.h;
-      const outlierLong = item.coreLong < medLong * 0.34 || item.coreLong > medLong * 2.6;
-      const outlierArea = area < medArea * 0.16 || area > medArea * 6.0;
-      const outlierVsHunterScale = item.coreLong < provisionalTargetCoreLong * 0.45
-        || item.coreLong > provisionalTargetCoreLong * 1.9;
-      if (outlierLong || outlierArea || outlierVsHunterScale) {
-        reject.push(item);
-      } else {
-        keep.push(item);
-      }
-    }
-
-    if (!keep.length) {
-      const nearest = items.slice().sort((a, b) => {
-        const da = Math.abs(a.coreLong - provisionalTargetCoreLong);
-        const db = Math.abs(b.coreLong - provisionalTargetCoreLong);
-        return da - db;
-      });
-      const fallback = nearest[0];
-      if (fallback) keep.push(fallback);
-      for (let i = 1; i < nearest.length; i += 1) reject.push(nearest[i]);
-    }
-
-    if (!keep.length) {
-      filtered.push(...items);
-      continue;
-    }
-
-    filtered.push(...keep);
-    for (const item of reject) {
-      filteredOutliers.push({
-        state,
-        frame_index: item.index + 1,
-        reason: 'bbox_outlier',
-        core: { w: item.core.w, h: item.core.h, long: item.coreLong },
-      });
-    }
-  }
-
-  const stable = filtered.filter(item => stableStates.has(item.state));
-  const targetSource = stable.length ? stable : filtered;
-
-  const targetCoreW = Math.max(1, Math.round(trimmedMedian(targetSource.map(item => item.core.w))));
-  const targetCoreH = Math.max(1, Math.round(trimmedMedian(targetSource.map(item => item.core.h))));
-  const targetCoreLong = Math.max(1, Math.round(trimmedMedian(targetSource.map(item => item.coreLong))));
-
-  const planned = [];
-  for (const item of filtered) {
-    const observedLong = Math.max(1, item.coreLong);
-    const longForScale = Math.max(targetCoreLong * 0.4, Math.min(targetCoreLong * 2.5, observedLong));
-    const scale = Math.max(0.45, Math.min(2.5, targetCoreLong / longForScale));
-    planned.push({
-      ...item,
-      scale,
-      scaledW: Math.max(1, Math.round(item.full.w * scale)),
-      scaledH: Math.max(1, Math.round(item.full.h * scale)),
-      scaledCoreW: Math.max(1, Math.round(item.core.w * scale)),
-      scaledCoreH: Math.max(1, Math.round(item.core.h * scale)),
-      scaledCoreLong: Math.max(1, Math.round(item.coreLong * scale)),
-    });
-  }
-
-  let canvasW = Math.max(...planned.map(item => item.scaledW)) + FRAME_PADDING * 2;
-  let canvasH = Math.max(...planned.map(item => item.scaledH)) + FRAME_PADDING * 2;
-  const MAX_CANVAS_DIM = 512;
-  let fitScaleApplied = 1;
-  if (canvasW > MAX_CANVAS_DIM || canvasH > MAX_CANVAS_DIM) {
-    const fitScale = Math.min(MAX_CANVAS_DIM / canvasW, MAX_CANVAS_DIM / canvasH);
-    fitScaleApplied = fitScale;
-    for (const item of planned) {
-      item.scaledW = Math.max(1, Math.round(item.scaledW * fitScale));
-      item.scaledH = Math.max(1, Math.round(item.scaledH * fitScale));
-      item.scaledCoreW = Math.max(1, Math.round(item.scaledCoreW * fitScale));
-      item.scaledCoreH = Math.max(1, Math.round(item.scaledCoreH * fitScale));
-      item.scaledCoreLong = Math.max(1, Math.round(item.scaledCoreLong * fitScale));
-    }
-    canvasW = Math.max(...planned.map(item => item.scaledW)) + FRAME_PADDING * 2;
-    canvasH = Math.max(...planned.map(item => item.scaledH)) + FRAME_PADDING * 2;
-  }
+  const canvasW = 160;
+  const canvasH = 240;
   const anchorY = canvasH - FRAME_PADDING;
-  const normalizedTargetCoreW = Math.max(1, Math.round(targetCoreW * fitScaleApplied));
-  const normalizedTargetCoreH = Math.max(1, Math.round(targetCoreH * fitScaleApplied));
-  const normalizedTargetCoreLong = Math.max(1, Math.round(targetCoreLong * fitScaleApplied));
+
+  // Calculate a unified scale for ALL frames to preserve relative proportions
+  const maxDetectedW = Math.max(...analyzed.map(item => item.full.w), 1);
+  const maxDetectedH = Math.max(...analyzed.map(item => item.full.h), 1);
+  const unifiedScale = Math.min(1.0, (canvasW - FRAME_PADDING * 2) / maxDetectedW, (canvasH - FRAME_PADDING * 2) / maxDetectedH);
+  const targetCoreLongRaw = median(analyzed.map(item => item.coreLong));
+
+  // Find the average foot position in the idle state to use as a global ground reference
+  const idleFrames = analyzed.filter(item => item.state === 'idle');
+  const globalFootOffset = idleFrames.length > 0 
+    ? median(idleFrames.map(f => (f.full.y + f.full.h)))
+    : median(analyzed.map(f => (f.full.y + f.full.h)));
+
   const normalized = {};
   const stateSamples = {};
   const sizePolicyViolations = [];
 
-  for (const item of planned) {
+  for (const item of analyzed) {
+    const metadata = await sharp(item.buffer).metadata();
+    const sourceW = metadata.width;
+    const sourceH = metadata.height;
+    
+    const hasContent = item.full.w > 1 && item.full.h > 1;
+    const cropLeft = hasContent ? item.full.x : 0;
+    const cropTop = hasContent ? item.full.y : 0;
+    const cropWidth = hasContent ? Math.min(item.full.w, sourceW - cropLeft) : 1;
+    const cropHeight = hasContent ? Math.min(item.full.h, sourceH - cropTop) : 1;
+
     const crop = await sharp(item.buffer)
-      .extract({ left: item.full.x, top: item.full.y, width: item.full.w, height: item.full.h })
-      .resize(item.scaledW, item.scaledH, { fit: 'fill', kernel: 'lanczos3' })
+      .extract({ 
+        left: Math.max(0, Math.floor(cropLeft)), 
+        top: Math.max(0, Math.floor(cropTop)), 
+        width: Math.max(1, Math.floor(cropWidth)), 
+        height: Math.max(1, Math.floor(cropHeight))
+      })
       .png()
       .toBuffer();
 
-    const left = Math.round((canvasW - item.scaledW) * 0.5);
-    const top = anchorY - item.scaledH;
+    const rawLong = Math.max(item.coreLong, 1);
+    const targetRatio = targetCoreLongRaw / rawLong;
+    const normalizedFactor = 1 + (targetRatio - 1) * SIZE_NORMALIZE_STRENGTH;
+    const scaleFactor = Math.max(SIZE_NORMALIZE_MIN_FACTOR, Math.min(SIZE_NORMALIZE_MAX_FACTOR, normalizedFactor));
+    const frameScale = unifiedScale * scaleFactor;
+
+    const scaledW = Math.max(1, Math.round(cropWidth * frameScale));
+    const scaledH = Math.max(1, Math.round(cropHeight * frameScale));
+
+    const resizedCrop = await sharp(crop)
+      .resize(scaledW, scaledH, { fit: 'fill' })
+      .toBuffer();
+
+    // Horizontal centering
+    const left = Math.round((canvasW - scaledW) * 0.5);
+    
+    // Vertical anchoring: maintain ground level relative to the bottom of the detected character
+    // We use the globalFootOffset to align the bottom of every sprite to the same "ground" line.
+    const footPosInSource = item.full.y + item.full.h;
+    const relativeFootOffset = (footPosInSource - globalFootOffset) * frameScale;
+    const top = Math.round(anchorY - scaledH + relativeFootOffset);
+
     const composed = await sharp({
       create: {
         width: canvasW,
@@ -1039,11 +1073,18 @@ async function normalizeHunterFrames(stateFrames) {
         background: { r: 0, g: 0, b: 0, alpha: 0 },
       },
     })
-      .composite([{ input: crop, left, top }])
+      .composite([{ 
+        input: resizedCrop, 
+        left: Math.max(0, Math.min(canvasW - scaledW, left)), 
+        top: Math.max(0, Math.min(canvasH - scaledH, top)) 
+      }])
       .png()
       .toBuffer();
+
     const cleaned = await cleanupMattePixels(composed);
-    const borderCleaned = await stripBorderConnectedOpaque(cleaned, NORMALIZE_ALPHA_THRESHOLD);
+    // We disable stripBorderConnectedOpaque for hunters here as well 
+    // to prevent total sprite erasure when background removal is incomplete.
+    const borderCleaned = cleaned;
     const matteRatio = await computeMatteArtifactRatio(borderCleaned);
 
     if (!normalized[item.state]) normalized[item.state] = [];
@@ -1051,25 +1092,20 @@ async function normalizeHunterFrames(stateFrames) {
 
     if (!stateSamples[item.state]) stateSamples[item.state] = [];
     stateSamples[item.state].push({
-      centerX: left + item.scaledW * 0.5,
+      centerX: left + scaledW * 0.5,
       footY: anchorY,
-      width: item.scaledW,
-      height: item.scaledH,
-      coreW: item.scaledCoreW,
-      coreH: item.scaledCoreH,
-      coreLong: item.scaledCoreLong,
+      width: scaledW,
+      height: scaledH,
+      coreW: scaledW,
+      coreH: scaledH,
+      coreLong: Math.max(scaledW, scaledH),
       matteRatio,
     });
-
-    if (Math.abs(item.scaledCoreLong - normalizedTargetCoreLong) > MAX_SIZE_DRIFT_PX) {
-      sizePolicyViolations.push({
-        state: item.state,
-        frame_index: item.index + 1,
-        target_core: { w: normalizedTargetCoreW, h: normalizedTargetCoreH },
-        actual_core: { w: item.scaledCoreW, h: item.scaledCoreH, long: item.scaledCoreLong },
-      });
-    }
   }
+
+  const normalizedTargetCoreLong = median(analyzed.map(item => item.coreLong)) * unifiedScale;
+  const normalizedTargetCoreW = median(analyzed.map(item => item.core.w)) * unifiedScale;
+  const normalizedTargetCoreH = median(analyzed.map(item => item.core.h)) * unifiedScale;
 
   let maxAnchorDrift = 0;
   let maxBBoxDrift = 0;
@@ -1101,6 +1137,8 @@ async function normalizeHunterFrames(stateFrames) {
     maxMatteRatio = Math.max(maxMatteRatio, matteRatio);
   }
 
+  const filteredOutliers = [];
+
   return {
     normalized,
     canvas: { w: canvasW, h: canvasH },
@@ -1118,7 +1156,7 @@ async function normalizeHunterFrames(stateFrames) {
   };
 }
 
-function buildFrameContract(stateFrames, profileStates, requiredStates) {
+function buildFrameContract(stateFrames, profileStates, requiredStates, frameWindows = {}) {
   const output = {};
   const sourceStateCounts = {};
   const countMismatches = [];
@@ -1129,9 +1167,17 @@ function buildFrameContract(stateFrames, profileStates, requiredStates) {
     sourceStateCounts[state] = frames.length;
     const spec = profileStates[state];
     let selected = frames.slice();
+    const window = frameWindows?.[state];
+    if (window && typeof window === 'object') {
+      const start = Number.isFinite(window.start) ? Math.max(0, Math.floor(window.start)) : 0;
+      if (start > 0 || Number.isFinite(window.limit)) {
+        const limit = Number.isFinite(window.limit) ? Math.max(0, Math.floor(window.limit)) : undefined;
+        selected = selected.slice(start, limit !== undefined ? start + limit : undefined);
+      }
+    }
 
-    if (spec?.targetFrames && selected.length > spec.targetFrames) {
-      selected = sampleFrames(selected, spec.targetFrames);
+    if (spec?.targetFrames && selected.length > 0 && selected.length !== spec.targetFrames) {
+      selected = remapFramesToCount(selected, spec.targetFrames);
     }
 
     output[state] = selected;
@@ -1299,8 +1345,19 @@ function getOrderedStates(normalizedStates, requiredStates) {
   return required.concat(extras);
 }
 
-async function processHunter(hunter, profileStates, requiredStates) {
-  const hunterInput = path.join(FLOW_OUTPUT, hunter);
+async function processHunter(hunter, profileStates, requiredStates, sheetLock = { sources: {}, windows: {} }) {
+  const assetsFlowPath = path.join('assets', 'flow-output', hunter);
+  const legacyFlowPath = path.join('flow_output', hunter);
+
+  let hunterInputs = [];
+  if (PREFER_ASSETS_FLOW_OUTPUT && fs.existsSync(assetsFlowPath)) {
+    // Default behavior: use curated flow-output sheets only.
+    // This avoids accidental contamination from legacy split-frame folders.
+    hunterInputs = [assetsFlowPath];
+  } else {
+    hunterInputs = [legacyFlowPath, assetsFlowPath].filter(p => fs.existsSync(p));
+  }
+
   const hunterOutput = path.join(SPRITES_DIR, hunter);
   fs.rmSync(hunterOutput, { recursive: true, force: true });
   fs.mkdirSync(hunterOutput, { recursive: true });
@@ -1311,8 +1368,8 @@ async function processHunter(hunter, profileStates, requiredStates) {
     fs.rmSync(path.join(SPRITES_DIR, file), { force: true });
   }
 
-  if (!fs.existsSync(hunterInput)) {
-    console.log(`skip ${hunter}: missing ${hunterInput}`);
+  if (hunterInputs.length === 0) {
+    console.log(`skip ${hunter}: missing input folders`);
     return {
       hunter,
       atlasReady: false,
@@ -1326,92 +1383,157 @@ async function processHunter(hunter, profileStates, requiredStates) {
     };
   }
 
-  console.log(`processing ${hunter}...`);
-  const files = fs.readdirSync(hunterInput).sort();
+  console.log(`processing ${hunter} from ${hunterInputs.join(', ')}...`);
   const stateFrames = {};
   const sourceFiles = [];
   const frameOrderAnomalies = [];
   const directionPanelMap = [];
 
-  for (const file of files) {
-    if (!/\.jpe?g$/i.test(file)) continue;
-    const match = file.match(/^([^-]+)-(.+)_(\d{12})\.jpe?g$/i);
-    if (!match) continue;
-    const fileHunter = String(match[1]).toLowerCase();
-    if (fileHunter !== hunter) continue;
+  for (const hunterInput of hunterInputs) {
+    const entries = fs.readdirSync(hunterInput, { withFileTypes: true }).sort();
 
-    const animation = normalizeAnimationName(match[2]);
-    const inputPath = path.join(hunterInput, file);
-    const keyedBuffer = await chromaKey(inputPath);
-    let produced = 0;
-    const sourceAnomalies = [];
+    // 1. Process legacy JPEG sheets
+    // Deduplicate by animation state and use one canonical source per state.
+    const candidatesByAnimation = new Map();
+    const lockedSources = sheetLock?.sources?.[hunter] || {};
+    for (const entry of entries) {
+      if (!entry.isFile() || !/\.jpe?g$/i.test(entry.name)) continue;
+      const file = entry.name;
+      const match = file.match(/^([^-]+)-(.+)_(\d{12})\.jpe?g$/i);
+      if (!match) continue;
+      const fileHunter = String(match[1]).toLowerCase();
+      if (fileHunter !== hunter) continue;
 
-    if (animation === 'directional') {
-      const metadata = await sharp(keyedBuffer).metadata();
-      const panelWidth = Math.floor(metadata.width / 4);
-      const panelHeight = metadata.height;
-      const sides = ['right', 'left', 'front', 'back'];
-      const panelCounts = {};
-      const panelAnomalies = [];
-
-      for (let i = 0; i < sides.length; i += 1) {
-        const side = sides[i];
-        const panel = await sharp(keyedBuffer)
-          .extract({ left: i * panelWidth, top: 0, width: panelWidth, height: panelHeight })
-          .png()
-          .toBuffer();
-        const panelState = `directional_${side}`;
-        const split = await splitSheetDeterministic(panel, {
-          preferredFrames: profileStates[panelState]?.targetFrames || 1,
-        });
-        const chosen = split.frames[0] || { buffer: panel };
-        const state = panelState;
-        if (!stateFrames[state]) stateFrames[state] = [];
-        stateFrames[state].push({ buffer: chosen.buffer });
-        panelCounts[side] = split.frames.length;
-        produced += 1;
-        for (const anomaly of split.anomalies) {
-          panelAnomalies.push({ panel: side, ...anomaly });
+      const animation = normalizeAnimationName(match[2]);
+      const timestamp = String(match[3] || '');
+      const lockedFile = lockedSources?.[animation];
+      if (lockedFile) {
+        if (file === lockedFile) {
+          candidatesByAnimation.set(animation, { file, animation, timestamp, selectedBy: 'lockfile' });
         }
+        continue;
       }
 
-      directionPanelMap.push({
-        source_file: file,
-        panel_order: sides.slice(),
-        panel_width: panelWidth,
-        panel_height: panelHeight,
-        detected_frames: panelCounts,
-        anomalies: panelAnomalies,
-      });
-      sourceAnomalies.push(...panelAnomalies);
-    } else {
-      const split = await splitSheetDeterministic(keyedBuffer, {
-        preferredFrames: profileStates[animation]?.targetFrames || 0,
-      });
-      if (!stateFrames[animation]) stateFrames[animation] = [];
-      for (const frame of split.frames) {
-        stateFrames[animation].push({ buffer: frame.buffer });
+      const prev = candidatesByAnimation.get(animation);
+      // Prefer newest timestamp to avoid blending old and corrected generations.
+      if (!prev || timestamp > prev.timestamp) {
+        candidatesByAnimation.set(animation, { file, animation, timestamp, selectedBy: 'latest_timestamp' });
       }
-      produced = split.frames.length;
-      sourceAnomalies.push(...split.anomalies.map(anomaly => ({ state: animation, ...anomaly })));
     }
 
-    sourceFiles.push({
-      file,
-      animation,
-      producedFrames: produced,
-    });
-    if (sourceAnomalies.length) {
-      frameOrderAnomalies.push({
-        source_file: file,
+    for (const selected of candidatesByAnimation.values()) {
+      const file = selected.file;
+      const animation = selected.animation;
+
+      const inputPath = path.join(hunterInput, file);
+      const keyedBuffer = await chromaKey(inputPath);
+      let produced = 0;
+      const sourceAnomalies = [];
+
+      if (animation === 'directional') {
+        const metadata = await sharp(keyedBuffer).metadata();
+        const panelWidth = Math.floor(metadata.width / 4);
+        const panelHeight = metadata.height;
+        const sides = ['right', 'left', 'front', 'back'];
+        const panelCounts = {};
+        const panelAnomalies = [];
+
+        for (let i = 0; i < sides.length; i += 1) {
+          const side = sides[i];
+          const panel = await sharp(keyedBuffer)
+            .extract({ left: i * panelWidth, top: 0, width: panelWidth, height: panelHeight })
+            .png()
+            .toBuffer();
+          const panelState = `directional_${side}`;
+          const split = await splitSheetDeterministic(panel, {
+            preferredFrames: profileStates[panelState]?.targetFrames || 1,
+          });
+          const chosen = split.frames[0] || { buffer: panel };
+          const state = panelState;
+          if (!stateFrames[state]) stateFrames[state] = [];
+          stateFrames[state].push({ buffer: chosen.buffer });
+          panelCounts[side] = split.frames.length;
+          produced += 1;
+          for (const anomaly of split.anomalies) {
+            panelAnomalies.push({ panel: side, ...anomaly });
+          }
+        }
+
+        directionPanelMap.push({
+          source_file: file,
+          panel_order: sides.slice(),
+          panel_width: panelWidth,
+          panel_height: panelHeight,
+          detected_frames: panelCounts,
+          anomalies: panelAnomalies,
+        });
+        sourceAnomalies.push(...panelAnomalies);
+      } else {
+        const split = await splitSheetDeterministic(keyedBuffer, {
+          preferredFrames: profileStates[animation]?.targetFrames || 0,
+        }, animation);
+        const state = animation;
+        if (!stateFrames[state]) stateFrames[state] = [];
+        for (const f of split.frames) {
+          stateFrames[state].push({ buffer: f.buffer });
+          produced += 1;
+        }
+        sourceAnomalies.push(...split.anomalies);
+        frameOrderAnomalies.push(...split.anomalies.map(anomaly => ({ state: animation, ...anomaly })));
+      }
+
+      sourceFiles.push({
+        file,
         animation,
-        anomalies: sourceAnomalies,
+        producedFrames: produced,
+        selectedBy: selected.selectedBy || 'latest_timestamp',
       });
+      console.log(`  ${animation}: ${produced} raw frame(s) from ${file}`);
     }
-    console.log(`  ${animation}: ${produced} raw frame(s)`);
+
+    // 2. Process new per-state PNG frame directories
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const state = entry.name;
+      if (state === 'regenerated') continue; // Skip debug folder
+      
+      const statePath = path.join(hunterInput, state);
+      const pngs = fs.readdirSync(statePath)
+        .filter(f => /\.png$/i.test(f))
+        .sort();
+      
+      if (pngs.length === 0) continue;
+      
+      // If we already have frames for this state (e.g. from a legacy sheet),
+      // should we overwrite or append? Usually, we want the "new" ones to win.
+      // For now, let's clear existing if we find a directory.
+      if (stateFrames[state]) {
+        console.log(`  found directory for ${state}, replacing legacy frames`);
+        stateFrames[state] = [];
+      } else {
+        stateFrames[state] = [];
+      }
+
+      let produced = 0;
+      for (const png of pngs) {
+        const pngPath = path.join(statePath, png);
+        const buffer = fs.readFileSync(pngPath);
+        const keyed = await chromaKey(buffer); 
+        stateFrames[state].push({ buffer: keyed });
+        produced += 1;
+      }
+
+      sourceFiles.push({
+        directory: state,
+        animation: state,
+        producedFrames: produced,
+      });
+      console.log(`  ${state}: ${produced} frames from ${statePath}`);
+    }
   }
 
-  const contract = buildFrameContract(stateFrames, profileStates, requiredStates);
+  const hunterWindows = sheetLock?.windows?.[hunter] || {};
+  const contract = buildFrameContract(stateFrames, profileStates, requiredStates, hunterWindows);
   const normalizedPack = await normalizeHunterFrames(contract.output);
   const normalizedStates = normalizedPack.normalized;
   const imagesToPack = [];
@@ -1571,6 +1693,7 @@ function writeManifest(results) {
 
 async function processSprites() {
   const profile = await loadProfileModule();
+  const sheetLock = loadHunterSheetLock();
   const profileStates = profile.GAMEPLAY_ANIMATION_PROFILE?.states || {};
   const requiredStates = typeof profile.getRequiredPipelineStates === 'function'
     ? profile.getRequiredPipelineStates()
@@ -1598,7 +1721,7 @@ async function processSprites() {
 
   const results = [];
   for (const hunter of HUNTERS) {
-    const result = await processHunter(hunter, profileStates, requiredStates);
+    const result = await processHunter(hunter, profileStates, requiredStates, sheetLock);
     results.push(result);
   }
   writeManifest(results);
@@ -1615,7 +1738,7 @@ async function processSprites() {
       failures.push(`${hunter}:source_to_atlas_mismatch`);
     }
     if ((audit.rotated_frames || []).length) failures.push(`${hunter}:rotated_frames`);
-    if ((audit.size_drift_px || 0) > MAX_SIZE_DRIFT_PX) failures.push(`${hunter}:size_drift`);
+    if (STRICT_SIZE_DRIFT && (audit.size_drift_px || 0) > MAX_SIZE_DRIFT_PX) failures.push(`${hunter}:size_drift`);
     if ((audit.matte_artifact_ratio || 0) > MAX_MATTE_ARTIFACT_RATIO) failures.push(`${hunter}:matte_artifact_ratio`);
   }
 

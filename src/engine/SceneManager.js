@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RunState } from '../core/RunState.js';
 import {
   DEFAULT_ORTHO_CAMERA_TILT_X,
@@ -28,7 +27,6 @@ import { HitFlarePool } from '../visuals/HitFlarePool.js';
 import { AudioManager } from './AudioManager.js';
 import { ZONE_CONFIGS } from '../gameplay/ZoneManager.js';
 import { HubWorld } from '../visuals/HubWorld.js';
-import { resolveModelColormapUrl } from '../visuals/Base3DArena.js';
 
 import { TitleScreen } from '../screens/TitleScreen.js';
 import { HunterSelectScreen } from '../screens/HunterSelectScreen.js';
@@ -88,11 +86,6 @@ export class SceneManager {
     this._lastHubHintAt = 0;
     this._cameraTiltX = getCameraTiltX(this.camera);
     this._cameraTiltTargetX = this._cameraTiltX;
-    this._hubLoader = new GLTFLoader();
-    this._hubLoader.manager.setURLModifier((url) =>
-      resolveModelColormapUrl(url, './assets/textures/props/hub/colormap.png')
-    );
-    this._hubModelCache = new Map();
 
     const overlay = document.getElementById('ui-overlay');
     this.portalManager = new PortalManager(overlay);
@@ -152,6 +145,7 @@ export class SceneManager {
     this.hunters.setVisible(false);
     
     this.titleScreen.show();
+    this._reconcileWorldVisibility();
   }
 
   pause(mode = null) {
@@ -485,6 +479,19 @@ export class SceneManager {
   getCamera() { return this.camera; }
 
   getDebugInfo() {
+    const mods = this.player?.hunterConfig?.modifiers || {};
+    const scaling = {
+      damage: 1 + (mods.damageMult || 0),
+      spell: 1 + (mods.spellDamageMult || 0),
+      status: 1 + (mods.statusDamageMult || 0),
+      speed: 1 + (mods.speedMult || 0),
+      cooldown: Math.max(0.2, 1 + (mods.cooldownMult || 0)),
+      surgeGain: 1 + (mods.surgeGainMult || 0),
+      essenceGain: 1 + (mods.essenceGainMult || 0),
+      lifesteal: mods.lifesteal || 0,
+      dodgeIFramesBonus: mods.dodgeIFrameBonus || 0,
+    };
+
     return {
       mode: this.mode,
       zone: this._activeZoneId || 'hub',
@@ -508,7 +515,9 @@ export class SceneManager {
       bossPhase: RunState.activeBossPhase,
       cameraTiltX: this._cameraTiltX,
       cameraTiltTargetX: this._cameraTiltTargetX,
+      scaling,
       parallax: this._collectParallaxDebug(),
+      world: this.getWorldVisibilityDebug(),
     };
   }
 
@@ -517,16 +526,16 @@ export class SceneManager {
   // ---------------------------------------------------------------------------
 
   _setupLighting() {
-    const ambient = new THREE.AmbientLight(0xe5ebff, 0.55);
+    const ambient = new THREE.AmbientLight(0xe5ebff, 0.85);
     this.scene.add(ambient);
-    const hemi = new THREE.HemisphereLight(0x8fb8ff, 0x1a1b28, 0.42);
+    const hemi = new THREE.HemisphereLight(0x9fc6ff, 0x24304a, 0.62);
     this.scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffefdb, 0.95);
+    const key = new THREE.DirectionalLight(0xffefdb, 1.15);
     key.position.set(-5, 6, 9);
     this.scene.add(key);
 
-    const rim = new THREE.DirectionalLight(0x7bbcff, 0.55);
+    const rim = new THREE.DirectionalLight(0x7bbcff, 0.72);
     rim.position.set(6, -2.5, 6);
     this.scene.add(rim);
   }
@@ -564,101 +573,104 @@ export class SceneManager {
     this.spawner.startZone(null);
     this._resetCameraFrustum();
     this._frameHubCamera({ snap: true, preview: true, focusX: 0 });
-  }
-
-  _queueHubModel(path, options = {}) {
-    this._loadHubModel(path)
-      .then((source) => {
-        if (!source) return;
-        const model = source.clone(true);
-        const {
-          x = 0, y = 0, z = 0,
-          scale = 1,
-          rx = 0, ry = 0, rz = 0,
-          tint = null,
-          emissive = null,
-          emissiveIntensity = 0.35,
-          opacity = null,
-        } = options;
-        const tintColor = tint !== null ? new THREE.Color(tint) : null;
-        const emissiveColor = emissive !== null ? new THREE.Color(emissive) : null;
-        model.position.set(x, y, z);
-        model.rotation.set(rx, ry, rz);
-        model.scale.set(scale, scale, scale);
-        model.traverse((child) => {
-          if (!child.isMesh) return;
-          const materials = Array.isArray(child.material) ? child.material : [child.material];
-          const nextMaterials = [];
-          for (const material of materials) {
-            if (!material) continue;
-            const working = material.clone ? material.clone() : material;
-            if (tintColor && working.color) working.color.multiply(tintColor);
-            if (emissiveColor && 'emissive' in working) {
-              working.emissive.copy(emissiveColor);
-              working.emissiveIntensity = emissiveIntensity;
-            }
-            if (typeof opacity === 'number') {
-              working.opacity = Math.max(0, Math.min(1, opacity));
-              working.transparent = working.opacity < 1;
-            }
-            nextMaterials.push(working);
-          }
-          child.material = Array.isArray(child.material) ? nextMaterials : (nextMaterials[0] || child.material);
-          child.castShadow = false;
-          child.receiveShadow = false;
-          child.frustumCulled = true;
-        });
-        model.visible = this.mode === SceneModes.HUB || this.mode === SceneModes.HUNTER_SELECT;
-        this.scene.add(model);
-        this._hubBackdrop.push(model);
-      })
-      .catch(() => null);
-  }
-
-  _loadHubModel(path) {
-    if (!this._hubModelCache.has(path)) {
-      this._hubModelCache.set(path, new Promise((resolve, reject) => {
-        this._hubLoader.load(path, (gltf) => resolve(gltf.scene), null, reject);
-      }));
-    }
-    return this._hubModelCache.get(path);
+    this._reconcileWorldVisibility();
+    this._scheduleVisibilityReconcile();
   }
 
   _setupHubPortals() {
     this._hubPortals = [];
     const layout = this.zoneManager.getPortalLayout();
-    const portalGeo = new THREE.TorusGeometry(0.52, 0.085, 8, 24);
-    const pedestalGeo = new THREE.BoxGeometry(1.2, 0.18, 0.1);
+    const ringGeo = new THREE.TorusGeometry(0.62, 0.09, 16, 72);
+    const innerRingGeo = new THREE.TorusGeometry(0.45, 0.05, 12, 64);
+    const coreGeo = new THREE.CircleGeometry(0.34, 48);
+    const plateGeo = new THREE.CylinderGeometry(0.62, 0.74, 0.18, 18);
+    const baseGeo = new THREE.CylinderGeometry(0.84, 1.02, 0.26, 18);
 
     for (const entry of layout) {
-      const portalMat = new THREE.MeshBasicMaterial({
-        color: entry.color,
-        transparent: true,
-        opacity: 0.45,
+      const portalY = Number.isFinite(entry.y) ? entry.y : -1.9;
+      const stack = new THREE.Group();
+      stack.position.set(entry.x, portalY, 0);
+      this.scene.add(stack);
+
+      const glow = new THREE.Mesh(
+        new THREE.CircleGeometry(0.8, 40),
+        new THREE.MeshBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.2,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      glow.position.set(0, 0, 0.19);
+      glow.renderOrder = 18;
+      stack.add(glow);
+
+      const core = new THREE.Mesh(
+        coreGeo,
+        new THREE.MeshBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.36,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      core.position.set(0, 0, 0.24);
+      core.renderOrder = 19;
+      stack.add(core);
+
+      const ringOuter = new THREE.Mesh(
+        ringGeo,
+        new THREE.MeshBasicMaterial({
+          color: entry.color,
+          transparent: true,
+          opacity: 0.92,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ringOuter.position.set(0, 0, 0.27);
+      ringOuter.renderOrder = 20;
+      stack.add(ringOuter);
+
+      const ringInner = new THREE.Mesh(
+        innerRingGeo,
+        new THREE.MeshBasicMaterial({
+          color: 0xdbe8ff,
+          transparent: true,
+          opacity: 0.48,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ringInner.position.set(0, 0, 0.28);
+      ringInner.renderOrder = 21;
+      stack.add(ringInner);
+
+      const portalPlate = new THREE.Mesh(plateGeo, new THREE.MeshLambertMaterial({ color: 0x263853 }));
+      portalPlate.position.set(0, -0.58, 0.12);
+      portalPlate.renderOrder = 10;
+      stack.add(portalPlate);
+
+      const portalBase = new THREE.Mesh(baseGeo, new THREE.MeshLambertMaterial({ color: 0x1e2d44 }));
+      portalBase.position.set(0, -0.8, 0.06);
+      portalBase.renderOrder = 9;
+      stack.add(portalBase);
+
+      const pedestal = portalBase;
+      const portal = ringOuter;
+      this._hubPortals.push({
+        ...entry,
+        y: portalY,
+        group: stack,
+        mesh: portal,
+        glow,
+        core,
+        innerRing: ringInner,
+        pedestal,
+        unlocked: false,
       });
-      const portal = new THREE.Mesh(portalGeo, portalMat);
-      portal.position.set(entry.x, entry.y, 0.3);
-      portal.renderOrder = 20;
-      this.scene.add(portal);
-
-      const pedestalMat = new THREE.MeshLambertMaterial({ color: 0x29364f });
-      const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-      pedestal.position.set(entry.x, entry.y - 0.62, 0.2);
-      this.scene.add(pedestal);
-
-      this._queueHubModel('./assets/models/world/city-breach/portal.glb', {
-        x: entry.x,
-        y: entry.y - 0.04,
-        z: -1.05,
-        scale: 0.52,
-        ry: Math.PI,
-        tint: entry.color,
-        emissive: entry.color,
-        emissiveIntensity: 0.55,
-        opacity: 0.95,
-      });
-
-      this._hubPortals.push({ ...entry, mesh: portal, pedestal, unlocked: false });
     }
     this._syncHubPortals();
   }
@@ -921,6 +933,8 @@ export class SceneManager {
     this.hunters.setVisible(true);
     this._setHubVisible(false);
     this.zoneManager.showZone(zoneId);
+    this._reconcileWorldVisibility();
+    this._scheduleVisibilityReconcile();
     this.spawner.startZone(config);
     this.portalManager.showZoneTitleCard(config.label, config.number);
     this.hud.showZoneTitle(config.label, config.number);
@@ -1044,6 +1058,8 @@ export class SceneManager {
       preview: false,
       focusX: this.hunters.primaryPlayer?.position.x || 0,
     });
+    this._reconcileWorldVisibility();
+    this._scheduleVisibilityReconcile();
     this._transitionLock = false;
 
     // Highlight the suggested next portal if the player just cleared a zone
@@ -1060,8 +1076,12 @@ export class SceneManager {
   _setHubVisible(visible) {
     for (const mesh of this._hubBackdrop) mesh.visible = visible;
     for (const portal of this._hubPortals) {
-      portal.mesh.visible     = visible;
+      if (portal.group) portal.group.visible = visible;
+      portal.mesh.visible = visible;
       portal.pedestal.visible = visible;
+      if (portal.glow) portal.glow.visible = visible;
+      if (portal.core) portal.core.visible = visible;
+      if (portal.innerRing) portal.innerRing.visible = visible;
     }
   }
 
@@ -1070,18 +1090,27 @@ export class SceneManager {
     const unlockedZones = new Set(this.zoneManager.getUnlockedZoneIds(RunState.zonesCleared));
     for (const portal of this._hubPortals) {
       portal.unlocked            = unlockedZones.has(portal.zoneId);
-      portal.mesh.visible        = inHub;
-      portal.pedestal.visible    = inHub;
-      portal.mesh.material.opacity     = portal.unlocked ? 0.95 : 0.28;
-      portal.pedestal.material.opacity = portal.unlocked ? 1    : 0.35;
+      if (portal.group) portal.group.visible = inHub;
+      portal.mesh.visible = inHub;
+      portal.pedestal.visible = inHub;
+      if (portal.glow) portal.glow.visible = inHub;
+      if (portal.core) portal.core.visible = inHub;
+      if (portal.innerRing) portal.innerRing.visible = inHub;
+
+      portal.mesh.material.opacity = portal.unlocked ? 0.96 : 0.22;
+      if (portal.core?.material) portal.core.material.opacity = portal.unlocked ? 0.4 : 0.14;
+      if (portal.glow?.material) portal.glow.material.opacity = portal.unlocked ? 0.24 : 0.08;
+      portal.pedestal.material.opacity = portal.unlocked ? 1 : 0.55;
     }
   }
 
   _setSuggestedPortal(zoneId) {
     for (const portal of this._hubPortals) {
       const isSuggested = portal.zoneId === zoneId;
-      portal.mesh.material.opacity = isSuggested ? 1.0 : (portal.unlocked ? 0.55 : 0.2);
+      portal.mesh.material.opacity = isSuggested ? 1.0 : (portal.unlocked ? 0.64 : 0.2);
       portal.mesh.material.color.setHex(isSuggested ? 0xaa66ff : portal.color);
+      if (portal.core?.material) portal.core.material.color.setHex(isSuggested ? 0xaa66ff : portal.color);
+      if (portal.glow?.material) portal.glow.material.color.setHex(isSuggested ? 0xaa66ff : portal.color);
       portal._suggested = isSuggested;
     }
     const clearedConfig = this.zoneManager.getZoneConfig(this._lastClearedZoneId);
@@ -1105,8 +1134,10 @@ export class SceneManager {
     let bestDistance = Infinity;
     for (const portal of this._hubPortals) {
       if (requireUnlocked && !portal.unlocked) continue;
-      const dx = playerPosition.x - portal.mesh.position.x;
-      const dy = playerPosition.y - portal.mesh.position.y;
+      const anchorX = Number.isFinite(portal.group?.position?.x) ? portal.group.position.x : portal.x;
+      const anchorY = Number.isFinite(portal.group?.position?.y) ? portal.group.position.y : portal.y;
+      const dx = playerPosition.x - anchorX;
+      const dy = playerPosition.y - anchorY;
       const distance = Math.hypot(dx, dy);
       if (distance <= HUB_PORTAL_INTERACT_RADIUS && distance < bestDistance) {
         best = portal;
@@ -1138,10 +1169,11 @@ export class SceneManager {
   _animateHubPortals(dt) {
     for (const portal of this._hubPortals) {
       portal.mesh.rotation.z += dt * (portal.unlocked ? 2.4 : 1.2);
+      if (portal.innerRing) portal.innerRing.rotation.z -= dt * (portal.unlocked ? 1.8 : 0.9);
       const pulse = 1 + Math.sin(performance.now() * 0.004 + portal.x) * 0.02;
       portal.mesh.scale.setScalar(portal.unlocked ? pulse : 0.96);
-      portal.mesh.position.z    = -portal.mesh.position.y * 0.01 + 0.3;
-      portal.pedestal.position.z = -portal.pedestal.position.y * 0.01;
+      if (portal.core) portal.core.scale.setScalar(portal.unlocked ? (1 + (pulse - 1) * 1.6) : 0.96);
+      if (portal.glow) portal.glow.scale.setScalar(portal.unlocked ? (1 + (pulse - 1) * 2.2) : 0.95);
     }
   }
 
@@ -1185,17 +1217,22 @@ export class SceneManager {
     const focusX = (minX + maxX) / 2;
     const focusY = (minY + maxY) / 2;
     const laneCenterY = -2.2;
-    const targetFocusY = laneCenterY + (focusY - laneCenterY) * 0.28;
+    const profile = this.zoneManager.getCameraProfile?.(this._activeZoneId || RunState.currentZone || 'city-breach') || {};
+    const laneBias = Number.isFinite(profile.laneBias) ? profile.laneBias : 0.3;
+    const targetFocusY = laneCenterY + (focusY - laneCenterY) * laneBias;
     const aspect  = window.innerWidth / window.innerHeight;
-    const padding = 2.25;
+    const padding = Number.isFinite(profile.framingPadding) ? profile.framingPadding : 2.6;
     const targetHeight = Math.max(
       ORTHO_HEIGHT,
       (maxY - minY) + padding,
       ((maxX - minX) + padding) / aspect
     );
-    const boundedTargetHeight = Math.min(11.2, targetHeight);
+    const minViewHeight = Number.isFinite(profile.zoomMin) ? profile.zoomMin : ORTHO_HEIGHT;
+    const maxViewHeight = Number.isFinite(profile.zoomMax) ? profile.zoomMax : Math.max(ORTHO_HEIGHT, this._resolveCameraViewHeight() + 2.0);
+    const boundedTargetHeight = Math.max(minViewHeight, Math.min(maxViewHeight, targetHeight));
     const currentHeight = this.camera.top - this.camera.bottom;
-    const nextHeight    = currentHeight + (boundedTargetHeight - currentHeight) * 0.08;
+    const zoomLerp = Number.isFinite(profile.zoomLerp) ? profile.zoomLerp : 0.14;
+    const nextHeight = currentHeight + (boundedTargetHeight - currentHeight) * zoomLerp;
     const halfH = nextHeight / 2;
     const halfW = halfH * aspect;
 
@@ -1208,8 +1245,10 @@ export class SceneManager {
     const clampedY = Math.max(camMinY, Math.min(camMaxY, targetFocusY));
     const currentFocusX = Number.isFinite(this.camera.userData.focusX) ? this.camera.userData.focusX : 0;
     const currentFocusY = Number.isFinite(this.camera.userData.focusY) ? this.camera.userData.focusY : 0;
-    const nextFocusX = currentFocusX + (clampedX - currentFocusX) * 0.085;
-    const nextFocusY = currentFocusY + (clampedY - currentFocusY) * 0.07;
+    const followLerpX = Number.isFinite(profile.followLerpX) ? profile.followLerpX : 0.11;
+    const followLerpY = Number.isFinite(profile.followLerpY) ? profile.followLerpY : 0.1;
+    const nextFocusX = currentFocusX + (clampedX - currentFocusX) * followLerpX;
+    const nextFocusY = currentFocusY + (clampedY - currentFocusY) * followLerpY;
     setCameraFocus(this.camera, nextFocusX, nextFocusY);
 
     this.camera.top    =  halfH;
@@ -1267,6 +1306,23 @@ export class SceneManager {
     return this.zoneManager.getParallaxDebugInfo?.() || [];
   }
 
+  getWorldVisibilityDebug() {
+    const zoneHealth = this.zoneManager.getWorldHealthDebug?.() || null;
+    const hubVisible = this._hubBackdrop?.some(mesh => !!mesh?.visible) || false;
+    const hubMeshCount = this._countVisibleMeshes(this._hubWorld?.group);
+    const hubParallaxCount = this._hubWorld?.getParallaxDebugInfo?.().length || 0;
+    return {
+      mode: this.mode,
+      activeZoneId: this._activeZoneId || zoneHealth?.activeZoneId || 'hub',
+      hub: {
+        visible: hubVisible,
+        meshCount: hubMeshCount,
+        parallaxCount: hubParallaxCount,
+      },
+      zone: zoneHealth,
+    };
+  }
+
   _resetCameraFrustum() {
     const viewHeight = this._resolveCameraViewHeight();
     const halfHeight = viewHeight / 2;
@@ -1280,7 +1336,33 @@ export class SceneManager {
     this.camera.updateProjectionMatrix();
   }
 
+  _reconcileWorldVisibility() {
+    const inHub = this.mode === SceneModes.HUB || this.mode === SceneModes.HUNTER_SELECT;
+    this._setHubVisible(inHub);
+    if (inHub) {
+      this.zoneManager.showHub();
+      return;
+    }
+    if (this.mode === SceneModes.ZONE && this._activeZoneId) {
+      this.zoneManager.showZone(this._activeZoneId);
+    }
+  }
+
+  _scheduleVisibilityReconcile() {
+    setTimeout(() => this._reconcileWorldVisibility(), 0);
+  }
+
+  _countVisibleMeshes(root) {
+    if (!root) return 0;
+    let count = 0;
+    root.traverse((child) => {
+      if (child?.isMesh && child.visible !== false) count += 1;
+    });
+    return count;
+  }
+
   _frameHubCamera({ focusX = 0, snap = false, preview = false } = {}) {
+    const profile = this.zoneManager.getCameraProfile?.('hub') || {};
     const hubBounds = ZONE_CONFIGS.hub?.playBounds || { minX: -8.4, maxX: 8.4 };
     const halfWidth = (this.camera.right - this.camera.left) * 0.5;
     const targetBaseX = preview ? 0 : (focusX + 0.2);
@@ -1292,8 +1374,10 @@ export class SceneManager {
     const targetY = this._resolveCameraFocusY();
     const currentFocusX = Number.isFinite(this.camera.userData.focusX) ? this.camera.userData.focusX : 0;
     const currentFocusY = Number.isFinite(this.camera.userData.focusY) ? this.camera.userData.focusY : targetY;
-    const nextFocusX = snap ? clampedX : currentFocusX + (clampedX - currentFocusX) * (preview ? 0.045 : 0.06);
-    const nextFocusY = snap ? targetY : currentFocusY + (targetY - currentFocusY) * (preview ? 0.065 : 0.09);
+    const followX = Number.isFinite(profile.hubFollowLerpX) ? profile.hubFollowLerpX : 0.08;
+    const followY = Number.isFinite(profile.hubFollowLerpY) ? profile.hubFollowLerpY : 0.1;
+    const nextFocusX = snap ? clampedX : currentFocusX + (clampedX - currentFocusX) * (preview ? followX * 0.8 : followX);
+    const nextFocusY = snap ? targetY : currentFocusY + (targetY - currentFocusY) * (preview ? followY * 0.85 : followY);
     setCameraFocus(this.camera, nextFocusX, nextFocusY);
   }
 
@@ -1532,9 +1616,9 @@ export class SceneManager {
   _updateCardInput(input) {
     if (input.justPressed(Actions.MOVE_LEFT))  this.hud.moveCardSelection(-1);
     if (input.justPressed(Actions.MOVE_RIGHT)) this.hud.moveCardSelection(1);
-    if (input.justPressedKey('KeyA')) return this.chooseCurrentCard(this.hud.getCardState().choices[0]?.id);
-    if (input.justPressedKey('KeyB')) return this.chooseCurrentCard(this.hud.getCardState().choices[1]?.id);
-    if (input.justPressedKey('KeyC')) return this.chooseCurrentCard(this.hud.getCardState().choices[2]?.id);
+    if (input.justPressedKey('KeyA') || input.justPressedKey('Digit1')) return this.chooseCurrentCard(this.hud.getCardState().choices[0]?.id);
+    if (input.justPressedKey('KeyB') || input.justPressedKey('Digit2')) return this.chooseCurrentCard(this.hud.getCardState().choices[1]?.id);
+    if (input.justPressedKey('KeyC') || input.justPressedKey('Digit3')) return this.chooseCurrentCard(this.hud.getCardState().choices[2]?.id);
     if (input.justPressed(Actions.INTERACT) || input.justPressed(Actions.LIGHT)) return this.chooseCurrentCard();
     return false;
   }

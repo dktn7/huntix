@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { Base3DArena } from './Base3DArena.js';
+import { Base2DArena } from './Base2DArena.js';
 import { RUIN_DEN } from './Palettes.js';
 
-export class RuinDenArena extends Base3DArena {
+export class RuinDenArena extends Base2DArena {
   constructor(scene, zoneConfig = null) {
     super(scene, {
       colormapTexture: './assets/textures/props/ruin-den/colormap.png',
@@ -14,9 +14,16 @@ export class RuinDenArena extends Base3DArena {
   build() {
     this.setZoneColors({ deep: 0x080604, far: 0x110d0a, mid: 0x1a1410, near: 0x1e1612 });
     this.addParallaxLayers();
-    this.buildWorldFromSource({
-      composed: () => this._queueWorldKit(),
-      fallback: () => this.buildFallbackWorld(),
+    this.buildFlatWorld2D({
+      floorColor: 0x3a312c,
+      laneColor: 0x766852,
+      backColor: 0x1e1612,
+      ridgeColor: 0x7b5134,
+      silhouetteColor: 0x17120f,
+      laneOpacity: 0.93,
+      backOpacity: 0.78,
+      ridgeOpacity: 0.72,
+      silhouetteOpacity: 0.54,
     });
 
     const fissureMaterial = new THREE.MeshBasicMaterial({
@@ -133,39 +140,4 @@ export class RuinDenArena extends Base3DArena {
     return this.group;
   }
 
-  _queueWorldKit() {
-    const root = './assets/models/world/ruin-den';
-
-    for (let i = -2; i <= 2; i += 1) {
-      this.queueModel(`${root}/Floor Tile.glb`, {
-        x: i * 3.25,
-        y: -2.34,
-        z: -0.98,
-        scale: 0.7,
-        layer: 'floor',
-      });
-    }
-    this.queueModel(`${root}/Bricks.glb`, { x: -7.1, y: -2.65, z: -0.98, scale: 0.78, layer: 'floor' });
-    this.queueModel(`${root}/Bricks.glb`, { x: -2.3, y: -2.5, z: -0.98, scale: 0.78, layer: 'floor' });
-    this.queueModel(`${root}/Bricks.glb`, { x: 2.6, y: -2.65, z: -0.98, scale: 0.78, layer: 'floor' });
-    this.queueModel(`${root}/Bricks.glb`, { x: 7.2, y: -2.5, z: -0.98, scale: 0.78, layer: 'floor' });
-
-    this.queueModel(`${root}/Column.glb`, { x: -7.95, y: 0.95, z: -2.18, scale: 0.72, layer: 'walls' });
-    this.queueModel(`${root}/Column.glb`, { x: 7.95, y: 0.95, z: -2.18, scale: 0.72, layer: 'walls' });
-    this.queueModel(`${root}/Pedestal.glb`, { x: 6.9, y: -0.55, z: -1.22, scale: 0.74, layer: 'props' });
-    this.queueModel(`${root}/crate.glb`, { x: -7.0, y: -3.05, z: -0.86, scale: 0.68, layer: 'props' });
-    this.queueModel(`${root}/crystal.glb`, { x: 6.95, y: -1.45, z: -0.84, scale: 0.76, layer: 'props' });
-    this.queueModel(`${root}/Torch.glb`, { x: -3.8, y: -1.0, z: -1.18, scale: 0.74, layer: 'props' });
-    this.queueModel(`${root}/Torch.glb`, { x: 3.8, y: -1.0, z: -1.18, scale: 0.74, layer: 'props' });
-    this.queueModel('./assets/models/world/city-breach/portal.glb', {
-      x: 7.1,
-      y: -2.18,
-      z: -1.12,
-      scale: 0.5,
-      tint: RUIN_DEN.fissure,
-      emissive: RUIN_DEN.fissure,
-      emissiveIntensity: 0.5,
-      layer: 'props',
-    });
-  }
 }

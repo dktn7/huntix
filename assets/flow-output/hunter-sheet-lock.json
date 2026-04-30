@@ -1,0 +1,100 @@
+{
+  "sources": {
+    "dabik": {
+      "attack_heavy": "dabik-attack_heavy_202604250050.jpeg",
+      "attack_light": "dabik-attack_light_202604250050.jpeg",
+      "dead": "dabik-dead_202604250050.jpeg",
+      "directional": "dabik-directional_202604250050.jpeg",
+      "dodge": "dabik-dodge_202604250050.jpeg",
+      "downed": "dabik-downed_202604250050.jpeg",
+      "hurt": "dabik-hurt_202604250050.jpeg",
+      "idle": "dabik-idle_202604250050.jpeg",
+      "jump": "dabik-jump_202604250050.jpeg",
+      "revive": "dabik-revive_202604292130.jpeg",
+      "run": "dabik-run_202604250050.jpeg",
+      "spell_advanced": "dabik-spell_advanced_202604250050.jpeg",
+      "spell_minor": "dabik-spell_minor_202604250050.jpeg",
+      "ultimate": "dabik-ultimate_202604251943.jpeg",
+      "weapon_swap": "dabik-weapon-swap_202604252008.jpeg"
+    },
+    "benzu": {
+      "attack_heavy": "benzu-attack_heavy_202604250049.jpeg",
+      "attack_light": "benzu-attack_light_202604250049.jpeg",
+      "dead": "benzu-dead_202604250049.jpeg",
+      "directional": "benzu-directional_202604250049.jpeg",
+      "dodge": "benzu-dodge_202604251946.jpeg",
+      "downed": "benzu-downed_202604250049.jpeg",
+      "hurt": "benzu-hurt_202604250049.jpeg",
+      "idle": "benzu-idle_202604251908.jpeg",
+      "jump": "benzu-jump_202604250049.jpeg",
+      "revive": "benzu-revive_202604292130.jpeg",
+      "run": "benzu-run_202604250049.jpeg",
+      "spell_advanced": "benzu-spell_advanced_202604250049.jpeg",
+      "spell_minor": "benzu-spell_minor_202604250049.jpeg",
+      "ultimate": "benzu-ultimate_202604251951.jpeg",
+      "weapon_swap": "benzu-weapon-swap_202604250049.jpeg"
+    },
+    "sereisa": {
+      "attack_heavy": "sereisa-attack_heavy_202604251954.jpeg",
+      "attack_light": "sereisa-attack_light_202604292130.jpeg",
+      "dead": "sereisa-dead_202604251958.jpeg",
+      "directional": "sereisa-directional_202604251911.jpeg",
+      "dodge": "sereisa-dodge_202604292130.jpeg",
+      "downed": "sereisa-downed_202604250154.jpeg",
+      "hurt": "sereisa-hurt_202604250154.jpeg",
+      "idle": "sereisa-idle_202604251917.jpeg",
+      "jump": "sereisa-jump_202604250154.jpeg",
+      "revive": "sereisa-revive_202604250154.jpeg",
+      "run": "sereisa-run_202604250154.jpeg",
+      "spell_advanced": "sereisa-spell_advanced_202604250154.jpeg",
+      "spell_minor": "sereisa-spell_minor_202604292130.jpeg",
+      "ultimate": "sereisa-ultimate_202604252000.jpeg",
+      "weapon_swap": "sereisa-weapon-swap_202604251937.jpeg"
+    },
+    "vesol": {
+      "attack_heavy": "vesol-attack_heavy_202604250145.jpeg",
+      "attack_light": "vesol-attack_light_202604250145.jpeg",
+      "dead": "vesol-dead_202604250145.jpeg",
+      "directional": "vesol-directional_202604251921.jpeg",
+      "dodge": "vesol-dodge_202604292130.jpeg",
+      "downed": "vesol-downed_202604250145.jpeg",
+      "hurt": "vesol-hurt_202604250145.jpeg",
+      "idle": "vesol-idle_202604250145.jpeg",
+      "jump": "vesol-jump_202604250145.jpeg",
+      "revive": "vesol-revive_202604252002.jpeg",
+      "run": "vesol-run_202604250145.jpeg",
+      "spell_advanced": "vesol-spell_advanced_202604250145.jpeg",
+      "spell_minor": "vesol-spell_minor_202604250145.jpeg",
+      "ultimate": "vesol-ultimate_202604251933.jpeg",
+      "weapon_swap": "vesol-weapon-swap_202604252004.jpeg"
+    }
+  },
+  "windows": {
+    "dabik": {
+      "dodge": { "start": 1, "limit": 14 },
+      "downed": { "start": 6, "limit": 12 },
+      "spell_minor": { "start": 3, "limit": 10 },
+      "spell_advanced": { "start": 5, "limit": 20 },
+      "ultimate": { "start": 3, "limit": 50 }
+    },
+    "benzu": {
+      "run": { "start": 1, "limit": 12 },
+      "jump": { "start": 3, "limit": 12 },
+      "weapon_swap": { "start": 0, "limit": 4 },
+      "ultimate": { "start": 1, "limit": 50 }
+    },
+    "sereisa": {
+      "attack_heavy": { "start": 1, "limit": 14 },
+      "downed": { "start": 4, "limit": 12 },
+      "jump": { "start": 2, "limit": 12 },
+      "ultimate": { "start": 0, "limit": 45 }
+    },
+    "vesol": {
+      "dodge": { "start": 6, "limit": 14 },
+      "downed": { "start": 2, "limit": 12 },
+      "spell_minor": { "start": 1, "limit": 10 },
+      "spell_advanced": { "start": 1, "limit": 20 },
+      "ultimate": { "start": 5, "limit": 50 }
+    }
+  }
+}

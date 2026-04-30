@@ -4,8 +4,8 @@ import { Hitbox, HitboxOwners, HitboxShapes } from './Hitbox.js';
 import { PlayerStates } from './PlayerState.js';
 import { StatusTypes } from './StatusEffects.js';
 
-const LIGHT_HITSTOP = 0.08;
-const HEAVY_HITSTOP = 0.15;
+const LIGHT_HITSTOP = 0.04;
+const HEAVY_HITSTOP = 0.08;
 const DODGE_STAMINA_COST = 25;
 const ADVANCED_HOLD_SECONDS = 0.35;
 const COMBO_TIMEOUT = 2;
@@ -37,7 +37,7 @@ export class CombatController {
     this._updateRevives(dt, playerInputs, players);
 
     for (let i = 0; i < players.length; i += 1) {
-      this._handleInput(dt, playerInputs[i], players[i], enemies, spawner);
+      this._handleInput(dt, playerInputs[i], players[i], enemies, spawner, players);
       this._spawnPlayerAttackHitbox(players[i]);
     }
 
@@ -119,7 +119,7 @@ export class CombatController {
     this._comboTimers.set(playerIndex, 0);
   }
 
-  _handleInput(dt, input, player, enemies, spawner) {
+  _handleInput(dt, input, player, enemies, spawner, players = []) {
     if (!input || !player) return;
 
     if (
@@ -140,6 +140,16 @@ export class CombatController {
 
     if (player.isAirborne?.()) {
       this._cancelSpecialInput(player);
+      return;
+    }
+
+    if (
+      input.justPressed(Actions.INTERACT) &&
+      player.runPlayer?.slot2WeaponId &&
+      !this._isNearDownedAlly(player, players)
+    ) {
+      player.runPlayer.activeSlot = player.runPlayer.activeSlot === 0 ? 1 : 0;
+      player.transitionTo(PlayerStates.WEAPON_SWAP, { force: true });
       return;
     }
 
@@ -659,6 +669,16 @@ export class CombatController {
     return Math.hypot(this._combatX(a) - this._combatX(b), this._combatY(a) - this._combatY(b));
   }
 
+  _isNearDownedAlly(player, players) {
+    for (let i = 0; i < players.length; i += 1) {
+      const other = players[i];
+      if (!other || other === player) continue;
+      if (other.state !== PlayerStates.DOWNED || other.isEliminated) continue;
+      if (this._distanceBetween(player, other) <= REVIVE_RANGE) return true;
+    }
+    return false;
+  }
+
   _enemyInsideArea(enemy, effect) {
     const bounds = enemy.getBodyBounds();
     return (
@@ -702,7 +722,7 @@ export class CombatController {
   }
 
   _surgeGainMult(player) {
-    return player?.hunterConfig?.modifiers?.surgeGainMult || 1;
+    return 1 + (player?.hunterConfig?.modifiers?.surgeGainMult || 0);
   }
 
   _advanceCooldowns(dt) {

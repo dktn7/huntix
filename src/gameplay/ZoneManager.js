@@ -22,14 +22,24 @@ const SHARED_PARALLAX_LAYERS = [
   { id: 'midground', z: -8, speed: 0.30, opacity: 0.72 },
   { id: 'foreground', z: -1, speed: 0.80, opacity: 0.46 },
 ];
+const BG_ASSET_REV = '20260430d';
 
 function createParallaxProfile(texture, palette = {}) {
+  const isExplicitPath = typeof texture === 'string' && texture.includes('/');
+  const baseName = isExplicitPath ? null : String(texture || '').trim();
+  const layerTexture = (layerId) => {
+    if (isExplicitPath) return texture;
+    if (!baseName) return '';
+    if (layerId === 'background') return `./assets/backgrounds/${baseName}-bg.webp?v=${BG_ASSET_REV}`;
+    if (layerId === 'midground') return `./assets/backgrounds/${baseName}-mid.webp?v=${BG_ASSET_REV}`;
+    return `./assets/backgrounds/${baseName}-fg.webp?v=${BG_ASSET_REV}`;
+  };
   return {
     layers: SHARED_PARALLAX_LAYERS.map((layer) => {
       const tint = palette[layer.id] ?? 0xffffff;
       return {
         ...layer,
-        texture,
+        texture: layerTexture(layer.id),
         tint,
       };
     }),
@@ -41,6 +51,15 @@ function createCameraProfile(tiltDeg = DEFAULT_TILT_DEG, options = {}) {
     tiltX: obliqueDegreesToCameraTiltX(tiltDeg),
     viewHeight: Number.isFinite(options.viewHeight) ? options.viewHeight : 10,
     focusY: Number.isFinite(options.focusY) ? options.focusY : 0,
+    zoomMin: Number.isFinite(options.zoomMin) ? options.zoomMin : 9.4,
+    zoomMax: Number.isFinite(options.zoomMax) ? options.zoomMax : 12.4,
+    followLerpX: Number.isFinite(options.followLerpX) ? options.followLerpX : 0.11,
+    followLerpY: Number.isFinite(options.followLerpY) ? options.followLerpY : 0.1,
+    zoomLerp: Number.isFinite(options.zoomLerp) ? options.zoomLerp : 0.14,
+    laneBias: Number.isFinite(options.laneBias) ? options.laneBias : 0.3,
+    framingPadding: Number.isFinite(options.framingPadding) ? options.framingPadding : 2.6,
+    hubFollowLerpX: Number.isFinite(options.hubFollowLerpX) ? options.hubFollowLerpX : 0.08,
+    hubFollowLerpY: Number.isFinite(options.hubFollowLerpY) ? options.hubFollowLerpY : 0.1,
   };
 }
 
@@ -53,12 +72,11 @@ function createVisualScaleProfile(multiplier = 1.08, structure = 1.26, props = 1
   };
 }
 
-function createWorldSource(looseAssetRoot, groupedAssets = null) {
+function createBackgroundLayers(baseName) {
   return {
-    mode: groupedAssets ? 'grouped' : 'composed-loose',
-    looseAssetRoot,
-    groupedAssets,
-    debugFallback: true,
+    bg: `./assets/backgrounds/${baseName}-bg.webp?v=${BG_ASSET_REV}`,
+    mid: `./assets/backgrounds/${baseName}-mid.webp?v=${BG_ASSET_REV}`,
+    fg: `./assets/backgrounds/${baseName}-fg.webp?v=${BG_ASSET_REV}`,
   };
 }
 
@@ -75,15 +93,19 @@ export const ZONE_CONFIGS = {
     waves: [],
     boss: null,
     neutral: true,
-    worldSource: createWorldSource('./assets/models/world/hub'),
+    backgroundLayers: createBackgroundLayers('hub'),
     cameraProfile: createCameraProfile(11.8, {
-      viewHeight: 11.4,
-      focusY: -0.95,
+      viewHeight: 10.8,
+      focusY: -0.45,
+      zoomMin: 10.4,
+      zoomMax: 11.2,
+      hubFollowLerpX: 0.075,
+      hubFollowLerpY: 0.11,
     }),
-    parallaxProfile: createParallaxProfile('./assets/textures/props/hub/colormap.png', {
-      background: 0x4f6da9,
-      midground: 0x3a537e,
-      foreground: 0x1a253b,
+    parallaxProfile: createParallaxProfile('hub', {
+      background: 0x88aee8,
+      midground: 0x5f84c1,
+      foreground: 0x2f4d7a,
     }),
     visualScaleProfile: createVisualScaleProfile(1.09, 1.24, 1.1),
     playBounds: HUB_PLAY_BOUNDS,
@@ -118,14 +140,23 @@ export const ZONE_CONFIGS = {
     label: 'City Breach',
     clearBg: './assets/backgrounds/clear-city.jpeg',
     portalColor: CITY_BREACH.gateFire,
-    worldSource: createWorldSource('./assets/models/world/city-breach'),
+    backgroundLayers: createBackgroundLayers('city-breach'),
     portalX: 4.8,
     enemyTint: 0xffefe1,
-    cameraProfile: createCameraProfile(),
-    parallaxProfile: createParallaxProfile('./assets/textures/props/city-breach/colormap.png', {
-      background: 0x050509,
-      midground: 0x28190f,
-      foreground: 0x3b2212,
+    cameraProfile: createCameraProfile(11.2, {
+      viewHeight: 10.1,
+      focusY: -0.12,
+      zoomMin: 9.8,
+      zoomMax: 11.2,
+      followLerpX: 0.115,
+      followLerpY: 0.105,
+      laneBias: 0.34,
+      framingPadding: 2.5,
+    }),
+    parallaxProfile: createParallaxProfile('city-breach', {
+      background: 0x2f3645,
+      midground: 0x5f3a22,
+      foreground: 0x8a5125,
     }),
     visualScaleProfile: createVisualScaleProfile(1.08, 1.28, 1.12),
     playBounds: CITY_PLAY_BOUNDS,
@@ -202,7 +233,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['BURN'],
       reward: { xp: 500, essence: 200 },
     },
-    hubPortal: { x: 7.15, y: 0.95 },
+    hubPortal: { x: -6.1, y: -1.95 },
   },
   'ruin-den': {
     id: 'ruin-den',
@@ -210,14 +241,23 @@ export const ZONE_CONFIGS = {
     label: 'Ruin Den',
     clearBg: './assets/backgrounds/clear-ruin.jpeg',
     portalColor: RUIN_DEN.fissure,
-    worldSource: createWorldSource('./assets/models/world/ruin-den'),
+    backgroundLayers: createBackgroundLayers('ruin-den'),
     portalX: 6.0,
     enemyTint: 0xf4e8d6,
-    cameraProfile: createCameraProfile(),
-    parallaxProfile: createParallaxProfile('./assets/textures/props/ruin-den/colormap.png', {
-      background: 0x080604,
-      midground: 0x2d1f17,
-      foreground: 0x3e2a1d,
+    cameraProfile: createCameraProfile(11.1, {
+      viewHeight: 10.0,
+      focusY: -0.1,
+      zoomMin: 9.7,
+      zoomMax: 11.0,
+      followLerpX: 0.118,
+      followLerpY: 0.106,
+      laneBias: 0.34,
+      framingPadding: 2.45,
+    }),
+    parallaxProfile: createParallaxProfile('ruin-den', {
+      background: 0x2f3028,
+      midground: 0x4b4432,
+      foreground: 0x6d5e42,
     }),
     visualScaleProfile: createVisualScaleProfile(1.1, 1.3, 1.14),
     playBounds: RUIN_PLAY_BOUNDS,
@@ -294,7 +334,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['STUN'],
       reward: { xp: 500, essence: 200 },
     },
-    hubPortal: { x: 7.15, y: 0.15 },
+    hubPortal: { x: -2.0, y: -1.95 },
   },
   'shadow-core': {
     id: 'shadow-core',
@@ -302,14 +342,23 @@ export const ZONE_CONFIGS = {
     label: 'Shadow Core',
     clearBg: './assets/backgrounds/clear-void.jpeg',
     portalColor: SHADOW_CORE.violet,
-    worldSource: createWorldSource('./assets/models/world/shadow-core'),
+    backgroundLayers: createBackgroundLayers('shadow-core'),
     portalX: 7.2,
     enemyTint: 0xe9deff,
-    cameraProfile: createCameraProfile(),
-    parallaxProfile: createParallaxProfile('./assets/textures/props/shadow-core/colormap.png', {
-      background: 0x010103,
-      midground: 0x170f2e,
-      foreground: 0x241845,
+    cameraProfile: createCameraProfile(11.3, {
+      viewHeight: 10.2,
+      focusY: -0.05,
+      zoomMin: 9.9,
+      zoomMax: 11.3,
+      followLerpX: 0.11,
+      followLerpY: 0.102,
+      laneBias: 0.32,
+      framingPadding: 2.55,
+    }),
+    parallaxProfile: createParallaxProfile('shadow-core', {
+      background: 0x1d1633,
+      midground: 0x36235e,
+      foreground: 0x5a3b8f,
     }),
     visualScaleProfile: createVisualScaleProfile(1.09, 1.32, 1.12),
     playBounds: SHADOW_PLAY_BOUNDS,
@@ -360,7 +409,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['BLEED'],
       reward: { xp: 500, essence: 200 },
     },
-    hubPortal: { x: 7.15, y: -0.65 },
+    hubPortal: { x: 2.1, y: -1.95 },
   },
   'thunder-spire': {
     id: 'thunder-spire',
@@ -368,14 +417,23 @@ export const ZONE_CONFIGS = {
     label: 'Thunder Spire',
     clearBg: './assets/backgrounds/clear-spire.jpeg',
     portalColor: THUNDER_SPIRE.lightning,
-    worldSource: createWorldSource('./assets/models/world/thunder-spire'),
+    backgroundLayers: createBackgroundLayers('thunder-spire'),
     portalX: 8.4,
     enemyTint: 0xe3f6ff,
-    cameraProfile: createCameraProfile(),
-    parallaxProfile: createParallaxProfile('./assets/textures/props/thunder-spire/colormap.png', {
-      background: 0x050812,
-      midground: 0x1a2a4a,
-      foreground: 0x2a3d63,
+    cameraProfile: createCameraProfile(11.5, {
+      viewHeight: 10.15,
+      focusY: -0.08,
+      zoomMin: 9.8,
+      zoomMax: 11.25,
+      followLerpX: 0.112,
+      followLerpY: 0.104,
+      laneBias: 0.33,
+      framingPadding: 2.5,
+    }),
+    parallaxProfile: createParallaxProfile('thunder-spire', {
+      background: 0x1a2d4f,
+      midground: 0x2e4f86,
+      foreground: 0x4877bc,
     }),
     visualScaleProfile: createVisualScaleProfile(1.08, 1.27, 1.13),
     playBounds: THUNDER_PLAY_BOUNDS,
@@ -429,7 +487,7 @@ export const ZONE_CONFIGS = {
       immuneStatuses: ['SLOW'],
       reward: { xp: 500, essence: 200 },
     },
-    hubPortal: { x: 7.15, y: -1.45 },
+    hubPortal: { x: 6.2, y: -1.95 },
   },
 };
 
@@ -507,6 +565,7 @@ export class ZoneManager {
       if (!arena) continue;
       arena.group.visible = key === zoneId;
     }
+    this._ensureActiveArenaRenderable(zoneId);
     return this.getZoneConfig(zoneId);
   }
 
@@ -527,6 +586,33 @@ export class ZoneManager {
     const arena = this.getActiveArena();
     if (!arena || typeof arena.getParallaxDebugInfo !== 'function') return [];
     return arena.getParallaxDebugInfo();
+  }
+
+  getWorldHealthDebug() {
+    const zones = {};
+    for (const key of ZONE_ORDER) {
+      const arena = this._arenaMap[key];
+      if (!arena) continue;
+      const health = typeof arena.getWorldHealth === 'function'
+        ? arena.getWorldHealth()
+        : null;
+      zones[key] = {
+        visible: !!arena.group?.visible,
+        built: this._builtArenas.has(key),
+        meshCount: health?.meshCount ?? 0,
+        fallbackMeshCount: health?.fallbackMeshCount ?? 0,
+        fallbackActive: !!health?.fallbackActive,
+        parallaxCount: health?.parallaxCount ?? 0,
+        authoredLayerCount: health?.authoredLayerCount ?? 0,
+      };
+    }
+    const active = this.getActiveArena();
+    const activeHealth = active?.getWorldHealth?.() || null;
+    return {
+      activeZoneId: this.activeZoneId,
+      active: activeHealth,
+      zones,
+    };
   }
 
   getActiveHazards(routeState = null) {
@@ -564,5 +650,11 @@ export class ZoneManager {
     for (const arena of Object.values(this._arenaMap)) {
       if (arena && typeof arena.dispose === 'function') arena.dispose();
     }
+  }
+
+  _ensureActiveArenaRenderable(zoneId) {
+    const arena = this._arenaMap[zoneId];
+    if (!arena) return;
+    arena.setFallbackActive?.(false);
   }
 }

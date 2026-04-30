@@ -37,27 +37,28 @@ const BOSS_CONFIGS = [
     id: 'thyxis',
     targetSize: { width: 320, height: 320 },
     sources: [
-      { state: 'idle', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Idle.png' },
-      { state: 'walk', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Walk.png' },
-      { state: 'run', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Run.png' },
-      { state: 'telegraph', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Run+Attack.png' },
-      { state: 'attack', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Attack_1.png' },
-      { state: 'attack', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Attack_2.png' },
-      { state: 'attack', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Attack_3.png' },
-      { state: 'hurt', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Hurt.png' },
-      { state: 'dead', kind: 'strip', file: 'thyxis-p1/Red_Werewolf/Dead.png' },
-      { state: 'phase3', kind: 'single', file: 'thyxis-p3/were17.png' },
+      { state: 'idle', kind: 'match', dir: 'thyxis/generated', match: /^idle_\d+\.png$/i },
+      { state: 'walk', kind: 'match', dir: 'thyxis/generated', match: /^walk_\d+\.png$/i },
+      { state: 'telegraph', kind: 'match', dir: 'thyxis/generated', match: /^telegraph_\d+\.png$/i },
+      { state: 'attack', kind: 'match', dir: 'thyxis/generated', match: /^attack_\d+\.png$/i },
+      { state: 'hurt', kind: 'match', dir: 'thyxis/generated', match: /^hurt_\d+\.png$/i },
+      { state: 'dead', kind: 'match', dir: 'thyxis/generated', match: /^dead_\d+\.png$/i },
     ],
   },
   {
     id: 'kibad',
     targetSize: { width: 320, height: 320 },
     sources: [
-      { state: 'idle', kind: 'sequence', dir: 'kibad/idle' },
-      { state: 'walk', kind: 'sequence', dir: 'kibad/walk' },
-      { state: 'attack', kind: 'sequence', dir: 'kibad/attack' },
-      { state: 'hurt', kind: 'sequence', dir: 'kibad/hurt' },
-      { state: 'dead', kind: 'sequence', dir: 'kibad/dead' },
+      { state: 'idle', kind: 'match', dir: 'kibad', match: /^idle_\d+\.png$/i },
+      { state: 'idle', kind: 'match', dir: 'kibad', match: /^_standing_pose_\d+\.png$/i },
+      { state: 'telegraph', kind: 'match', dir: 'kibad', match: /^_with_white_\d+\.png$/i },
+      { state: 'blink_exit', kind: 'match', dir: 'kibad', match: /^_dissolves_into_\d+\.png$/i },
+      { state: 'blink_enter', kind: 'match', dir: 'kibad', match: /^_materialises_mid_\d+\.png$/i },
+      { state: 'combo', kind: 'match', dir: 'kibad', match: /^_\d+\.png$/i },
+      { state: 'clone', kind: 'match', dir: 'kibad', match: /^_ghost_duplicate_\d+\.png$/i },
+      { state: 'recover', kind: 'match', dir: 'kibad', match: /^_returns_to_\d+\.png$/i },
+      { state: 'hurt', kind: 'match', dir: 'kibad', match: /^_flinches_backward_\d+\.png$/i },
+      { state: 'dead', kind: 'match', dir: 'kibad', match: /^_fades_to_\d+\.png$/i },
     ],
     placeholderColor: '#f6f6ff',
   },
@@ -150,10 +151,31 @@ async function processFrameBuffer(buffer, targetSize) {
 
 async function collectFramesForSource(source, targetSize) {
   if (source.kind === 'sequence') return collectSequenceFrames(source, targetSize);
+  if (source.kind === 'match') return collectMatchedFrames(source, targetSize);
   if (source.kind === 'strip') return collectStripFrames(source, targetSize);
   if (source.kind === 'gridRow') return collectGridRowFrames(source, targetSize);
   if (source.kind === 'single') return collectSingleFrame(source, targetSize);
   return [];
+}
+
+async function collectMatchedFrames(source, targetSize) {
+  const dirPath = path.join(BOSS_ROOT, source.dir);
+  if (!fs.existsSync(dirPath)) return [];
+  const matcher = source.match instanceof RegExp ? source.match : null;
+  if (!matcher) return [];
+
+  const files = fs.readdirSync(dirPath)
+    .filter((name) => matcher.test(name))
+    .sort(numericAwareSort);
+
+  const frames = [];
+  for (const file of files) {
+    const fullPath = path.join(dirPath, file);
+    const buffer = fs.readFileSync(fullPath);
+    const frame = await processFrameBuffer(buffer, targetSize);
+    if (await hasVisiblePixels(frame)) frames.push(frame);
+  }
+  return frames;
 }
 
 async function collectSequenceFrames(source, targetSize) {

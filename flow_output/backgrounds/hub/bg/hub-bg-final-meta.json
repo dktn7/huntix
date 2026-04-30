@@ -1,0 +1,16 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Wed, 29 Apr 2026 23:48:18 GMT",
+    "content-type": "application/json",
+    "content-length": "236",
+    "connection": "close",
+    "x-fal-request-id": "019ddba4-5743-7370-b645-7c8d89bc2bfc",
+    "x-fal-served-from": "07a12bdf-a065-4ed8-9694-4386100e0990",
+    "x-fal-billable-units": "1.0",
+    "vary": "origin, access-control-request-method, access-control-request-headers",
+    "access-control-allow-credentials": "true",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-robots-tag": "noindex"
+  }
+}

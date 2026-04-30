@@ -623,7 +623,7 @@ export class HUD {
 
     const help = document.createElement('div');
     help.className = 'modal-help';
-    help.textContent = 'A/B/C or Mouse: click card  |  Arrows/AD: choose  |  F/J: confirm';
+    help.textContent = '1/2/3 or A/B/C or Mouse: pick card  |  Arrows/AD: choose  |  F/J: confirm';
     panel.appendChild(help);
 
     this._renderCardSelection();

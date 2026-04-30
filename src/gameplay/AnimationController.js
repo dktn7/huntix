@@ -10,6 +10,7 @@ const STATE_MAP = {
   [PlayerStates.JUMP_FALL]: { names: ['jump_fall', 'jump'], loop: false },
   [PlayerStates.LAND]: { names: ['land', 'jump'], loop: false },
   [PlayerStates.DODGE]: { name: 'dodge', loop: false },
+  [PlayerStates.WEAPON_SWAP]: { name: 'weapon_swap', loop: false },
   [PlayerStates.SPELL_MINOR]: { name: 'spell_minor', loop: false },
   [PlayerStates.SPELL_ADVANCED]: { name: 'spell_advanced', loop: false },
   [PlayerStates.ULTIMATE]: { name: 'spell_ultimate', loop: false },
@@ -50,7 +51,8 @@ export class AnimationController {
 
   _mapState() {
     if (this.playerState.state === PlayerStates.ATTACK_LIGHT) {
-      return { name: `attack_light_${this.playerState.lightComboStep}`, loop: false };
+      const step = String(this.playerState.lightComboStep).padStart(2, '0');
+      return { name: `attack_light_${step}`, loop: false };
     }
     return STATE_MAP[this.playerState.state] || STATE_MAP[PlayerStates.IDLE];
   }

@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-04-30T00:00:09Z",
+  "task_slug": "huntix-thunder-spire-fg",
+  "provider": "fal",
+  "model_alias": "nano-banana-2-t2i",
+  "family": "nano-banana-2",
+  "endpoint_id": "fal-ai/nano-banana-2",
+  "task_type": "text-to-image",
+  "status": "completed",
+  "prompt_text": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, storm-battered foreground structures, crackling cable silhouettes, white-blue highlights, preserve lane readability",
+  "prompt_hash": "e314a91e0154c67c0f97aae74b762250a2cf1682585472f2f6645d68ff1ece37",
+  "input_source": {
+    "image_files": [],
+    "image_urls": [],
+    "input_image_field": null
+  },
+  "resolved_arguments": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "webp",
+    "resolution": "1K",
+    "safety_tolerance": "4",
+    "prompt": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, storm-battered foreground structures, crackling cable silhouettes, white-blue highlights, preserve lane readability",
+    "image_size": "landscape_16_9"
+  },
+  "preset_defaults": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "png",
+    "resolution": "1K",
+    "safety_tolerance": "4"
+  },
+  "explicit_overrides": {
+    "num_images": 1,
+    "image_size": "landscape_16_9",
+    "output_format": "webp"
+  },
+  "headers": {
+    "X-Fal-Store-IO": "1",
+    "x-app-fal-disable-fallback": "true"
+  },
+  "request_id": "019ddbad-c26f-7540-9dba-c7a59af00479",
+  "output_files": [
+    "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-output-01.webp"
+  ],
+  "output_urls": [
+    "https://v3b.fal.media/files/b/0a9842b5/3bNOsY8uJGR49YWGHkLSD_IuDo0781.webp"
+  ],
+  "estimated_cost": {
+    "estimate_type": "unit_price",
+    "total_cost": 0.08,
+    "currency": "USD"
+  },
+  "estimated_cost_method": "unit_price",
+  "reconciled_cost": null,
+  "cost_currency": "USD",
+  "raw_files": {
+    "create_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-create.json",
+    "create_meta_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-create-meta.json",
+    "status_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-status.json",
+    "status_meta_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-status-meta.json",
+    "final_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-final.json",
+    "final_meta_json": "flow_output/backgrounds/thunder-spire/fg/thunder-spire-fg-final-meta.json"
+  },
+  "notes": [],
+  "completed_at": "2026-04-30T00:00:49Z",
+  "billable_units_header": "1.0",
+  "request_headers_seen": {
+    "status": {
+      "date": "Wed, 29 Apr 2026 23:58:43 GMT",
+      "content-type": "application/json",
+      "content-length": "459",
+      "connection": "close",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    },
+    "result": {
+      "date": "Wed, 29 Apr 2026 23:58:44 GMT",
+      "content-type": "application/json",
+      "content-length": "236",
+      "connection": "close",
+      "x-fal-request-id": "019ddbad-c26f-7540-9dba-c7a59af00479",
+      "x-fal-billable-units": "1.0",
+      "x-fal-served-from": "f96457b0-7117-49a6-a14c-d90d9b18588f",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    }
+  }
+}

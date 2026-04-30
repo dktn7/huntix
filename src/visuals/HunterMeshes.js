@@ -3,7 +3,7 @@ import { SpriteAnimator } from './SpriteAnimator.js';
 import { HUNTERS } from './Palettes.js';
 import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 
-const SPRITE_HEIGHT = 1.1;
+const SPRITE_HEIGHT = 1.75;
 const HUNTER_SPRITES_DIR = 'assets/sprites/hunters';
 const SHARED_SPRITES_DIR = 'assets/sprites';
 const textureLoader = new THREE.TextureLoader();
@@ -21,11 +21,11 @@ export async function loadHunterAtlas(hunterId) {
   const atlasData = await loadAtlasJson(id);
   const texture = await loadAtlasTexture(id);
 
-  texture.magFilter = THREE.NearestFilter;
-  texture.minFilter = THREE.NearestFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.flipY = false;
+  texture.flipY = true;
   return { texture, atlasData };
 }
 
@@ -44,21 +44,25 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   const group = new THREE.Group();
   const normalizedAtlas = normalizeAtlasData(atlasData);
   const firstFrame = Object.values(normalizedAtlas.frames)[0];
-  const sourceSize = firstFrame?.sourceSize || firstFrame?.frame || { w: 64, h: 96 };
-  const width = SPRITE_HEIGHT * (sourceSize.w / sourceSize.h);
+  const frameBox = firstFrame?.frame || { w: 64, h: 96 };
+  const width = SPRITE_HEIGHT * (frameBox.w / frameBox.h);
 
   const geometry = new THREE.PlaneGeometry(width, SPRITE_HEIGHT);
+  // PlaneGeometry by default puts center at 0,0,0. 
+  // We want the bottom of the sprite to be at the group's origin.
   geometry.translate(0, SPRITE_HEIGHT / 2, 0);
 
   const material = new THREE.MeshBasicMaterial({
     map: atlasTexture.clone(),
     transparent: true,
-    alphaTest: 0.5, // Increased from 0.1 to clip edges more aggressively
+    alphaTest: 0.3,
     side: THREE.FrontSide,
   });
   material.map.needsUpdate = true;
 
   const sprite = new THREE.Mesh(geometry, material);
+  // Hunter billboards tilt back to face the orthographic camera.
+  // The tilt is applied to the billboard plane, not the group.
   sprite.rotation.x = -ORTHO_CAMERA_TILT_X;
   sprite.renderOrder = 0;
   group.add(sprite);
@@ -72,7 +76,7 @@ export function createAtlasHunterMesh(hunterId, atlasTexture, atlasData) {
   group.userData.bodyMesh = sprite;
   group.userData.shadowMesh = shadow;
   const animator = new SpriteAnimator(material, normalizedAtlas);
-  animator.update(0); // stamp frame 0 UV immediately so the full atlas is never shown
+  animator.update(0); 
   group.userData.animator = animator;
   return group;
 }

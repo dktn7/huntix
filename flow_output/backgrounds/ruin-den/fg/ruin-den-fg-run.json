@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-04-29T23:55:35Z",
+  "task_slug": "huntix-ruin-den-fg",
+  "provider": "fal",
+  "model_alias": "nano-banana-2-t2i",
+  "family": "nano-banana-2",
+  "endpoint_id": "fal-ai/nano-banana-2",
+  "task_type": "text-to-image",
+  "status": "completed",
+  "prompt_text": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, foreground rubble mounds, broken slabs, utility wreckage, subtle particulate glow, keep lane readable",
+  "prompt_hash": "d2eb93446c46d65e1ed6625bad4249c2990f815e55fd5853aab6670fde27fed9",
+  "input_source": {
+    "image_files": [],
+    "image_urls": [],
+    "input_image_field": null
+  },
+  "resolved_arguments": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "webp",
+    "resolution": "1K",
+    "safety_tolerance": "4",
+    "prompt": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, foreground rubble mounds, broken slabs, utility wreckage, subtle particulate glow, keep lane readable",
+    "image_size": "landscape_16_9"
+  },
+  "preset_defaults": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "png",
+    "resolution": "1K",
+    "safety_tolerance": "4"
+  },
+  "explicit_overrides": {
+    "num_images": 1,
+    "image_size": "landscape_16_9",
+    "output_format": "webp"
+  },
+  "headers": {
+    "X-Fal-Store-IO": "1",
+    "x-app-fal-disable-fallback": "true"
+  },
+  "request_id": "019ddba9-8e17-7a40-b46b-23a710c75d0e",
+  "output_files": [
+    "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-output-01.webp"
+  ],
+  "output_urls": [
+    "https://v3b.fal.media/files/b/0a984299/HerpdfWtsxbOTZzuHddZo_fZkVFpEd.webp"
+  ],
+  "estimated_cost": {
+    "estimate_type": "unit_price",
+    "total_cost": 0.08,
+    "currency": "USD"
+  },
+  "estimated_cost_method": "unit_price",
+  "reconciled_cost": null,
+  "cost_currency": "USD",
+  "raw_files": {
+    "create_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-create.json",
+    "create_meta_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-create-meta.json",
+    "status_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-status.json",
+    "status_meta_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-status-meta.json",
+    "final_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-final.json",
+    "final_meta_json": "flow_output/backgrounds/ruin-den/fg/ruin-den-fg-final-meta.json"
+  },
+  "notes": [],
+  "completed_at": "2026-04-29T23:56:25Z",
+  "billable_units_header": "1.0",
+  "request_headers_seen": {
+    "status": {
+      "date": "Wed, 29 Apr 2026 23:54:20 GMT",
+      "content-type": "application/json",
+      "content-length": "460",
+      "connection": "close",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    },
+    "result": {
+      "date": "Wed, 29 Apr 2026 23:54:20 GMT",
+      "content-type": "application/json",
+      "content-length": "236",
+      "connection": "close",
+      "x-fal-served-from": "07a12bdf-a065-4ed8-9694-4386100e0990",
+      "x-fal-request-id": "019ddba9-8e17-7a40-b46b-23a710c75d0e",
+      "x-fal-billable-units": "1.0",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    }
+  }
+}

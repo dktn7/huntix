@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { Base3DArena } from './Base3DArena.js';
+import { Base2DArena } from './Base2DArena.js';
 import { CITY_BREACH } from './Palettes.js';
 
-export class CityBreachArena extends Base3DArena {
+export class CityBreachArena extends Base2DArena {
   constructor(scene, zoneConfig = null) {
     super(scene, {
       colormapTexture: './assets/textures/props/city-breach/colormap.png',
@@ -14,9 +14,16 @@ export class CityBreachArena extends Base3DArena {
   build() {
     this.setZoneColors({ deep: 0x050509, far: 0x0d0a14, mid: 0x111018, near: 0x1a0f0a });
     this.addParallaxLayers();
-    this.buildWorldFromSource({
-      composed: () => this._queueWorldKit(),
-      fallback: () => this.buildFallbackWorld(),
+    this.buildFlatWorld2D({
+      floorColor: 0x2a2d36,
+      laneColor: 0x5c6d86,
+      backColor: 0x151018,
+      ridgeColor: 0x3a2320,
+      silhouetteColor: 0x11151f,
+      laneOpacity: 0.94,
+      backOpacity: 0.8,
+      ridgeOpacity: 0.72,
+      silhouetteOpacity: 0.56,
     });
 
     const reactorCore = new THREE.Mesh(
@@ -89,55 +96,4 @@ export class CityBreachArena extends Base3DArena {
     return this.group;
   }
 
-  _queueWorldKit() {
-    const root = './assets/models/world/city-breach';
-
-    for (let i = -1; i <= 1; i += 1) {
-      this.queueModel(`${root}/tile-low.glb`, {
-        x: i * 5.4,
-        y: -2.28,
-        z: -1.02,
-        scale: 0.66,
-        tint: 0xf4bc82,
-      });
-    }
-
-    for (let i = -1; i <= 1; i += 1) {
-      this.queueModel(`${root}/road-straight.glb`, {
-        x: i * 5.4,
-        y: -2.25,
-        z: -0.96,
-        scale: 0.55,
-        tint: 0xf0c08f,
-      });
-    }
-
-    for (let i = -1; i <= 1; i += 1) {
-      this.queueModel(`${root}/BuildingBlock_1.glb`, {
-        x: i * 5.45,
-        y: 2.0 + (i % 2) * 0.16,
-        z: -2.72,
-        scale: 0.62,
-      });
-    }
-    this.queueModel(`${root}/BuildingBlock_24.glb`, { x: -7.5, y: 1.55, z: -2.46, scale: 0.66 });
-    this.queueModel(`${root}/Building_3.glb`, { x: 7.55, y: 1.4, z: -2.58, scale: 0.64 });
-    this.queueModel(`${root}/BuildingBlock_2.glb`, { x: 0.0, y: 1.75, z: -2.64, scale: 0.64 });
-
-    this.queueModel(`${root}/bridge-pillar.glb`, { x: -7.9, y: 0.9, z: -2.26, scale: 0.74 });
-    this.queueModel(`${root}/bridge-pillar.glb`, { x: 7.9, y: 0.9, z: -2.26, scale: 0.74 });
-    this.queueModel(`${root}/construction-barrier.glb`, { x: -6.75, y: -1.4, z: -0.9, scale: 0.72 });
-    this.queueModel(`${root}/construction-barrier.glb`, { x: -5.55, y: -2.95, z: -0.9, scale: 0.72, rz: Math.PI * 0.02 });
-    this.queueModel(`${root}/debris-1.glb`, { x: -7.8, y: -3.15, z: -0.96, scale: 0.7 });
-    this.queueModel(`${root}/sign-highway-wide.glb`, { x: 7.35, y: 2.0, z: -2.24, scale: 0.62 });
-    this.queueModel(`${root}/portal.glb`, {
-      x: 7.2,
-      y: -2.25,
-      z: -1.2,
-      scale: 0.56,
-      tint: CITY_BREACH.gateFire,
-      emissive: CITY_BREACH.gateFire,
-      emissiveIntensity: 0.55,
-    });
-  }
 }

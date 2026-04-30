@@ -8,9 +8,9 @@ import { ORTHO_CAMERA_TILT_X } from '../engine/Renderer.js';
 const TICK = 1 / 60;
 const PLAYER_WIDTH = 0.8;
 const PLAYER_HEIGHT = 1.2;
-const BASE_Y_SCALE = 0.4;
+const BASE_Y_SCALE = 0.55;
 const ATTACK_BODY_GAP = 0.08;
-const SPEED_TO_WORLD_UNITS = 64;
+const SPEED_TO_WORLD_UNITS = 52;
 const DOWNED_SECONDS = 8;
 const LIGHT_COMBO_WINDOW = 0.45;
 const JUMP_HEIGHT = 2.5;
@@ -32,6 +32,7 @@ export const PlayerStates = {
   JUMP_FALL: 'JUMP_FALL',
   LAND: 'LAND',
   DODGE: 'DODGE',
+  WEAPON_SWAP: 'WEAPON_SWAP',
   HURT: 'HURT',
   DOWNED: 'DOWNED',
   REVIVE: 'REVIVE',
@@ -47,6 +48,7 @@ const STATE_DURATIONS = {
   [PlayerStates.JUMP]: JUMP_START_SECONDS,
   [PlayerStates.LAND]: LAND_SECONDS,
   [PlayerStates.DODGE]: 14 * TICK,
+  [PlayerStates.WEAPON_SWAP]: 4 * TICK,
   [PlayerStates.HURT]: 8 * TICK,
   [PlayerStates.REVIVE]: 18 * TICK,
   [PlayerStates.DEAD]: 24 * TICK,
@@ -637,6 +639,7 @@ export class PlayerState {
       this.state === PlayerStates.ATTACK_HEAVY ||
       this.state === PlayerStates.SPELL_MINOR ||
       this.state === PlayerStates.SPELL_ADVANCED ||
+      this.state === PlayerStates.WEAPON_SWAP ||
       this.state === PlayerStates.ULTIMATE;
   }
 
@@ -704,6 +707,10 @@ export class PlayerState {
       this.mesh.rotation.z = this._dodgeDirection.x * -0.25;
       this.mesh.scale.set(1.15, 0.85, 1);
       this._setVisualColor(0x48f7ff);
+    } else if (this.state === PlayerStates.WEAPON_SWAP) {
+      const pulse = 1 + Math.sin(this._stateElapsed * 42) * 0.06;
+      this.mesh.scale.set(pulse, pulse, 1);
+      this._setVisualColor(0xf4dc7a);
     } else if (this.state === PlayerStates.HURT) {
       const shake = Math.sin(this._stateElapsed * 220) * 0.1;
       this.mesh.position.x += shake;

@@ -1,0 +1,6 @@
+{
+  "request_id": "019ddac3-8630-7cb2-8a13-0a17c945b583",
+  "response_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac3-8630-7cb2-8a13-0a17c945b583",
+  "status_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac3-8630-7cb2-8a13-0a17c945b583/status",
+  "cancel_url": "https://queue.fal.run/fal-ai/gpt-image-1.5/requests/019ddac3-8630-7cb2-8a13-0a17c945b583/cancel"
+}

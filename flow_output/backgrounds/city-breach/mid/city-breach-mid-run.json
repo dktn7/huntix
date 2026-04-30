@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-04-29T23:52:31Z",
+  "task_slug": "huntix-city-breach-mid",
+  "provider": "fal",
+  "model_alias": "nano-banana-2-t2i",
+  "family": "nano-banana-2",
+  "endpoint_id": "fal-ai/nano-banana-2",
+  "task_type": "text-to-image",
+  "status": "completed",
+  "prompt_text": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, collapsed facades and tilted street structures, broken billboards, emergency lights, ember haze, strong horizontal composition",
+  "prompt_hash": "a927c541f07e6d85a2a7560cc06f33fc554345ddea253427de753cd7de766263",
+  "input_source": {
+    "image_files": [],
+    "image_urls": [],
+    "input_image_field": null
+  },
+  "resolved_arguments": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "webp",
+    "resolution": "1K",
+    "safety_tolerance": "4",
+    "prompt": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, collapsed facades and tilted street structures, broken billboards, emergency lights, ember haze, strong horizontal composition",
+    "image_size": "landscape_16_9"
+  },
+  "preset_defaults": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "png",
+    "resolution": "1K",
+    "safety_tolerance": "4"
+  },
+  "explicit_overrides": {
+    "num_images": 1,
+    "image_size": "landscape_16_9",
+    "output_format": "webp"
+  },
+  "headers": {
+    "X-Fal-Store-IO": "1",
+    "x-app-fal-disable-fallback": "true"
+  },
+  "request_id": "019ddba6-bf09-7733-8cd5-60900127a189",
+  "output_files": [
+    "flow_output/backgrounds/city-breach/mid/city-breach-mid-output-01.webp"
+  ],
+  "output_urls": [
+    "https://v3b.fal.media/files/b/0a984287/mTnbTGwoI7bPzZ3bj2JZU_XntvAqMW.webp"
+  ],
+  "estimated_cost": {
+    "estimate_type": "unit_price",
+    "total_cost": 0.08,
+    "currency": "USD"
+  },
+  "estimated_cost_method": "unit_price",
+  "reconciled_cost": null,
+  "cost_currency": "USD",
+  "raw_files": {
+    "create_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-create.json",
+    "create_meta_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-create-meta.json",
+    "status_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-status.json",
+    "status_meta_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-status-meta.json",
+    "final_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-final.json",
+    "final_meta_json": "flow_output/backgrounds/city-breach/mid/city-breach-mid-final-meta.json"
+  },
+  "notes": [],
+  "completed_at": "2026-04-29T23:53:30Z",
+  "billable_units_header": "1.0",
+  "request_headers_seen": {
+    "status": {
+      "date": "Wed, 29 Apr 2026 23:51:25 GMT",
+      "content-type": "application/json",
+      "content-length": "460",
+      "connection": "close",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    },
+    "result": {
+      "date": "Wed, 29 Apr 2026 23:51:26 GMT",
+      "content-type": "application/json",
+      "content-length": "236",
+      "connection": "close",
+      "x-fal-billable-units": "1.0",
+      "x-fal-served-from": "07a12bdf-a065-4ed8-9694-4386100e0990",
+      "x-fal-request-id": "019ddba6-bf09-7733-8cd5-60900127a189",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    }
+  }
+}

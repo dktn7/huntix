@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-04-29T23:56:27Z",
+  "task_slug": "huntix-shadow-core-bg",
+  "provider": "fal",
+  "model_alias": "nano-banana-2-t2i",
+  "family": "nano-banana-2",
+  "endpoint_id": "fal-ai/nano-banana-2",
+  "task_type": "text-to-image",
+  "status": "completed",
+  "prompt_text": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, corrupted void expanse, black-violet depth field, white energy fractures, floating debris silhouettes, high contrast but readable",
+  "prompt_hash": "005132b8ffbd21cbc666042f4b9cdd1d1f27055c175e5727f18e11a2e4db1741",
+  "input_source": {
+    "image_files": [],
+    "image_urls": [],
+    "input_image_field": null
+  },
+  "resolved_arguments": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "webp",
+    "resolution": "1K",
+    "safety_tolerance": "4",
+    "prompt": "2.5D side-view game environment backdrop, dark urban fantasy, high readability, clean silhouette separation, painterly-stylized low-poly feel, cinematic lighting, no characters, no text, no logo, no UI, no foreground subject centered, corrupted void expanse, black-violet depth field, white energy fractures, floating debris silhouettes, high contrast but readable",
+    "image_size": "landscape_16_9"
+  },
+  "preset_defaults": {
+    "num_images": 1,
+    "aspect_ratio": "1:1",
+    "output_format": "png",
+    "resolution": "1K",
+    "safety_tolerance": "4"
+  },
+  "explicit_overrides": {
+    "num_images": 1,
+    "image_size": "landscape_16_9",
+    "output_format": "webp"
+  },
+  "headers": {
+    "X-Fal-Store-IO": "1",
+    "x-app-fal-disable-fallback": "true"
+  },
+  "request_id": "019ddbaa-6b7d-7341-81b8-18091a4c630d",
+  "output_files": [
+    "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-output-01.webp"
+  ],
+  "output_urls": [
+    "https://v3b.fal.media/files/b/0a98429f/4L6yNwtahorpOFnj-R8gn_VJQcyqrl.webp"
+  ],
+  "estimated_cost": {
+    "estimate_type": "unit_price",
+    "total_cost": 0.08,
+    "currency": "USD"
+  },
+  "estimated_cost_method": "unit_price",
+  "reconciled_cost": null,
+  "cost_currency": "USD",
+  "raw_files": {
+    "create_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-create.json",
+    "create_meta_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-create-meta.json",
+    "status_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-status.json",
+    "status_meta_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-status-meta.json",
+    "final_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-final.json",
+    "final_meta_json": "flow_output/backgrounds/shadow-core/bg/shadow-core-bg-final-meta.json"
+  },
+  "notes": [],
+  "completed_at": "2026-04-29T23:57:09Z",
+  "billable_units_header": "1.0",
+  "request_headers_seen": {
+    "status": {
+      "date": "Wed, 29 Apr 2026 23:55:04 GMT",
+      "content-type": "application/json",
+      "content-length": "459",
+      "connection": "close",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    },
+    "result": {
+      "date": "Wed, 29 Apr 2026 23:55:05 GMT",
+      "content-type": "application/json",
+      "content-length": "236",
+      "connection": "close",
+      "x-fal-billable-units": "1.0",
+      "x-fal-request-id": "019ddbaa-6b7d-7341-81b8-18091a4c630d",
+      "x-fal-served-from": "c9f55121-d75d-4292-a38f-6f753673075f",
+      "vary": "origin, access-control-request-method, access-control-request-headers",
+      "access-control-allow-credentials": "true",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-robots-tag": "noindex"
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "hunter": "kibad",
+  "source_used": [],
+  "source_file_count": 0,
+  "packed_count": 0,
+  "state_counts": {},
+  "required_states": [
+    "idle",
+    "run",
+    "attack_light",
+    "attack_heavy",
+    "spell_minor",
+    "spell_advanced",
+    "ultimate",
+    "dodge",
+    "hurt",
+    "dead",
+    "revive",
+    "weapon_swap",
+    "jump"
+  ],
+  "missing_states": [
+    "idle",
+    "run",
+    "attack_light",
+    "attack_heavy",
+    "spell_minor",
+    "spell_advanced",
+    "ultimate",
+    "dodge",
+    "hurt",
+    "dead",
+    "revive",
+    "weapon_swap",
+    "jump"
+  ],
+  "count_mismatches": [
+    {
+      "state": "idle",
+      "expected": 6,
+      "actual": 0
+    },
+    {
+      "state": "run",
+      "expected": 12,
+      "actual": 0
+    },
+    {
+      "state": "attack_light",
+      "expected": 8,
+      "actual": 0
+    },
+    {
+      "state": "attack_heavy",
+      "expected": 14,
+      "actual": 0
+    },
+    {
+      "state": "spell_minor",
+      "expected": 10,
+      "actual": 0
+    },
+    {
+      "state": "spell_advanced",
+      "expected": 20,
+      "actual": 0
+    },
+    {
+      "state": "ultimate",
+      "expected": 50,
+      "actual": 0
+    },
+    {
+      "state": "dodge",
+      "expected": 14,
+      "actual": 0
+    },
+    {
+      "state": "hurt",
+      "expected": 8,
+      "actual": 0
+    },
+    {
+      "state": "dead",
+      "expected": 24,
+      "actual": 0
+    },
+    {
+      "state": "revive",
+      "expected": 18,
+      "actual": 0
+    },
+    {
+      "state": "weapon_swap",
+      "expected": 4,
+      "actual": 0
+    },
+    {
+      "state": "jump",
+      "expected": 12,
+      "actual": 0
+    }
+  ],
+  "states_requiring_regeneration": [],
+  "source_to_atlas": {
+    "expected_count": 0,
+    "atlas_count": 0,
+    "missing_in_atlas": [],
+    "extra_in_atlas": []
+  },
+  "anchor_drift_px": 0,
+  "bbox_drift_px": 0,
+  "size_drift_px": 0,
+  "matte_artifact_ratio": 0,
+  "per_state_metrics": {},
+  "normalization_canvas": {
+    "w": 1,
+    "h": 1
+  },
+  "frame_order_anomalies": [],
+  "direction_panel_map": [],
+  "size_policy_violations": [],
+  "filtered_outliers": [],
+  "rotated_frames": [],
+  "atlas_image": null,
+  "atlas_data": "kibad-atlas.json",
+  "pack_backend": null
+}

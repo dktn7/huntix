@@ -66,6 +66,7 @@ const ENEMY_ATLAS_BY_TYPE = {
 const ENEMY_STATE_TO_ANIM = {
   IDLE: 'idle',
   WAIT: 'idle',
+  PATROL: 'idle',
   AGGRO: 'walk',
   WALK: 'walk',
   TELEGRAPH: 'telegraph',
@@ -727,6 +728,7 @@ export class EnemySpawner {
     });
 
     const mesh = new THREE.InstancedMesh(geometry, material, ENEMY_CAPACITY);
+    mesh.frustumCulled = false;
     mesh.rotation.x = this._billboardTiltX;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.renderOrder = 50;

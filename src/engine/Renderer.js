@@ -10,7 +10,8 @@ export const ORTHO_HEIGHT = 10;
 export const ORTHO_WIDTH  = ORTHO_HEIGHT * (GAME_WIDTH / GAME_HEIGHT);
 export const DEFAULT_ORTHO_OBLIQUE_DEGREES = 11;
 export function obliqueDegreesToCameraTiltX(obliqueDegrees = DEFAULT_ORTHO_OBLIQUE_DEGREES) {
-  return THREE.MathUtils.degToRad(90 - obliqueDegrees);
+  // Small oblique tilt restores 2.5D depth without pushing the arena out of view.
+  return -THREE.MathUtils.degToRad(obliqueDegrees);
 }
 export const DEFAULT_ORTHO_CAMERA_TILT_X = obliqueDegreesToCameraTiltX(DEFAULT_ORTHO_OBLIQUE_DEGREES);
 export const ORTHO_CAMERA_TILT_X = DEFAULT_ORTHO_CAMERA_TILT_X;
@@ -45,7 +46,7 @@ export class Renderer {
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = false; // disabled for perf — add later if needed
-    this.renderer.setClearColor(0x0a0a0f);
+    this.renderer.setClearColor(0x101a2b);
 
     this._resize();
     window.addEventListener('resize', () => this._resize());
@@ -63,6 +64,7 @@ export class Renderer {
     );
     cam.userData.distanceZ = ORTHO_CAMERA_DISTANCE_Z;
     setCameraTiltX(cam, ORTHO_CAMERA_TILT_X);
+    setCameraFocus(cam, 0, 0); // Initialize camera position
     return cam;
   }
 

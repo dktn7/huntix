@@ -37,3 +37,6 @@ assets/audio/
 *.wav
 *.ogg
 *.m4a
+
+.gemini/
+gha-creds-*.json

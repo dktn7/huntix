@@ -362,10 +362,10 @@ export class HunterController {
 
   _buildConfig(hunterId, modifiers = {}) {
     const base = HUNTER_CONFIGS[hunterId] || HUNTER_CONFIGS.dabik;
-    const damageMult = modifiers?.damageMult || 1;
-    const speedMult = modifiers?.speedMult || 1;
-    const spellDamageMult = modifiers?.spellDamageMult || 1;
-    const cooldownMult = Math.max(0.2, modifiers?.cooldownMult || 1);
+    const damageMult = 1 + (modifiers?.damageMult || 0);
+    const speedMult = 1 + (modifiers?.speedMult || 0);
+    const spellDamageMult = 1 + (modifiers?.spellDamageMult || 0);
+    const cooldownMult = Math.max(0.2, 1 + (modifiers?.cooldownMult || 0));
     const dodgeIFrameBonus = modifiers?.dodgeIFrameBonus || 0;
 
     return {

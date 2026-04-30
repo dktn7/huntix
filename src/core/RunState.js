@@ -252,7 +252,7 @@ export const RunState = {
 
   addEssence(playerIndex, amount) {
     const player = getPlayer(playerIndex);
-    const mult = amount > 0 ? player.modifiers?.essenceGainMult || 1 : 1;
+    const mult = amount > 0 ? 1 + (player.modifiers?.essenceGainMult || 0) : 1;
     const delta = amount > 0 ? Math.round(amount * mult) : amount;
     player.essence = Math.max(0, player.essence + delta);
     if (delta > 0) player.stats.essenceCollected += delta;
